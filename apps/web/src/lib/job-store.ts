@@ -44,6 +44,7 @@ export type JobCardData = {
   requirements: string[];
   responsibilities: string[];
   applicationUrl: string;
+  salary?: string | null;
   featured?: boolean;
 };
 
@@ -293,6 +294,7 @@ export function toJobCard(job: StoredJob): JobCardData {
         ? descriptionLines.slice(0, 5)
         : ["Consultar descrição completa na página da entidade."],
     applicationUrl: job.applicationUrl,
+    salary: job.salary,
   };
 }
 

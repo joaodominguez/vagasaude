@@ -15,6 +15,7 @@ import { CategoryPageView } from "@/components/category-page-view";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { JobCard } from "@/components/job-card";
+import { SalaryInsight } from "@/components/salary-insight";
 import { ShareButtons } from "@/components/share-buttons";
 import {
   buildCategoryMetadata,
@@ -208,6 +209,9 @@ function ActiveJobView({ job, allJobs }: { job: Job; allJobs: Job[] }) {
                     </div>
                   ))}
                 </dl>
+                <div className="mt-4">
+                  <SalaryInsight job={job} />
+                </div>
                 <a
                   href={job.applicationUrl}
                   target="_blank"

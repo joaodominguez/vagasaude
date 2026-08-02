@@ -7,6 +7,7 @@ import {
   Stethoscope,
 } from "lucide-react";
 import type { Job } from "@/lib/jobs";
+import { SalaryInsight } from "@/components/salary-insight";
 
 function JobIcon({ profession }: { profession: string }) {
   const Icon =
@@ -53,6 +54,7 @@ export function JobCard({ job }: { job: Job }) {
             </span>
             <span className="tag tag-primary">{job.sector}</span>
             <span className="tag">{job.contract}</span>
+            <SalaryInsight job={job} variant="compact" />
           </span>
         </span>
       </span>

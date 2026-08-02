@@ -14,6 +14,8 @@ export type Job = {
   requirements: string[];
   responsibilities: string[];
   applicationUrl: string;
+  /** Remuneração anunciada na fonte (se existir). */
+  salary?: string | null;
   featured?: boolean;
 };
 
