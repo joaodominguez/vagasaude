@@ -1,0 +1,10 @@
+{
+  "name": "vagasaude-scrapers",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Helpers Node para scrapers (ex.: Diário da República via Chrome)",
+  "dependencies": {
+    "puppeteer-core": "^23.11.1"
+  }
+}

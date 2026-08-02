@@ -5,6 +5,10 @@ Fontes ativas nesta fase:
 | Fonte | Origem | Tipo |
 |---|---|---|
 | `bep` | https://www.bep.gov.pt | Nível MS + varredura catálogo + keywords (filtro SNS/clínico) |
+| `dre` | https://diariodarepublica.pt | Avisos Série II (Chrome/puppeteer-core) — concursos saúde |
+| `iefp` | https://iefponline.iefp.pt | Facetas CNP saúde (enfermagem, fisio, TO, TF) |
+| `ipo_porto` | https://ipoporto.pt/nos-ipo/emprego-e-carreira/ | Procedimentos concursais IPO Porto |
+| `scml` | https://recrutamento.scml.pt/ | Santa Casa Lisboa (filtro saúde, sector IPSS) |
 | `cuf` | https://carreiras.cuf.pt/jobs.json | JSON Feed / Teamtailor |
 | `luz_saude` | CVWarehouse (Luz Saúde) | HTML público |
 | `lusiadas` | CVWarehouse (Lusíadas) | HTML público |

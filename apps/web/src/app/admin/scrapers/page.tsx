@@ -10,6 +10,26 @@ const SCRAPERS = [
     schedule: "A cada 6 horas",
   },
   {
+    slug: "dre",
+    name: "Diário da República (avisos Série II)",
+    schedule: "A cada 6 horas",
+  },
+  {
+    slug: "iefp",
+    name: "IEFP (ofertas saúde)",
+    schedule: "A cada 6 horas",
+  },
+  {
+    slug: "ipo_porto",
+    name: "IPO Porto (emprego)",
+    schedule: "A cada 6 horas",
+  },
+  {
+    slug: "scml",
+    name: "Santa Casa Misericórdia Lisboa",
+    schedule: "A cada 6 horas",
+  },
+  {
     slug: "cuf",
     name: "CUF (Teamtailor)",
     schedule: "A cada 6 horas",

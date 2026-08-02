@@ -11,6 +11,26 @@ const SOURCE_META: Record<
     url: "https://www.bep.gov.pt/pages/oferta/Oferta_Pesquisa_basica.aspx",
     sector: "Público",
   },
+  dre: {
+    name: "Diário da República (avisos)",
+    url: "https://diariodarepublica.pt/dr/home",
+    sector: "Público",
+  },
+  iefp: {
+    name: "IEFP — Ofertas de emprego (saúde)",
+    url: "https://iefponline.iefp.pt/IEFP/pesquisas/search.do?cat=ofertaEmprego",
+    sector: "Privado",
+  },
+  ipo_porto: {
+    name: "IPO Porto",
+    url: "https://ipoporto.pt/nos-ipo/emprego-e-carreira/",
+    sector: "Público",
+  },
+  scml: {
+    name: "Santa Casa da Misericórdia de Lisboa",
+    url: "https://recrutamento.scml.pt/",
+    sector: "IPSS",
+  },
   cuf: {
     name: "CUF / José de Mello",
     url: "https://carreiras.cuf.pt/",

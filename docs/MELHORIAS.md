@@ -27,10 +27,10 @@
 
 | Prioridade | Item | Estado |
 |---|---|---|
-| 1 | BEP: ULS/EPE/IPO via catálogo completo + filtro SNS (sem keyword exclusive) | Feito — teto ≈ inventário real BEP (~17) |
-| 2 | Fontes privadas em falta (HPA, SAMS, Misericórdias, labs…) | **HPA em produção** (16); SAMS/Unilabs SPA; UMP sem listagem scrapável |
-| 3 | Cobertura geográfica (interior + ilhas) | HPA → Faro 8 / Madeira 6 / Setúbal+2 (Sines); Açores ainda fraco |
-| 4 | Qualidade: dedupeHash duplicados + Outros | **39 collapsed**; Outros 13%→11.6%; reclassify API |
+| 1 | BEP + **DR avisos Série II** + IPO Porto | DR ~177 aberturas; IPO Porto ~30; BEP ~14 |
+| 2 | Fontes privadas / IPSS | HPA + **SCML (IPSS)** + IEFP saúde (~80) |
+| 3 | Cobertura geográfica (interior + ilhas) | IEFP/DR alargam distritos; HPA ilhas/Algarve |
+| 4 | Qualidade: dedupeHash duplicados + Outros | Dedupe + reclassify API |
 
 ---
 
