@@ -1,9 +1,6 @@
 import Link from "next/link";
 import { ArrowUpRight, MapPinned } from "lucide-react";
-import {
-  PORTUGAL_DISTRICTS,
-  PORTUGAL_OUTLINE,
-} from "@/lib/portugal-map";
+import { PORTUGAL_DISTRICTS, PORTUGAL_OUTLINE } from "@/lib/portugal-map";
 
 type PortugalJobsMapProps = {
   counts: Record<string, number>;
@@ -31,7 +28,7 @@ export function PortugalJobsMap({ counts, total }: PortugalJobsMapProps) {
     <div className="portugal-map-panel">
       <div className="portugal-map-visual">
         <svg
-          viewBox="0 0 200 340"
+          viewBox="0 0 240 390"
           className="portugal-map-svg"
           role="img"
           aria-label="Mapa de Portugal com vagas por distrito"
@@ -42,17 +39,14 @@ export function PortugalJobsMap({ counts, total }: PortugalJobsMapProps) {
               <stop offset="100%" stopColor="var(--map-sea-to)" />
             </linearGradient>
           </defs>
-          <rect width="200" height="340" rx="28" fill="url(#mapSea)" />
-          <path
-            d={PORTUGAL_OUTLINE}
-            className="portugal-land"
-            transform="translate(8 8) scale(0.92)"
-          />
+          <rect width="240" height="390" rx="28" fill="url(#mapSea)" />
+          <path d={PORTUGAL_OUTLINE} className="portugal-land" />
+
           {ranked.map((district) => {
             const active = district.count > 0;
             const radius = active
-              ? Math.min(16, 7 + (district.count / max) * 9)
-              : 5;
+              ? Math.min(14, 6.5 + (district.count / max) * 7.5)
+              : 4;
             const marker = (
               <>
                 <circle

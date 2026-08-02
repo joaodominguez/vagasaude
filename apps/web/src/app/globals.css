@@ -400,8 +400,20 @@ select {
 
 .portugal-land {
   fill: var(--map-land);
-  stroke: color-mix(in srgb, var(--primary) 35%, transparent);
-  stroke-width: 1.2;
+  stroke: color-mix(in srgb, var(--primary) 40%, transparent);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+
+.portugal-island {
+  opacity: 0.85;
+}
+
+.map-inset-label {
+  fill: var(--muted);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
 }
 
 .map-marker-empty {
