@@ -13,8 +13,8 @@ O produto deve transmitir confiança sem parecer um portal institucional antigo
 ou uma aplicação hospitalar. A interface dá prioridade às vagas e evita
 fotografias genéricas de profissionais de saúde.
 
-**Nome visual:** `VagaSaúde`  
-**Domínio:** `vagasaude.pt`  
+**Nome visual:** `VagaSaúde`
+**Domínio:** `vagasaude.pt`
 **Mensagem principal:** “A tua próxima oportunidade na saúde começa aqui.”
 
 ---
