@@ -13,7 +13,7 @@ import { SearchForm } from "@/components/search-form";
 import {
   categoryPath,
   isCategoryEligible,
-  listEligibleCategories,
+  listCategoryChips,
 } from "@/lib/categories";
 import { getJobs } from "@/lib/jobs-data";
 import { professions } from "@/lib/jobs";
@@ -27,9 +27,7 @@ export default async function Home() {
     acc[key] = (acc[key] || 0) + 1;
     return acc;
   }, {});
-  const topCategories = listEligibleCategories(jobs)
-    .filter((item) => item.kind === "profession" || item.kind === "district")
-    .slice(0, 8);
+  const topCategories = listCategoryChips(jobs, 8);
 
   return (
     <>

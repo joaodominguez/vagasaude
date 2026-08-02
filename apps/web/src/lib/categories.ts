@@ -1,6 +1,8 @@
 import type { Job } from "@/lib/jobs";
-import { districts as allDistricts } from "@/lib/portugal-map";
-import { professions as taxonomyProfessions } from "@/lib/taxonomies";
+import {
+  districts as categoryDistricts,
+  professions as taxonomyProfessions,
+} from "@/lib/taxonomies";
 import { absoluteUrl, SITE_NAME, truncateMeta } from "@/lib/seo";
 import type { Metadata } from "next";
 
@@ -14,6 +16,9 @@ const PROFESSION_LABELS = [
   "Assistência Social",
   "Outros",
 ] as const;
+
+/** Distritos/regiões válidos para landings (continente + ilhas). */
+export const CATEGORY_DISTRICTS = categoryDistricts;
 
 function normalizeKey(text: string) {
   return text
@@ -33,7 +38,7 @@ const PROFESSION_BY_SLUG = new Map(
   PROFESSION_LABELS.map((label) => [toCategorySlug(label), label] as const),
 );
 const DISTRICT_BY_SLUG = new Map(
-  allDistricts.map((label) => [toCategorySlug(label), label] as const),
+  CATEGORY_DISTRICTS.map((label) => [toCategorySlug(label), label] as const),
 );
 
 export function professionFromSlug(slug: string) {
@@ -42,6 +47,14 @@ export function professionFromSlug(slug: string) {
 
 export function districtFromSlug(slug: string) {
   return DISTRICT_BY_SLUG.get(slug) ?? null;
+}
+
+export function isKnownProfession(label: string) {
+  return PROFESSION_BY_SLUG.has(toCategorySlug(label));
+}
+
+export function isKnownDistrict(label: string) {
+  return DISTRICT_BY_SLUG.has(toCategorySlug(label));
 }
 
 export function isReservedCategorySlug(slug: string) {
@@ -182,7 +195,9 @@ export function buildCategoryStats(jobs: Job[]): CategoryStats {
 export function listEligibleCategories(jobs: Job[]): CategoryRef[] {
   const refs: CategoryRef[] = [];
 
-  const professions = new Set(jobs.map((job) => job.profession));
+  const professions = new Set(
+    jobs.map((job) => job.profession).filter(isKnownProfession),
+  );
   for (const profession of professions) {
     const subset = filterJobsForCategory(jobs, profession, null);
     if (subset.length < CATEGORY_MIN_JOBS) continue;
@@ -195,7 +210,9 @@ export function listEligibleCategories(jobs: Job[]): CategoryRef[] {
     });
   }
 
-  const districts = new Set(jobs.map((job) => job.district));
+  const districts = new Set(
+    jobs.map((job) => job.district).filter(isKnownDistrict),
+  );
   for (const district of districts) {
     const subset = filterJobsForCategory(jobs, null, district);
     if (subset.length < CATEGORY_MIN_JOBS) continue;
@@ -222,7 +239,29 @@ export function listEligibleCategories(jobs: Job[]): CategoryRef[] {
     }
   }
 
-  return refs.sort((a, b) => a.path.localeCompare(b.path, "pt"));
+  return refs
+    .filter((ref) => {
+      // Garantir que o path resolve na rota (evita chips 404).
+      const segments = ref.path.replace(/^\/vagas\//, "").split("/");
+      return Boolean(resolveCategoryFromSegments(segments[0], segments[1]));
+    })
+    .sort((a, b) => a.path.localeCompare(b.path, "pt"));
+}
+
+/** Chips para homepage/listagem: só categorias com página real, por volume. */
+export function listCategoryChips(jobs: Job[], limit = 10): CategoryRef[] {
+  return listEligibleCategories(jobs)
+    .filter((item) => item.kind === "profession" || item.kind === "district")
+    .map((item) => ({
+      item,
+      count: filterJobsForCategory(jobs, item.profession, item.district).length,
+    }))
+    .sort(
+      (a, b) =>
+        b.count - a.count || a.item.path.localeCompare(b.item.path, "pt"),
+    )
+    .slice(0, limit)
+    .map(({ item }) => item);
 }
 
 export function isCategoryEligible(

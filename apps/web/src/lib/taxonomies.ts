@@ -1,4 +1,4 @@
-export { districts } from "@/lib/portugal-map";
+import { districts as mainlandDistricts } from "@/lib/portugal-map";
 
 export const professions = [
   "Enfermagem",
@@ -10,3 +10,6 @@ export const professions = [
 ] as const;
 
 export const sectors = ["Público", "Privado", "IPSS"] as const;
+
+/** Continente + regiões autónomas (para filtros e landings). */
+export const districts = [...mainlandDistricts, "Açores", "Madeira"] as const;

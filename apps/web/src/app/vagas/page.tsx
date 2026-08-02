@@ -8,7 +8,7 @@ import { SearchForm } from "@/components/search-form";
 import {
   categoryPath,
   isCategoryEligible,
-  listEligibleCategories,
+  listCategoryChips,
 } from "@/lib/categories";
 import { getJobs } from "@/lib/jobs-data";
 import { professions } from "@/lib/taxonomies";
@@ -68,9 +68,7 @@ export default async function JobsPage({
   const sector = params.setor ?? "";
   const page = Math.max(1, Number.parseInt(params.page || "1", 10) || 1);
   const jobs = await getJobs();
-  const topCategories = listEligibleCategories(jobs)
-    .filter((item) => item.kind !== "combo")
-    .slice(0, 10);
+  const topCategories = listCategoryChips(jobs, 10);
 
   const filteredJobs = jobs.filter((job) => {
     const haystack =
@@ -138,7 +136,13 @@ export default async function JobsPage({
               </div>
 
               <FilterGroup title="Profissão">
-                {professions.map((item) => (
+                {professions
+                  .map((item) => ({
+                    item,
+                    count: jobs.filter((job) => job.profession === item).length,
+                  }))
+                  .filter(({ count }) => count > 0)
+                  .map(({ item, count }) => (
                   <FilterLink
                     key={item}
                     label={item}
@@ -146,7 +150,7 @@ export default async function JobsPage({
                     value={item}
                     active={profession === item}
                     params={params}
-                    count={jobs.filter((job) => job.profession === item).length}
+                    count={count}
                     preferCategory={
                       !query && !sector && !district
                         ? isCategoryEligible(jobs, item, null)
@@ -163,7 +167,13 @@ export default async function JobsPage({
               </FilterGroup>
 
               <FilterGroup title="Setor">
-                {["Público", "Privado", "IPSS"].map((item) => (
+                {["Público", "Privado", "IPSS"]
+                  .map((item) => ({
+                    item,
+                    count: jobs.filter((job) => job.sector === item).length,
+                  }))
+                  .filter(({ count }) => count > 0)
+                  .map(({ item, count }) => (
                   <FilterLink
                     key={item}
                     label={item}
@@ -171,7 +181,7 @@ export default async function JobsPage({
                     value={item}
                     active={sector === item}
                     params={params}
-                    count={jobs.filter((job) => job.sector === item).length}
+                    count={count}
                   />
                 ))}
               </FilterGroup>
