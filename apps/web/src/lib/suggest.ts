@@ -125,6 +125,7 @@ export function buildSuggestions(
     companies.set(job.company, (companies.get(job.company) || 0) + 1);
     // primeiras 6 palavras do título como “role”
     const short = job.title
+      .replace(/[\u200b\u200c\u200d\ufeff]/g, "")
       .replace(/\s*[|–—-]\s*/g, " ")
       .replace(/\s*\(.*?\)\s*/g, " ")
       .replace(/\s+/g, " ")
@@ -132,7 +133,7 @@ export function buildSuggestions(
       .split(" ")
       .slice(0, 6)
       .join(" ");
-    if (short.length >= 8 && short.length <= 60) {
+    if (short.length >= 8 && short.length <= 48) {
       titleCounts.set(short, (titleCounts.get(short) || 0) + 1);
     }
   }
