@@ -39,6 +39,7 @@ export type JobCardData = {
   profession: string;
   publishedLabel: string;
   publishedAt: string;
+  expiresAt?: string | null;
   description: string;
   requirements: string[];
   responsibilities: string[];
@@ -158,6 +159,7 @@ export function toJobCard(job: StoredJob): JobCardData {
     profession: job.profession,
     publishedLabel: publishedLabel(job.publishedAt),
     publishedAt: job.publishedAt || job.createdAt.slice(0, 10),
+    expiresAt: job.expiresAt,
     description,
     requirements:
       requirements.length > 0

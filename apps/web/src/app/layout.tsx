@@ -1,5 +1,12 @@
 import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
+import {
+  buildOrganizationJsonLd,
+  buildWebsiteJsonLd,
+  DEFAULT_DESCRIPTION,
+  SITE_NAME,
+  SITE_URL,
+} from "@/lib/seo";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -19,20 +26,51 @@ const themeScript = `
 `;
 
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? "https://vagasaude.pt",
-  ),
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: "VagaSaúde — Emprego na saúde em Portugal",
-    template: "%s | VagaSaúde",
+    default: `${SITE_NAME} — Emprego na saúde em Portugal`,
+    template: `%s | ${SITE_NAME}`,
   },
-  description:
-    "Todas as vagas de saúde em Portugal num só sítio. Encontra oportunidades no setor público, privado e IPSS.",
+  description: DEFAULT_DESCRIPTION,
+  applicationName: SITE_NAME,
+  keywords: [
+    "vagas saúde",
+    "emprego enfermagem",
+    "emprego medicina",
+    "vagas hospital",
+    "emprego Portugal",
+  ],
+  authors: [{ name: SITE_NAME }],
+  creator: SITE_NAME,
+  publisher: SITE_NAME,
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
   openGraph: {
-    title: "VagaSaúde",
+    title: SITE_NAME,
     description: "A tua próxima oportunidade na saúde começa aqui.",
+    url: SITE_URL,
+    siteName: SITE_NAME,
     locale: "pt_PT",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: SITE_NAME,
+    description: "A tua próxima oportunidade na saúde começa aqui.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
   },
 };
 
@@ -41,10 +79,23 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [buildWebsiteJsonLd(), buildOrganizationJsonLd()].map(
+      ({ ["@context"]: _ctx, ...rest }) => rest,
+    ),
+  };
+
   return (
     <html lang="pt" className={manrope.variable} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(structuredData),
+          }}
+        />
       </head>
       <body className="min-h-screen">{children}</body>
     </html>

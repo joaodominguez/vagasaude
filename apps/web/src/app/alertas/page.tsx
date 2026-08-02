@@ -8,6 +8,14 @@ export const metadata: Metadata = {
   title: "Criar alerta de vagas",
   description:
     "Recebe por email as novas oportunidades de emprego em saúde que correspondem aos teus interesses.",
+  alternates: { canonical: "/alertas" },
+  openGraph: {
+    title: "Criar alerta de vagas | VagaSaúde",
+    description:
+      "Recebe por email as novas oportunidades de emprego em saúde que correspondem aos teus interesses.",
+    url: "/alertas",
+    type: "website",
+  },
 };
 
 export default function AlertsPage() {

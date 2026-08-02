@@ -14,6 +14,20 @@ export const metadata: Metadata = {
   title: "Vagas de saúde",
   description:
     "Pesquisa vagas de enfermagem, medicina, fisioterapia e outras profissões de saúde em Portugal.",
+  alternates: { canonical: "/vagas" },
+  openGraph: {
+    title: "Vagas de saúde | VagaSaúde",
+    description:
+      "Pesquisa vagas de enfermagem, medicina, fisioterapia e outras profissões de saúde em Portugal.",
+    url: "/vagas",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Vagas de saúde | VagaSaúde",
+    description:
+      "Pesquisa vagas de enfermagem, medicina, fisioterapia e outras profissões de saúde em Portugal.",
+  },
 };
 
 type SearchParams = Promise<{

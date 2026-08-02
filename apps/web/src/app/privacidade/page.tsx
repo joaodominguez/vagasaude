@@ -4,6 +4,10 @@ import { Header } from "@/components/header";
 
 export const metadata: Metadata = {
   title: "Privacidade",
+  description:
+    "Política de privacidade do VagaSaúde: que dados recolhemos e como os usamos.",
+  alternates: { canonical: "/privacidade" },
+  robots: { index: true, follow: true },
 };
 
 export default function PrivacyPage() {

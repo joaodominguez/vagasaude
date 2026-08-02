@@ -14,7 +14,9 @@ import { AlertForm } from "@/components/alert-form";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { JobCard } from "@/components/job-card";
+import { ShareButtons } from "@/components/share-buttons";
 import { getJob, getJobs } from "@/lib/jobs-data";
+import { buildJobMetadata, buildJobPostingJsonLd, jobUrl } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
@@ -27,13 +29,8 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const job = await getJob(slug);
-  if (!job) return {};
-
-  return {
-    title: `${job.title} — ${job.company}`,
-    description: `${job.title} em ${job.city}. Consulta os requisitos e candidata-te no site da entidade.`,
-    alternates: { canonical: `/vagas/${job.slug}` },
-  };
+  if (!job) return { title: "Vaga não encontrada" };
+  return buildJobMetadata(job);
 }
 
 export default async function JobDetailPage({ params }: { params: Params }) {
@@ -50,28 +47,8 @@ export default async function JobDetailPage({ params }: { params: Params }) {
     )
     .slice(0, 3);
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "JobPosting",
-    title: job.title,
-    description: job.description,
-    datePosted: job.publishedAt,
-    employmentType: job.contract,
-    hiringOrganization: {
-      "@type": "Organization",
-      name: job.company,
-    },
-    jobLocation: {
-      "@type": "Place",
-      address: {
-        "@type": "PostalAddress",
-        addressLocality: job.city,
-        addressRegion: job.district,
-        addressCountry: "PT",
-      },
-    },
-    directApply: false,
-  };
+  const jsonLd = buildJobPostingJsonLd(job);
+  const shareUrl = jobUrl(job.slug);
 
   return (
     <>
@@ -114,6 +91,11 @@ export default async function JobDetailPage({ params }: { params: Params }) {
                   <span className="tag">{job.contract}</span>
                   <span className="tag">{job.profession}</span>
                 </div>
+                <ShareButtons
+                  url={shareUrl}
+                  title={job.title}
+                  summary={`${job.company} · ${job.city}`}
+                />
               </header>
 
               <div className="job-content">

@@ -9,6 +9,7 @@ export type Job = {
   profession: string;
   publishedLabel: string;
   publishedAt: string;
+  expiresAt?: string | null;
   description: string;
   requirements: string[];
   responsibilities: string[];
