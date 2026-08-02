@@ -8,38 +8,34 @@ from common.models import BaseScraper, JobPayload
 from common.normalize import guess_district, guess_profession, html_to_text
 
 BASE = "https://www.bep.gov.pt"
-SEARCH_URL = f"{BASE}/pages/oferta/Oferta_Pesquisa_basica.aspx"
+SEARCH_BASIC = f"{BASE}/pages/oferta/Oferta_Pesquisa_basica.aspx"
+SEARCH_ADV = f"{BASE}/pages/oferta/Oferta_Pesquisa.aspx"
+# Compat com código antigo / README.
+SEARCH_URL = SEARCH_BASIC
 
-# Termos de pesquisa focados em saúde pública (BEP indexa texto livre).
+# Níveis orgânicos de saúde no BEP (dropNivelOrganico em Oferta_Pesquisa.aspx).
+# O assistente assistantOrg.aspx?CodNivelOrganico=29 corresponde ao Ministério da Saúde
+# (códigos internos 308 / 470) e secretarias regionais.
+HEALTH_NIVEL_ORGANICO = (
+    "308",  # Ministério da Saúde
+    "470",  # Ministério da Saúde (entrada alternativa)
+    "366",  # Secretaria Regional da Saúde (RAA)
+    "447",  # Secretaria Regional da Saúde e Desporto (RAA)
+    "434",  # Secretaria Regional de Saúde e Proteção Civil (RAM)
+)
+
+# Complemento por texto livre (ex.: Escolas Superiores de Saúde fora do MS).
 SEARCH_TERMS = [
     "enfermeiro",
     "enfermagem",
     "médico",
-    "medico",
-    "médica",
     "fisioterapeuta",
     "farmacêutico",
-    "farmaceutico",
-    "terapeuta",
-    "nutricionista",
-    "psicólogo",
-    "psicologo",
-    "ortoptista",
-    "audiologia",
-    "imagiologia",
-    "radiologia",
-    "cardiopneumologia",
-    "anatomia patológica",
-    "técnico de diagnóstico",
-    "tecnico de diagnostico",
-    "técnico superior de saúde",
     "técnico auxiliar de saúde",
+    "técnico superior de saúde",
     "administrador hospitalar",
-    "assistente operacional",
-    "auxiliar de ação médica",
     "Unidade Local de Saúde",
-    "ULS",
-    "hospital",
+    "Escola Superior de Saúde",
     "IPO",
 ]
 
@@ -49,7 +45,14 @@ HEALTH_RE = re.compile(
     r"anatomia\s+patol|neurofisiolog|higienista|auxilia|"
     r"administrador\s+hospitalar|assistente\s+graduado|"
     r"sa[uú]de|hospital|uls\b|ars\b|ipo\b|oncolog|cuidados\s+de\s+sa[uú]de|"
-    r"centro\s+hospitalar|unidade\s+local\s+de\s+sa[uú]de",
+    r"centro\s+hospitalar|unidade\s+local\s+de\s+sa[uú]de|"
+    r"escola\s+superior\s+de\s+sa[uú]de",
+    re.I,
+)
+
+NON_HEALTH_ORG_RE = re.compile(
+    r"junta\s+de\s+freguesia|c[aâ]mara\s+municipal|agrupamento\s+de\s+escolas|"
+    r"escola\s+b[aá]sica|escola\s+secund[aá]ria",
     re.I,
 )
 
@@ -72,77 +75,102 @@ class BepScraper(BaseScraper):
             jobs: list[JobPayload] = []
             for item in listed:
                 detail = self._fetch_detail(client, item)
-                if not detail:
-                    continue
-                jobs.append(detail)
+                if detail:
+                    jobs.append(detail)
             return jobs
         finally:
             client.close()
 
     def _collect_listings(self, client: HttpClient) -> list[dict]:
         by_code: dict[str, dict] = {}
+
+        # 1) Ofertas de organismos do Ministério da Saúde / secretarias regionais.
+        for nivel in HEALTH_NIVEL_ORGANICO:
+            for row in self._search_nivel(client, nivel):
+                row["term"] = row["code"]
+                by_code[row["code"]] = row
+
+        # 2) Complemento por palavras-chave (escolas de saúde, etc.).
         for term in SEARCH_TERMS:
             for row in self._search_term(client, term):
                 if not self._is_health(row):
                     continue
-                by_code[row["code"]] = row
+                row.setdefault("term", row["code"])
+                by_code.setdefault(row["code"], row)
+
         return list(by_code.values())
 
+    def _search_nivel(self, client: HttpClient, nivel: str, max_pages: int = 30) -> list[dict]:
+        html = client.get_text(SEARCH_ADV)
+        payload = _form_fields(html)
+        for key in list(payload):
+            if key.endswith("dropNivelOrganico"):
+                payload[key] = str(nivel)
+        search_btn = _search_button_name(html)
+        if not search_btn:
+            return []
+        payload[search_btn] = "Pesquisar"
+        html = client.post_form(SEARCH_ADV, payload)
+        return self._paginate_rows(client, SEARCH_ADV, html, term=f"nivel:{nivel}", max_pages=max_pages)
+
     def _search_term(self, client: HttpClient, term: str, max_pages: int = 10) -> list[dict]:
-        html = client.get_text(SEARCH_URL)
+        html = client.get_text(SEARCH_BASIC)
         payload = _hidden_fields(html)
-        payload["ctl00$ctl00$FormMasterContentPlaceHolder$ContentPlaceHolder1$txtValor"] = (
-            term
-        )
+        payload[
+            "ctl00$ctl00$FormMasterContentPlaceHolder$ContentPlaceHolder1$txtValor"
+        ] = term
         payload[
             "ctl00$ctl00$FormMasterContentPlaceHolder$ContentPlaceHolder1$ucSearch"
         ] = "Pesquisar"
-        html = client.post_form(SEARCH_URL, payload)
+        html = client.post_form(SEARCH_BASIC, payload)
+        return self._paginate_rows(client, SEARCH_BASIC, html, term=term, max_pages=max_pages)
+
+    def _paginate_rows(
+        self,
+        client: HttpClient,
+        url: str,
+        html: str,
+        term: str,
+        max_pages: int,
+    ) -> list[dict]:
         rows: list[dict] = []
         page = 1
         while page <= max_pages:
-            page_rows = _parse_rows(html)
-            for row in page_rows:
+            for row in _parse_rows(html):
                 row["term"] = term
                 row["page"] = page
                 rows.append(row)
-            pages = sorted({int(x) for x in re.findall(r"Page\$(\d+)", html)})
             nxt = page + 1
-            if nxt not in pages:
+            if f"Page${nxt}" not in html:
                 break
-            payload = _hidden_fields(html)
-            payload["__EVENTTARGET"] = (
-                "ctl00$ctl00$FormMasterContentPlaceHolder$ContentPlaceHolder1$GvOfertaGestao"
-            )
+            payload = _form_fields(html) if url == SEARCH_ADV else _hidden_fields(html)
+            payload["__EVENTTARGET"] = _grid_event_target(html)
             payload["__EVENTARGUMENT"] = f"Page${nxt}"
-            html = client.post_form(SEARCH_URL, payload)
+            payload = {
+                key: value
+                for key, value in payload.items()
+                if not key.endswith("ucSearch")
+            }
+            html = client.post_form(url, payload)
             page = nxt
         return rows
 
     def _fetch_detail(self, client: HttpClient, item: dict) -> JobPayload | None:
-        # Reabrir a pesquisa no termo/página onde a oferta apareceu e abrir o detalhe.
-        html = client.get_text(SEARCH_URL)
+        # Abrir a oferta pelo código OE (pesquisa básica) e fazer postback do detalhe.
+        code = item["code"]
+        html = client.get_text(SEARCH_BASIC)
         payload = _hidden_fields(html)
-        payload["ctl00$ctl00$FormMasterContentPlaceHolder$ContentPlaceHolder1$txtValor"] = (
-            item["term"]
-        )
+        payload[
+            "ctl00$ctl00$FormMasterContentPlaceHolder$ContentPlaceHolder1$txtValor"
+        ] = code
         payload[
             "ctl00$ctl00$FormMasterContentPlaceHolder$ContentPlaceHolder1$ucSearch"
         ] = "Pesquisar"
-        html = client.post_form(SEARCH_URL, payload)
+        html = client.post_form(SEARCH_BASIC, payload)
 
-        for page in range(2, int(item.get("page") or 1) + 1):
-            payload = _hidden_fields(html)
-            payload["__EVENTTARGET"] = (
-                "ctl00$ctl00$FormMasterContentPlaceHolder$ContentPlaceHolder1$GvOfertaGestao"
-            )
-            payload["__EVENTARGUMENT"] = f"Page${page}"
-            html = client.post_form(SEARCH_URL, payload)
-
-        # Localizar o ctl atual (a grelha pode mudar).
         ctl = None
         for row in _parse_rows(html):
-            if row["code"] == item["code"]:
+            if row["code"] == code:
                 ctl = row["ctl"]
                 item = {**item, **row}
                 break
@@ -155,7 +183,7 @@ class BepScraper(BaseScraper):
             f"GvOfertaGestao$ctl{ctl}$btnDetalhes"
         )
         payload["__EVENTARGUMENT"] = ""
-        response = client.post_form_response(SEARCH_URL, payload)
+        response = client.post_form_response(SEARCH_BASIC, payload)
         labels = _parse_labels(response.text)
         cod = None
         match = re.search(r"CodOferta=(\d+)", str(response.url))
@@ -175,7 +203,6 @@ class BepScraper(BaseScraper):
             or "Administração Pública"
         )
         distrito = labels.get("Distrito") or item.get("distrito") or "Portugal"
-        # Distrito por vezes só na listagem.
         if distrito == "Portugal":
             distrito = item.get("distrito") or "Portugal"
 
@@ -206,7 +233,11 @@ class BepScraper(BaseScraper):
             location_district=guess_district(distrito),
             location_concelho=None,
             profession=guess_profession(f"{title} {carreira or ''}"),
-            specialty=carreira if carreira and "não aplicável" not in carreira.lower() else None,
+            specialty=(
+                carreira
+                if carreira and "não aplicável" not in carreira.lower()
+                else None
+            ),
             sector="publico",
             contract_type=(contract or None),
             description=html_to_text(description),
@@ -235,7 +266,7 @@ class BepScraper(BaseScraper):
             description=f"{title} em {company} ({district}). Consultar detalhes no BEP.",
             requirements=None,
             salary=None,
-            application_url=SEARCH_URL,
+            application_url=SEARCH_BASIC,
             source=self.slug,
             source_id=item["code"],
             published_at=None,
@@ -246,11 +277,25 @@ class BepScraper(BaseScraper):
 
     @staticmethod
     def _is_health(row: dict) -> bool:
-        blob = " ".join(
-            str(row.get(key) or "")
-            for key in ("carreira", "categoria", "organismo", "tipo")
+        organismo = str(row.get("organismo") or "")
+        role_blob = " ".join(
+            str(row.get(key) or "") for key in ("carreira", "categoria", "tipo")
         )
-        return bool(HEALTH_RE.search(blob))
+        blob = f"{role_blob} {organismo}"
+        if not HEALTH_RE.search(blob):
+            return False
+        # Evitar falsos positivos (ex.: juntas com "Hospital" no topónimo).
+        if NON_HEALTH_ORG_RE.search(organismo):
+            return bool(
+                re.search(
+                    r"sa[uú]de|enferm|m[eé]dic|fisioterap|farmac|"
+                    r"diagn[oó]stico|terap[eê]ut|auxiliar\s+de\s+sa[uú]de|"
+                    r"administrador\s+hospitalar",
+                    role_blob,
+                    re.I,
+                )
+            )
+        return True
 
 
 def _hidden_fields(html: str) -> dict[str, str]:
@@ -266,6 +311,60 @@ def _hidden_fields(html: str) -> dict[str, str]:
         value_match = re.search(r'\bvalue="([^"]*)"', attrs, re.I)
         fields[name] = unescape(value_match.group(1) if value_match else "")
     return fields
+
+
+def _form_fields(html: str) -> dict[str, str]:
+    fields: dict[str, str] = {}
+    for match in re.finditer(r"<input([^>]+)>", html, re.I):
+        attrs = match.group(1)
+        name_match = re.search(r'\bname="([^"]+)"', attrs, re.I)
+        if not name_match:
+            continue
+        name = name_match.group(1)
+        type_match = re.search(r'\btype="([^"]*)"', attrs, re.I)
+        input_type = (type_match.group(1) if type_match else "text").lower()
+        if input_type in {"submit", "button", "image"}:
+            continue
+        value_match = re.search(r'\bvalue="([^"]*)"', attrs, re.I)
+        fields[name] = unescape(value_match.group(1) if value_match else "")
+    for match in re.finditer(
+        r'<select[^>]*name="([^"]+)"[^>]*>(.*?)</select>',
+        html,
+        re.I | re.S,
+    ):
+        name = match.group(1)
+        selected = re.search(
+            r'<option[^>]*selected[^>]*value="([^"]*)"',
+            match.group(2),
+            re.I,
+        )
+        if not selected:
+            selected = re.search(
+                r'<option[^>]*value="([^"]*)"',
+                match.group(2),
+                re.I,
+            )
+        fields[name] = unescape(selected.group(1) if selected else "0")
+    return fields
+
+
+def _search_button_name(html: str) -> str | None:
+    for match in re.finditer(r"<input([^>]+)>", html, re.I):
+        attrs = match.group(1)
+        name_match = re.search(r'\bname="([^"]+)"', attrs, re.I)
+        value_match = re.search(r'\bvalue="([^"]*)"', attrs, re.I)
+        if name_match and value_match and value_match.group(1) == "Pesquisar":
+            return name_match.group(1)
+    return None
+
+
+def _grid_event_target(html: str) -> str:
+    match = re.search(r"doPostBack\('(ctl00\$ctl00\$[^']*GvOferta[^']*)'", html)
+    if match:
+        return match.group(1)
+    return (
+        "ctl00$ctl00$FormMasterContentPlaceHolder$ContentPlaceHolder1$GvOfertaGestao"
+    )
 
 
 def _parse_rows(html: str) -> list[dict]:

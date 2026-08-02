@@ -4,7 +4,7 @@ Fontes ativas nesta fase:
 
 | Fonte | Origem | Tipo |
 |---|---|---|
-| `bep` | https://www.bep.gov.pt | ASP.NET (pesquisa saúde) |
+| `bep` | https://www.bep.gov.pt | Pesquisa avançada por Ministério da Saúde (+ keywords) |
 | `cuf` | https://carreiras.cuf.pt/jobs.json | JSON Feed / Teamtailor |
 | `luz_saude` | CVWarehouse (Luz Saúde) | HTML público |
 | `lusiadas` | CVWarehouse (Lusíadas) | HTML público |
