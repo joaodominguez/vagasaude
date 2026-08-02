@@ -109,8 +109,8 @@ export default async function JobsPage({
         </section>
 
         <div className="page-container grid min-w-0 gap-8 py-10 lg:grid-cols-[15rem_minmax(0,1fr)]">
-          <aside className="hidden min-w-0 lg:block">
-            <div className="sticky top-24 content-card p-5">
+          <aside className="min-w-0">
+            <div className="content-card p-5 lg:sticky lg:top-24">
               <div className="flex items-center gap-2 font-extrabold">
                 <SlidersHorizontal size={18} />
                 Filtros
@@ -169,11 +169,6 @@ export default async function JobsPage({
                     : ""}
                 </p>
               </div>
-              {hasFilters && (
-                <Link href="/vagas" className="filter-chip lg:hidden">
-                  <X size={13} /> Limpar
-                </Link>
-              )}
             </div>
 
             {pageJobs.length > 0 ? (
@@ -255,7 +250,9 @@ function FilterGroup({
       <h3 className="mb-3 text-xs font-extrabold uppercase tracking-wider text-muted">
         {title}
       </h3>
-      <div className="space-y-1.5">{children}</div>
+      <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-2 lg:grid-cols-1">
+        {children}
+      </div>
     </div>
   );
 }
