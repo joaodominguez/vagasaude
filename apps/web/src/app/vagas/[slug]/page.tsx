@@ -81,7 +81,7 @@ export default async function VagasSlugPage({ params }: { params: Params }) {
     );
     return (
       <CategoryPageView
-        ref={category}
+        category={category}
         jobs={jobs}
         allCategoryRefs={listEligibleCategories(allJobs)}
       />

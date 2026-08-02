@@ -63,7 +63,7 @@ export default async function ProfessionDistrictPage({
 
   return (
     <CategoryPageView
-      ref={category}
+      category={category}
       jobs={jobs}
       allCategoryRefs={listEligibleCategories(allJobs)}
     />

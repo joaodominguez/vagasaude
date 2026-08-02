@@ -16,33 +16,33 @@ import {
 } from "@/lib/categories";
 
 export function CategoryPageView({
-  ref,
+  category,
   jobs,
   allCategoryRefs,
 }: {
-  ref: CategoryRef;
+  category: CategoryRef;
   jobs: Job[];
   allCategoryRefs: CategoryRef[];
 }) {
   const stats = buildCategoryStats(jobs);
-  const intro = buildCategoryIntro(stats, ref.profession, ref.district);
-  const related = relatedCategoryLinks(allCategoryRefs, ref);
-  const siblings = siblingDistrictLinks(allCategoryRefs, ref);
-  const jsonLd = buildItemListJsonLd(ref, jobs);
+  const intro = buildCategoryIntro(stats, category.profession, category.district);
+  const related = relatedCategoryLinks(allCategoryRefs, category);
+  const siblings = siblingDistrictLinks(allCategoryRefs, category);
+  const jsonLd = buildItemListJsonLd(category, jobs);
 
   const parentLinks: Array<{ href: string; label: string }> = [
     { href: "/vagas", label: "Todas as vagas" },
   ];
-  if (ref.kind === "combo" && ref.profession) {
+  if (category.kind === "combo" && category.profession) {
     parentLinks.push({
-      href: categoryPath(ref.profession, null),
-      label: ref.profession,
+      href: categoryPath(category.profession, null),
+      label: category.profession,
     });
   }
-  if (ref.kind === "combo" && ref.district) {
+  if (category.kind === "combo" && category.district) {
     parentLinks.push({
-      href: categoryPath(null, ref.district),
-      label: ref.district,
+      href: categoryPath(null, category.district),
+      label: category.district,
     });
   }
 
@@ -60,7 +60,7 @@ export function CategoryPageView({
             </Link>
             <p className="section-kicker">Categoria</p>
             <h1 className="mt-2 text-3xl font-extrabold tracking-[-0.045em] sm:text-4xl">
-              {ref.title}
+              {category.title}
             </h1>
             <p className="mt-2 text-sm font-semibold text-primary">
               {stats.count}{" "}
@@ -123,16 +123,16 @@ export function CategoryPageView({
               </h2>
               <p className="mt-1.5 text-sm leading-6 text-muted">
                 Recebe novas{" "}
-                {ref.profession
-                  ? `vagas de ${ref.profession.toLowerCase()}`
+                {category.profession
+                  ? `vagas de ${category.profession.toLowerCase()}`
                   : "vagas de saúde"}
-                {ref.district ? ` em ${ref.district}` : ""}.
+                {category.district ? ` em ${category.district}` : ""}.
               </p>
               <div className="mt-4">
                 <AlertForm
                   compact
-                  defaultDistrict={ref.district ?? ""}
-                  defaultProfession={ref.profession ?? ""}
+                  defaultDistrict={category.district ?? ""}
+                  defaultProfession={category.profession ?? ""}
                 />
               </div>
             </div>
