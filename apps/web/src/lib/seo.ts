@@ -64,13 +64,26 @@ export function mapEmploymentType(contract: string | null | undefined) {
   return EMPLOYMENT_TYPE_MAP[key] ?? "OTHER";
 }
 
-export function jobValidThrough(job: Job) {
-  if (job.expiresAt) return job.expiresAt;
-  const posted = new Date(job.publishedAt);
+export function jobValidThrough(job: Job, datePostedIso?: string) {
+  if (job.expiresAt) {
+    const expires = new Date(job.expiresAt);
+    if (!Number.isNaN(expires.getTime()) && expires.getTime() > Date.now()) {
+      return expires.toISOString();
+    }
+  }
+  const posted = new Date(datePostedIso || job.publishedAt);
   if (Number.isNaN(posted.getTime())) return undefined;
-  const expires = new Date(posted);
+  const base = posted.getTime() > Date.now() ? new Date() : posted;
+  const expires = new Date(base);
   expires.setUTCDate(expires.getUTCDate() + 60);
   return expires.toISOString();
+}
+
+export function safeDatePosted(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return new Date().toISOString();
+  if (date.getTime() > Date.now()) return new Date().toISOString();
+  return date.toISOString();
 }
 
 export function buildJobMetadata(job: Job): Metadata {
@@ -99,7 +112,8 @@ export function buildJobMetadata(job: Job): Metadata {
 }
 
 export function buildJobPostingJsonLd(job: Job) {
-  const validThrough = jobValidThrough(job);
+  const datePosted = safeDatePosted(job.publishedAt);
+  const validThrough = jobValidThrough(job, datePosted);
   const description = [job.description, ...job.requirements, ...job.responsibilities]
     .filter(Boolean)
     .join("\n\n");
@@ -109,7 +123,7 @@ export function buildJobPostingJsonLd(job: Job) {
     "@type": "JobPosting",
     title: job.title,
     description,
-    datePosted: job.publishedAt,
+    datePosted,
     ...(validThrough ? { validThrough } : {}),
     employmentType: mapEmploymentType(job.contract),
     hiringOrganization: {

@@ -81,7 +81,7 @@ class TrofaSaudeScraper(BaseScraper):
                                 or item.get("ProcessCode")
                                 or title
                             ),
-                            published_at=item.get("StartDate") or item.get("CreatedAt"),
+                    published_at=_pick_published_at(item),
                         )
                     )
                 if len(batch) < 50:
@@ -90,3 +90,27 @@ class TrofaSaudeScraper(BaseScraper):
             return jobs
         finally:
             client.close()
+
+
+def _pick_published_at(item: dict) -> str | None:
+    from datetime import datetime, timezone
+
+    candidates = [item.get("CreatedAt"), item.get("StartDate")]
+    now = datetime.now(timezone.utc)
+    parsed: list[datetime] = []
+    for value in candidates:
+        if not value:
+            continue
+        try:
+            dt = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+        except ValueError:
+            continue
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        if dt <= now:
+            return dt.isoformat()
+        parsed.append(dt)
+    # Prefer earliest known date even if scheduled in the future.
+    if parsed:
+        return min(parsed).isoformat()
+    return None

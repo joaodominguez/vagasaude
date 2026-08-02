@@ -18,11 +18,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [
     ...staticPages,
-    ...jobs.map((job) => ({
-      url: `${SITE_URL}/vagas/${job.slug}`,
-      lastModified: new Date(job.publishedAt),
-      changeFrequency: "daily" as const,
-      priority: 0.8,
-    })),
+    ...jobs.map((job) => {
+      const published = Date.parse(job.publishedAt);
+      const lastModified = Number.isNaN(published)
+        ? new Date()
+        : new Date(Math.min(published, Date.now()));
+      return {
+        url: `${SITE_URL}/vagas/${job.slug}`,
+        lastModified,
+        changeFrequency: "daily" as const,
+        priority: 0.8,
+      };
+    }),
   ];
 }
