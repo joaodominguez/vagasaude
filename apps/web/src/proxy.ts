@@ -14,14 +14,20 @@ export function proxy(request: NextRequest) {
   const authorization = request.headers.get("authorization");
   if (authorization?.startsWith("Basic ")) {
     try {
-      const [user, password] = Buffer.from(
+      const credentials = Buffer.from(
         authorization.slice(6),
         "base64",
       )
-        .toString("utf8")
-        .split(/:(.*)/s, 2);
+        .toString("utf8");
+      const separator = credentials.indexOf(":");
+      const user = credentials.slice(0, separator);
+      const password = credentials.slice(separator + 1);
 
-      if (user === expectedUser && password === expectedPassword) {
+      if (
+        separator > 0 &&
+        user === expectedUser &&
+        password === expectedPassword
+      ) {
         return NextResponse.next();
       }
     } catch {
