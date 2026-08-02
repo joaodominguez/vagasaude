@@ -17,6 +17,25 @@ from common.normalize import (
 LUZ_GUID = "5498d2b5-b889-48e2-b434-d850c72bc42e"
 LUSIADAS_GUID = "af1a9847-a9ab-4cd7-904e-d48470afea9a"
 
+JOB_BLOCK_PATTERN = re.compile(
+    r'<div data-item-collection="jobCollection-[^"]+"([^>]*)>([\s\S]*?)'
+    r'(?=<div data-item-collection="jobCollection-|\Z)'
+)
+SECTION_PATTERN = re.compile(
+    r'[?&](?:amp;)?section=([0-9a-fA-F-]{36})',
+)
+COMPANY_PATTERN = re.compile(
+    r"\b("
+    r"Hospital da Luz[^.|\n]{0,60}"
+    r"|Hospital do Mar[^.|\n]{0,40}"
+    r"|Hospital Lus[ií]adas[^.|\n]{0,60}"
+    r"|Cl[ií]nica Lus[ií]adas[^.|\n]{0,60}"
+    r"|Luz Sa[uú]de"
+    r"|Lus[ií]adas Sa[uú]de"
+    r")\b",
+    re.I,
+)
+
 
 class CvWarehouseScraper(BaseScraper):
     slug: str
@@ -24,23 +43,41 @@ class CvWarehouseScraper(BaseScraper):
     company_guid: str
     default_company: str
 
+    def landing_url(self) -> str:
+        return (
+            "https://jobpage.cvwarehouse.com/"
+            f"?companyGuid={self.company_guid}&lang=pt-PT"
+        )
+
+    def section_url(self, section_id: str) -> str:
+        return f"{self.landing_url()}&section={section_id}"
+
     def fetch(self) -> list[JobPayload]:
         client = HttpClient()
         try:
-            url = (
-                "https://jobpage.cvwarehouse.com/"
-                f"?companyGuid={self.company_guid}&lang=pt-PT"
-            )
-            html = client.get_text(url)
+            landing_html = client.get_text(self.landing_url())
+            pages = [landing_html]
+            for section_id in self._discover_sections(landing_html):
+                pages.append(client.get_text(self.section_url(section_id)))
         finally:
             client.close()
 
+        by_id: dict[str, JobPayload] = {}
+        for html in pages:
+            for job in self._parse_jobs(html):
+                by_id[job.source_id] = job
+        return list(by_id.values())
+
+    def _discover_sections(self, html: str) -> list[str]:
+        seen: list[str] = []
+        for section_id in SECTION_PATTERN.findall(html):
+            if section_id not in seen:
+                seen.append(section_id)
+        return seen
+
+    def _parse_jobs(self, html: str) -> list[JobPayload]:
         jobs: list[JobPayload] = []
-        pattern = re.compile(
-            r'<div data-item-collection="jobCollection-[^"]+"([^>]*)>([\s\S]*?)'
-            r'(?=<div data-item-collection="jobCollection-|\Z)'
-        )
-        for attrs, body in pattern.findall(html):
+        for attrs, body in JOB_BLOCK_PATTERN.findall(html):
 
             def attr(name: str) -> str | None:
                 match = re.search(rf'data-filter-{name}="([^"]*)"', attrs)
@@ -54,33 +91,14 @@ class CvWarehouseScraper(BaseScraper):
 
             job_id = job_match.group(1)
             title = (attr("keywordsearchtitle") or unescape(job_match.group(2))).strip()
+            if not title:
+                continue
+
             description = html_to_text(attr("keywordsearchdescription") or "")
             city = attr("city")
-            region_raw = attr("region") or ""
-            try:
-                region_list = json.loads(region_raw) if region_raw.startswith("[") else []
-                region = region_list[0] if region_list else region_raw
-            except json.JSONDecodeError:
-                region = region_raw.strip("[]\"' ")
-
-            schedule_raw = attr("workschedule") or ""
-            try:
-                schedule_list = (
-                    json.loads(schedule_raw) if schedule_raw.startswith("[") else []
-                )
-                schedule = ", ".join(schedule_list) if schedule_list else schedule_raw
-            except json.JSONDecodeError:
-                schedule = schedule_raw
-
-            # Infer hospital/unit from description opening if present.
-            company = self.default_company
-            company_match = re.search(
-                r"\b(Hospital da Luz[^.|\n]{0,60}|Hospital do Mar[^.|\n]{0,40}|Luz Saúde)\b",
-                description,
-                re.I,
-            )
-            if company_match:
-                company = company_match.group(1).strip()
+            region = self._parse_jsonish_list(attr("region") or "")
+            schedule = self._parse_jsonish_list(attr("workschedule") or "", join=True)
+            company = self._guess_company(description)
 
             application_url = urljoin(
                 "https://jobpage.cvwarehouse.com/",
@@ -107,6 +125,25 @@ class CvWarehouseScraper(BaseScraper):
                 )
             )
         return jobs
+
+    def _guess_company(self, description: str) -> str:
+        match = COMPANY_PATTERN.search(description)
+        if match:
+            return re.sub(r"\s+", " ", match.group(1)).strip(" ,.-")
+        return self.default_company
+
+    @staticmethod
+    def _parse_jsonish_list(raw: str, join: bool = False) -> str:
+        value = raw.strip()
+        if not value:
+            return ""
+        try:
+            parsed = json.loads(value) if value.startswith("[") else []
+            if isinstance(parsed, list) and parsed:
+                return ", ".join(str(item) for item in parsed) if join else str(parsed[0])
+        except json.JSONDecodeError:
+            pass
+        return value.strip("[]\"' ")
 
 
 class LuzSaudeScraper(CvWarehouseScraper):

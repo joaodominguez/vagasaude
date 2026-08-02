@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import re
 import unicodedata
+from html import unescape as html_unescape
 
 
 DISTRICT_ALIASES = {
@@ -36,6 +37,7 @@ DISTRICT_ALIASES = {
     "norte": "Porto",
     "centro": "Coimbra",
     "sul": "Faro",
+    "algarve": "Faro",
 }
 
 CITY_TO_DISTRICT = {
@@ -72,6 +74,9 @@ CITY_TO_DISTRICT = {
     "tavira": "Faro",
     "vilamoura": "Faro",
     "almancil": "Faro",
+    "albufeira": "Faro",
+    "lagos": "Faro",
+    "lagoa": "Faro",
     "evora": "Évora",
     "évora": "Évora",
     "valenca": "Viana do Castelo",
@@ -112,17 +117,7 @@ def html_to_text(html: str | None) -> str:
     text = re.sub(r"(?i)</li>", "\n", text)
     text = re.sub(r"(?i)<li[^>]*>", "- ", text)
     text = re.sub(r"<[^>]+>", " ", text)
-
-    replacements = {
-        "&nbsp;": " ",
-        "&amp;": "&",
-        "&quot;": '"',
-        "&#39;": "'",
-        "&lt;": "<",
-        "&gt;": ">",
-    }
-    for old, new in replacements.items():
-        text = text.replace(old, new)
+    text = html_unescape(text)
 
     def is_list_item(line: str) -> bool:
         return bool(re.match(r"^[-•*]\s+\S", line) or re.match(r"^\d+[.)]\s+\S", line))
@@ -194,7 +189,7 @@ def guess_profession(title: str, fallback: str | None = None) -> str:
     rules = [
         (("enfermeir",), "Enfermagem"),
         (("medic", "cirurgi"), "Medicina"),
-        (("fisioterapeut",), "Fisioterapia"),
+        (("fisioterapeut", "fisioterap"), "Fisioterapia"),
         (("auxiliar", "acao medica", "accao medica", "geriatr"), "Auxiliares"),
         (("farmaceut", "farmacia"), "Farmácia"),
         (
@@ -205,6 +200,7 @@ def guess_profession(title: str, fallback: str | None = None) -> str:
                 "laboratorio",
                 "tdt",
                 "diagnostico",
+                "audiolog",
                 "terapeut",
             ),
             "Técnico de Saúde",
