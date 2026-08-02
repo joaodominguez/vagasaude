@@ -64,8 +64,8 @@ export default function AlertsPage() {
             Criar o meu alerta
           </h2>
           <p className="mt-2 mb-6 text-sm leading-6 text-muted">
-            Nesta primeira versão recebes aviso das novas vagas publicadas. Os
-            filtros personalizados chegam em breve.
+            Escolhe distrito, profissão ou sector (opcional) e confirma o email
+            para activar. Podes alterar ou cancelar a qualquer momento.
           </p>
           <AlertForm />
         </aside>

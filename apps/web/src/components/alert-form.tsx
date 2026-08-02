@@ -2,12 +2,15 @@
 
 import { CheckCircle2, LoaderCircle, Mail } from "lucide-react";
 import { FormEvent, useState } from "react";
+import { districts, professions, sectors } from "@/lib/taxonomies";
 
 export function AlertForm({ compact = false }: { compact?: boolean }) {
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">(
     "idle",
   );
-  const [emailSent, setEmailSent] = useState(true);
+  const [message, setMessage] = useState(
+    "Enviámos um email de confirmação. Confirma a inscrição para activar o alerta.",
+  );
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -16,16 +19,39 @@ export function AlertForm({ compact = false }: { compact?: boolean }) {
     const response = await fetch("/api/alerts", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: form.get("email") }),
+      body: JSON.stringify({
+        email: form.get("email"),
+        district: form.get("district") || null,
+        profession: form.get("profession") || null,
+        sector: form.get("sector") || null,
+      }),
     });
+
     if (!response.ok) {
       setStatus("error");
       return;
     }
+
     const data = (await response.json().catch(() => null)) as {
       emailSent?: boolean;
+      needsConfirmation?: boolean;
+      message?: string;
     } | null;
-    setEmailSent(Boolean(data?.emailSent));
+
+    if (data?.message) {
+      setMessage(data.message);
+    } else if (data?.needsConfirmation && data.emailSent) {
+      setMessage(
+        "Enviámos um email de confirmação. Confirma a inscrição para activar o alerta.",
+      );
+    } else if (data?.needsConfirmation) {
+      setMessage(
+        "O teu email ficou registado. Se não receberes a confirmação, verifica mais tarde.",
+      );
+    } else {
+      setMessage("Preferências actualizadas. O teu alerta continua activo.");
+    }
+
     setStatus("success");
   }
 
@@ -34,10 +60,8 @@ export function AlertForm({ compact = false }: { compact?: boolean }) {
       <div className="flex items-start gap-3 rounded-xl bg-success-soft p-4 text-sm text-success">
         <CheckCircle2 className="mt-0.5 shrink-0" size={19} />
         <p>
-          <strong className="block">Alerta criado.</strong>
-          {emailSent
-            ? "Enviámos um email de confirmação. Fica atento à caixa de entrada."
-            : "O teu email ficou registado. Se não receberes confirmação, verifica mais tarde."}
+          <strong className="block">Quase pronto.</strong>
+          {message}
         </p>
       </div>
     );
@@ -58,6 +82,59 @@ export function AlertForm({ compact = false }: { compact?: boolean }) {
           />
         </span>
       </label>
+
+      {!compact ? (
+        <>
+          <label className="block">
+            <span className="mb-2 block text-sm font-semibold">Distrito</span>
+            <select
+              name="district"
+              defaultValue=""
+              className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
+            >
+              <option value="">Todo o país</option>
+              {districts.map((district) => (
+                <option key={district} value={district}>
+                  {district}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="block">
+            <span className="mb-2 block text-sm font-semibold">Profissão</span>
+            <select
+              name="profession"
+              defaultValue=""
+              className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
+            >
+              <option value="">Todas</option>
+              {professions.map((profession) => (
+                <option key={profession} value={profession}>
+                  {profession}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="block">
+            <span className="mb-2 block text-sm font-semibold">Sector</span>
+            <select
+              name="sector"
+              defaultValue=""
+              className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
+            >
+              <option value="">Todos</option>
+              {sectors.map((sector) => (
+                <option key={sector} value={sector}>
+                  {sector}
+                </option>
+              ))}
+            </select>
+          </label>
+        </>
+      ) : null}
+
       <button
         className="button button-primary w-full"
         type="submit"
@@ -75,7 +152,7 @@ export function AlertForm({ compact = false }: { compact?: boolean }) {
       )}
       {!compact && (
         <p className="text-xs leading-5 text-muted">
-          Sem spam. Podes cancelar a qualquer momento.
+          Sem spam. Confirmas por email e podes cancelar a qualquer momento.
         </p>
       )}
     </form>

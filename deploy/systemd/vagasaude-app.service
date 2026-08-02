@@ -1,0 +1,19 @@
+[Unit]
+Description=VagaSaúde Next.js (user service)
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/var/www/vagasaude/start.sh
+WorkingDirectory=/var/www/vagasaude
+Environment=NODE_ENV=production
+Environment=PORT=3010
+Environment=HOSTNAME=127.0.0.1
+EnvironmentFile=-/var/www/vagasaude/.env.production
+# App files live in /var/www/vagasaude/current (symlink to releases/<sha>).
+# start.sh cds into current and launches the standalone server.
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

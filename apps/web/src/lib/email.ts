@@ -1,4 +1,6 @@
 import { SITE_URL } from "@/lib/seo";
+import type { StoredAlert } from "@/lib/alerts";
+import { describeAlertFilters } from "@/lib/alerts";
 
 export type SendEmailInput = {
   to: string | string[];
@@ -65,28 +67,80 @@ export async function sendEmail(
   return { ok: true, id: data.id };
 }
 
-export function alertCreatedEmailHtml() {
+function manageUrl(token: string) {
+  return `${SITE_URL}/alertas/gerir?token=${encodeURIComponent(token)}`;
+}
+
+function confirmUrl(token: string) {
+  return `${SITE_URL}/alertas/confirmar?token=${encodeURIComponent(token)}`;
+}
+
+function emailShell(title: string, bodyHtml: string, token: string) {
   return `<!doctype html>
 <html lang="pt">
   <body style="margin:0;padding:0;background:#f8fafc;color:#0f172a;">
     <div style="font-family:Arial,Helvetica,sans-serif;max-width:560px;margin:0 auto;padding:28px 20px;">
       <p style="margin:0 0 18px;font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#0f766e;">VagaSaúde</p>
-      <h1 style="margin:0 0 12px;font-size:24px;line-height:1.25;">O teu alerta está ativo</h1>
-      <p style="margin:0 0 18px;font-size:15px;line-height:1.65;color:#475569;">
-        Obrigado por te juntares. Vamos avisar-te quando surgirem novas oportunidades de emprego na saúde em Portugal.
+      <h1 style="margin:0 0 12px;font-size:24px;line-height:1.25;">${title}</h1>
+      ${bodyHtml}
+      <p style="margin:28px 0 0;font-size:12px;line-height:1.6;color:#94a3b8;">
+        Gerir ou cancelar alerta:
+        <a href="${manageUrl(token)}" style="color:#0f766e;">${manageUrl(token)}</a>
+      </p>
+    </div>
+  </body>
+</html>`;
+}
+
+export function alertConfirmEmailHtml(alert: StoredAlert) {
+  const filters = describeAlertFilters(alert);
+  return emailShell(
+    "Confirma o teu alerta",
+    `<p style="margin:0 0 18px;font-size:15px;line-height:1.65;color:#475569;">
+        Para ativares o alerta de vagas (${escapeHtml(filters)}), confirma o teu email.
+      </p>
+      <p style="margin:0 0 28px;">
+        <a href="${confirmUrl(alert.token)}" style="display:inline-block;background:#0f766e;color:#ffffff;text-decoration:none;padding:12px 18px;border-radius:10px;font-weight:700;font-size:14px;">
+          Confirmar alerta
+        </a>
+      </p>
+      <p style="margin:0;font-size:13px;line-height:1.6;color:#64748b;">
+        Se não foste tu, podes ignorar este email.
+      </p>`,
+    alert.token,
+  );
+}
+
+export function alertConfirmedEmailHtml(alert: StoredAlert) {
+  const filters = describeAlertFilters(alert);
+  return emailShell(
+    "Alerta confirmado",
+    `<p style="margin:0 0 18px;font-size:15px;line-height:1.65;color:#475569;">
+        O teu alerta está ativo (${escapeHtml(filters)}). Vamos avisar-te quando surgirem novas oportunidades.
       </p>
       <p style="margin:0 0 28px;">
         <a href="${SITE_URL}/vagas" style="display:inline-block;background:#0f766e;color:#ffffff;text-decoration:none;padding:12px 18px;border-radius:10px;font-weight:700;font-size:14px;">
           Ver vagas agora
         </a>
+      </p>`,
+    alert.token,
+  );
+}
+
+/** @deprecated use alertConfirmEmailHtml */
+export function alertCreatedEmailHtml(token = "") {
+  return emailShell(
+    "Confirma o teu alerta",
+    `<p style="margin:0 0 18px;font-size:15px;line-height:1.65;color:#475569;">
+        Confirma o teu email para começares a receber novas vagas de saúde.
       </p>
-      <p style="margin:0;font-size:12px;line-height:1.6;color:#94a3b8;">
-        Recebeste este email porque criaste um alerta em
-        <a href="${SITE_URL}" style="color:#0f766e;">vagasaude.pt</a>.
-      </p>
-    </div>
-  </body>
-</html>`;
+      <p style="margin:0 0 28px;">
+        <a href="${token ? confirmUrl(token) : `${SITE_URL}/alertas`}" style="display:inline-block;background:#0f766e;color:#ffffff;text-decoration:none;padding:12px 18px;border-radius:10px;font-weight:700;font-size:14px;">
+          Confirmar alerta
+        </a>
+      </p>`,
+    token || "missing",
+  );
 }
 
 export function newJobsDigestHtml(
@@ -96,6 +150,7 @@ export function newJobsDigestHtml(
     city: string;
     slug: string;
   }>,
+  token: string,
 ) {
   const items = jobs
     .map(
@@ -113,13 +168,9 @@ export function newJobsDigestHtml(
     )
     .join("");
 
-  return `<!doctype html>
-<html lang="pt">
-  <body style="margin:0;padding:0;background:#f8fafc;color:#0f172a;">
-    <div style="font-family:Arial,Helvetica,sans-serif;max-width:560px;margin:0 auto;padding:28px 20px;">
-      <p style="margin:0 0 18px;font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#0f766e;">VagaSaúde</p>
-      <h1 style="margin:0 0 12px;font-size:24px;line-height:1.25;">Novas vagas de saúde</h1>
-      <p style="margin:0 0 18px;font-size:15px;line-height:1.65;color:#475569;">
+  return emailShell(
+    "Novas vagas de saúde",
+    `<p style="margin:0 0 18px;font-size:15px;line-height:1.65;color:#475569;">
         Encontrámos ${jobs.length} nova${jobs.length === 1 ? "" : "s"} oportunidade${jobs.length === 1 ? "" : "s"} para ti.
       </p>
       <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;">
@@ -129,13 +180,9 @@ export function newJobsDigestHtml(
         <a href="${SITE_URL}/vagas" style="display:inline-block;background:#0f766e;color:#ffffff;text-decoration:none;padding:12px 18px;border-radius:10px;font-weight:700;font-size:14px;">
           Ver todas as vagas
         </a>
-      </p>
-      <p style="margin:28px 0 0;font-size:12px;line-height:1.6;color:#94a3b8;">
-        Estás a receber este email porque criaste um alerta em vagasaude.pt.
-      </p>
-    </div>
-  </body>
-</html>`;
+      </p>`,
+    token,
+  );
 }
 
 function escapeHtml(value: string) {

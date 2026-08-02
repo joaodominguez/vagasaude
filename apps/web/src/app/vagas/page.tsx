@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { SlidersHorizontal, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, SlidersHorizontal, X } from "lucide-react";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { JobCard } from "@/components/job-card";
 import { SearchForm } from "@/components/search-form";
 import { getJobs } from "@/lib/jobs-data";
-import { professions } from "@/lib/jobs";
+import { professions } from "@/lib/taxonomies";
 
 export const dynamic = "force-dynamic";
+
+const PAGE_SIZE = 20;
 
 export const metadata: Metadata = {
   title: "Vagas de saúde",
@@ -35,7 +37,19 @@ type SearchParams = Promise<{
   distrito?: string;
   profissao?: string;
   setor?: string;
+  page?: string;
 }>;
+
+function buildJobsHref(params: Record<string, string | undefined>, page?: number) {
+  const next = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    if (key === "page") return;
+    if (value) next.set(key, value);
+  });
+  if (page && page > 1) next.set("page", String(page));
+  const query = next.toString();
+  return query ? `/vagas?${query}` : "/vagas";
+}
 
 export default async function JobsPage({
   searchParams,
@@ -47,6 +61,7 @@ export default async function JobsPage({
   const district = params.distrito ?? "";
   const profession = params.profissao ?? "";
   const sector = params.setor ?? "";
+  const page = Math.max(1, Number.parseInt(params.page || "1", 10) || 1);
   const jobs = await getJobs();
 
   const filteredJobs = jobs.filter((job) => {
@@ -60,7 +75,18 @@ export default async function JobsPage({
     );
   });
 
+  const totalPages = Math.max(1, Math.ceil(filteredJobs.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const pageJobs = filteredJobs.slice(start, start + PAGE_SIZE);
+
   const hasFilters = Boolean(query || district || profession || sector);
+  const filterParams = {
+    q: params.q,
+    distrito: district || undefined,
+    profissao: profession || undefined,
+    setor: sector || undefined,
+  };
 
   return (
     <>
@@ -138,24 +164,58 @@ export default async function JobsPage({
                 </h2>
                 <p className="mt-1 text-sm text-muted">
                   Ordenadas pelas mais recentes
+                  {totalPages > 1
+                    ? ` · página ${currentPage} de ${totalPages}`
+                    : ""}
                 </p>
               </div>
               {hasFilters && (
-                <Link
-                  href="/vagas"
-                  className="filter-chip lg:hidden"
-                >
+                <Link href="/vagas" className="filter-chip lg:hidden">
                   <X size={13} /> Limpar
                 </Link>
               )}
             </div>
 
-            {filteredJobs.length > 0 ? (
-              <div className="min-w-0 space-y-3">
-                {filteredJobs.map((job) => (
-                  <JobCard key={job.slug} job={job} />
-                ))}
-              </div>
+            {pageJobs.length > 0 ? (
+              <>
+                <div className="min-w-0 space-y-3">
+                  {pageJobs.map((job) => (
+                    <JobCard key={job.slug} job={job} />
+                  ))}
+                </div>
+
+                {totalPages > 1 ? (
+                  <nav
+                    className="mt-8 flex flex-wrap items-center justify-between gap-3"
+                    aria-label="Paginação"
+                  >
+                    {currentPage > 1 ? (
+                      <Link
+                        href={buildJobsHref(filterParams, currentPage - 1)}
+                        className="button button-secondary"
+                      >
+                        <ChevronLeft size={16} /> Anterior
+                      </Link>
+                    ) : (
+                      <span />
+                    )}
+                    <p className="text-sm text-muted">
+                      {start + 1}–{Math.min(start + PAGE_SIZE, filteredJobs.length)}{" "}
+                      de {filteredJobs.length}
+                    </p>
+                    {currentPage < totalPages ? (
+                      <Link
+                        href={buildJobsHref(filterParams, currentPage + 1)}
+                        className="button button-secondary"
+                      >
+                        Seguinte <ChevronRight size={16} />
+                      </Link>
+                    ) : (
+                      <span />
+                    )}
+                  </nav>
+                ) : null}
+              </>
             ) : (
               <div className="content-card px-6 py-14 text-center">
                 <h2 className="text-xl font-extrabold">
@@ -217,7 +277,8 @@ function FilterLink({
 }) {
   const next = new URLSearchParams();
   Object.entries(params).forEach(([key, item]) => {
-    if (item && key !== name) next.set(key, item);
+    if (!item || key === name || key === "page") return;
+    next.set(key, item);
   });
   if (!active) next.set(name, value);
 

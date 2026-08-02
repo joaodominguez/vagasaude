@@ -1,0 +1,33 @@
+# Exemplo de VirtualHost Apache (requer sudo no servidor).
+# Colocar em /etc/apache2/sites-available/vagasaude.pt.conf
+#
+# a2enmod proxy proxy_http headers rewrite ssl
+# a2ensite vagasaude.pt
+# apache2ctl configtest && systemctl reload apache2
+
+<VirtualHost *:80>
+    ServerName vagasaude.pt
+    ServerAlias www.vagasaude.pt
+    RewriteEngine On
+    RewriteRule ^ https://%{SERVER_NAME}%{REQUEST_URI} [L,R=301]
+</VirtualHost>
+
+<VirtualHost *:443>
+    ServerName vagasaude.pt
+    ServerAlias www.vagasaude.pt
+
+    SSLEngine on
+    # SSLCertificateFile / etc...
+    # SSLCertificateKeyFile / etc...
+
+    ProxyPreserveHost On
+    ProxyPass /.well-known/acme-challenge/ !
+    ProxyPass / http://127.0.0.1:3010/
+    ProxyPassReverse / http://127.0.0.1:3010/
+
+    RequestHeader set X-Forwarded-Proto "https"
+    RequestHeader set X-Forwarded-For "%{REMOTE_ADDR}s"
+
+    ErrorLog ${APACHE_LOG_DIR}/vagasaude-error.log
+    CustomLog ${APACHE_LOG_DIR}/vagasaude-access.log combined
+</VirtualHost>

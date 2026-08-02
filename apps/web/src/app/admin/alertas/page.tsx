@@ -1,10 +1,20 @@
-import { listAlerts } from "@/lib/alerts";
+import { describeAlertFilters, listAlerts } from "@/lib/alerts";
 
 export const dynamic = "force-dynamic";
+
+const STATUS_LABEL: Record<string, string> = {
+  active: "Activo",
+  pending_confirm: "Por confirmar",
+  unsubscribed: "Cancelado",
+};
 
 export default async function AdminAlertsPage() {
   const alerts = await listAlerts();
   const resendConfigured = Boolean(process.env.RESEND_API_KEY);
+  const active = alerts.filter((alert) => alert.status === "active").length;
+  const pending = alerts.filter(
+    (alert) => alert.status === "pending_confirm",
+  ).length;
 
   return (
     <main className="p-5 sm:p-8 lg:p-10">
@@ -15,8 +25,8 @@ export default async function AdminAlertsPage() {
             Alertas
           </h1>
           <p className="mt-1 text-sm text-muted">
-            {alerts.length} email{alerts.length === 1 ? "" : "s"} registado
-            {alerts.length === 1 ? "" : "s"}
+            {alerts.length} email{alerts.length === 1 ? "" : "s"} · {active}{" "}
+            activo{active === 1 ? "" : "s"} · {pending} por confirmar
           </p>
         </header>
 
@@ -28,7 +38,7 @@ export default async function AdminAlertsPage() {
           }`}
         >
           {resendConfigured
-            ? "Resend ativo — confirmações e digests de novas vagas podem ser enviados."
+            ? "Resend activo — confirmações e digests de novas vagas podem ser enviados."
             : "Resend ainda não está configurado. Os emails ficam só guardados."}
         </div>
 
@@ -41,13 +51,31 @@ export default async function AdminAlertsPage() {
             )}
             {alerts.map((alert) => (
               <article
-                key={`${alert.email}-${alert.createdAt}`}
-                className="flex flex-wrap items-center justify-between gap-3 px-5 py-4"
+                key={alert.id}
+                className="flex flex-wrap items-start justify-between gap-3 px-5 py-4"
               >
-                <p className="text-sm font-semibold">{alert.email}</p>
-                <p className="text-xs text-muted">
-                  {new Date(alert.createdAt).toLocaleString("pt-PT")}
-                </p>
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold">{alert.email}</p>
+                  <p className="mt-1 text-xs text-muted">
+                    {describeAlertFilters(alert)}
+                  </p>
+                </div>
+                <div className="text-right text-xs text-muted">
+                  <p
+                    className={
+                      alert.status === "active"
+                        ? "font-semibold text-success"
+                        : alert.status === "pending_confirm"
+                          ? "font-semibold text-primary"
+                          : ""
+                    }
+                  >
+                    {STATUS_LABEL[alert.status] || alert.status}
+                  </p>
+                  <p className="mt-1">
+                    {new Date(alert.createdAt).toLocaleString("pt-PT")}
+                  </p>
+                </div>
               </article>
             ))}
           </div>

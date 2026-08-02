@@ -1,6 +1,6 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { listAlerts } from "@/lib/alerts";
+import { alertMatchesJob, listActiveAlerts } from "@/lib/alerts";
 import { newJobsDigestHtml, sendEmail } from "@/lib/email";
 import { listJobCards, type JobCardData } from "@/lib/job-store";
 
@@ -36,7 +36,7 @@ function jobKey(job: JobCardData) {
 
 export async function sendNewJobsDigest(limit = 12) {
   const [alerts, jobs, state] = await Promise.all([
-    listAlerts(),
+    listActiveAlerts(),
     listJobCards(),
     readState(),
   ]);
@@ -49,12 +49,10 @@ export async function sendNewJobsDigest(limit = 12) {
     ? Date.parse(state.lastDigestAt)
     : Date.now() - 24 * 60 * 60 * 1000;
 
-  const freshJobs = jobs
-    .filter((job) => {
-      const published = Date.parse(job.publishedAt);
-      return !Number.isNaN(published) && published >= since;
-    })
-    .slice(0, limit);
+  const freshJobs = jobs.filter((job) => {
+    const published = Date.parse(job.publishedAt);
+    return !Number.isNaN(published) && published >= since;
+  });
 
   if (freshJobs.length === 0) {
     state.lastDigestAt = new Date().toISOString();
@@ -67,7 +65,9 @@ export async function sendNewJobsDigest(limit = 12) {
 
   for (const alert of alerts) {
     const already = new Set(state.deliveries[alert.email] || []);
-    const pending = freshJobs.filter((job) => !already.has(jobKey(job)));
+    const pending = freshJobs
+      .filter((job) => alertMatchesJob(alert, job) && !already.has(jobKey(job)))
+      .slice(0, limit);
     if (pending.length === 0) continue;
 
     const result = await sendEmail({
@@ -83,6 +83,7 @@ export async function sendNewJobsDigest(limit = 12) {
           city: job.city,
           slug: job.slug,
         })),
+        alert.token,
       ),
     });
 

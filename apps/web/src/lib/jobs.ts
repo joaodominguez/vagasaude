@@ -176,16 +176,7 @@ export const jobs: Job[] = [
   },
 ];
 
-export { districts } from "@/lib/portugal-map";
-
-export const professions = [
-  "Enfermagem",
-  "Medicina",
-  "Fisioterapia",
-  "Auxiliares",
-  "Técnico de Saúde",
-  "Farmácia",
-];
+export { districts, professions } from "@/lib/taxonomies";
 
 export function getJob(slug: string) {
   return jobs.find((job) => job.slug === slug);
