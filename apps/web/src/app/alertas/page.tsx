@@ -64,8 +64,9 @@ export default function AlertsPage() {
             Criar o meu alerta
           </h2>
           <p className="mt-2 mb-6 text-sm leading-6 text-muted">
-            Nesta primeira versão recebes todas as novas oportunidades. Os
-            filtros personalizados chegam em breve.
+            Nesta primeira versão guardamos o teu email para te avisar das
+            novas vagas. Os envios automáticos e filtros personalizados ficam
+            ativos após a configuração do Resend.
           </p>
           <AlertForm />
         </aside>

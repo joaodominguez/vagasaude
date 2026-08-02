@@ -72,7 +72,7 @@ export default async function Home() {
             </Link>
           </div>
 
-          <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_21rem]">
+          <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
             <div className="min-w-0 space-y-3">
               {jobs.slice(0, 4).map((job) => (
                 <JobCard key={job.slug} job={job} />
@@ -85,20 +85,19 @@ export default async function Home() {
               </Link>
             </div>
 
-            <aside className="alert-card">
+            <aside className="alert-card alert-card-home">
               <span className="feature-icon">
-                <Mail size={23} />
+                <Mail size={22} />
               </span>
-              <h3 className="mt-5 text-xl font-extrabold tracking-[-0.03em]">
-                Recebe novas vagas no teu email
+              <h3 className="mt-4 text-lg font-extrabold tracking-[-0.03em]">
+                Novas vagas no email
               </h3>
               <p className="mt-2 text-sm leading-6 text-muted">
-                Cria um alerta e recebe as oportunidades que realmente te
-                interessam.
+                Regista o teu email e fica a par das oportunidades de saúde.
               </p>
               <Link
                 href="/alertas"
-                className="button button-primary mt-7 w-full"
+                className="button button-primary mt-5 w-full"
               >
                 <Bell size={17} />
                 Criar alerta

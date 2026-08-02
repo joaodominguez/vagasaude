@@ -25,8 +25,9 @@ export function AlertForm({ compact = false }: { compact?: boolean }) {
       <div className="flex items-start gap-3 rounded-xl bg-success-soft p-4 text-sm text-success">
         <CheckCircle2 className="mt-0.5 shrink-0" size={19} />
         <p>
-          <strong className="block">Alerta criado.</strong>
-          O teu email ficou registado para receber novas oportunidades.
+          <strong className="block">Email registado.</strong>
+          Guardámos o teu contacto. Os envios automáticos ficam ativos assim
+          que o email do VagaSaúde estiver configurado.
         </p>
       </div>
     );

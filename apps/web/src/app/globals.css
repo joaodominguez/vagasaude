@@ -329,11 +329,16 @@ select {
 }
 
 .alert-card {
-  align-self: stretch;
+  align-self: start;
   border: 1px solid color-mix(in srgb, var(--primary) 22%, var(--border));
   border-radius: 1rem;
-  padding: 1.55rem;
+  padding: 1.35rem 1.45rem 1.45rem;
   background: color-mix(in srgb, var(--primary-soft) 55%, var(--surface));
+}
+
+.alert-card-home {
+  position: sticky;
+  top: 6rem;
 }
 
 .feature-card {
