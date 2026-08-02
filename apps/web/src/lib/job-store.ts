@@ -166,6 +166,18 @@ export function slugify(text: string) {
   return normalize(text).replace(/\s+/g, "-").replace(/-+/g, "-").slice(0, 80);
 }
 
+export function buildJobSlug(title: string, company: string, sourceId: string) {
+  const base = `${slugify(title)}-${slugify(company)}-${slugify(sourceId)}`
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+  return base.slice(0, 100);
+}
+
+function slugNeedsRepair(slug: string) {
+  // Barras/espacos partem a rota /vagas/[slug].
+  return !slug || /[\/\\?#%\s]/.test(slug);
+}
+
 function publishedLabel(value: string | null) {
   if (!value) return "Recente";
   const date = new Date(value);
@@ -259,13 +271,34 @@ async function readJobsFile(): Promise<JobsFile> {
   try {
     const raw = await readFile(jobsFilePath(), "utf8");
     const parsed = JSON.parse(raw) as JobsFile;
-    return {
+    const jobs = Array.isArray(parsed.jobs) ? parsed.jobs : [];
+    const repaired = repairJobSlugs(jobs);
+    const file: JobsFile = {
       updatedAt: parsed.updatedAt,
-      jobs: Array.isArray(parsed.jobs) ? parsed.jobs : [],
+      jobs: repaired.jobs,
     };
+    if (repaired.changed) {
+      file.updatedAt = new Date().toISOString();
+      await writeJobsFile(file);
+    }
+    return file;
   } catch {
     return { updatedAt: new Date(0).toISOString(), jobs: [] };
   }
+}
+
+function repairJobSlugs(jobs: StoredJob[]) {
+  let changed = false;
+  const next = jobs.map((job) => {
+    if (!slugNeedsRepair(job.slug)) return job;
+    changed = true;
+    return {
+      ...job,
+      slug: buildJobSlug(job.title, job.company, job.sourceId),
+      updatedAt: new Date().toISOString(),
+    };
+  });
+  return { jobs: next, changed };
 }
 
 async function writeJobsFile(file: JobsFile) {
@@ -291,7 +324,15 @@ export async function listStoredJobs(status: StoredJob["status"] = "published") 
 
 export async function getStoredJobBySlug(slug: string) {
   const jobs = await listStoredJobs("published");
-  return jobs.find((job) => job.slug === slug) ?? null;
+  const exact = jobs.find((job) => job.slug === slug);
+  if (exact) return exact;
+  // Compat: URLs antigas com OE202607/0939 (barra no source id).
+  const normalized = slugify(slug);
+  return (
+    jobs.find(
+      (job) => job.slug === normalized || slugify(job.slug) === normalized,
+    ) ?? null
+  );
 }
 
 export async function listJobCards() {
@@ -373,10 +414,13 @@ export async function ingestJobs(source: string, incoming: IngestJobInput[]) {
 
     if (status === "pending_review") review += 1;
 
-    const slugBase = `${slugify(title)}-${slugify(company)}-${sourceId}`.slice(0, 100);
+    const slugBase = buildJobSlug(title, company, sourceId);
+    const existingSlug = existingSameSource?.slug;
+    const slug =
+      existingSlug && !slugNeedsRepair(existingSlug) ? existingSlug : slugBase;
     const next: StoredJob = {
       id: existingSameSource?.id || crypto.randomUUID(),
-      slug: existingSameSource?.slug || slugBase,
+      slug,
       title,
       company,
       locationDistrict: district,
