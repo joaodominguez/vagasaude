@@ -8,6 +8,7 @@ Fontes ativas nesta fase:
 | `luz_saude` | CVWarehouse (Luz Saúde) | HTML público |
 | `lusiadas` | CVWarehouse (Lusíadas) | HTML público |
 | `trofa_saude` | Portal VNC / Trofa Saúde | API JSON |
+| `joaquim_chaves` | https://recrutamento.jcs.pt/Offers | Harpoon `/GetOffersFiltered` |
 
 José de Mello Saúde usa o mesmo portal da CUF para recrutamento externo.
 

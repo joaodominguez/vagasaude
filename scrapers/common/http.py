@@ -41,3 +41,10 @@ class HttpClient:
         response = self.client.get(url, **kwargs)
         response.raise_for_status()
         return response.text
+
+    def post_json(self, url: str, payload: Any, **kwargs: Any) -> Any:
+        self._throttle()
+        headers = {"Content-Type": "application/json", "Accept": "application/json"}
+        response = self.client.post(url, json=payload, headers=headers, **kwargs)
+        response.raise_for_status()
+        return response.json()

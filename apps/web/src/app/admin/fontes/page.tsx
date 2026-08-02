@@ -26,6 +26,11 @@ const SOURCE_META: Record<
     url: "https://www.lusiadas.pt/",
     sector: "Privado",
   },
+  joaquim_chaves: {
+    name: "Joaquim Chaves Saúde",
+    url: "https://recrutamento.jcs.pt/Offers",
+    sector: "Privado",
+  },
 };
 
 export default async function AdminSourcesPage() {

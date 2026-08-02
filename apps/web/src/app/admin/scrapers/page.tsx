@@ -23,6 +23,11 @@ const SCRAPERS = [
     name: "Lusíadas (CVWarehouse)",
     schedule: "A cada 6 horas",
   },
+  {
+    slug: "joaquim_chaves",
+    name: "Joaquim Chaves Saúde (Harpoon)",
+    schedule: "A cada 6 horas",
+  },
 ];
 
 export default async function AdminScrapersPage() {

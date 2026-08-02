@@ -87,6 +87,12 @@ CITY_TO_DISTRICT = {
     "valenca": "Viana do Castelo",
     "valença": "Viana do Castelo",
     "trofa": "Porto",
+    "carnaxide": "Lisboa",
+    "miraflores": "Lisboa",
+    "carcavelos": "Lisboa",
+    "ponta delgada": "Açores",
+    "abrantes": "Santarém",
+    "chamusca": "Santarém",
 }
 
 
