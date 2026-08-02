@@ -45,7 +45,21 @@ class HttpClient:
     def post_json(self, url: str, payload: Any, **kwargs: Any) -> Any:
         self._throttle()
         headers = {"Content-Type": "application/json", "Accept": "application/json"}
-        response = self.client.post(url, json=payload, headers=headers, **kwargs)
+        extra_headers = kwargs.pop("headers", None)
+        if extra_headers:
+            headers.update(extra_headers)
+        # Alguns sites (ex.: Champalimaud) pedem JSON no body com content-type form.
+        if headers.get("Content-Type", "").startswith("application/json"):
+            response = self.client.post(url, json=payload, headers=headers, **kwargs)
+        else:
+            import json as json_lib
+
+            response = self.client.post(
+                url,
+                content=json_lib.dumps(payload),
+                headers=headers,
+                **kwargs,
+            )
         response.raise_for_status()
         return response.json()
 

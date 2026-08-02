@@ -34,6 +34,11 @@ const SCRAPERS = [
     name: "Joaquim Chaves Saúde (Harpoon)",
     schedule: "A cada 6 horas",
   },
+  {
+    slug: "champalimaud",
+    name: "Champalimaud (get-offers)",
+    schedule: "A cada 6 horas",
+  },
 ];
 
 export default async function AdminScrapersPage() {

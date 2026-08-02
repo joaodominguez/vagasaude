@@ -1,4 +1,5 @@
 from sources.bep import BepScraper
+from sources.champalimaud import ChampalimaudScraper
 from sources.cuf import CufScraper
 from sources.cvwarehouse import LuzSaudeScraper, LusiadasScraper
 from sources.joaquim_chaves import JoaquimChavesScraper
@@ -11,4 +12,5 @@ SCRAPERS = {
     LusiadasScraper.slug: LusiadasScraper,
     TrofaSaudeScraper.slug: TrofaSaudeScraper,
     JoaquimChavesScraper.slug: JoaquimChavesScraper,
+    ChampalimaudScraper.slug: ChampalimaudScraper,
 }

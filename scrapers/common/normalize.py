@@ -198,7 +198,7 @@ def guess_district(city: str | None, region: str | None = None) -> str:
 def guess_profession(title: str, fallback: str | None = None) -> str:
     t = norm(title)
     rules = [
-        (("enfermeir", "enfermagem"), "Enfermagem"),
+        (("enfermeir", "enfermagem", "nurse", "nursing"), "Enfermagem"),
         (
             (
                 "auxiliar",
@@ -209,9 +209,9 @@ def guess_profession(title: str, fallback: str | None = None) -> str:
             ),
             "Auxiliares",
         ),
-        (("medico", "medica ", "medicas", "cirurgi", "internato"), "Medicina"),
-        (("fisioterapeut", "fisioterap"), "Fisioterapia"),
-        (("farmaceut", "farmacia"), "Farmácia"),
+        (("medico", "medica ", "medicas", "cirurgi", "internato", "physician"), "Medicina"),
+        (("fisioterapeut", "fisioterap", "physiotherapist", "physiotherapy"), "Fisioterapia"),
+        (("farmaceut", "farmacia", "pharmacist"), "Farmácia"),
         (
             (
                 "radiologia",
@@ -219,6 +219,7 @@ def guess_profession(title: str, fallback: str | None = None) -> str:
                 "cardiolog",
                 "analises",
                 "laboratorio",
+                "laboratory",
                 "tdt",
                 "diagnostico",
                 "terapeut",
@@ -230,10 +231,12 @@ def guess_profession(title: str, fallback: str | None = None) -> str:
                 "anatomia patol",
                 "oftalmolog",
                 "higienista",
+                "research technician",
+                "tecnico de investig",
             ),
             "Técnico de Saúde",
         ),
-        (("psicolog",), "Psicologia"),
+        (("psicolog", "psychologist"), "Psicologia"),
         (("nutric", "dietista"), "Nutrição"),
         (("assistente social",), "Assistência Social"),
         (
@@ -265,6 +268,11 @@ def guess_profession(title: str, fallback: str | None = None) -> str:
                 "sistemas",
                 "data analytics",
                 "engenheir",
+                "postdoc",
+                "postdoctoral",
+                "phd student",
+                "investigador",
+                "researcher",
             ),
             "Outros",
         ),

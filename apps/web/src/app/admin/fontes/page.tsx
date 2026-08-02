@@ -36,6 +36,11 @@ const SOURCE_META: Record<
     url: "https://recrutamento.jcs.pt/Offers",
     sector: "Privado",
   },
+  champalimaud: {
+    name: "Fundação Champalimaud",
+    url: "https://www.fchampalimaud.org/pt-pt/posicoes-em-aberto",
+    sector: "Privado",
+  },
 };
 
 export default async function AdminSourcesPage() {

@@ -10,6 +10,7 @@ Fontes ativas nesta fase:
 | `lusiadas` | CVWarehouse (Lusíadas) | HTML público |
 | `trofa_saude` | Portal VNC / Trofa Saúde | API JSON |
 | `joaquim_chaves` | https://recrutamento.jcs.pt/Offers | Harpoon `/GetOffersFiltered` |
+| `champalimaud` | https://www.fchampalimaud.org/pt-pt/posicoes-em-aberto | `/get-offers` JSON |
 
 José de Mello Saúde usa o mesmo portal da CUF para recrutamento externo.
 

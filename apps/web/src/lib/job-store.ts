@@ -89,6 +89,7 @@ function normalizeCompany(company: string) {
   if (value.includes("lusiadas")) return "lusiadas";
   if (value.includes("trofa")) return "trofa saude";
   if (value.includes("joaquim chaves") || value === "jcs") return "joaquim chaves";
+  if (value.includes("champalimaud")) return "champalimaud";
   return value;
 }
 
@@ -103,20 +104,21 @@ export function makeDedupeHash(title: string, company: string, district: string)
 export function guessProfession(title: string, fallback = "Outros") {
   const t = normalize(title);
   const rules: Array<[string[], string]> = [
-    [["enfermeir", "enfermagem"], "Enfermagem"],
+    [["enfermeir", "enfermagem", "nurse", "nursing"], "Enfermagem"],
     [
       ["auxiliar", "acao medica", "accao medica", "assistente operacional", "geriatr"],
       "Auxiliares",
     ],
-    [["medico", "medica ", "medicas", "cirurgi", "internato"], "Medicina"],
-    [["fisioterapeut", "fisioterap"], "Fisioterapia"],
-    [["farmaceut", "farmacia"], "Farmácia"],
+    [["medico", "medica ", "medicas", "cirurgi", "internato", "physician"], "Medicina"],
+    [["fisioterapeut", "fisioterap", "physiotherapist", "physiotherapy"], "Fisioterapia"],
+    [["farmaceut", "farmacia", "pharmacist"], "Farmácia"],
     [
       [
         "radiologia",
         "cardiopneumolog",
         "analises",
         "laboratorio",
+        "laboratory",
         "diagnostico",
         "terapeut",
         "audiolog",
@@ -127,10 +129,12 @@ export function guessProfession(title: string, fallback = "Outros") {
         "anatomia patol",
         "oftalmolog",
         "higienista",
+        "research technician",
+        "tecnico de investig",
       ],
       "Técnico de Saúde",
     ],
-    [["psicolog"], "Psicologia"],
+    [["psicolog", "psychologist"], "Psicologia"],
     [["nutric", "dietista"], "Nutrição"],
     [["assistente social"], "Assistência Social"],
     [
