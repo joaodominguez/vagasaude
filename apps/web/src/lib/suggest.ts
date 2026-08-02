@@ -60,10 +60,10 @@ export function buildSuggestions(
   const seen = new Set<string>();
   const scored: Array<{ item: SuggestItem; score: number }> = [];
 
-  const consider = (item: SuggestItem) => {
+  const consider = (item: SuggestItem, boost = 0) => {
     const key = `${item.kind}:${normalize(item.value)}`;
     if (seen.has(key)) return;
-    const score = q
+    let score = q
       ? Math.max(scoreMatch(item.label, q), scoreMatch(item.value, q))
       : item.kind === "profession"
         ? 40
@@ -71,38 +71,51 @@ export function buildSuggestions(
           ? 30
           : 20;
     if (q && score <= 0) return;
+    // Prefer taxonomias / seeds curtos face a títulos longos do inventário.
+    score += boost;
+    if (item.label.length <= 28) score += 4;
+    else if (item.label.length > 48) score -= 8;
     seen.add(key);
     scored.push({ item, score });
   };
 
   for (const profession of professions) {
-    consider({
-      label: profession,
-      value: profession,
-      kind: "profession",
-      hint: "Profissão",
-      href: `/vagas?profissao=${encodeURIComponent(profession)}`,
-    });
+    consider(
+      {
+        label: profession,
+        value: profession,
+        kind: "profession",
+        hint: "Profissão",
+        href: `/vagas?profissao=${encodeURIComponent(profession)}`,
+      },
+      12,
+    );
   }
 
   for (const district of districts) {
-    consider({
-      label: district,
-      value: district,
-      kind: "district",
-      hint: "Distrito",
-      href: `/vagas?distrito=${encodeURIComponent(district)}`,
-    });
+    consider(
+      {
+        label: district,
+        value: district,
+        kind: "district",
+        hint: "Distrito",
+        href: `/vagas?distrito=${encodeURIComponent(district)}`,
+      },
+      8,
+    );
   }
 
   for (const role of ROLE_SEEDS) {
-    consider({
-      label: role,
-      value: role,
-      kind: "role",
-      hint: "Função",
-      href: `/vagas?q=${encodeURIComponent(role)}`,
-    });
+    consider(
+      {
+        label: role,
+        value: role,
+        kind: "role",
+        hint: "Função",
+        href: `/vagas?q=${encodeURIComponent(role)}`,
+      },
+      10,
+    );
   }
 
   // Termos frequentes nos títulos publicados.
