@@ -41,6 +41,11 @@ const SOURCE_META: Record<
     url: "https://www.fchampalimaud.org/pt-pt/posicoes-em-aberto",
     sector: "Privado",
   },
+  germano_de_sousa: {
+    name: "Grupo Germano de Sousa",
+    url: "https://www.germanodesousa.com/contactos/ofertas-de-emprego/",
+    sector: "Privado",
+  },
 };
 
 export default async function AdminSourcesPage() {

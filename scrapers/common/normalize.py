@@ -233,6 +233,9 @@ def guess_profession(title: str, fallback: str | None = None) -> str:
                 "higienista",
                 "research technician",
                 "tecnico de investig",
+                "biolog",
+                "analises clinicas",
+                "ciencias biomedicas",
             ),
             "Técnico de Saúde",
         ),
@@ -289,14 +292,19 @@ def guess_contract(text: str | None) -> str | None:
     if not text:
         return None
     t = norm(text)
-    if "part" in t or "parcial" in t:
+    if (
+        "part time" in t
+        or "parttime" in t
+        or "tempo parcial" in t
+        or re.search(r"\bparcial\b", t)
+    ):
         return "Tempo parcial"
     if "turno" in t:
         return "Turnos"
     if "prestacao" in t or "recibo" in t:
         return "Prestação de serviços"
-    if "inteiro" in t or "full" in t or "completo" in t:
+    if "tempo inteiro" in t or "full time" in t or "fulltime" in t or "completo" in t:
         return "Tempo inteiro"
-    if "termo" in t or "contrato" in t:
+    if "contrato" in t or re.search(r"\btermo\b", t):
         return "Contrato"
-    return text.strip()[:60]
+    return None

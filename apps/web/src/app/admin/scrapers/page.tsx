@@ -39,6 +39,11 @@ const SCRAPERS = [
     name: "Champalimaud (get-offers)",
     schedule: "A cada 6 horas",
   },
+  {
+    slug: "germano_de_sousa",
+    name: "Germano de Sousa (HTML)",
+    schedule: "A cada 6 horas",
+  },
 ];
 
 export default async function AdminScrapersPage() {

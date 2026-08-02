@@ -138,7 +138,8 @@ export default async function AdminPage() {
             </div>
             <p className="mt-6 rounded-xl bg-primary-soft p-3 text-xs leading-5 text-muted">
               Fontes ativas: BEP (público), CUF, Luz Saúde, Trofa Saúde, Lusíadas,
-              Joaquim Chaves e Champalimaud. Histórico em /admin/scrapers.
+              Joaquim Chaves, Champalimaud e Germano de Sousa. Histórico em
+              /admin/scrapers.
             </p>
           </section>
         </div>

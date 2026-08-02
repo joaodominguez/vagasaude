@@ -11,6 +11,7 @@ Fontes ativas nesta fase:
 | `trofa_saude` | Portal VNC / Trofa Saúde | API JSON |
 | `joaquim_chaves` | https://recrutamento.jcs.pt/Offers | Harpoon `/GetOffersFiltered` |
 | `champalimaud` | https://www.fchampalimaud.org/pt-pt/posicoes-em-aberto | `/get-offers` JSON |
+| `germano_de_sousa` | https://www.germanodesousa.com/contactos/ofertas-de-emprego/ | HTML (portfolio) |
 
 José de Mello Saúde usa o mesmo portal da CUF para recrutamento externo.
 

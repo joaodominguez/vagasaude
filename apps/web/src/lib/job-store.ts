@@ -90,6 +90,9 @@ function normalizeCompany(company: string) {
   if (value.includes("trofa")) return "trofa saude";
   if (value.includes("joaquim chaves") || value === "jcs") return "joaquim chaves";
   if (value.includes("champalimaud")) return "champalimaud";
+  if (value.includes("germano de sousa") || value.includes("germano sousa")) {
+    return "germano de sousa";
+  }
   return value;
 }
 
@@ -131,6 +134,9 @@ export function guessProfession(title: string, fallback = "Outros") {
         "higienista",
         "research technician",
         "tecnico de investig",
+        "biolog",
+        "analises clinicas",
+        "ciencias biomedicas",
       ],
       "Técnico de Saúde",
     ],
