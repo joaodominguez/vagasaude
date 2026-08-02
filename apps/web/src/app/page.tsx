@@ -68,8 +68,8 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_21rem]">
-            <div className="space-y-3">
+          <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_21rem]">
+            <div className="min-w-0 space-y-3">
               {jobs.slice(0, 4).map((job) => (
                 <JobCard key={job.slug} job={job} />
               ))}

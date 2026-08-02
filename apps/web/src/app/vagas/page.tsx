@@ -64,8 +64,8 @@ export default async function JobsPage({
           </div>
         </section>
 
-        <div className="page-container grid gap-8 py-10 lg:grid-cols-[15rem_minmax(0,1fr)]">
-          <aside className="hidden lg:block">
+        <div className="page-container grid min-w-0 gap-8 py-10 lg:grid-cols-[15rem_minmax(0,1fr)]">
+          <aside className="hidden min-w-0 lg:block">
             <div className="sticky top-24 content-card p-5">
               <div className="flex items-center gap-2 font-extrabold">
                 <SlidersHorizontal size={18} />
@@ -109,9 +109,9 @@ export default async function JobsPage({
             </div>
           </aside>
 
-          <section>
-            <div className="mb-5 flex items-center justify-between">
-              <div>
+          <section className="min-w-0">
+            <div className="mb-5 flex items-center justify-between gap-3">
+              <div className="min-w-0">
                 <h2 className="text-xl font-extrabold tracking-[-0.03em]">
                   {filteredJobs.length}{" "}
                   {filteredJobs.length === 1 ? "vaga encontrada" : "vagas encontradas"}
@@ -131,7 +131,7 @@ export default async function JobsPage({
             </div>
 
             {filteredJobs.length > 0 ? (
-              <div className="space-y-3">
+              <div className="min-w-0 space-y-3">
                 {filteredJobs.map((job) => (
                   <JobCard key={job.slug} job={job} />
                 ))}

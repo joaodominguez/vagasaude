@@ -6,7 +6,7 @@ import { ThemeToggle } from "./theme-toggle";
 export function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-border/80 bg-background/90 backdrop-blur-lg">
-      <div className="page-container flex h-17 items-center justify-between">
+      <div className="page-container flex h-16 items-center justify-between">
         <Logo />
 
         <nav

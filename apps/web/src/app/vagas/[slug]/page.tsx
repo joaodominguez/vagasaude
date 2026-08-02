@@ -86,18 +86,18 @@ export default async function JobDetailPage({ params }: { params: Params }) {
             <ArrowLeft size={16} /> Voltar às vagas
           </Link>
 
-          <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_21rem]">
-            <article>
+          <div className="grid min-w-0 gap-8 lg:grid-cols-[minmax(0,1fr)_21rem]">
+            <article className="min-w-0">
               <header className="border-b border-border pb-8">
-                <div className="flex items-start gap-4">
-                  <span className="flex h-15 w-15 shrink-0 items-center justify-center rounded-2xl bg-primary-soft text-primary">
-                    <BriefcaseBusiness size={28} strokeWidth={1.7} />
+                <div className="flex min-w-0 items-start gap-3 sm:gap-4">
+                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary-soft text-primary sm:h-14 sm:w-14">
+                    <BriefcaseBusiness size={26} strokeWidth={1.7} />
                   </span>
-                  <div>
-                    <h1 className="max-w-3xl text-3xl font-extrabold leading-tight tracking-[-0.05em] sm:text-4xl">
+                  <div className="min-w-0">
+                    <h1 className="break-words text-2xl font-extrabold leading-tight tracking-[-0.05em] sm:text-4xl">
                       {job.title}
                     </h1>
-                    <p className="mt-2 text-base font-semibold text-muted">
+                    <p className="mt-2 truncate text-base font-semibold text-muted">
                       {job.company}
                     </p>
                   </div>
@@ -152,10 +152,10 @@ export default async function JobDetailPage({ params }: { params: Params }) {
                   href={job.applicationUrl}
                   target="_blank"
                   rel="noopener noreferrer nofollow"
-                  className="button button-primary mt-5 w-full"
+                  className="button button-primary mt-5 w-full text-center"
                 >
-                  Candidatar no site da entidade
-                  <ExternalLink size={16} />
+                  <span className="truncate">Candidatar no site da entidade</span>
+                  <ExternalLink size={16} className="shrink-0" />
                 </a>
                 <p className="mt-3 flex items-center justify-center gap-1.5 text-center text-xs text-muted">
                   <ShieldCheck size={14} className="text-primary" />
@@ -178,7 +178,7 @@ export default async function JobDetailPage({ params }: { params: Params }) {
           {related.length > 0 && (
             <section className="mt-12 border-t border-border pt-9">
               <h2 className="section-title">Vagas relacionadas</h2>
-              <div className="mt-5 grid gap-3 lg:grid-cols-3">
+              <div className="mt-5 grid min-w-0 gap-3 lg:grid-cols-3">
                 {related.map((item) => (
                   <JobCard key={item.slug} job={item} />
                 ))}

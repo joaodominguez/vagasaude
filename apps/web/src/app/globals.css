@@ -59,9 +59,11 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: clip;
 }
 
 body {
+  overflow-x: clip;
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-manrope), sans-serif;
@@ -305,13 +307,15 @@ select {
 }
 
 .job-card {
-  display: flex;
-  min-height: 7rem;
-  gap: 1rem;
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   border: 1px solid var(--border);
   border-radius: 0.9rem;
-  padding: 1rem;
+  padding: 0.9rem;
   background: var(--surface);
+  overflow: hidden;
   transition:
     transform 160ms ease,
     border-color 160ms ease,
@@ -446,6 +450,22 @@ select {
 
   .hero-section {
     padding-top: 3.8rem;
+  }
+
+  .hero-title {
+    font-size: clamp(2rem, 9vw, 2.75rem);
+    letter-spacing: -0.05em;
+  }
+
+  .job-card {
+    padding: 0.85rem;
+  }
+
+  .alert-card,
+  .feature-card,
+  .content-card {
+    max-width: 100%;
+    min-width: 0;
   }
 }
 
