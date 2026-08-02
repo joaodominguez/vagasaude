@@ -99,12 +99,12 @@ class CvWarehouseScraper(BaseScraper):
             region = self._parse_jsonish_list(attr("region") or "")
             schedule = self._parse_jsonish_list(attr("workschedule") or "", join=True)
             company = self._guess_company(description)
+            city, district = self._resolve_location(title, city, region)
 
             application_url = urljoin(
                 "https://jobpage.cvwarehouse.com/",
                 f"?companyGuid={self.company_guid}&lang=pt-PT&job={job_id}",
             )
-            district = guess_district(city, region)
             jobs.append(
                 JobPayload(
                     title=title,
@@ -125,6 +125,23 @@ class CvWarehouseScraper(BaseScraper):
                 )
             )
         return jobs
+
+    def _resolve_location(
+        self, title: str, city: str | None, region: str
+    ) -> tuple[str | None, str]:
+        district = guess_district(city, region)
+        # Prefer an explicit place named in the title when ATS city is wrong.
+        title_place = re.search(
+            r"(?:Hospital|Cl[ií]nica)\s+(?:da\s+Luz|Lus[ií]adas|do\s+Mar)\s+([^–\-,(|]+)",
+            title,
+            re.I,
+        )
+        if title_place:
+            place = title_place.group(1).strip()
+            place_district = guess_district(place)
+            if place_district != "Portugal":
+                return place, place_district
+        return city, district
 
     def _guess_company(self, description: str) -> str:
         match = COMPANY_PATTERN.search(description)
