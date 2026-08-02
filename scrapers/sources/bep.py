@@ -16,6 +16,7 @@ SEARCH_TERMS = [
     "enfermagem",
     "médico",
     "medico",
+    "médica",
     "fisioterapeuta",
     "farmacêutico",
     "farmaceutico",
@@ -32,16 +33,21 @@ SEARCH_TERMS = [
     "técnico de diagnóstico",
     "tecnico de diagnostico",
     "técnico superior de saúde",
+    "técnico auxiliar de saúde",
+    "administrador hospitalar",
     "assistente operacional",
     "auxiliar de ação médica",
+    "Unidade Local de Saúde",
     "ULS",
     "hospital",
+    "IPO",
 ]
 
 HEALTH_RE = re.compile(
     r"enferm|m[eé]dic|fisioterap|farmac|diagn[oó]stico|terap[eê]ut|"
     r"nutric|psicolog|ortopt|audiolog|imagiolog|radiolog|cardiopneum|"
     r"anatomia\s+patol|neurofisiolog|higienista|auxilia|"
+    r"administrador\s+hospitalar|assistente\s+graduado|"
     r"sa[uú]de|hospital|uls\b|ars\b|ipo\b|oncolog|cuidados\s+de\s+sa[uú]de|"
     r"centro\s+hospitalar|unidade\s+local\s+de\s+sa[uú]de",
     re.I,
