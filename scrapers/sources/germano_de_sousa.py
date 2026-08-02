@@ -101,7 +101,7 @@ class GermanoDeSousaScraper(BaseScraper):
             profession=guess_profession(title, funcao),
             specialty=funcao or None,
             sector="privado",
-            contract_type=guess_contract(description[:500]),
+            contract_type=guess_contract(description),
             description=description[:8000],
             requirements=None,
             salary=None,
