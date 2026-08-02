@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
+import { GoogleAnalytics } from "@/components/google-analytics";
 import {
   buildOrganizationJsonLd,
   buildWebsiteJsonLd,
@@ -81,9 +82,11 @@ export default function RootLayout({
 }>) {
   const structuredData = {
     "@context": "https://schema.org",
-    "@graph": [buildWebsiteJsonLd(), buildOrganizationJsonLd()].map(
-      ({ ["@context"]: _ctx, ...rest }) => rest,
-    ),
+    "@graph": [buildWebsiteJsonLd(), buildOrganizationJsonLd()].map((item) => {
+      const { ["@context"]: _context, ...rest } = item;
+      void _context;
+      return rest;
+    }),
   };
 
   return (
@@ -97,7 +100,10 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-screen">{children}</body>
+      <body className="min-h-screen">
+        {children}
+        <GoogleAnalytics />
+      </body>
     </html>
   );
 }
