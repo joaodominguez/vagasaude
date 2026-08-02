@@ -125,6 +125,15 @@ export function buildSuggestions(
   }
 
   for (const [label, count] of titleCounts) {
+    // Evitar frases genéricas de avisos públicos no autocomplete vazio.
+    const n = normalize(label);
+    if (
+      n.startsWith("abertura de ") ||
+      n.startsWith("aviso de ") ||
+      n.startsWith("procedimento concursal")
+    ) {
+      if (!q || q.length < 4) continue;
+    }
     if (count < 2 && q.length < 3) continue;
     consider({
       label,

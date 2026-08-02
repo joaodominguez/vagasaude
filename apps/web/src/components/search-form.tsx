@@ -41,12 +41,29 @@ export function SearchForm({
   const router = useRouter();
   const listId = useId();
   const wrapRef = useRef<HTMLDivElement>(null);
+  const fieldRef = useRef<HTMLLabelElement>(null);
   const [query, setQuery] = useState(defaultQuery);
   const [district, setDistrict] = useState(defaultDistrict);
   const [suggestions, setSuggestions] = useState<SearchSuggestion[]>([]);
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
   const [loading, setLoading] = useState(false);
+  const [menuBox, setMenuBox] = useState<{
+    top: number;
+    left: number;
+    width: number;
+  } | null>(null);
+
+  function updateMenuBox() {
+    const el = fieldRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    setMenuBox({
+      top: rect.bottom + 6,
+      left: rect.left,
+      width: rect.width,
+    });
+  }
 
   useEffect(() => {
     setQuery(defaultQuery);
@@ -93,6 +110,23 @@ export function SearchForm({
     document.addEventListener("mousedown", onPointerDown);
     return () => document.removeEventListener("mousedown", onPointerDown);
   }, []);
+
+  useEffect(() => {
+    if (!open) {
+      setMenuBox(null);
+      return;
+    }
+    updateMenuBox();
+    function onReposition() {
+      updateMenuBox();
+    }
+    window.addEventListener("resize", onReposition);
+    window.addEventListener("scroll", onReposition, true);
+    return () => {
+      window.removeEventListener("resize", onReposition);
+      window.removeEventListener("scroll", onReposition, true);
+    };
+  }, [open, suggestions.length, query]);
 
   function goToSearch(nextQuery: string, nextDistrict: string) {
     const params = new URLSearchParams();
@@ -171,7 +205,7 @@ export function SearchForm({
       role="search"
     >
       <div className="search-suggest min-w-0 flex-1" ref={wrapRef}>
-        <label className="search-field">
+        <label className="search-field" ref={fieldRef}>
           <Search aria-hidden="true" size={19} />
           <span className="sr-only">Profissão ou palavra-chave</span>
           <input
@@ -192,16 +226,24 @@ export function SearchForm({
               setQuery(event.target.value);
               setOpen(true);
             }}
-            onFocus={() => setOpen(true)}
+            onFocus={() => {
+              setOpen(true);
+              requestAnimationFrame(updateMenuBox);
+            }}
             onKeyDown={onKeyDown}
           />
         </label>
-        {open && suggestions.length > 0 ? (
+        {open && menuBox && suggestions.length > 0 ? (
           <ul
             id={listId}
             className="search-suggest-list"
             role="listbox"
             aria-label="Sugestões de pesquisa"
+            style={{
+              top: menuBox.top,
+              left: menuBox.left,
+              width: menuBox.width,
+            }}
           >
             {suggestions.map((item, index) => (
               <li key={`${item.kind}:${item.value}`} role="presentation">
@@ -229,10 +271,19 @@ export function SearchForm({
           </ul>
         ) : null}
         {open &&
+        menuBox &&
         !loading &&
         suggestions.length === 0 &&
         query.trim().length >= 2 ? (
-          <div className="search-suggest-empty" role="status">
+          <div
+            className="search-suggest-empty"
+            role="status"
+            style={{
+              top: menuBox.top,
+              left: menuBox.left,
+              width: menuBox.width,
+            }}
+          >
             Sem sugestões — prima Enter para pesquisar.
           </div>
         ) : null}
