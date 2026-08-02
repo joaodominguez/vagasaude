@@ -28,7 +28,7 @@ export default async function AdminAlertsPage() {
           }`}
         >
           {resendConfigured
-            ? "Resend configurado — confirmações de alerta podem ser enviadas."
+            ? "Resend ativo — confirmações e digests de novas vagas podem ser enviados."
             : "Resend ainda não está configurado. Os emails ficam só guardados."}
         </div>
 

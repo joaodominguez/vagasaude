@@ -7,6 +7,7 @@ export function AlertForm({ compact = false }: { compact?: boolean }) {
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">(
     "idle",
   );
+  const [emailSent, setEmailSent] = useState(true);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -17,7 +18,15 @@ export function AlertForm({ compact = false }: { compact?: boolean }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: form.get("email") }),
     });
-    setStatus(response.ok ? "success" : "error");
+    if (!response.ok) {
+      setStatus("error");
+      return;
+    }
+    const data = (await response.json().catch(() => null)) as {
+      emailSent?: boolean;
+    } | null;
+    setEmailSent(Boolean(data?.emailSent));
+    setStatus("success");
   }
 
   if (status === "success") {
@@ -25,9 +34,10 @@ export function AlertForm({ compact = false }: { compact?: boolean }) {
       <div className="flex items-start gap-3 rounded-xl bg-success-soft p-4 text-sm text-success">
         <CheckCircle2 className="mt-0.5 shrink-0" size={19} />
         <p>
-          <strong className="block">Email registado.</strong>
-          Guardámos o teu contacto. Os envios automáticos ficam ativos assim
-          que o email do VagaSaúde estiver configurado.
+          <strong className="block">Alerta criado.</strong>
+          {emailSent
+            ? "Enviámos um email de confirmação. Fica atento à caixa de entrada."
+            : "O teu email ficou registado. Se não receberes confirmação, verifica mais tarde."}
         </p>
       </div>
     );

@@ -1,6 +1,11 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { NextResponse } from "next/server";
+import {
+  alertCreatedEmailHtml,
+  isEmailConfigured,
+  sendEmail,
+} from "@/lib/email";
 
 type StoredAlert = {
   email: string;
@@ -33,28 +38,37 @@ export async function POST(request: Request) {
     // O ficheiro é criado no primeiro alerta.
   }
 
-  if (!alerts.some((alert) => alert.email === email)) {
+  const alreadyExists = alerts.some((alert) => alert.email === email);
+  if (!alreadyExists) {
     alerts.push({ email, createdAt: new Date().toISOString() });
     await writeFile(alertsFile, JSON.stringify(alerts, null, 2), {
       mode: 0o600,
     });
   }
 
-  if (process.env.RESEND_API_KEY) {
-    await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: process.env.EMAIL_FROM ?? "VagaSaúde <alertas@vagasaude.pt>",
-        to: [email],
-        subject: "O teu alerta VagaSaúde está criado",
-        html: "<p>O teu alerta foi criado. Avisaremos quando surgirem novas oportunidades de saúde.</p>",
-      }),
-    }).catch(() => null);
+  let emailSent = false;
+  let emailError: string | null = null;
+
+  if (isEmailConfigured()) {
+    const result = await sendEmail({
+      to: email,
+      subject: alreadyExists
+        ? "O teu alerta VagaSaúde continua ativo"
+        : "O teu alerta VagaSaúde está ativo",
+      html: alertCreatedEmailHtml(),
+    });
+    emailSent = result.ok;
+    emailError = result.ok ? null : result.error;
   }
 
-  return NextResponse.json({ ok: true }, { status: 201 });
+  return NextResponse.json(
+    {
+      ok: true,
+      alreadyExists,
+      emailSent,
+      emailConfigured: isEmailConfigured(),
+      ...(emailError ? { emailError } : {}),
+    },
+    { status: 201 },
+  );
 }
