@@ -1,0 +1,16 @@
+DirectoryIndex disabled
+RewriteEngine On
+
+# URL canónico sem www.
+RewriteCond %{HTTP_HOST} ^www\.vagasaude\.pt$ [NC]
+RewriteRule ^ https://vagasaude.pt%{REQUEST_URI} [L,R=301]
+
+# A raiz precisa de uma regra explícita em contexto .htaccess.
+RewriteCond %{REQUEST_URI} !^/\.well-known/acme-challenge/
+RewriteRule ^$ http://127.0.0.1:3010/ [P,L]
+
+# Restantes rotas e assets passam para o Next.js.
+RewriteCond %{REQUEST_URI} !^/\.well-known/acme-challenge/
+RewriteRule ^(.+)$ http://127.0.0.1:3010/$1 [P,L,QSA]
+
+RequestHeader set X-Forwarded-Proto "https"

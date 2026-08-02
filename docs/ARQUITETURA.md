@@ -135,6 +135,17 @@ sudo systemctl reload apache2
 Executar `configtest` antes de cada reload. A configuração da porta 80 continua
 a redirecionar para HTTPS.
 
+### Integração atual sem alterar o VirtualHost
+
+Enquanto o utilizador de deploy não tiver `sudo`, o ficheiro
+[`deploy/apache/.htaccess`](../deploy/apache/.htaccess) faz o mesmo
+encaminhamento através de `mod_rewrite` e `mod_proxy`, que já estão ativos no
+servidor. `DirectoryIndex disabled` é necessário para a raiz `/` não ser
+transformada em `/index.html` antes do proxy.
+
+O VirtualHost com `ProxyPass` continua a ser a configuração final preferida,
+porque é mais explícita e eficiente.
+
 ---
 
 ## 4. Cloudflare
