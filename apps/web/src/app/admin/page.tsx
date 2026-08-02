@@ -17,7 +17,8 @@ import {
   Settings,
 } from "lucide-react";
 import { Logo } from "@/components/logo";
-import { jobs } from "@/lib/jobs";
+import { getJobs } from "@/lib/jobs-data";
+import { getJobStats } from "@/lib/job-store";
 
 export const dynamic = "force-dynamic";
 
@@ -35,6 +36,8 @@ async function getAlertCount() {
 
 export default async function AdminPage() {
   const alertCount = await getAlertCount();
+  const jobs = await getJobs();
+  const stats = await getJobStats();
 
   return (
     <div className="min-h-screen bg-background lg:grid lg:grid-cols-[15rem_1fr]">
@@ -86,14 +89,16 @@ export default async function AdminPage() {
             <MetricCard
               icon={BriefcaseBusiness}
               label="Vagas publicadas"
-              value={jobs.length}
-              detail="+2 hoje"
+              value={stats.published || jobs.length}
+              detail={Object.entries(stats.bySource)
+                .map(([source, total]) => `${source}: ${total}`)
+                .join(" · ") || "Sem scrapers ainda"}
             />
             <MetricCard
               icon={FileWarning}
               label="Em revisão"
-              value={0}
-              detail="Sem pendentes"
+              value={stats.pendingReview}
+              detail={stats.pendingReview ? "Requer atenção" : "Sem pendentes"}
             />
             <MetricCard
               icon={Bell}
@@ -105,7 +110,11 @@ export default async function AdminPage() {
               icon={Activity}
               label="Estado do site"
               value="Online"
-              detail="Todos os sistemas"
+              detail={
+                stats.updatedAt && stats.updatedAt !== new Date(0).toISOString()
+                  ? `Dados: ${new Date(stats.updatedAt).toLocaleString("pt-PT")}`
+                  : "Todos os sistemas"
+              }
               healthy
             />
           </section>
@@ -145,13 +154,26 @@ export default async function AdminPage() {
               <h2 className="font-extrabold">Estado do sistema</h2>
               <div className="mt-5 space-y-4">
                 <SystemRow icon={CheckCircle2} label="Aplicação" state="Online" />
-                <SystemRow icon={Database} label="Dados" state="Operacional" />
-                <SystemRow icon={Rss} label="Fontes" state="Demonstração" muted />
+                <SystemRow
+                  icon={Database}
+                  label="Dados"
+                  state={stats.published ? `${stats.published} publicadas` : "Seed"}
+                />
+                <SystemRow
+                  icon={Rss}
+                  label="Fontes privadas"
+                  state={
+                    Object.keys(stats.bySource).length
+                      ? Object.keys(stats.bySource).join(", ")
+                      : "Aguardando scrape"
+                  }
+                  muted={!Object.keys(stats.bySource).length}
+                />
                 <SystemRow icon={Clock3} label="Último backup" state="A configurar" muted />
               </div>
               <p className="mt-6 rounded-xl bg-primary-soft p-3 text-xs leading-5 text-muted">
-                Os scrapers e a base de dados definitiva serão ligados na fase
-                seguinte. Esta versão já permite validar toda a experiência.
+                Scrapers privados ativos: CUF, Luz Saúde, Trofa Saúde e Lusíadas.
+                O setor público (BEP) será ligado na fase seguinte.
               </p>
             </section>
           </div>

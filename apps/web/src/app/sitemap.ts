@@ -1,14 +1,18 @@
 import type { MetadataRoute } from "next";
-import { jobs } from "@/lib/jobs";
+import { getJobs } from "@/lib/jobs-data";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://vagasaude.pt";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export const dynamic = "force-dynamic";
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const jobs = await getJobs();
   const staticPages = ["", "/vagas", "/alertas", "/privacidade"].map(
     (path) => ({
       url: `${siteUrl}${path}`,
       lastModified: new Date(),
-      changeFrequency: path === "/vagas" ? ("daily" as const) : ("weekly" as const),
+      changeFrequency:
+        path === "/vagas" ? ("daily" as const) : ("weekly" as const),
       priority: path === "" ? 1 : 0.8,
     }),
   );

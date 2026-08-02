@@ -11,9 +11,13 @@ import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { JobCard } from "@/components/job-card";
 import { SearchForm } from "@/components/search-form";
-import { jobs, professions } from "@/lib/jobs";
+import { getJobs } from "@/lib/jobs-data";
+import { professions } from "@/lib/jobs";
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const jobs = await getJobs();
   return (
     <>
       <Header />

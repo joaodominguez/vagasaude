@@ -14,13 +14,11 @@ import { AlertForm } from "@/components/alert-form";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { JobCard } from "@/components/job-card";
-import { getJob, jobs } from "@/lib/jobs";
+import { getJob, getJobs } from "@/lib/jobs-data";
+
+export const dynamic = "force-dynamic";
 
 type Params = Promise<{ slug: string }>;
-
-export function generateStaticParams() {
-  return jobs.map((job) => ({ slug: job.slug }));
-}
 
 export async function generateMetadata({
   params,
@@ -28,7 +26,7 @@ export async function generateMetadata({
   params: Params;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const job = getJob(slug);
+  const job = await getJob(slug);
   if (!job) return {};
 
   return {
@@ -40,10 +38,11 @@ export async function generateMetadata({
 
 export default async function JobDetailPage({ params }: { params: Params }) {
   const { slug } = await params;
-  const job = getJob(slug);
+  const job = await getJob(slug);
   if (!job) notFound();
 
-  const related = jobs
+  const allJobs = await getJobs();
+  const related = allJobs
     .filter(
       (item) =>
         item.slug !== job.slug &&
@@ -108,7 +107,8 @@ export default async function JobDetailPage({ params }: { params: Params }) {
                   </span>
                   <span aria-hidden="true">•</span>
                   <span className="inline-flex items-center gap-1.5">
-                    <CalendarDays size={15} /> Publicado {job.publishedLabel.toLowerCase()}
+                    <CalendarDays size={15} /> Publicado{" "}
+                    {job.publishedLabel.toLowerCase()}
                   </span>
                   <span className="tag tag-primary">{job.sector}</span>
                   <span className="tag">{job.contract}</span>
@@ -119,7 +119,7 @@ export default async function JobDetailPage({ params }: { params: Params }) {
               <div className="job-content">
                 <section>
                   <h2>Sobre a vaga</h2>
-                  <p>{job.description}</p>
+                  <p className="whitespace-pre-line">{job.description}</p>
                 </section>
                 <CheckList title="O que procuramos" items={job.requirements} />
                 <CheckList

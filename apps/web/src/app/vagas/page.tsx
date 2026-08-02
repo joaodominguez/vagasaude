@@ -5,7 +5,10 @@ import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { JobCard } from "@/components/job-card";
 import { SearchForm } from "@/components/search-form";
-import { jobs, professions } from "@/lib/jobs";
+import { getJobs } from "@/lib/jobs-data";
+import { professions } from "@/lib/jobs";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Vagas de saúde",
@@ -30,6 +33,7 @@ export default async function JobsPage({
   const district = params.distrito ?? "";
   const profession = params.profissao ?? "";
   const sector = params.setor ?? "";
+  const jobs = await getJobs();
 
   const filteredJobs = jobs.filter((job) => {
     const haystack =
@@ -81,6 +85,7 @@ export default async function JobsPage({
                     value={item}
                     active={profession === item}
                     params={params}
+                    count={jobs.filter((job) => job.profession === item).length}
                   />
                 ))}
               </FilterGroup>
@@ -94,6 +99,7 @@ export default async function JobsPage({
                     value={item}
                     active={sector === item}
                     params={params}
+                    count={jobs.filter((job) => job.sector === item).length}
                   />
                 ))}
               </FilterGroup>
@@ -186,12 +192,14 @@ function FilterLink({
   value,
   active,
   params,
+  count,
 }: {
   label: string;
   name: string;
   value: string;
   active: boolean;
   params: Record<string, string | undefined>;
+  count: number;
 }) {
   const next = new URLSearchParams();
   Object.entries(params).forEach(([key, item]) => {
@@ -209,9 +217,7 @@ function FilterLink({
       }`}
     >
       {label}
-      <span className="text-xs">
-        {jobs.filter((job) => job[name === "setor" ? "sector" : "profession"] === value).length}
-      </span>
+      <span className="text-xs">{count}</span>
     </Link>
   );
 }

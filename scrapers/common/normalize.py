@@ -1,0 +1,200 @@
+from __future__ import annotations
+
+import hashlib
+import re
+import unicodedata
+
+
+DISTRICT_ALIASES = {
+    "lisboa": "Lisboa",
+    "porto": "Porto",
+    "braga": "Braga",
+    "coimbra": "Coimbra",
+    "faro": "Faro",
+    "setubal": "Setúbal",
+    "setúbal": "Setúbal",
+    "aveiro": "Aveiro",
+    "leiria": "Leiria",
+    "santarem": "Santarém",
+    "santaré": "Santarém",
+    "viana do castelo": "Viana do Castelo",
+    "vila real": "Vila Real",
+    "viseu": "Viseu",
+    "guarda": "Guarda",
+    "castelo branco": "Castelo Branco",
+    "portalegre": "Portalegre",
+    "evora": "Évora",
+    "évora": "Évora",
+    "beja": "Beja",
+    "madeira": "Madeira",
+    "acores": "Açores",
+    "açores": "Açores",
+    "ilha da madeira": "Madeira",
+    "funchal": "Madeira",
+    "grande lisboa": "Lisboa",
+    "beira litoral": "Coimbra",
+    "norte": "Porto",
+    "centro": "Coimbra",
+    "sul": "Faro",
+}
+
+CITY_TO_DISTRICT = {
+    "lisboa": "Lisboa",
+    "oeiras": "Lisboa",
+    "cascais": "Lisboa",
+    "sintra": "Lisboa",
+    "amadora": "Lisboa",
+    "loures": "Lisboa",
+    "odivelas": "Lisboa",
+    "almada": "Setúbal",
+    "seixal": "Setúbal",
+    "setubal": "Setúbal",
+    "setúbal": "Setúbal",
+    "porto": "Porto",
+    "matosinhos": "Porto",
+    "gaia": "Porto",
+    "vila nova de gaia": "Porto",
+    "gondomar": "Porto",
+    "maia": "Porto",
+    "braga": "Braga",
+    "guimaraes": "Braga",
+    "guimarães": "Braga",
+    "coimbra": "Coimbra",
+    "leiria": "Leiria",
+    "aveiro": "Aveiro",
+    "faro": "Faro",
+    "loule": "Faro",
+    "loulé": "Faro",
+    "portimao": "Faro",
+    "portimão": "Faro",
+    "olhao": "Faro",
+    "olhão": "Faro",
+    "tavira": "Faro",
+    "vilamoura": "Faro",
+    "almancil": "Faro",
+    "evora": "Évora",
+    "évora": "Évora",
+    "valenca": "Viana do Castelo",
+    "valença": "Viana do Castelo",
+    "trofa": "Porto",
+}
+
+
+def strip_accents(text: str) -> str:
+    return "".join(
+        c for c in unicodedata.normalize("NFKD", text) if not unicodedata.combining(c)
+    )
+
+
+def norm(text: str) -> str:
+    text = strip_accents(text or "")
+    text = re.sub(r"[^a-zA-Z0-9\s]", " ", text).lower()
+    return re.sub(r"\s+", " ", text).strip()
+
+
+def dedupe_hash(title: str, company: str, district: str) -> str:
+    key = f"{norm(title)}|{norm(company)}|{norm(district)}"
+    return hashlib.sha256(key.encode()).hexdigest()
+
+
+def slugify(text: str) -> str:
+    text = norm(text).replace(" ", "-")
+    return re.sub(r"-+", "-", text).strip("-")[:80]
+
+
+def html_to_text(html: str | None) -> str:
+    if not html:
+        return ""
+    text = re.sub(r"(?is)<(script|style).*?>.*?</\1>", " ", html)
+    text = re.sub(r"(?i)<br\s*/?>", "\n", text)
+    text = re.sub(r"(?i)</p>", "\n\n", text)
+    text = re.sub(r"(?i)</li>", "\n", text)
+    text = re.sub(r"(?i)<li[^>]*>", "- ", text)
+    text = re.sub(r"<[^>]+>", " ", text)
+    text = re.sub(r"&nbsp;", " ", text)
+    text = re.sub(r"&amp;", "&", text)
+    text = re.sub(r"&quot;", '"', text)
+    text = re.sub(r"&#39;", "'", text)
+    text = re.sub(r"[ \t]+", " ", text)
+    text = re.sub(r"\n{3,}", "\n\n", text)
+    return text.strip()
+
+
+def guess_district(city: str | None, region: str | None = None) -> str:
+    for value in (city, region):
+        if not value:
+            continue
+        cleaned = value.strip("[]\"' ")
+        # region may be JSON-like list
+        cleaned = cleaned.replace('"', "").replace("[", "").replace("]", "")
+        first = cleaned.split(",")[0].strip()
+        key = norm(first)
+        if key in DISTRICT_ALIASES:
+            return DISTRICT_ALIASES[key]
+        if key in CITY_TO_DISTRICT:
+            return CITY_TO_DISTRICT[key]
+        for alias, district in DISTRICT_ALIASES.items():
+            if alias in key:
+                return district
+        for alias, district in CITY_TO_DISTRICT.items():
+            if alias in key:
+                return district
+    return "Portugal"
+
+
+def guess_profession(title: str, fallback: str | None = None) -> str:
+    t = norm(title)
+    rules = [
+        (("enfermeir",), "Enfermagem"),
+        (("medic", "cirurgi"), "Medicina"),
+        (("fisioterapeut",), "Fisioterapia"),
+        (("auxiliar", "acao medica", "accao medica", "geriatr"), "Auxiliares"),
+        (("farmaceut", "farmacia"), "Farmácia"),
+        (
+            (
+                "radiologia",
+                "cardiopneumolog",
+                "analises",
+                "laboratorio",
+                "tdt",
+                "diagnostico",
+                "terapeut",
+            ),
+            "Técnico de Saúde",
+        ),
+        (("psicolog",), "Psicologia"),
+        (("nutric", "dietista"), "Nutrição"),
+        (("assistente social",), "Assistência Social"),
+        (("administrativ", "recepcion", "secretaria"), "Administrativo"),
+    ]
+    for needles, label in rules:
+        if any(n in t for n in needles):
+            return label
+    if fallback:
+        fb = norm(fallback)
+        if "enferm" in fb:
+            return "Enfermagem"
+        if "auxiliar" in fb:
+            return "Auxiliares"
+        if "farmac" in fb:
+            return "Farmácia"
+        if "tecn" in fb or "diagn" in fb:
+            return "Técnico de Saúde"
+    return "Outros"
+
+
+def guess_contract(text: str | None) -> str | None:
+    if not text:
+        return None
+    t = norm(text)
+    if "part" in t or "parcial" in t:
+        return "Tempo parcial"
+    if "turno" in t:
+        return "Turnos"
+    if "prestacao" in t or "recibo" in t:
+        return "Prestação de serviços"
+    if "inteiro" in t or "full" in t or "completo" in t:
+        return "Tempo inteiro"
+    if "termo" in t or "contrato" in t:
+        return "Contrato"
+    return text.strip()[:60]
