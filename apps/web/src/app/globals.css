@@ -167,6 +167,70 @@ select {
   box-shadow: var(--shadow);
 }
 
+.search-suggest {
+  position: relative;
+}
+
+.search-suggest-list,
+.search-suggest-empty {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  left: 0;
+  right: 0;
+  z-index: 40;
+  margin: 0;
+  padding: 0.35rem;
+  list-style: none;
+  border: 1px solid var(--border);
+  border-radius: 0.85rem;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.search-suggest-empty {
+  padding: 0.75rem 0.9rem;
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+.search-suggest-item {
+  display: grid;
+  grid-template-columns: 5.5rem minmax(0, 1fr);
+  align-items: center;
+  gap: 0.65rem;
+  width: 100%;
+  border: 0;
+  border-radius: 0.65rem;
+  padding: 0.55rem 0.7rem;
+  text-align: left;
+  color: var(--foreground);
+  background: transparent;
+  cursor: pointer;
+  transition: background 140ms ease;
+}
+
+.search-suggest-item:hover,
+.search-suggest-item.is-active {
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
+}
+
+.search-suggest-kind {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.search-suggest-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
 .search-field,
 .input-shell {
   display: flex;
