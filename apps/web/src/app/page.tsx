@@ -1,15 +1,14 @@
 import Link from "next/link";
 import {
   ArrowRight,
-  Bell,
   BriefcaseMedical,
   CheckCircle2,
-  Mail,
   ShieldCheck,
 } from "lucide-react";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { JobCard } from "@/components/job-card";
+import { PortugalJobsMap } from "@/components/portugal-jobs-map";
 import { SearchForm } from "@/components/search-form";
 import { getJobs } from "@/lib/jobs-data";
 import { professions } from "@/lib/jobs";
@@ -18,6 +17,12 @@ export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const jobs = await getJobs();
+  const districtCounts = jobs.reduce<Record<string, number>>((acc, job) => {
+    const key = job.district || "Portugal";
+    acc[key] = (acc[key] || 0) + 1;
+    return acc;
+  }, {});
+
   return (
     <>
       <Header />
@@ -72,42 +77,36 @@ export default async function Home() {
             </Link>
           </div>
 
-          <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
-            <div className="min-w-0 space-y-3">
-              {jobs.slice(0, 4).map((job) => (
-                <JobCard key={job.slug} job={job} />
-              ))}
-              <Link
-                href="/vagas"
-                className="button button-secondary mt-5 w-full sm:hidden"
-              >
-                Ver todas as vagas
-              </Link>
-            </div>
+          <div className="grid min-w-0 gap-3 sm:grid-cols-2">
+            {jobs.slice(0, 6).map((job) => (
+              <JobCard key={job.slug} job={job} />
+            ))}
+          </div>
 
-            <aside className="alert-card alert-card-home">
-              <span className="feature-icon">
-                <Mail size={22} />
-              </span>
-              <h3 className="mt-4 text-lg font-extrabold tracking-[-0.03em]">
-                Novas vagas no email
-              </h3>
-              <p className="mt-2 text-sm leading-6 text-muted">
-                Regista o teu email e fica a par das oportunidades de saúde.
+          <Link
+            href="/vagas"
+            className="button button-secondary mt-6 w-full sm:hidden"
+          >
+            Ver todas as vagas
+          </Link>
+        </section>
+
+        <section className="border-y border-border bg-surface">
+          <div className="page-container py-14 sm:py-18">
+            <div className="mb-8 max-w-2xl">
+              <span className="section-kicker">Por localidade</span>
+              <h2 className="section-title">Vagas em Portugal</h2>
+              <p className="mt-3 text-sm leading-6 text-muted sm:text-base">
+                Descobre onde há mais oportunidades neste momento e salta
+                direto para o distrito que te interessa.
               </p>
-              <Link
-                href="/alertas"
-                className="button button-primary mt-5 w-full"
-              >
-                <Bell size={17} />
-                Criar alerta
-              </Link>
-            </aside>
+            </div>
+            <PortugalJobsMap counts={districtCounts} total={jobs.length} />
           </div>
         </section>
 
-        <section id="sobre" className="border-y border-border bg-surface">
-          <div className="page-container grid gap-5 py-14 sm:grid-cols-3 sm:py-18">
+        <section id="sobre" className="page-container py-14 sm:py-18">
+          <div className="grid gap-5 sm:grid-cols-3">
             {[
               {
                 icon: BriefcaseMedical,

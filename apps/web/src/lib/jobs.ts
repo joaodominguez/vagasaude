@@ -176,17 +176,7 @@ export const jobs: Job[] = [
   },
 ];
 
-export const districts = [
-  "Aveiro",
-  "Braga",
-  "Coimbra",
-  "Faro",
-  "Leiria",
-  "Lisboa",
-  "Porto",
-  "Setúbal",
-  "Viseu",
-];
+export { districts } from "@/lib/portugal-map";
 
 export const professions = [
   "Enfermagem",
