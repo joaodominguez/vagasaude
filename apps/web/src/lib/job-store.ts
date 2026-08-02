@@ -193,15 +193,20 @@ async function writeJobsFile(file: JobsFile) {
   await writeFile(jobsFilePath(), JSON.stringify(file, null, 2), { mode: 0o600 });
 }
 
-export async function listStoredJobs(status: StoredJob["status"] = "published") {
+export async function listAllStoredJobs() {
   const file = await readJobsFile();
   return file.jobs
-    .filter((job) => job.status === status)
+    .slice()
     .sort((a, b) => {
-      const aDate = a.publishedAt || a.createdAt;
-      const bDate = b.publishedAt || b.createdAt;
+      const aDate = a.updatedAt || a.publishedAt || a.createdAt;
+      const bDate = b.updatedAt || b.publishedAt || b.createdAt;
       return bDate.localeCompare(aDate);
     });
+}
+
+export async function listStoredJobs(status: StoredJob["status"] = "published") {
+  const jobs = await listAllStoredJobs();
+  return jobs.filter((job) => job.status === status);
 }
 
 export async function getStoredJobBySlug(slug: string) {
@@ -359,10 +364,19 @@ export async function getJobStats() {
     acc[job.source] = (acc[job.source] || 0) + 1;
     return acc;
   }, {});
+  const byStatus = file.jobs.reduce<Record<string, number>>((acc, job) => {
+    acc[job.status] = (acc[job.status] || 0) + 1;
+    return acc;
+  }, {});
   return {
     updatedAt: file.updatedAt,
+    total: file.jobs.length,
     published: published.length,
-    pendingReview: file.jobs.filter((job) => job.status === "pending_review").length,
+    pendingReview: byStatus.pending_review || 0,
+    hidden: byStatus.hidden || 0,
+    expired: byStatus.expired || 0,
+    duplicate: byStatus.duplicate || 0,
     bySource,
+    byStatus,
   };
 }

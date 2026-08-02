@@ -1,5 +1,3 @@
-import { readFile } from "node:fs/promises";
-import path from "node:path";
 import Link from "next/link";
 import {
   Activity,
@@ -10,199 +8,142 @@ import {
   Database,
   ExternalLink,
   FileWarning,
-  LayoutDashboard,
-  LogOut,
-  RefreshCw,
   Rss,
-  Settings,
 } from "lucide-react";
-import { Logo } from "@/components/logo";
+import { listAlerts } from "@/lib/alerts";
 import { getJobs } from "@/lib/jobs-data";
 import { getJobStats } from "@/lib/job-store";
 
 export const dynamic = "force-dynamic";
 
-async function getAlertCount() {
-  const directory = process.env.DATA_DIR ?? path.join(process.cwd(), "data");
-  try {
-    const alerts = JSON.parse(
-      await readFile(path.join(directory, "alerts.json"), "utf8"),
-    ) as unknown[];
-    return alerts.length;
-  } catch {
-    return 0;
-  }
-}
-
 export default async function AdminPage() {
-  const alertCount = await getAlertCount();
-  const jobs = await getJobs();
-  const stats = await getJobStats();
+  const [alerts, jobs, stats] = await Promise.all([
+    listAlerts(),
+    getJobs(),
+    getJobStats(),
+  ]);
 
   return (
-    <div className="min-h-screen bg-background lg:grid lg:grid-cols-[15rem_1fr]">
-      <aside className="border-b border-border bg-surface p-5 lg:min-h-screen lg:border-r lg:border-b-0">
-        <div className="flex items-center justify-between">
-          <Logo />
-          <span className="tag tag-primary">Admin</span>
-        </div>
-        <nav className="mt-8 grid grid-cols-2 gap-1 text-sm lg:grid-cols-1">
-          <AdminLink icon={LayoutDashboard} active>
-            Visão geral
-          </AdminLink>
-          <AdminLink icon={BriefcaseBusiness}>Vagas</AdminLink>
-          <AdminLink icon={Rss}>Fontes</AdminLink>
-          <AdminLink icon={RefreshCw}>Scrapers</AdminLink>
-          <AdminLink icon={Bell}>Alertas</AdminLink>
-          <AdminLink icon={Settings}>Sistema</AdminLink>
-        </nav>
-        <Link
-          href="/"
-          className="mt-8 hidden items-center gap-2 text-sm font-bold text-muted hover:text-primary lg:flex"
-        >
-          <LogOut size={16} /> Voltar ao site
-        </Link>
-      </aside>
+    <main className="p-5 sm:p-8 lg:p-10">
+      <div className="mx-auto max-w-6xl">
+        <header className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p className="section-kicker">Operação</p>
+            <h1 className="mt-2 text-3xl font-extrabold tracking-[-0.045em]">
+              Visão geral
+            </h1>
+            <p className="mt-1 text-sm text-muted">
+              Estado atual da plataforma VagaSaúde.
+            </p>
+          </div>
+          <a href="/" target="_blank" className="button button-secondary">
+            Ver site <ExternalLink size={16} />
+          </a>
+        </header>
 
-      <main className="p-5 sm:p-8 lg:p-10">
-        <div className="mx-auto max-w-6xl">
-          <header className="flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <p className="section-kicker">Operação</p>
-              <h1 className="mt-2 text-3xl font-extrabold tracking-[-0.045em]">
-                Bom dia, administrador
-              </h1>
-              <p className="mt-1 text-sm text-muted">
-                Estado atual da plataforma VagaSaúde.
-              </p>
-            </div>
-            <a
-              href="/"
-              target="_blank"
-              className="button button-secondary"
-            >
-              Ver site <ExternalLink size={16} />
-            </a>
-          </header>
-
-          <section className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <MetricCard
-              icon={BriefcaseBusiness}
-              label="Vagas publicadas"
-              value={stats.published || jobs.length}
-              detail={Object.entries(stats.bySource)
+        <section className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <MetricCard
+            icon={BriefcaseBusiness}
+            label="Vagas publicadas"
+            value={stats.published || jobs.length}
+            detail={
+              Object.entries(stats.bySource)
                 .map(([source, total]) => `${source}: ${total}`)
-                .join(" · ") || "Sem scrapers ainda"}
-            />
-            <MetricCard
-              icon={FileWarning}
-              label="Em revisão"
-              value={stats.pendingReview}
-              detail={stats.pendingReview ? "Requer atenção" : "Sem pendentes"}
-            />
-            <MetricCard
-              icon={Bell}
-              label="Alertas ativos"
-              value={alertCount}
-              detail="Subscritores"
-            />
-            <MetricCard
-              icon={Activity}
-              label="Estado do site"
-              value="Online"
-              detail={
-                stats.updatedAt && stats.updatedAt !== new Date(0).toISOString()
-                  ? `Dados: ${new Date(stats.updatedAt).toLocaleString("pt-PT")}`
-                  : "Todos os sistemas"
-              }
-              healthy
-            />
+                .join(" · ") || "Sem scrapers ainda"
+            }
+          />
+          <MetricCard
+            icon={FileWarning}
+            label="Em revisão"
+            value={stats.pendingReview}
+            detail={stats.pendingReview ? "Requer atenção" : "Sem pendentes"}
+          />
+          <MetricCard
+            icon={Bell}
+            label="Alertas ativos"
+            value={alerts.length}
+            detail="Subscritores"
+          />
+          <MetricCard
+            icon={Activity}
+            label="Estado do site"
+            value="Online"
+            detail={
+              stats.updatedAt && stats.updatedAt !== new Date(0).toISOString()
+                ? `Dados: ${new Date(stats.updatedAt).toLocaleString("pt-PT")}`
+                : "Todos os sistemas"
+            }
+            healthy
+          />
+        </section>
+
+        <div className="mt-8 grid gap-6 xl:grid-cols-[minmax(0,1fr)_21rem]">
+          <section className="content-card overflow-hidden">
+            <div className="flex items-center justify-between border-b border-border px-5 py-4">
+              <div>
+                <h2 className="font-extrabold">Vagas recentes</h2>
+                <p className="mt-0.5 text-xs text-muted">
+                  Últimas oportunidades publicadas
+                </p>
+              </div>
+              <Link className="text-sm font-bold text-primary" href="/admin/vagas">
+                Ver todas
+              </Link>
+            </div>
+            <div className="divide-y divide-border">
+              {jobs.slice(0, 5).map((job) => (
+                <div
+                  key={job.slug}
+                  className="grid gap-2 px-5 py-4 sm:grid-cols-[1fr_auto] sm:items-center"
+                >
+                  <div>
+                    <p className="text-sm font-bold">{job.title}</p>
+                    <p className="mt-0.5 text-xs text-muted">
+                      {job.company} · {job.city}
+                    </p>
+                  </div>
+                  <span className="tag tag-primary w-fit">Publicada</span>
+                </div>
+              ))}
+            </div>
           </section>
 
-          <div className="mt-8 grid gap-6 xl:grid-cols-[minmax(0,1fr)_21rem]">
-            <section className="content-card overflow-hidden">
-              <div className="flex items-center justify-between border-b border-border px-5 py-4">
-                <div>
-                  <h2 className="font-extrabold">Vagas recentes</h2>
-                  <p className="mt-0.5 text-xs text-muted">
-                    Últimas oportunidades publicadas
-                  </p>
-                </div>
-                <Link className="text-sm font-bold text-primary" href="/vagas">
-                  Ver todas
-                </Link>
-              </div>
-              <div className="divide-y divide-border">
-                {jobs.slice(0, 5).map((job) => (
-                  <div
-                    key={job.slug}
-                    className="grid gap-2 px-5 py-4 sm:grid-cols-[1fr_auto] sm:items-center"
-                  >
-                    <div>
-                      <p className="text-sm font-bold">{job.title}</p>
-                      <p className="mt-0.5 text-xs text-muted">
-                        {job.company} · {job.city}
-                      </p>
-                    </div>
-                    <span className="tag tag-primary w-fit">Publicada</span>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            <section className="content-card p-5">
-              <h2 className="font-extrabold">Estado do sistema</h2>
-              <div className="mt-5 space-y-4">
-                <SystemRow icon={CheckCircle2} label="Aplicação" state="Online" />
-                <SystemRow
-                  icon={Database}
-                  label="Dados"
-                  state={stats.published ? `${stats.published} publicadas` : "Seed"}
-                />
-                <SystemRow
-                  icon={Rss}
-                  label="Fontes privadas"
-                  state={
-                    Object.keys(stats.bySource).length
-                      ? Object.keys(stats.bySource).join(", ")
-                      : "Aguardando scrape"
-                  }
-                  muted={!Object.keys(stats.bySource).length}
-                />
-                <SystemRow icon={Clock3} label="Último backup" state="A configurar" muted />
-              </div>
-              <p className="mt-6 rounded-xl bg-primary-soft p-3 text-xs leading-5 text-muted">
-                Scrapers privados ativos: CUF, Luz Saúde, Trofa Saúde e Lusíadas.
-                O setor público (BEP) será ligado na fase seguinte.
-              </p>
-            </section>
-          </div>
+          <section className="content-card p-5">
+            <h2 className="font-extrabold">Estado do sistema</h2>
+            <div className="mt-5 space-y-4">
+              <SystemRow icon={CheckCircle2} label="Aplicação" state="Online" />
+              <SystemRow
+                icon={Database}
+                label="Dados"
+                state={
+                  stats.published ? `${stats.published} publicadas` : "Seed"
+                }
+              />
+              <SystemRow
+                icon={Rss}
+                label="Fontes privadas"
+                state={
+                  Object.keys(stats.bySource).length
+                    ? Object.keys(stats.bySource).join(", ")
+                    : "Aguardando scrape"
+                }
+                muted={!Object.keys(stats.bySource).length}
+              />
+              <SystemRow
+                icon={Clock3}
+                label="Email / Resend"
+                state="Por configurar"
+                muted
+              />
+            </div>
+            <p className="mt-6 rounded-xl bg-primary-soft p-3 text-xs leading-5 text-muted">
+              Scrapers privados ativos: CUF, Luz Saúde, Trofa Saúde e Lusíadas.
+              O setor público (BEP) será ligado na fase seguinte.
+            </p>
+          </section>
         </div>
-      </main>
-    </div>
-  );
-}
-
-function AdminLink({
-  icon: Icon,
-  active = false,
-  children,
-}: {
-  icon: typeof LayoutDashboard;
-  active?: boolean;
-  children: React.ReactNode;
-}) {
-  return (
-    <span
-      className={`flex min-h-11 items-center gap-2.5 rounded-xl px-3 font-semibold ${
-        active
-          ? "bg-primary-soft text-primary"
-          : "text-muted hover:bg-primary-soft hover:text-primary"
-      }`}
-    >
-      <Icon size={17} />
-      {children}
-    </span>
+      </div>
+    </main>
   );
 }
 
