@@ -119,7 +119,7 @@ export default async function JobDetailPage({ params }: { params: Params }) {
               <div className="job-content">
                 <section>
                   <h2>Sobre a vaga</h2>
-                  <p className="whitespace-pre-line">{job.description}</p>
+                  <p>{job.description}</p>
                 </section>
                 <CheckList title="O que procuramos" items={job.requirements} />
                 <CheckList

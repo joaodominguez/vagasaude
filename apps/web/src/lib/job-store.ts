@@ -96,9 +96,47 @@ function publishedLabel(value: string | null) {
   return date.toLocaleDateString("pt-PT");
 }
 
+function isListItem(line: string) {
+  return /^[-•*]\s+\S/.test(line) || /^\d+[.)]\s+\S/.test(line);
+}
+
+function cleanDescription(text: string) {
+  const lines = text
+    .replace(/\r/g, "")
+    .split("\n")
+    .map((line) => line.replace(/[ \t]+/g, " ").trim())
+    .filter((line) => {
+      if (!line) return true;
+      if (line.startsWith(".") || line.includes("{") || line.includes("}")) {
+        return false;
+      }
+      if (/^a document with/i.test(line)) return false;
+      return true;
+    });
+
+  const compacted: string[] = [];
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    if (!line) {
+      const prev = [...compacted].reverse().find((l) => l !== "") ?? "";
+      const next = lines.slice(i + 1).find((l) => l !== "") ?? "";
+      if (!prev || !next) continue;
+      // Listas compactas; sem linha vazia entre título/intro e a lista.
+      if (isListItem(prev) && isListItem(next)) continue;
+      if (!isListItem(prev) && isListItem(next)) continue;
+      if (compacted[compacted.length - 1] === "") continue;
+      compacted.push("");
+      continue;
+    }
+    compacted.push(line);
+  }
+
+  return compacted.join("\n").replace(/\n{3,}/g, "\n\n").trim();
+}
+
 function splitList(text: string | null): string[] {
   if (!text) return [];
-  return text
+  return cleanDescription(text)
     .split(/\n+/)
     .map((line) => line.replace(/^[-•*\d.)\s]+/, "").trim())
     .filter((line) => line.length > 8)
@@ -106,8 +144,9 @@ function splitList(text: string | null): string[] {
 }
 
 export function toJobCard(job: StoredJob): JobCardData {
+  const description = cleanDescription(job.description);
   const requirements = splitList(job.requirements);
-  const descriptionLines = splitList(job.description);
+  const descriptionLines = splitList(description);
   return {
     slug: job.slug,
     title: job.title,
@@ -119,7 +158,7 @@ export function toJobCard(job: StoredJob): JobCardData {
     profession: job.profession,
     publishedLabel: publishedLabel(job.publishedAt),
     publishedAt: job.publishedAt || job.createdAt.slice(0, 10),
-    description: job.description,
+    description,
     requirements:
       requirements.length > 0
         ? requirements
@@ -229,9 +268,10 @@ export async function ingestJobs(source: string, incoming: IngestJobInput[]) {
     const dedupeHash = makeDedupeHash(title, company, district);
     const existingSameSource = bySourceId.get(`${source}:${sourceId}`);
     const existingHash = byHash.get(dedupeHash);
+    const description = cleanDescription(item.description?.trim() || title);
     const incomplete =
-      !item.description?.trim() ||
-      item.description.trim().length < 40 ||
+      !description ||
+      description.length < 40 ||
       !item.profession?.trim();
 
     let status: StoredJob["status"] =
@@ -257,7 +297,7 @@ export async function ingestJobs(source: string, incoming: IngestJobInput[]) {
       specialty: item.specialty?.trim() || null,
       sector: item.sector,
       contractType: item.contract_type?.trim() || null,
-      description: item.description?.trim() || title,
+      description,
       requirements: item.requirements?.trim() || null,
       salary: item.salary?.trim() || null,
       applicationUrl,

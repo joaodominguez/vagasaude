@@ -105,19 +105,66 @@ def slugify(text: str) -> str:
 def html_to_text(html: str | None) -> str:
     if not html:
         return ""
-    text = re.sub(r"(?is)<(script|style).*?>.*?</\1>", " ", html)
+
+    text = re.sub(r"(?is)<(script|style|head|title).*?>.*?</\1>", " ", html)
     text = re.sub(r"(?i)<br\s*/?>", "\n", text)
-    text = re.sub(r"(?i)</p>", "\n\n", text)
+    text = re.sub(r"(?i)</(p|div|h[1-6]|tr)>", "\n", text)
     text = re.sub(r"(?i)</li>", "\n", text)
     text = re.sub(r"(?i)<li[^>]*>", "- ", text)
     text = re.sub(r"<[^>]+>", " ", text)
-    text = re.sub(r"&nbsp;", " ", text)
-    text = re.sub(r"&amp;", "&", text)
-    text = re.sub(r"&quot;", '"', text)
-    text = re.sub(r"&#39;", "'", text)
-    text = re.sub(r"[ \t]+", " ", text)
-    text = re.sub(r"\n{3,}", "\n\n", text)
-    return text.strip()
+
+    replacements = {
+        "&nbsp;": " ",
+        "&amp;": "&",
+        "&quot;": '"',
+        "&#39;": "'",
+        "&lt;": "<",
+        "&gt;": ">",
+    }
+    for old, new in replacements.items():
+        text = text.replace(old, new)
+
+    def is_list_item(line: str) -> bool:
+        return bool(re.match(r"^[-•*]\s+\S", line) or re.match(r"^\d+[.)]\s+\S", line))
+
+    raw_lines: list[str] = []
+    for raw_line in text.splitlines():
+        line = re.sub(r"[ \t]+", " ", raw_line).strip()
+        if not line:
+            raw_lines.append("")
+            continue
+        # Remove residual CSS / boilerplate from ATS HTML wrappers.
+        if (
+            line.startswith(".")
+            or "{" in line
+            or "}" in line
+            or line.lower().startswith("a document with")
+            or line.lower() in {"html", "body"}
+        ):
+            continue
+        raw_lines.append(line)
+
+    lines: list[str] = []
+    for i, line in enumerate(raw_lines):
+        if not line:
+            prev = next((l for l in reversed(lines) if l), "")
+            nxt = next((l for l in raw_lines[i + 1 :] if l), "")
+            if not prev or not nxt:
+                continue
+            # Keep list blocks tight; no blank between intro/title and list.
+            if is_list_item(prev) and is_list_item(nxt):
+                continue
+            if not is_list_item(prev) and is_list_item(nxt):
+                continue
+            if lines and lines[-1] == "":
+                continue
+            lines.append("")
+            continue
+        lines.append(line)
+
+    cleaned = "\n".join(lines)
+    cleaned = re.sub(r"\n{3,}", "\n\n", cleaned)
+    return cleaned.strip()
 
 
 def guess_district(city: str | None, region: str | None = None) -> str:
