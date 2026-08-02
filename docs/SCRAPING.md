@@ -1,4 +1,4 @@
-# Scraping & Ingestão de Dados — VagaSaude.pt
+# Scraping & Ingestão de Dados — VagaSaúde
 
 Documento de apoio ao [`PLANO.md`](./PLANO.md). Descreve a estratégia de
 scraping, arquitetura dos scrapers, normalização, deduplicação e boas práticas
@@ -125,8 +125,14 @@ lote de vagas e faz `upsert`:
 ```
 
 A app calcula/valida, faz `upsert` por `(source, source_id)`, verifica
-`dedupe_hash`, e marca `is_active`. Vantagem de usar a API (em vez de escrever
-direto na BD): validação, tipos e uma única fonte de verdade.
+`dedupe_hash` e atribui o estado:
+
+- `published` quando a vaga está completa e a fonte permite publicação automática;
+- `pending_review` quando os dados são incompletos ou ambíguos;
+- `duplicate` quando já existe uma vaga equivalente.
+
+A API mantém validação, tipos e uma única fonte de verdade. Cada execução cria
+um `ScraperRun` com estado, contadores e eventual erro, visível no backoffice.
 
 ---
 
@@ -137,8 +143,8 @@ direto na BD): validação, tipos e uma única fonte de verdade.
 - **Opção B (cron do host):** entradas cron chamam
   `docker compose run --rm scraper python run.py --once --source bep`.
 
-Após cada execução, atualizar `sources.last_run_at`, `last_status`, `last_error`
-para monitorização.
+Após cada execução, atualizar `sources.last_run_at`, `last_status`,
+`last_error` e terminar o respetivo `ScraperRun`.
 
 ---
 
@@ -155,7 +161,7 @@ para monitorização.
 
 ## 7. Expiração e limpeza
 
-- Vagas não vistas em N execuções consecutivas de uma fonte podem ser marcadas
-  `is_active = false` (provavelmente removidas na fonte).
-- Vagas com `expires_at` no passado → `is_active = false` (ver SQL em
+- Vagas não vistas em N execuções consecutivas de uma fonte podem passar a
+  `expired` (provavelmente removidas na fonte).
+- Vagas com `expires_at` no passado → `status = expired` (ver SQL em
   [`MODELO-DADOS.md`](./MODELO-DADOS.md)).

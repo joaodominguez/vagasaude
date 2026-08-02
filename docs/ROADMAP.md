@@ -1,4 +1,4 @@
-# Roadmap Detalhado — VagaSaude.pt
+# Roadmap Detalhado — VagaSaúde
 
 Documento de apoio ao [`PLANO.md`](./PLANO.md). Checklist acionável por fase.
 As fases estão ordenadas por dependência técnica, não por calendário.
@@ -14,9 +14,13 @@ As fases estão ordenadas por dependência técnica, não por calendário.
 - [ ] `Caddyfile` + certificado de origem Cloudflare.
 - [ ] `.env.example` completo.
 - [ ] DNS na Cloudflare (`A` + proxy) e SSL **Full (strict)**.
-- [ ] Schema Prisma inicial (`Job`, `District`, `Concelho`, `Profession`, `Source`, `User`, `JobAlert`).
+- [ ] Schema Prisma inicial, incluindo estados de vaga, `ScraperRun` e `AdminAuditLog`.
 - [ ] Migração inicial + `prisma db seed` (distritos, concelhos, profissões, sources).
+- [ ] Tokens do design, Manrope e temas claro/escuro/sistema.
+- [ ] Componentes base e logótipo vetorial.
 - [ ] Página inicial + `/vagas` a listar dados seed/mock.
+- [ ] Magic link para `ADMIN_EMAIL`, sessão no servidor e proteção Cloudflare Access.
+- [ ] Layout e navegação base de `/admin`.
 - [ ] `/api/health` e Uptime Kuma a monitorizar.
 
 **Saída:** `docker compose up` num VPS limpo serve o site com dados de exemplo.
@@ -48,13 +52,25 @@ As fases estão ordenadas por dependência técnica, não por calendário.
 - [ ] (Opcional) Net-Empregos / Indeed filtrado.
 - [ ] Agendamento (APScheduler ou cron do host).
 - [ ] Deduplicação a funcionar entre fontes.
+- [ ] Publicação automática de vagas válidas.
+- [ ] Fila `pending_review` para vagas incompletas ou suspeitas.
+- [ ] Histórico `ScraperRun` com contadores e erros.
+
+### Backoffice
+- [ ] Dashboard com métricas e estado das fontes.
+- [ ] Gestão de vagas e ações em massa.
+- [ ] Gestão de fontes e execução manual assíncrona dos scrapers.
+- [ ] Gestão de profissões, localizações e contratos.
+- [ ] Gestão de alertas/subscritores e eliminação GDPR.
+- [ ] Registo de auditoria das ações administrativas.
 
 ### SEO
 - [ ] `sitemap.ts` dinâmico + `robots.ts`.
 - [ ] `generateMetadata` em todas as páginas.
 - [ ] 2–3 landing pages programáticas (distrito/profissão).
 
-**Saída:** vagas reais, filtráveis, com alertas a chegar por email.
+**Saída:** vagas reais e publicadas automaticamente, alertas a chegar por
+email e operação completa através do backoffice.
 
 ---
 
@@ -62,11 +78,11 @@ As fases estão ordenadas por dependência técnica, não por calendário.
 
 **Objetivo:** qualidade de lançamento.
 
-- [ ] Design final (shadcn/ui + Tailwind), consistência visual.
-- [ ] Acessibilidade AA (axe/Lighthouse).
+- [ ] Polimento do design aprovado e consistência visual.
+- [ ] Acessibilidade WCAG 2.2 AA (axe/Lighthouse).
 - [ ] Performance: LCP < 1.5s, Lighthouse ≥ 90.
 - [ ] Testes unitários (normalização, dedup, queries) + e2e do fluxo de alertas.
-- [ ] Backups diários automáticos + retenção + (idealmente) off-site.
+- [ ] Backups diários automáticos para Hetzner Storage Box + teste de restauro.
 - [ ] Página de privacidade + fluxo GDPR (apagar dados).
 - [ ] Tratamento de erros e estados vazios.
 - [ ] **Soft launch** (partilha limitada, recolha de feedback).

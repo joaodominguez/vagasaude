@@ -1,4 +1,4 @@
-# Modelo de Dados — VagaSaude.pt
+# Modelo de Dados — VagaSaúde
 
 Documento de apoio ao [`PLANO.md`](./PLANO.md). Inclui schema Prisma, SQL
 equivalente, índices e queries de exemplo.
@@ -25,6 +25,20 @@ enum Sector {
   ipss
 }
 
+enum JobStatus {
+  published
+  pending_review
+  hidden
+  expired
+  duplicate
+}
+
+enum ScraperRunStatus {
+  running
+  succeeded
+  failed
+}
+
 model Job {
   id                String    @id @default(uuid()) @db.Uuid
   title             String
@@ -42,15 +56,16 @@ model Job {
   source            String
   sourceId          String    @map("source_id")
   dedupeHash        String    @map("dedupe_hash")
+  status            JobStatus @default(pending_review)
+  reviewReason      String?   @map("review_reason")
   publishedAt       DateTime? @map("published_at")
   expiresAt         DateTime? @map("expires_at")
-  isActive          Boolean   @default(true) @map("is_active")
   createdAt         DateTime  @default(now()) @map("created_at")
   updatedAt         DateTime  @updatedAt @map("updated_at")
 
   @@unique([source, sourceId])
   @@index([dedupeHash])
-  @@index([isActive, locationDistrict, profession, sector])
+  @@index([status, locationDistrict, profession, sector])
   @@index([publishedAt])
   @@map("jobs")
 }
@@ -112,16 +127,53 @@ model JobAlert {
 }
 
 model Source {
-  id          Int       @id @default(autoincrement())
-  slug        String    @unique
-  name        String
-  baseUrl     String    @map("base_url")
-  isActive    Boolean   @default(true) @map("is_active")
-  lastRunAt   DateTime? @map("last_run_at")
-  lastStatus  String?   @map("last_status") // ok | error
-  lastError   String?   @map("last_error")
+  id            Int          @id @default(autoincrement())
+  slug          String       @unique
+  name          String
+  baseUrl       String       @map("base_url")
+  isActive      Boolean      @default(true) @map("is_active")
+  autoPublish   Boolean      @default(true) @map("auto_publish")
+  schedule      String?      // expressão cron
+  lastRunAt     DateTime?    @map("last_run_at")
+  lastStatus    String?      @map("last_status")
+  lastError     String?      @map("last_error")
+  scraperRuns   ScraperRun[]
 
   @@map("sources")
+}
+
+model ScraperRun {
+  id           String           @id @default(uuid()) @db.Uuid
+  source       Source           @relation(fields: [sourceId], references: [id])
+  sourceId     Int              @map("source_id")
+  status       ScraperRunStatus @default(running)
+  startedAt    DateTime         @default(now()) @map("started_at")
+  finishedAt   DateTime?        @map("finished_at")
+  foundCount   Int              @default(0) @map("found_count")
+  createdCount Int              @default(0) @map("created_count")
+  updatedCount Int              @default(0) @map("updated_count")
+  ignoredCount Int              @default(0) @map("ignored_count")
+  reviewCount  Int              @default(0) @map("review_count")
+  errorMessage String?          @map("error_message")
+
+  @@index([sourceId, startedAt])
+  @@map("scraper_runs")
+}
+
+model AdminAuditLog {
+  id         String   @id @default(uuid()) @db.Uuid
+  action     String
+  entityType String   @map("entity_type")
+  entityId   String?  @map("entity_id")
+  before     Json?
+  after      Json?
+  ipAddress  String?  @map("ip_address")
+  userAgent  String?  @map("user_agent")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@index([entityType, entityId])
+  @@index([createdAt])
+  @@map("admin_audit_logs")
 }
 
 model AlertDelivery {
@@ -168,6 +220,16 @@ remoção de pontuação. Estratégia:
 3. **Aproximada:** para casos de títulos ligeiramente diferentes, usar
    `similarity()` do `pg_trgm` acima de um limiar (ex.: 0.6).
 
+### Estado após ingestão
+
+- `published` quando a fonte permite publicação automática e os campos
+  obrigatórios passam validação;
+- `pending_review` quando faltam dados, a normalização é ambígua ou a fonte
+  não permite publicação automática;
+- `duplicate` quando corresponde a uma vaga existente.
+
+Uma alteração manual de estado feita no backoffice cria um `AdminAuditLog`.
+
 ---
 
 ## 4. Queries de exemplo
@@ -178,7 +240,7 @@ remoção de pontuação. Estratégia:
 SELECT id, title, company, location_district, profession, sector,
        contract_type, published_at
 FROM jobs
-WHERE is_active = true
+WHERE status = 'published'
   AND (COALESCE($1, location_district) = location_district)   -- distrito
   AND (COALESCE($2, profession) = profession)                 -- profissão
   AND (COALESCE($3, sector) = sector)                         -- setor
@@ -192,7 +254,7 @@ Equivalente Prisma:
 ```ts
 const jobs = await prisma.job.findMany({
   where: {
-    isActive: true,
+    status: "published",
     ...(district && { locationDistrict: district }),
     ...(profession && { profession }),
     ...(sector && { sector }),
@@ -209,7 +271,7 @@ const jobs = await prisma.job.findMany({
 ```sql
 SELECT location_district, COUNT(*) AS total
 FROM jobs
-WHERE is_active = true
+WHERE status = 'published'
 GROUP BY location_district
 ORDER BY total DESC;
 ```
@@ -221,7 +283,7 @@ SELECT j.*
 FROM jobs j
 JOIN job_alerts a ON a.id = $1
 LEFT JOIN alert_deliveries d ON d.alert_id = a.id AND d.job_id = j.id
-WHERE j.is_active = true
+WHERE j.status = 'published'
   AND d.id IS NULL                                   -- ainda não enviada
   AND j.created_at > COALESCE(a.last_sent_at, 'epoch')
   AND (a.district   IS NULL OR a.district   = j.location_district)
@@ -234,8 +296,8 @@ ORDER BY j.published_at DESC;
 
 ```sql
 UPDATE jobs
-SET is_active = false, updated_at = now()
-WHERE is_active = true
+SET status = 'expired', updated_at = now()
+WHERE status = 'published'
   AND expires_at IS NOT NULL
   AND expires_at < now();
 ```

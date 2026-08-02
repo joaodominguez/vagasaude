@@ -1,4 +1,4 @@
-# Arquitetura & Infraestrutura — VagaSaude.pt
+# Arquitetura & Infraestrutura — VagaSaúde
 
 Documento de apoio ao [`PLANO.md`](./PLANO.md). Contém a proposta concreta de
 `docker-compose.yml`, `Caddyfile`, configuração Cloudflare, backups e monitorização.
@@ -11,6 +11,11 @@ Um único VPS Hetzner corre todos os serviços via Docker Compose, atrás da
 Cloudflare (proxy laranja ativo). A Cloudflare faz CDN, WAF e termina o TLS
 público; o Caddy no VPS serve como reverse proxy interno e termina o TLS de
 origem (certificado de origem da Cloudflare).
+
+Dimensionamento inicial recomendado: **4 vCPU, 8 GB RAM e 80 GB SSD**. O
+Playwright é o componente com maior consumo transitório de memória. A base de
+dados, aplicação, backoffice, Redis, scrapers, Caddy e monitorização ficam na
+Hetzner; apenas Cloudflare e Resend são serviços externos de aplicação.
 
 ```
 Internet → Cloudflare (SSL público + WAF + CDN) → Caddy → Next.js → Postgres/Redis
@@ -142,6 +147,8 @@ CDN/WAF da Cloudflare.
 - **Cache:** cache agressivo de estáticos (`/_next/static/*`, imagens). Regras de cache para não cachear páginas dinâmicas/API.
 - **WAF:** regras básicas + rate limiting no `/api/*`.
 - **Bot protection:** ativar para mitigar scraping do próprio site.
+- **Access:** proteger `vagasaude.pt/admin/*`, permitindo apenas o email do
+  administrador. A aplicação continua a validar a sessão no servidor.
 
 ---
 
@@ -163,7 +170,11 @@ REDIS_URL=redis://redis:6379
 
 # Email (Resend)
 RESEND_API_KEY=re_xxx
-EMAIL_FROM="VagaSaude <alertas@vagasaude.pt>"
+EMAIL_FROM="VagaSaúde <alertas@vagasaude.pt>"
+
+# Backoffice (um administrador)
+ADMIN_EMAIL=administrador@example.com
+AUTH_SECRET=generate-a-long-random-value
 
 # Scraper
 SCRAPER_API_TOKEN=change-me   # auth para o scraper escrever via API interna
@@ -171,27 +182,37 @@ SCRAPER_API_TOKEN=change-me   # auth para o scraper escrever via API interna
 
 ---
 
-## 6. Backups (diários, automáticos)
+## 6. Backups (diários, externos e automáticos)
 
-Script `backup.sh` no host, agendado por cron do host (não em contentor):
+Um backup guardado apenas no mesmo VPS não protege contra perda do servidor.
+O destino externo aprovado é uma **Hetzner Storage Box**. Script `backup.sh`
+no host, agendado pelo cron:
 
 ```bash
 #!/usr/bin/env bash
 set -euo pipefail
+cd /opt/vagasaude
+set -a
+source .env
+set +a
 STAMP=$(date +%F-%H%M)
 DEST=/opt/backups
 mkdir -p "$DEST"
 docker compose exec -T db pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB" \
   | gzip > "$DEST/vagasaude-$STAMP.sql.gz"
-# Retenção: apagar backups com mais de 30 dias
+# Cópia externa (remote "storagebox" previamente configurado no rclone)
+rclone copy "$DEST/vagasaude-$STAMP.sql.gz" storagebox:vagasaude/database
+# Retenção local
 find "$DEST" -name 'vagasaude-*.sql.gz' -mtime +30 -delete
-# (Recomendado) sincronizar off-site: rclone/rsync para storage externo
 ```
 
 Cron do host:
 ```
 0 3 * * * cd /opt/vagasaude && ./backup.sh >> /var/log/vagasaude-backup.log 2>&1
 ```
+
+Executar e documentar um teste de restauro pelo menos trimestralmente. Uma
+cópia nunca testada não é uma garantia de recuperação.
 
 ---
 
@@ -214,4 +235,6 @@ Cron do host:
 4. `docker compose build && docker compose up -d`.
 5. Correr migrações: `docker compose exec web npx prisma migrate deploy`.
 6. Seed inicial: `docker compose exec web npx prisma db seed`.
-7. Verificar `https://vagasaude.pt` e `/api/health`.
+7. Configurar Cloudflare Access para `/admin/*` e testar o magic link.
+8. Configurar a Storage Box, executar um backup e testar o restauro.
+9. Verificar `https://vagasaude.pt` e `/api/health`.

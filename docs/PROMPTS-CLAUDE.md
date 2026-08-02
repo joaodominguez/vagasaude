@@ -1,4 +1,4 @@
-# Prompts para o Claude (ou outra IA) — VagaSaude.pt
+# Prompts para o Claude (ou outra IA) — VagaSaúde
 
 Documento de apoio ao [`PLANO.md`](./PLANO.md). Prompts prontos a copiar para
 gerar cada peça do projeto, por ordem de execução. Ajusta os detalhes entre
@@ -15,9 +15,11 @@ gerar cada peça do projeto, por ordem de execução. Ajusta os detalhes entre
 És um engenheiro sénior a construir o VagaSaude.pt, um agregador de vagas de
 saúde em Portugal. Stack: Next.js 15 (App Router, TypeScript), Prisma,
 PostgreSQL, Python + Playwright para scraping, Docker Compose, Caddy, Cloudflare,
-Resend para emails. Segue o plano em docs/PLANO.md e os documentos de apoio.
-Escreve código limpo, tipado e mobile-first. Não incluas funcionalidades fora do
-MVP (sem candidatura interna, chat, app móvel ou IA de matching).
+Resend para emails. Inclui um backoffice /admin para um único administrador e
+publicação automática de vagas válidas. Segue docs/PLANO.md, docs/DESIGN.md e
+docs/BACKOFFICE.md. Escreve código limpo, tipado, acessível e mobile-first. Não
+incluas funcionalidades fora do MVP (sem candidatura interna, chat, app móvel,
+portal de empregador ou IA de matching).
 ```
 
 ---
@@ -58,6 +60,16 @@ Inclui um helper prisma client partilhável em packages/database.
 
 ## 4. Listagem + filtros
 
+```
+
+## 4A. Design system e homepage
+
+```
+Com base em docs/DESIGN.md, implementa os tokens CSS dos modos claro e escuro,
+Manrope via next/font, alternador claro/escuro/sistema sem flash inicial e os
+componentes base acessíveis. Implementa a homepage aprovada: cabeçalho, hero com
+pesquisa, chips de profissões, vagas recentes e CTA para alertas. Mantém WCAG
+2.2 AA, alvos táteis de 44px e evita fotografias genéricas de saúde.
 ```
 Com base em docs/COMPONENTES-REACT.md, implementa a rota /vagas como Server
 Component que lê filtros dos searchParams (distrito, profissão, setor, contrato,
@@ -112,27 +124,44 @@ Cria POST /api/ingest no Next.js, autenticado por Bearer SCRAPER_API_TOKEN.
 Recebe { source, jobs[] }, valida com zod, calcula dedupe_hash, faz upsert por
 (source, source_id), evita duplicados cruzados por dedupe_hash, e atualiza
 sources.last_run_at/last_status. Devolve um resumo (inseridas, atualizadas,
-ignoradas).
+ignoradas, em revisão). Publica automaticamente as vagas completas quando
+source.auto_publish está ativo; usa pending_review para exceções e duplicate
+para correspondências já existentes. Cria um ScraperRun por execução.
 ```
 
 ---
 
-## 9. Testes
+## 9. Backoffice
+
+```
+Com base em docs/BACKOFFICE.md, implementa /admin integrado no Next.js para um
+único ADMIN_EMAIL. Usa magic link via Resend, sessão validada no servidor e
+assume Cloudflare Access como camada adicional. Cria dashboard, gestão de vagas,
+fontes, execuções dos scrapers, taxonomias, alertas/subscritores, auditoria e
+estado do sistema. Todas as Server Actions validam autorização e Zod; ações
+destrutivas pedem confirmação e criam AdminAuditLog. Não implementes RBAC.
+```
+
+---
+
+## 10. Testes
 
 ```
 Escreve testes: (a) unitários para normalize/dedupe_hash e para a query de
 listagem; (b) e2e (Playwright) do fluxo de criar alerta → confirmar → simular
-vaga nova → receber email (mock do Resend). Configura o script de teste no CI.
+vaga nova → receber email (mock do Resend); (c) autorização de todas as rotas
+/admin e transições de estado da publicação automática. Configura o CI.
 ```
 
 ---
 
-## 10. Backups + monitorização
+## 11. Backups + monitorização
 
 ```
 Com base em docs/ARQUITETURA.md, cria o script backup.sh (pg_dump + gzip +
-retenção 30 dias + sync off-site opcional) e a entrada cron. Adiciona /api/health
-que verifica a BD e explica como ligar o Uptime Kuma.
+retenção local de 30 dias + cópia obrigatória para Hetzner Storage Box) e a
+entrada cron. Documenta e testa o restauro. Adiciona /api/health que verifica a
+BD e explica como ligar o Uptime Kuma.
 ```
 
 ---

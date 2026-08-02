@@ -1,4 +1,4 @@
-# Estrutura Frontend (Next.js 15 + React) — VagaSaude.pt
+# Estrutura Frontend (Next.js 15 + React) — VagaSaúde
 
 Documento de apoio ao [`PLANO.md`](./PLANO.md). Propõe rotas, componentes e
 padrões para o `apps/web`.
@@ -20,6 +20,17 @@ apps/web/src/app/
 │   ├── page.tsx               # Criar alerta
 │   ├── confirmar/page.tsx     # Confirmação double opt-in (?token=)
 │   └── gerir/page.tsx         # Gerir/cancelar alertas (?token=)
+├── admin/
+│   ├── layout.tsx             # sessão obrigatória + navegação administrativa
+│   ├── page.tsx               # dashboard operacional
+│   ├── vagas/page.tsx
+│   ├── vagas/[id]/page.tsx
+│   ├── fontes/page.tsx
+│   ├── scrapers/page.tsx
+│   ├── taxonomias/page.tsx
+│   ├── alertas/page.tsx
+│   ├── auditoria/page.tsx
+│   └── sistema/page.tsx
 ├── sobre/page.tsx
 ├── privacidade/page.tsx
 ├── sitemap.ts                 # sitemap dinâmico
@@ -43,7 +54,8 @@ apps/web/src/components/
 ├── layout/
 │   ├── Header.tsx
 │   ├── Footer.tsx
-│   └── Container.tsx
+│   ├── Container.tsx
+│   └── ThemeSwitcher.tsx
 ├── jobs/
 │   ├── JobCard.tsx            # cartão na listagem
 │   ├── JobList.tsx            # grelha/lista + estado vazio
@@ -60,6 +72,13 @@ apps/web/src/components/
 ├── alerts/
 │   ├── AlertForm.tsx          # criar alerta (client component)
 │   └── AlertManager.tsx
+├── admin/
+│   ├── AdminSidebar.tsx
+│   ├── DashboardMetrics.tsx
+│   ├── JobsTable.tsx
+│   ├── JobEditor.tsx
+│   ├── SourcesTable.tsx
+│   └── ScraperRunsTable.tsx
 ├── ui/                        # primitivos (Button, Input, Select, Badge...)
 └── seo/
     └── Meta.tsx
@@ -83,6 +102,10 @@ rápido, acessível e mobile-first.
   ISR para as vagas ativas.
 - **Metadados** via `generateMetadata` por página (título, descrição, OG).
 - **`JobPosting` JSON-LD** injetado na página de detalhe (ver [`SEO.md`](./SEO.md)).
+- **Tema claro/escuro/sistema:** tokens CSS partilhados e preferência aplicada
+  antes da renderização, conforme [`DESIGN.md`](./DESIGN.md).
+- **Backoffice:** Server Components/Actions protegidos no servidor; Cloudflare
+  Access é uma camada adicional e não substitui a autorização da aplicação.
 
 ---
 
@@ -107,7 +130,7 @@ export default async function VagasPage({
 
   const jobs = await prisma.job.findMany({
     where: {
-      isActive: true,
+      status: "published",
       ...(distrito && { locationDistrict: distrito }),
       ...(profissao && { profession: profissao }),
       ...(setor && { sector: setor as any }),

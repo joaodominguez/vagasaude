@@ -1,13 +1,13 @@
-# Plano Completo e Elaborado — VagaSaude.pt
+# Plano Completo e Elaborado — VagaSaúde
 
 > Documento mestre do projeto. Versão elaborada e detalhada do plano inicial.
-> Documentos de apoio: [`ARQUITETURA.md`](./ARQUITETURA.md), [`MODELO-DADOS.md`](./MODELO-DADOS.md), [`COMPONENTES-REACT.md`](./COMPONENTES-REACT.md), [`SCRAPING.md`](./SCRAPING.md), [`SEO.md`](./SEO.md), [`ROADMAP.md`](./ROADMAP.md), [`PROMPTS-CLAUDE.md`](./PROMPTS-CLAUDE.md).
+> Documentos de apoio: [`ARQUITETURA.md`](./ARQUITETURA.md), [`BACKOFFICE.md`](./BACKOFFICE.md), [`DESIGN.md`](./DESIGN.md), [`MODELO-DADOS.md`](./MODELO-DADOS.md), [`COMPONENTES-REACT.md`](./COMPONENTES-REACT.md), [`SCRAPING.md`](./SCRAPING.md), [`SEO.md`](./SEO.md), [`ROADMAP.md`](./ROADMAP.md), [`PROMPTS-CLAUDE.md`](./PROMPTS-CLAUDE.md).
 
 ---
 
 ## 1. Visão do Projeto
 
-**Nome:** VagaSaude.pt
+**Marca:** VagaSaúde
 **Domínio:** vagasaude.pt
 **Objetivo:** Ser o melhor agregador de ofertas de emprego na área da saúde em Portugal (setor público + privado + IPSS), com uma interface extremamente simples, rápida e clara.
 
@@ -38,6 +38,8 @@
 | Camada               | Tecnologia                     | Notas |
 |----------------------|--------------------------------|-------|
 | Frontend + Backend   | Next.js 15 (App Router)        | TypeScript, React Server Components |
+| Backoffice           | Next.js (`/admin`)             | Integrado, para um único administrador |
+| Autenticação admin   | Magic link + Cloudflare Access | Email autorizado por `ADMIN_EMAIL` |
 | ORM                  | Prisma                         | Migrações versionadas, type-safe |
 | Base de Dados        | PostgreSQL 16                  | Docker, com `pg_trgm` para dedup/pesquisa |
 | Cache / Filas        | Redis 7 (opcional no início)   | Cache de listagens + fila de emails |
@@ -45,8 +47,9 @@
 | Reverse Proxy        | Caddy 2                        | HTTPS automático (mas ver nota Cloudflare) |
 | Orquestração         | Docker Compose                 | Tudo contentorizado |
 | DNS + CDN + Proteção | Cloudflare                     | Proxy ativado, cache de estáticos, WAF |
-| Hosting              | Hetzner VPS (CX/CPX)           | Já existente |
-| Emails               | Resend (recomendado) ou Brevo  | Alertas + transacionais |
+| Hosting              | Hetzner VPS                    | 4 vCPU, 8 GB RAM e 80 GB SSD recomendados |
+| Backups externos     | Hetzner Storage Box            | Cópia fora do VPS |
+| Emails               | Resend                         | Alertas, transacionais e login admin |
 | Monitorização        | Uptime Kuma + logs Docker      | Healthchecks e uptime |
 
 **Decisões e justificações:**
@@ -54,6 +57,8 @@
 - **Caddy + Cloudflare:** com o proxy da Cloudflare ativo, o SSL público é terminado na Cloudflare. Usa **Cloudflare "Full (strict)"** com um certificado de origem da Cloudflare no Caddy (ver [`ARQUITETURA.md`](./ARQUITETURA.md)).
 - **Redis opcional:** não é bloqueante para o MVP. Introduzir quando a listagem precisar de cache ou quando os emails precisarem de fila.
 - **Resend:** DX simples, bom free tier, ótimo para começar. Configurar SPF/DKIM/DMARC no domínio.
+- **Alojamento:** aplicação, backoffice, base de dados, Redis, scrapers, Caddy e monitorização correm na Hetzner. Cloudflare e Resend são os serviços externos aprovados.
+- **Backoffice:** integrado em `/admin`; sem sistema de equipas/RBAC no MVP, porque será usado por um único administrador.
 
 ---
 
@@ -104,6 +109,9 @@ Detalhe completo (`docker-compose.yml`, `Caddyfile`, redes, volumes, backups) em
 - **Design mobile-first**, limpo e muito rápido.
 - **SEO técnico forte** — sitemap, metadados, `JobPosting` structured data, URLs limpas.
 - **Atualização automática de vagas** via scraping (mín. 2–3 fontes).
+- **Publicação automática** de vagas que passam validação, normalização e deduplicação; exceções entram numa fila de revisão.
+- **Backoffice privado** para gerir vagas, fontes, scrapers, taxonomias, alertas, auditoria e estado do sistema (ver [`BACKOFFICE.md`](./BACKOFFICE.md)).
+- **Modos claro e escuro** e identidade moderna conforme [`DESIGN.md`](./DESIGN.md).
 
 ### Explicitamente fora do MVP
 - Candidatura interna (redireciona sempre para a fonte).
@@ -125,7 +133,9 @@ Resumo abaixo; schema Prisma completo, SQL e índices em [`MODELO-DADOS.md`](./M
 `profession`, `specialty (nullable)`, `sector (publico|privado|ipss)`,
 `contract_type`, `description`, `requirements`, `salary (nullable)`,
 `application_url`, `source`, `source_id`, `dedupe_hash`,
-`published_at`, `expires_at`, `is_active`, `created_at`, `updated_at`.
+`published_at`, `expires_at`, `status`, `created_at`, `updated_at`.
+
+Estados: `published`, `pending_review`, `hidden`, `expired`, `duplicate`.
 
 ### Outras tabelas
 - `professions` — taxonomia normalizada de profissões.
@@ -134,6 +144,8 @@ Resumo abaixo; schema Prisma completo, SQL e índices em [`MODELO-DADOS.md`](./M
 - `job_alerts` — alertas com filtros por utilizador.
 - `sources` — fontes de scraping e respetivo estado.
 - `alert_deliveries` (recomendado) — histórico de envios para não repetir vagas.
+- `scraper_runs` — histórico, estado, contadores e erros de cada execução.
+- `admin_audit_logs` — registo seguro das operações administrativas.
 
 **Deduplicação:** `dedupe_hash = sha256(normalizar(title) + normalizar(company) + normalizar(location))`, com `unique` por `(source, source_id)` e verificação cruzada por `dedupe_hash` (usando `pg_trgm` para casos aproximados).
 
@@ -155,7 +167,7 @@ Resumo abaixo; schema Prisma completo, SQL e índices em [`MODELO-DADOS.md`](./M
 - Respeitar `robots.txt` e Termos de Serviço de cada fonte; preferir feeds/APIs oficiais quando existirem.
 - Rate limiting e user-agent identificável.
 - Deduplicação obrigatória.
-- Guardar sempre `application_url` original (o VagaSaude reencaminha, não "rouba" a candidatura).
+- Guardar sempre `application_url` original (o VagaSaúde reencaminha, não "rouba" a candidatura).
 
 ---
 
@@ -190,13 +202,15 @@ Roadmap detalhado com checklist por tarefa em [`ROADMAP.md`](./ROADMAP.md). Resu
 - Setup Docker Compose (Next.js + PostgreSQL + Caddy).
 - Configuração Cloudflare + DNS.
 - Schema da base de dados (Prisma) + seed de distritos/profissões.
-- Página inicial + listagem básica (dados seed/mock).
+- Design system claro/escuro + página inicial e listagem básica (dados seed/mock).
+- Autenticação administrativa e esqueleto de `/admin`.
 
 ### Fase 2 — Core
 - Filtros completos + pesquisa.
 - Página de detalhe da vaga + `JobPosting` schema.
 - Sistema de alertas por email (double opt-in + envio).
 - Scraping das primeiras 3–4 fontes + deduplicação.
+- Publicação automática, fila de revisão e backoffice operacional.
 - SEO técnico (sitemap, metadados, robots).
 
 ### Fase 3 — Polimento
@@ -221,9 +235,10 @@ Roadmap detalhado com checklist por tarefa em [`ROADMAP.md`](./ROADMAP.md). Resu
 | Mobile-friendly | 100% | Lighthouse mobile |
 | HTTPS | Obrigatório | Cloudflare Full (strict) |
 | Conformidade GDPR | Total | Consentimento, double opt-in, política de privacidade, direito ao esquecimento |
-| Backups da BD | Diários automáticos | `pg_dump` + retenção 7/30 dias |
+| Backups da BD | Diários e externos | `pg_dump` + retenção + Hetzner Storage Box |
 | Monitorização | Básica | Uptime Kuma + healthchecks Docker |
-| Acessibilidade | WCAG AA (razoável) | axe / Lighthouse a11y |
+| Acessibilidade | WCAG 2.2 AA | axe / Lighthouse a11y |
+| Tema | Claro, escuro e sistema | Testes visuais e sem flash inicial |
 
 **GDPR — pontos concretos:** minimização de dados (só email para alertas), double opt-in, link de cancelamento em todos os emails, política de privacidade clara, e endpoint para apagar dados do utilizador.
 
@@ -249,7 +264,10 @@ Nenhuma monetização é ativada no MVP. O foco é audiência e utilidade primei
 - [ ] **Página de detalhe** com `JobPosting` structured data válido (testado no Rich Results Test).
 - [ ] **Performance:** LCP da listagem < 1.5s; Lighthouse ≥ 90 (perf + a11y + SEO).
 - [ ] **Deduplicação** a evitar vagas repetidas entre fontes.
-- [ ] **Backups diários** e monitorização ativos.
+- [ ] **Publicação automática** de vagas válidas e fila de revisão para exceções.
+- [ ] **Backoffice protegido** a gerir vagas, fontes, scrapers, taxonomias, alertas e auditoria.
+- [ ] **Modos claro/escuro** responsivos e acessíveis.
+- [ ] **Backups diários externos** e monitorização ativos.
 - [ ] **Deploy reproduzível** via `docker compose up` num VPS limpo.
 
 ---
@@ -269,11 +287,12 @@ Nenhuma monetização é ativada no MVP. O foco é audiência e utilidade primei
 
 ## 13. Próximos Passos Imediatos
 
-1. Aprovar este plano e a stack (Prisma, Resend, Cloudflare Full strict).
-2. Criar o esqueleto do monorepo (`apps/web`, `packages/database`, `scrapers`).
+1. Criar o esqueleto do monorepo (`apps/web`, `packages/database`, `scrapers`).
+2. Implementar os tokens visuais, temas e componentes base de [`DESIGN.md`](./DESIGN.md).
 3. Subir `docker-compose.yml` + `Caddyfile` (ver [`ARQUITETURA.md`](./ARQUITETURA.md)).
 4. Definir e migrar o schema (ver [`MODELO-DADOS.md`](./MODELO-DADOS.md)) + seed de distritos/profissões.
-5. Construir a listagem com dados seed e, em paralelo, o primeiro scraper (BEP).
+5. Construir a listagem com dados seed, autenticação e estrutura do backoffice.
+6. Implementar o primeiro scraper (BEP), publicação automática e fila de revisão.
 
 Prompts prontos para acelerar cada passo com o Claude em [`PROMPTS-CLAUDE.md`](./PROMPTS-CLAUDE.md).
 

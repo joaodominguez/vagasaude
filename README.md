@@ -1,4 +1,4 @@
-# VagaSaude.pt
+# VagaSaúde
 
 Agregador de ofertas de emprego na área da saúde em Portugal (público + privado + IPSS).
 
@@ -10,6 +10,8 @@ O plano completo e elaborado do projeto está em [`docs/`](./docs):
 
 - [**PLANO.md**](./docs/PLANO.md) — plano mestre (visão, stack, MVP, fases, sucesso).
 - [ARQUITETURA.md](./docs/ARQUITETURA.md) — Docker Compose, Caddy, Cloudflare, backups.
+- [BACKOFFICE.md](./docs/BACKOFFICE.md) — painel administrativo, publicação automática e segurança.
+- [DESIGN.md](./docs/DESIGN.md) — identidade visual, temas, componentes e experiência.
 - [MODELO-DADOS.md](./docs/MODELO-DADOS.md) — schema Prisma, SQL, dedup, queries.
 - [COMPONENTES-REACT.md](./docs/COMPONENTES-REACT.md) — rotas e componentes Next.js.
 - [SCRAPING.md](./docs/SCRAPING.md) — estratégia e arquitetura dos scrapers.
