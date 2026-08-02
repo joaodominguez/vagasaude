@@ -37,7 +37,7 @@
 
 | Camada               | Tecnologia                     | Notas |
 |----------------------|--------------------------------|-------|
-| Frontend + Backend   | Next.js 15 (App Router)        | TypeScript, React Server Components |
+| Frontend + Backend   | Next.js 16 (App Router)        | TypeScript, React Server Components |
 | Backoffice           | Next.js (`/admin`)             | Integrado, para um único administrador |
 | Autenticação admin   | Magic link + Cloudflare Access | Email autorizado por `ADMIN_EMAIL` |
 | ORM                  | Prisma                         | Migrações versionadas, type-safe |
@@ -176,7 +176,7 @@ Estados: `published`, `pending_review`, `hidden`, `expired`, `duplicate`.
 ```
 vagasaude/
 ├── apps/
-│   └── web/                 # Next.js 15 (App Router, TypeScript)
+│   └── web/                 # Next.js 16 (App Router, TypeScript)
 ├── packages/
 │   └── database/            # Prisma schema, client, migrações e seed
 ├── scrapers/                # Python + Playwright (um módulo por fonte)

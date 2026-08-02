@@ -1,0 +1,139 @@
+import Link from "next/link";
+import {
+  ArrowRight,
+  Bell,
+  BriefcaseMedical,
+  CheckCircle2,
+  Mail,
+  ShieldCheck,
+} from "lucide-react";
+import { Footer } from "@/components/footer";
+import { Header } from "@/components/header";
+import { JobCard } from "@/components/job-card";
+import { SearchForm } from "@/components/search-form";
+import { jobs, professions } from "@/lib/jobs";
+
+export default function Home() {
+  return (
+    <>
+      <Header />
+      <main>
+        <section className="hero-section">
+          <div className="page-container relative z-10">
+            <div className="mx-auto max-w-3xl text-center">
+              <span className="eyebrow">
+                <BriefcaseMedical size={15} />
+                Emprego em saúde, simplificado
+              </span>
+              <h1 className="hero-title">
+                A tua próxima oportunidade
+                <br className="hidden sm:block" /> na saúde começa aqui.
+              </h1>
+              <p className="hero-copy">
+                Todas as vagas de saúde em Portugal num só sítio.
+              </p>
+            </div>
+
+            <div className="mx-auto mt-9 max-w-5xl">
+              <SearchForm />
+              <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+                <span className="mr-1 text-xs font-semibold text-muted">
+                  Pesquisas populares
+                </span>
+                {professions.slice(0, 5).map((profession) => (
+                  <Link
+                    key={profession}
+                    href={`/vagas?q=${encodeURIComponent(profession)}`}
+                    className="filter-chip"
+                  >
+                    {profession}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="page-container py-14 sm:py-18">
+          <div className="mb-7 flex items-end justify-between gap-4">
+            <div>
+              <span className="section-kicker">Atualizado diariamente</span>
+              <h2 className="section-title">Vagas mais recentes</h2>
+            </div>
+            <Link
+              href="/vagas"
+              className="hidden items-center gap-1.5 text-sm font-bold text-primary hover:underline sm:flex"
+            >
+              Ver todas as vagas <ArrowRight size={16} />
+            </Link>
+          </div>
+
+          <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_21rem]">
+            <div className="space-y-3">
+              {jobs.slice(0, 4).map((job) => (
+                <JobCard key={job.slug} job={job} />
+              ))}
+              <Link
+                href="/vagas"
+                className="button button-secondary mt-5 w-full sm:hidden"
+              >
+                Ver todas as vagas
+              </Link>
+            </div>
+
+            <aside className="alert-card">
+              <span className="feature-icon">
+                <Mail size={23} />
+              </span>
+              <h3 className="mt-5 text-xl font-extrabold tracking-[-0.03em]">
+                Recebe novas vagas no teu email
+              </h3>
+              <p className="mt-2 text-sm leading-6 text-muted">
+                Cria um alerta e recebe as oportunidades que realmente te
+                interessam.
+              </p>
+              <Link
+                href="/alertas"
+                className="button button-primary mt-7 w-full"
+              >
+                <Bell size={17} />
+                Criar alerta
+              </Link>
+            </aside>
+          </div>
+        </section>
+
+        <section id="sobre" className="border-y border-border bg-surface">
+          <div className="page-container grid gap-5 py-14 sm:grid-cols-3 sm:py-18">
+            {[
+              {
+                icon: BriefcaseMedical,
+                title: "Tudo num só sítio",
+                copy: "Reunimos oportunidades do setor público, privado e IPSS.",
+              },
+              {
+                icon: CheckCircle2,
+                title: "Vagas atualizadas",
+                copy: "Verificamos as fontes regularmente e removemos vagas expiradas.",
+              },
+              {
+                icon: ShieldCheck,
+                title: "Candidatura segura",
+                copy: "Encaminhamos-te sempre para o site oficial da entidade.",
+              },
+            ].map(({ icon: Icon, title, copy }) => (
+              <article key={title} className="feature-card">
+                <span className="feature-icon">
+                  <Icon size={22} />
+                </span>
+                <h3 className="mt-4 font-extrabold">{title}</h3>
+                <p className="mt-1.5 text-sm leading-6 text-muted">{copy}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+      </main>
+      <Footer />
+    </>
+  );
+}

@@ -1,4 +1,4 @@
-# Estrutura Frontend (Next.js 15 + React) — VagaSaúde
+# Estrutura Frontend (Next.js 16 + React) — VagaSaúde
 
 Documento de apoio ao [`PLANO.md`](./PLANO.md). Propõe rotas, componentes e
 padrões para o `apps/web`.

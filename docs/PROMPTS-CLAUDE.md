@@ -13,7 +13,7 @@ gerar cada peça do projeto, por ordem de execução. Ajusta os detalhes entre
 
 ```
 És um engenheiro sénior a construir o VagaSaude.pt, um agregador de vagas de
-saúde em Portugal. Stack: Next.js 15 (App Router, TypeScript), Prisma,
+saúde em Portugal. Stack: Next.js 16 (App Router, TypeScript), Prisma,
 PostgreSQL, Python + Playwright para scraping, Docker Compose, Apache, Cloudflare,
 Resend para emails. Inclui um backoffice /admin para um único administrador e
 publicação automática de vagas válidas. Segue docs/PLANO.md, docs/DESIGN.md e
@@ -28,7 +28,7 @@ portal de empregador ou IA de matching).
 
 ```
 Cria o esqueleto do monorepo do VagaSaude com esta estrutura:
-apps/web (Next.js 15 + TypeScript + Tailwind + shadcn/ui),
+apps/web (Next.js 16 + TypeScript + Tailwind + shadcn/ui),
 packages/database (Prisma), scrapers/ (Python + Playwright),
 docker-compose.yml, deploy/apache/ e .env.example.
 Configura workspaces (pnpm) e scripts base. Mostra todos os ficheiros de config.

@@ -21,4 +21,25 @@ O plano completo e elaborado do projeto está em [`docs/`](./docs):
 
 ## Stack
 
-Next.js 15 · TypeScript · Prisma · PostgreSQL · Redis (opcional) · Python + Playwright · Apache · Docker Compose · Cloudflare · Hetzner · Resend.
+Next.js 16 · TypeScript · Prisma · PostgreSQL · Redis (opcional) · Python + Playwright · Apache · Docker Compose · Cloudflare · Hetzner · Resend.
+
+## Aplicação web
+
+A primeira versão funcional está em [`apps/web`](./apps/web) e usa Next.js 16,
+React 19 e Tailwind CSS 4.
+
+```bash
+cd apps/web
+cp .env.example .env.local
+pnpm install
+pnpm dev
+```
+
+Rotas principais:
+
+- `/` — homepage
+- `/vagas` — pesquisa e filtros
+- `/vagas/[slug]` — detalhe e candidatura externa
+- `/alertas` — criação de alertas
+- `/admin` — backoffice protegido por autenticação HTTP
+- `/api/health` — healthcheck
