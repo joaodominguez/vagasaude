@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import {
   ArrowLeft,
   BriefcaseBusiness,
@@ -11,10 +11,20 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { AlertForm } from "@/components/alert-form";
+import { CategoryPageView } from "@/components/category-page-view";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { JobCard } from "@/components/job-card";
 import { ShareButtons } from "@/components/share-buttons";
+import {
+  buildCategoryMetadata,
+  categoryPath,
+  filterJobsForCategory,
+  isCategoryEligible,
+  listEligibleCategories,
+  resolveCategoryFromSegments,
+} from "@/lib/categories";
+import type { Job } from "@/lib/jobs";
 import { getJob, getJobs } from "@/lib/jobs-data";
 import { buildJobMetadata, buildJobPostingJsonLd, jobUrl } from "@/lib/seo";
 
@@ -28,17 +38,75 @@ export async function generateMetadata({
   params: Params;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const job = await getJob(slug);
-  if (!job) return { title: "Vaga não encontrada" };
-  return buildJobMetadata(job);
+  const allJobs = await getJobs();
+  const category = resolveCategoryFromSegments(slug);
+  if (
+    category &&
+    isCategoryEligible(allJobs, category.profession, category.district)
+  ) {
+    const jobs = filterJobsForCategory(
+      allJobs,
+      category.profession,
+      category.district,
+    );
+    return buildCategoryMetadata(category, jobs.length);
+  }
+
+  const found = await getJob(slug);
+  if (!found) return { title: "Vaga não encontrada" };
+  const meta = buildJobMetadata(found.job);
+  if (found.expired) {
+    return {
+      ...meta,
+      title: `${found.job.title} (vaga encerrada)`,
+      robots: { index: true, follow: true },
+    };
+  }
+  return meta;
 }
 
-export default async function JobDetailPage({ params }: { params: Params }) {
+export default async function VagasSlugPage({ params }: { params: Params }) {
   const { slug } = await params;
-  const job = await getJob(slug);
-  if (!job) notFound();
-
   const allJobs = await getJobs();
+  const category = resolveCategoryFromSegments(slug);
+
+  if (
+    category &&
+    isCategoryEligible(allJobs, category.profession, category.district)
+  ) {
+    const jobs = filterJobsForCategory(
+      allJobs,
+      category.profession,
+      category.district,
+    );
+    return (
+      <CategoryPageView
+        ref={category}
+        jobs={jobs}
+        allCategoryRefs={listEligibleCategories(allJobs)}
+      />
+    );
+  }
+
+  // Slug reservado a categoria sem inventário suficiente → listagem filtrada.
+  if (category) {
+    const paramsQs = new URLSearchParams();
+    if (category.profession) paramsQs.set("profissao", category.profession);
+    if (category.district) paramsQs.set("distrito", category.district);
+    redirect(`/vagas?${paramsQs.toString()}`);
+  }
+
+  const found = await getJob(slug);
+  if (!found) notFound();
+
+  if (found.expired) {
+    return <ExpiredJobView job={found.job} allJobs={allJobs} />;
+  }
+
+  return <ActiveJobView job={found.job} allJobs={allJobs} />;
+}
+
+function ActiveJobView({ job, allJobs }: { job: Job; allJobs: Job[] }) {
   const related = allJobs
     .filter(
       (item) =>
@@ -49,6 +117,7 @@ export default async function JobDetailPage({ params }: { params: Params }) {
 
   const jsonLd = buildJobPostingJsonLd(job);
   const shareUrl = jobUrl(job.slug);
+  const categoryLinks = buildJobCategoryLinks(job, allJobs);
 
   return (
     <>
@@ -91,6 +160,15 @@ export default async function JobDetailPage({ params }: { params: Params }) {
                   <span className="tag">{job.contract}</span>
                   <span className="tag">{job.profession}</span>
                 </div>
+                {categoryLinks.length > 0 && (
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {categoryLinks.map((link) => (
+                      <Link key={link.href} href={link.href} className="filter-chip">
+                        {link.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
                 <ShareButtons
                   url={shareUrl}
                   title={job.title}
@@ -151,7 +229,11 @@ export default async function JobDetailPage({ params }: { params: Params }) {
                   Avisamos quando surgir uma oportunidade relevante.
                 </p>
                 <div className="mt-4">
-                  <AlertForm compact />
+                  <AlertForm
+                    compact
+                    defaultDistrict={job.district}
+                    defaultProfession={job.profession}
+                  />
                 </div>
               </div>
             </aside>
@@ -187,6 +269,118 @@ export default async function JobDetailPage({ params }: { params: Params }) {
       />
     </>
   );
+}
+
+function ExpiredJobView({ job, allJobs }: { job: Job; allJobs: Job[] }) {
+  const similar = allJobs
+    .filter(
+      (item) =>
+        item.slug !== job.slug &&
+        (item.profession === job.profession || item.district === job.district),
+    )
+    .slice(0, 6);
+  const categoryLinks = buildJobCategoryLinks(job, allJobs);
+
+  return (
+    <>
+      <Header />
+      <main>
+        <div className="page-container py-7 sm:py-10">
+          <Link
+            href="/vagas"
+            className="mb-7 inline-flex items-center gap-1.5 text-sm font-bold text-muted hover:text-primary"
+          >
+            <ArrowLeft size={16} /> Voltar às vagas
+          </Link>
+
+          <div className="content-card border-amber-500/30 bg-amber-500/5 p-5 sm:p-6">
+            <p className="text-sm font-extrabold uppercase tracking-wider text-amber-800 dark:text-amber-200">
+              Vaga encerrada
+            </p>
+            <h1 className="mt-2 text-2xl font-extrabold tracking-[-0.04em] sm:text-3xl">
+              {job.title}
+            </h1>
+            <p className="mt-2 text-muted">
+              {job.company} · {job.city}
+            </p>
+            <p className="mt-4 text-sm leading-6 text-muted">
+              Esta vaga já não está activa. Podes explorar oportunidades
+              semelhantes abaixo ou criar um alerta para {job.profession}
+              {job.district ? ` em ${job.district}` : ""}.
+            </p>
+            {categoryLinks.length > 0 && (
+              <div className="mt-4 flex flex-wrap gap-2">
+                {categoryLinks.map((link) => (
+                  <Link key={link.href} href={link.href} className="filter-chip">
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem]">
+            <section>
+              <h2 className="section-title">Vagas semelhantes</h2>
+              {similar.length > 0 ? (
+                <div className="mt-5 space-y-3">
+                  {similar.map((item) => (
+                    <JobCard key={item.slug} job={item} />
+                  ))}
+                </div>
+              ) : (
+                <p className="mt-4 text-sm text-muted">
+                  Neste momento não há vagas semelhantes activas.{" "}
+                  <Link href="/vagas" className="font-bold text-primary">
+                    Ver todas
+                  </Link>
+                </p>
+              )}
+            </section>
+            <aside>
+              <div className="alert-card">
+                <h2 className="font-extrabold">Criar alerta</h2>
+                <p className="mt-1.5 text-sm leading-6 text-muted">
+                  Avisamos-te quando surgirem novas oportunidades.
+                </p>
+                <div className="mt-4">
+                  <AlertForm
+                    compact
+                    defaultDistrict={job.district}
+                    defaultProfession={job.profession}
+                  />
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </main>
+      <Footer />
+    </>
+  );
+}
+
+function buildJobCategoryLinks(job: Job, allJobs: Job[]) {
+  const links: Array<{ href: string; label: string }> = [];
+  if (isCategoryEligible(allJobs, job.profession, null)) {
+    links.push({
+      href: categoryPath(job.profession, null),
+      label: job.profession,
+    });
+  }
+  if (isCategoryEligible(allJobs, null, job.district)) {
+    links.push({
+      href: categoryPath(null, job.district),
+      label: job.district,
+    });
+  }
+  if (isCategoryEligible(allJobs, job.profession, job.district)) {
+    links.push({
+      href: categoryPath(job.profession, job.district),
+      label: `${job.profession} em ${job.district}`,
+    });
+  }
+  return links;
 }
 
 function CheckList({ title, items }: { title: string; items: string[] }) {

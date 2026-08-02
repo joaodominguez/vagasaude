@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowUpRight, MapPinned } from "lucide-react";
+import { categoryPath } from "@/lib/categories";
 import { PORTUGAL_DISTRICTS, PORTUGAL_OUTLINE } from "@/lib/portugal-map";
 
 type PortugalJobsMapProps = {
@@ -13,6 +14,11 @@ function intensityClass(count: number, max: number) {
   if (ratio > 0.66) return "map-marker-hot";
   if (ratio > 0.33) return "map-marker-mid";
   return "map-marker-low";
+}
+
+function districtHref(name: string, count: number) {
+  if (count >= 3) return categoryPath(null, name);
+  return `/vagas?distrito=${encodeURIComponent(name)}`;
 }
 
 export function PortugalJobsMap({ counts, total }: PortugalJobsMapProps) {
@@ -80,7 +86,7 @@ export function PortugalJobsMap({ counts, total }: PortugalJobsMapProps) {
             return (
               <a
                 key={district.name}
-                href={`/vagas?distrito=${encodeURIComponent(district.name)}`}
+                href={districtHref(district.name, district.count)}
                 aria-label={`${district.count} vagas em ${district.name}`}
                 className="map-marker-group"
               >
@@ -110,7 +116,7 @@ export function PortugalJobsMap({ counts, total }: PortugalJobsMapProps) {
           {withJobs.slice(0, 8).map((district) => (
             <li key={district.name}>
               <Link
-                href={`/vagas?distrito=${encodeURIComponent(district.name)}`}
+                href={districtHref(district.name, district.count)}
                 className="district-row"
               >
                 <span>{district.name}</span>

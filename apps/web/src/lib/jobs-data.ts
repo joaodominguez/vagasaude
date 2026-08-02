@@ -9,10 +9,14 @@ export async function getJobs(): Promise<Job[]> {
   return seedJobs;
 }
 
-export async function getJob(slug: string): Promise<Job | null> {
+export async function getJob(
+  slug: string,
+): Promise<{ job: Job; expired: boolean } | null> {
   const stored = await getJobCard(slug);
   if (stored) return stored;
-  return seedJobs.find((job) => job.slug === slug) ?? null;
+  const seed = seedJobs.find((job) => job.slug === slug);
+  if (!seed) return null;
+  return { job: seed, expired: false };
 }
 
 export async function getJobSlugs(): Promise<string[]> {

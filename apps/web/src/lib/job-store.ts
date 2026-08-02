@@ -323,26 +323,61 @@ export async function listStoredJobs(status: StoredJob["status"] = "published") 
 }
 
 export async function getStoredJobBySlug(slug: string) {
-  const jobs = await listStoredJobs("published");
-  const exact = jobs.find((job) => job.slug === slug);
-  if (exact) return exact;
-  // Compat: URLs antigas com OE202607/0939 (barra no source id).
+  const published = await listStoredJobs("published");
   const normalized = slugify(slug);
-  return (
-    jobs.find(
+  const matchPublished =
+    published.find((job) => job.slug === slug) ||
+    published.find(
       (job) => job.slug === normalized || slugify(job.slug) === normalized,
-    ) ?? null
-  );
+    );
+  if (matchPublished) return matchPublished;
+  return null;
+}
+
+export async function getStoredJobBySlugIncludingExpired(slug: string) {
+  const published = await getStoredJobBySlug(slug);
+  if (published) {
+    if (isPastExpiry(published)) {
+      return { job: published, expired: true as const };
+    }
+    return { job: published, expired: false as const };
+  }
+
+  const all = await listAllStoredJobs();
+  const normalized = slugify(slug);
+  const match =
+    all.find((job) => job.slug === slug) ||
+    all.find(
+      (job) => job.slug === normalized || slugify(job.slug) === normalized,
+    );
+  if (!match) return null;
+  if (match.status === "expired" || isPastExpiry(match)) {
+    return { job: match, expired: true as const };
+  }
+  if (match.status === "published") {
+    return { job: match, expired: false as const };
+  }
+  return null;
+}
+
+function isPastExpiry(job: StoredJob) {
+  if (!job.expiresAt) return false;
+  const expires = Date.parse(job.expiresAt);
+  return !Number.isNaN(expires) && expires < Date.now();
 }
 
 export async function listJobCards() {
   const jobs = await listStoredJobs("published");
-  return jobs.map(toJobCard);
+  return jobs.filter((job) => !isPastExpiry(job)).map(toJobCard);
 }
 
 export async function getJobCard(slug: string) {
-  const job = await getStoredJobBySlug(slug);
-  return job ? toJobCard(job) : null;
+  const found = await getStoredJobBySlugIncludingExpired(slug);
+  if (!found) return null;
+  return {
+    job: toJobCard(found.job),
+    expired: found.expired,
+  };
 }
 
 export type IngestJobInput = {

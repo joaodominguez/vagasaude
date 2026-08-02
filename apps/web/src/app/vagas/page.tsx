@@ -5,6 +5,11 @@ import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { JobCard } from "@/components/job-card";
 import { SearchForm } from "@/components/search-form";
+import {
+  categoryPath,
+  isCategoryEligible,
+  listEligibleCategories,
+} from "@/lib/categories";
 import { getJobs } from "@/lib/jobs-data";
 import { professions } from "@/lib/taxonomies";
 
@@ -63,6 +68,9 @@ export default async function JobsPage({
   const sector = params.setor ?? "";
   const page = Math.max(1, Number.parseInt(params.page || "1", 10) || 1);
   const jobs = await getJobs();
+  const topCategories = listEligibleCategories(jobs)
+    .filter((item) => item.kind !== "combo")
+    .slice(0, 10);
 
   const filteredJobs = jobs.filter((job) => {
     const haystack =
@@ -105,6 +113,19 @@ export default async function JobsPage({
                 defaultDistrict={district}
               />
             </div>
+            {topCategories.length > 0 && !hasFilters && (
+              <div className="mt-5 flex flex-wrap gap-2">
+                {topCategories.map((category) => (
+                  <Link
+                    key={category.path}
+                    href={category.path}
+                    className="filter-chip"
+                  >
+                    {category.title.replace(/^Vagas (de )?/i, "")}
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
         </section>
 
@@ -126,6 +147,17 @@ export default async function JobsPage({
                     active={profession === item}
                     params={params}
                     count={jobs.filter((job) => job.profession === item).length}
+                    preferCategory={
+                      !query && !sector && !district
+                        ? isCategoryEligible(jobs, item, null)
+                          ? categoryPath(item, null)
+                          : null
+                        : !query && !sector && district
+                          ? isCategoryEligible(jobs, item, district)
+                            ? categoryPath(item, district)
+                            : null
+                          : null
+                    }
                   />
                 ))}
               </FilterGroup>
@@ -160,7 +192,9 @@ export default async function JobsPage({
               <div className="min-w-0">
                 <h2 className="text-xl font-extrabold tracking-[-0.03em]">
                   {filteredJobs.length}{" "}
-                  {filteredJobs.length === 1 ? "vaga encontrada" : "vagas encontradas"}
+                  {filteredJobs.length === 1
+                    ? "vaga encontrada"
+                    : "vagas encontradas"}
                 </h2>
                 <p className="mt-1 text-sm text-muted">
                   Ordenadas pelas mais recentes
@@ -195,8 +229,9 @@ export default async function JobsPage({
                       <span />
                     )}
                     <p className="text-sm text-muted">
-                      {start + 1}–{Math.min(start + PAGE_SIZE, filteredJobs.length)}{" "}
-                      de {filteredJobs.length}
+                      {start + 1}–
+                      {Math.min(start + PAGE_SIZE, filteredJobs.length)} de{" "}
+                      {filteredJobs.length}
                     </p>
                     {currentPage < totalPages ? (
                       <Link
@@ -264,6 +299,7 @@ function FilterLink({
   active,
   params,
   count,
+  preferCategory,
 }: {
   label: string;
   name: string;
@@ -271,6 +307,7 @@ function FilterLink({
   active: boolean;
   params: Record<string, string | undefined>;
   count: number;
+  preferCategory?: string | null;
 }) {
   const next = new URLSearchParams();
   Object.entries(params).forEach(([key, item]) => {
@@ -279,9 +316,12 @@ function FilterLink({
   });
   if (!active) next.set(name, value);
 
+  const href =
+    !active && preferCategory ? preferCategory : `/vagas?${next.toString()}`;
+
   return (
     <Link
-      href={`/vagas?${next.toString()}`}
+      href={href}
       className={`flex min-h-9 items-center justify-between rounded-lg px-2.5 text-sm transition ${
         active
           ? "bg-primary-soft font-bold text-primary"

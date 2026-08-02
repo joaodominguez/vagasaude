@@ -10,6 +10,11 @@ import { Header } from "@/components/header";
 import { JobCard } from "@/components/job-card";
 import { PortugalJobsMap } from "@/components/portugal-jobs-map";
 import { SearchForm } from "@/components/search-form";
+import {
+  categoryPath,
+  isCategoryEligible,
+  listEligibleCategories,
+} from "@/lib/categories";
 import { getJobs } from "@/lib/jobs-data";
 import { professions } from "@/lib/jobs";
 
@@ -22,6 +27,9 @@ export default async function Home() {
     acc[key] = (acc[key] || 0) + 1;
     return acc;
   }, {});
+  const topCategories = listEligibleCategories(jobs)
+    .filter((item) => item.kind === "profession" || item.kind === "district")
+    .slice(0, 8);
 
   return (
     <>
@@ -49,15 +57,16 @@ export default async function Home() {
                 <span className="mr-1 text-xs font-semibold text-muted">
                   Pesquisas populares
                 </span>
-                {professions.slice(0, 5).map((profession) => (
-                  <Link
-                    key={profession}
-                    href={`/vagas?q=${encodeURIComponent(profession)}`}
-                    className="filter-chip"
-                  >
-                    {profession}
-                  </Link>
-                ))}
+                {professions.slice(0, 5).map((profession) => {
+                  const href = isCategoryEligible(jobs, profession, null)
+                    ? categoryPath(profession, null)
+                    : `/vagas?profissao=${encodeURIComponent(profession)}`;
+                  return (
+                    <Link key={profession} href={href} className="filter-chip">
+                      {profession}
+                    </Link>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -90,6 +99,24 @@ export default async function Home() {
             Ver todas as vagas
           </Link>
         </section>
+
+        {topCategories.length > 0 && (
+          <section className="page-container pb-4">
+            <span className="section-kicker">Categorias</span>
+            <h2 className="section-title">Explorar por área e distrito</h2>
+            <div className="mt-5 flex flex-wrap gap-2">
+              {topCategories.map((category) => (
+                <Link
+                  key={category.path}
+                  href={category.path}
+                  className="filter-chip"
+                >
+                  {category.title.replace(/^Vagas (de )?/i, "")}
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
 
         <section className="border-y border-border bg-surface">
           <div className="page-container py-14 sm:py-18">

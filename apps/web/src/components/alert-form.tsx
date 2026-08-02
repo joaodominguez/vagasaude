@@ -4,7 +4,15 @@ import { CheckCircle2, LoaderCircle, Mail } from "lucide-react";
 import { FormEvent, useState } from "react";
 import { districts, professions, sectors } from "@/lib/taxonomies";
 
-export function AlertForm({ compact = false }: { compact?: boolean }) {
+export function AlertForm({
+  compact = false,
+  defaultDistrict = "",
+  defaultProfession = "",
+}: {
+  compact?: boolean;
+  defaultDistrict?: string;
+  defaultProfession?: string;
+}) {
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">(
     "idle",
   );
@@ -89,7 +97,7 @@ export function AlertForm({ compact = false }: { compact?: boolean }) {
             <span className="mb-2 block text-sm font-semibold">Distrito</span>
             <select
               name="district"
-              defaultValue=""
+              defaultValue={defaultDistrict}
               className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
             >
               <option value="">Todo o país</option>
@@ -105,7 +113,7 @@ export function AlertForm({ compact = false }: { compact?: boolean }) {
             <span className="mb-2 block text-sm font-semibold">Profissão</span>
             <select
               name="profession"
-              defaultValue=""
+              defaultValue={defaultProfession}
               className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
             >
               <option value="">Todas</option>
@@ -133,7 +141,12 @@ export function AlertForm({ compact = false }: { compact?: boolean }) {
             </select>
           </label>
         </>
-      ) : null}
+      ) : (
+        <>
+          <input type="hidden" name="district" value={defaultDistrict} />
+          <input type="hidden" name="profession" value={defaultProfession} />
+        </>
+      )}
 
       <button
         className="button button-primary w-full"

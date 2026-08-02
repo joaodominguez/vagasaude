@@ -15,11 +15,13 @@ export default async function JobOpenGraphImage({
   params: Params;
 }) {
   const { slug } = await params;
-  const job = await getJob(slug);
+  const found = await getJob(slug);
+  const job = found?.job;
 
   const title = job?.title ?? "Vaga de saúde";
   const company = job?.company ?? SITE_NAME;
   const location = job ? `${job.city} · ${job.profession}` : "Portugal";
+  const badge = found?.expired ? "Vaga encerrada" : "Vaga disponível";
   const shortTitle =
     title.length > 90 ? `${title.slice(0, 87).trimEnd()}…` : title;
 
@@ -85,7 +87,7 @@ export default async function JobOpenGraphImage({
               padding: "10px 18px",
             }}
           >
-            Vaga disponível
+            {badge}
           </div>
         </div>
 
