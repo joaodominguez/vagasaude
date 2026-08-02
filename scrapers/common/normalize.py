@@ -193,9 +193,9 @@ def guess_profession(title: str, fallback: str | None = None) -> str:
     t = norm(title)
     rules = [
         (("enfermeir",), "Enfermagem"),
-        (("medic", "cirurgi"), "Medicina"),
-        (("fisioterapeut", "fisioterap"), "Fisioterapia"),
         (("auxiliar", "acao medica", "accao medica", "geriatr"), "Auxiliares"),
+        (("medico", "medica ", "cirurgi"), "Medicina"),
+        (("fisioterapeut", "fisioterap"), "Fisioterapia"),
         (("farmaceut", "farmacia"), "Farmácia"),
         (
             (
@@ -215,7 +215,7 @@ def guess_profession(title: str, fallback: str | None = None) -> str:
         (("psicolog",), "Psicologia"),
         (("nutric", "dietista"), "Nutrição"),
         (("assistente social",), "Assistência Social"),
-        (("administrativ", "recepcion", "secretaria"), "Administrativo"),
+        (("administrativ", "recepcion", "rececion", "secretaria"), "Administrativo"),
     ]
     for needles, label in rules:
         if any(n in t for n in needles):
