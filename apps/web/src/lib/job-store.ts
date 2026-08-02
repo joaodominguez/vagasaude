@@ -93,6 +93,9 @@ function normalizeCompany(company: string) {
   if (value.includes("germano de sousa") || value.includes("germano sousa")) {
     return "germano de sousa";
   }
+  if (value.includes("hpa") || value.includes("hospital particular do algarve")) {
+    return "hpa";
+  }
   return value;
 }
 
@@ -109,10 +112,35 @@ export function guessProfession(title: string, fallback = "Outros") {
   const rules: Array<[string[], string]> = [
     [["enfermeir", "enfermagem", "nurse", "nursing"], "Enfermagem"],
     [
-      ["auxiliar", "acao medica", "accao medica", "assistente operacional", "geriatr"],
+      [
+        "auxiliar",
+        "acao medica",
+        "accao medica",
+        "assistente operacional",
+        "geriatr",
+        "cuidador",
+        "cuidados continuados",
+      ],
       "Auxiliares",
     ],
-    [["medico", "medica ", "medicas", "cirurgi", "internato", "physician"], "Medicina"],
+    // Antes de Medicina — "assistente de medicina dentária" não é médico.
+    [["assistente dent", "assistente de medicina dent"], "Administrativo"],
+    [
+      [
+        "medico",
+        "medica ",
+        "medicas",
+        "medicina geral",
+        "medicina dentar",
+        "dentista",
+        "cirurgi",
+        "internato",
+        "physician",
+        "mgf",
+        "clinica geral",
+      ],
+      "Medicina",
+    ],
     [["fisioterapeut", "fisioterap", "physiotherapist", "physiotherapy"], "Fisioterapia"],
     [["farmaceut", "farmacia", "pharmacist"], "Farmácia"],
     [
@@ -132,6 +160,8 @@ export function guessProfession(title: string, fallback = "Outros") {
         "anatomia patol",
         "oftalmolog",
         "higienista",
+        "optometrist",
+        "podolog",
         "research technician",
         "tecnico de investig",
         "biolog",
@@ -149,7 +179,6 @@ export function guessProfession(title: string, fallback = "Outros") {
         "recepcion",
         "rececion",
         "secretaria",
-        "assistente dent",
         "gestor de cliente",
         "contact center",
       ],
@@ -442,9 +471,23 @@ export async function ingestJobs(source: string, incoming: IngestJobInput[]) {
       item.status || (incomplete ? "pending_review" : "published");
     let reviewReason = item.review_reason || null;
 
-    if (!existingSameSource && existingHash && existingHash.source !== source) {
-      status = "duplicate";
-      reviewReason = `Duplicado de ${existingHash.source}:${existingHash.sourceId}`;
+    if (!existingSameSource && existingHash) {
+      const hashIsLive =
+        existingHash.status === "published" ||
+        existingHash.status === "pending_review";
+      if (existingHash.source !== source && hashIsLive) {
+        status = "duplicate";
+        reviewReason = `Duplicado de ${existingHash.source}:${existingHash.sourceId}`;
+      } else if (
+        existingHash.source === source &&
+        existingHash.sourceId !== sourceId &&
+        hashIsLive
+      ) {
+        // Mesma fonte, mesmo título/empresa/distrito, IDs de origem diferentes
+        // (ex.: CUF republica a mesma vaga com outro sourceId).
+        status = "duplicate";
+        reviewReason = `Duplicado interno de ${existingHash.source}:${existingHash.sourceId}`;
+      }
     }
 
     if (status === "pending_review") review += 1;
@@ -534,6 +577,42 @@ export async function reclassifyOutrosProfessions() {
     await writeJobsFile(file);
   }
   return { changed, total: file.jobs.length };
+}
+
+/** Marca como duplicate vagas published/pending com o mesmo dedupeHash (mantém a mais antiga). */
+export async function collapseDuplicateHashes() {
+  const file = await readJobsFile();
+  const now = new Date().toISOString();
+  const groups = new Map<string, StoredJob[]>();
+  for (const job of file.jobs) {
+    if (job.status !== "published" && job.status !== "pending_review") continue;
+    const list = groups.get(job.dedupeHash) || [];
+    list.push(job);
+    groups.set(job.dedupeHash, list);
+  }
+
+  let collapsed = 0;
+  for (const [, list] of groups) {
+    if (list.length < 2) continue;
+    list.sort((a, b) => {
+      const aTime = Date.parse(a.createdAt || a.publishedAt || "") || 0;
+      const bTime = Date.parse(b.createdAt || b.publishedAt || "") || 0;
+      return aTime - bTime;
+    });
+    const keep = list[0];
+    for (const job of list.slice(1)) {
+      job.status = "duplicate";
+      job.reviewReason = `Duplicado de ${keep.source}:${keep.sourceId}`;
+      job.updatedAt = now;
+      collapsed += 1;
+    }
+  }
+
+  if (collapsed > 0) {
+    file.updatedAt = now;
+    await writeJobsFile(file);
+  }
+  return { collapsed, total: file.jobs.length };
 }
 
 export async function getJobStats() {

@@ -93,6 +93,10 @@ CITY_TO_DISTRICT = {
     "ponta delgada": "Açores",
     "abrantes": "Santarém",
     "chamusca": "Santarém",
+    "sines": "Setúbal",
+    "gambelas": "Faro",
+    "alvor": "Faro",
+    "funchal": "Madeira",
 }
 
 
@@ -206,10 +210,32 @@ def guess_profession(title: str, fallback: str | None = None) -> str:
                 "accao medica",
                 "assistente operacional",
                 "geriatr",
+                "cuidador",
+                "cuidados continuados",
             ),
             "Auxiliares",
         ),
-        (("medico", "medica ", "medicas", "cirurgi", "internato", "physician"), "Medicina"),
+        # Antes de Medicina — "assistente de medicina dentária" não é médico.
+        (
+            ("assistente dent", "assistente de medicina dent"),
+            "Administrativo",
+        ),
+        (
+            (
+                "medico",
+                "medica ",
+                "medicas",
+                "medicina geral",
+                "medicina dentar",
+                "dentista",
+                "cirurgi",
+                "internato",
+                "physician",
+                "mgf",
+                "clinica geral",
+            ),
+            "Medicina",
+        ),
         (("fisioterapeut", "fisioterap", "physiotherapist", "physiotherapy"), "Fisioterapia"),
         (("farmaceut", "farmacia", "pharmacist"), "Farmácia"),
         (
@@ -231,6 +257,8 @@ def guess_profession(title: str, fallback: str | None = None) -> str:
                 "anatomia patol",
                 "oftalmolog",
                 "higienista",
+                "optometrist",
+                "podolog",
                 "research technician",
                 "tecnico de investig",
                 "biolog",
@@ -248,7 +276,6 @@ def guess_profession(title: str, fallback: str | None = None) -> str:
                 "recepcion",
                 "rececion",
                 "secretaria",
-                "assistente dent",
                 "gestor de cliente",
                 "contact center",
             ),

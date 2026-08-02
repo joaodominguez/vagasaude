@@ -44,6 +44,11 @@ const SCRAPERS = [
     name: "Germano de Sousa (HTML)",
     schedule: "A cada 6 horas",
   },
+  {
+    slug: "hpa",
+    name: "Grupo HPA Saúde (HTML)",
+    schedule: "A cada 6 horas",
+  },
 ];
 
 export default async function AdminScrapersPage() {

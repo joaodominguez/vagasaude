@@ -46,6 +46,11 @@ const SOURCE_META: Record<
     url: "https://www.germanodesousa.com/contactos/ofertas-de-emprego/",
     sector: "Privado",
   },
+  hpa: {
+    name: "Grupo HPA Saúde",
+    url: "https://www.grupohpa.com/pt/empregos/",
+    sector: "Privado",
+  },
 };
 
 export default async function AdminSourcesPage() {

@@ -29,30 +29,61 @@ SEARCH_TERMS = [
     "enfermeiro",
     "enfermagem",
     "médico",
+    "medico",
     "fisioterapeuta",
     "farmacêutico",
+    "farmaceutico",
     "técnico auxiliar de saúde",
+    "tecnico auxiliar de saude",
     "técnico superior de saúde",
+    "tecnico superior de saude",
     "administrador hospitalar",
     "Unidade Local de Saúde",
     "Escola Superior de Saúde",
     "IPO",
+    "diagnóstico e terapêutica",
+    "diagnostico e terapeutica",
+    "assistente graduado",
 ]
 
-HEALTH_RE = re.compile(
-    r"enferm|m[eé]dic|fisioterap|farmac|diagn[oó]stico|terap[eê]ut|"
-    r"nutric|psicolog|ortopt|audiolog|imagiolog|radiolog|cardiopneum|"
-    r"anatomia\s+patol|neurofisiolog|higienista|auxilia|"
-    r"administrador\s+hospitalar|assistente\s+graduado|"
-    r"sa[uú]de|hospital|uls\b|ars\b|ipo\b|oncolog|cuidados\s+de\s+sa[uú]de|"
-    r"centro\s+hospitalar|unidade\s+local\s+de\s+sa[uú]de|"
-    r"escola\s+superior\s+de\s+sa[uú]de",
+# Organismos SNS / saúde pública — aceitar ofertas mesmo sem keyword clínica.
+SNS_ORG_RE = re.compile(
+    r"unidade\s+local\s+de\s+sa[uú]de|"
+    r"centro\s+hospitalar|"
+    r"instituto\s+portugu[eê]s\s+de\s+oncologia|"
+    r"\bipo\b|"
+    r"escola\s+superior\s+de\s+sa[uú]de|"
+    r"administra[cç][aã]o\s+regional\s+de\s+sa[uú]de|"
+    r"administra[cç][aã]o\s+central\s+do\s+sistema\s+de\s+sa[uú]de|"
+    r"dire[cç][aã]o[- ]geral\s+da\s+sa[uú]de|"
+    r"servi[cç]o\s+de\s+utiliza[cç][aã]o\s+comum\s+dos\s+hospitais|"
+    r"infarmed|"
+    r"instituto\s+nacional\s+de\s+emerg[eê]ncia|"
+    r"\binem\b|"
+    r"instituto\s+portugu[eê]s\s+do\s+sangue|"
+    r"secretaria\s+regional.*sa[uú]de|"
+    r"hospital\b.+\be\.?\s*p\.?\s*e",
     re.I,
 )
 
+CLINICAL_ROLE_RE = re.compile(
+    r"enferm|m[eé]dic|fisioterap|farmac|diagn[oó]stico|terap[eê]ut|"
+    r"nutric|psicolog|ortopt|audiolog|imagiolog|radiolog|cardiopneum|"
+    r"anatomia\s+patol|neurofisiolog|higienista|"
+    r"auxiliar\s+de\s+sa[uú]de|t[eé]cnico\s+auxiliar\s+de\s+sa[uú]de|"
+    r"t[eé]cnico\s+superior\s+de\s+sa[uú]de|"
+    r"administrador\s+hospitalar|assistente\s+graduado|"
+    r"cuidados\s+de\s+sa[uú]de",
+    re.I,
+)
+
+ACADEMIC_ROLE_RE = re.compile(r"\bprofessor\b|\binvestigador\b", re.I)
+VET_RE = re.compile(r"veterin", re.I)
+
 NON_HEALTH_ORG_RE = re.compile(
     r"junta\s+de\s+freguesia|c[aâ]mara\s+municipal|agrupamento\s+de\s+escolas|"
-    r"escola\s+b[aá]sica|escola\s+secund[aá]ria",
+    r"escola\s+b[aá]sica|escola\s+secund[aá]ria|universidade|faculdade|"
+    r"instituto\s+polit[eé]cnico",
     re.I,
 )
 
@@ -87,18 +118,40 @@ class BepScraper(BaseScraper):
         # 1) Ofertas de organismos do Ministério da Saúde / secretarias regionais.
         for nivel in HEALTH_NIVEL_ORGANICO:
             for row in self._search_nivel(client, nivel):
-                row["term"] = row["code"]
+                if not self._is_health(row):
+                    continue
+                row["term"] = f"nivel:{nivel}"
                 by_code[row["code"]] = row
 
-        # 2) Complemento por palavras-chave (escolas de saúde, etc.).
+        # 2) Varredura do catálogo BEP (sem filtro de keywords) + filtro saúde.
+        #    Cobre ULS/EPE/IPO que por vezes não vêm no nível orgânico 308/470.
+        for row in self._search_catalog(client):
+            if not self._is_health(row):
+                continue
+            row.setdefault("term", "catalog")
+            by_code.setdefault(row["code"], row)
+
+        # 3) Complemento por palavras-chave (escolas de saúde, tipologias clínicas).
         for term in SEARCH_TERMS:
             for row in self._search_term(client, term):
                 if not self._is_health(row):
                     continue
-                row.setdefault("term", row["code"])
+                row.setdefault("term", term)
                 by_code.setdefault(row["code"], row)
 
         return list(by_code.values())
+
+    def _search_catalog(self, client: HttpClient, max_pages: int = 50) -> list[dict]:
+        html = client.get_text(SEARCH_ADV)
+        payload = _form_fields(html)
+        search_btn = _search_button_name(html)
+        if not search_btn:
+            return []
+        payload[search_btn] = "Pesquisar"
+        html = client.post_form(SEARCH_ADV, payload)
+        return self._paginate_rows(
+            client, SEARCH_ADV, html, term="catalog", max_pages=max_pages
+        )
 
     def _search_nivel(self, client: HttpClient, nivel: str, max_pages: int = 30) -> list[dict]:
         html = client.get_text(SEARCH_ADV)
@@ -282,15 +335,29 @@ class BepScraper(BaseScraper):
             str(row.get(key) or "") for key in ("carreira", "categoria", "tipo")
         )
         blob = f"{role_blob} {organismo}"
-        if not HEALTH_RE.search(blob):
+        if VET_RE.search(blob):
             return False
-        # Evitar falsos positivos (ex.: juntas com "Hospital" no topónimo).
+        # Professores/investigadores universitários com "saúde/medicina" no nome
+        # da faculdade não são vagas SNS operacionais.
+        if ACADEMIC_ROLE_RE.search(role_blob) and not re.search(
+            r"escola\s+superior\s+de\s+sa[uú]de",
+            organismo,
+            re.I,
+        ):
+            return False
+        if SNS_ORG_RE.search(organismo):
+            return True
+        if not CLINICAL_ROLE_RE.search(role_blob):
+            return False
+        # Evitar Assistente Operacional genérico em juntas/câmaras.
         if NON_HEALTH_ORG_RE.search(organismo):
             return bool(
                 re.search(
-                    r"sa[uú]de|enferm|m[eé]dic|fisioterap|farmac|"
+                    r"enferm|m[eé]dic|fisioterap|farmac|"
                     r"diagn[oó]stico|terap[eê]ut|auxiliar\s+de\s+sa[uú]de|"
-                    r"administrador\s+hospitalar",
+                    r"t[eé]cnico\s+auxiliar\s+de\s+sa[uú]de|"
+                    r"t[eé]cnico\s+superior\s+de\s+sa[uú]de|"
+                    r"administrador\s+hospitalar|assistente\s+graduado",
                     role_blob,
                     re.I,
                 )

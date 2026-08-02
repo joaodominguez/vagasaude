@@ -11,15 +11,24 @@
 |--------|------:|
 | Vagas publicadas | ~516 |
 | Privado / Público | ~499 / ~17 |
-| Fontes activas | CUF, Luz, Lusíadas, Trofa, JCS, Champalimaud, Germano de Sousa, BEP |
+| Fontes activas | CUF, Luz, Lusíadas, Trofa, JCS, Champalimaud, Germano de Sousa, HPA, BEP |
 | Alertas | Double opt-in, filtros, gestão/unsubscribe (Resend) |
 | Persistência | JSON files (`jobs.json`, `alerts.json`, …) |
 | Runtime | Next standalone + cron scrapers; app ainda em tmux |
 | Backups | Cron diário local (`backup.sh`) |
 
-**Já feito recentemente:** alertas robustos, paginação, BEP (MS), histórico de scrapes, dedupe, scrapers privados extra, filtros mobile, fix de slugs BEP.
+**Já feito recentemente:** alertas, landings SEO (Fase 1), BEP expandido (catálogo + filtro SNS), HPA, heurísticas Outros, dedupe same-source, filtros mobile, fix de slugs BEP.
 
-**Gaps principais:** pouco público vs privado, ~67 vagas em “Outros”, backoffice ainda read-mostly, dados em JSON, poucas landings SEO, systemd/Apache ainda por fechar.
+**Gaps principais:** teto baixo do BEP (~15–25 ofertas SNS activas no catálogo — não há 150–200 públicas abertas), IPSS/labs ainda a zero, interior/ilhas incompletos, backoffice read-mostly, dados em JSON.
+
+### Fase 2 — Oferta (em curso)
+
+| Prioridade | Item | Estado |
+|---|---|---|
+| 1 | BEP: ULS/EPE/IPO via catálogo completo + filtro SNS (sem keyword exclusive) | Feito (teto = inventário real BEP) |
+| 2 | Fontes privadas em falta (HPA, SAMS, Misericórdias, labs…) | HPA feito; resto por scrapabilidade |
+| 3 | Cobertura geográfica (interior + ilhas) | HPA → Faro / Setúbal (Sines) / Madeira |
+| 4 | Qualidade: dedupeHash duplicados + Outros | Dedupe same-source + reclassify/collapse API |
 
 ---
 

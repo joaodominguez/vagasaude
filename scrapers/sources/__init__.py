@@ -3,6 +3,7 @@ from sources.champalimaud import ChampalimaudScraper
 from sources.cuf import CufScraper
 from sources.cvwarehouse import LuzSaudeScraper, LusiadasScraper
 from sources.germano_de_sousa import GermanoDeSousaScraper
+from sources.hpa import HpaScraper
 from sources.joaquim_chaves import JoaquimChavesScraper
 from sources.trofa import TrofaSaudeScraper
 
@@ -15,4 +16,5 @@ SCRAPERS = {
     JoaquimChavesScraper.slug: JoaquimChavesScraper,
     ChampalimaudScraper.slug: ChampalimaudScraper,
     GermanoDeSousaScraper.slug: GermanoDeSousaScraper,
+    HpaScraper.slug: HpaScraper,
 }

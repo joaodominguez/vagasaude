@@ -4,7 +4,7 @@ Fontes ativas nesta fase:
 
 | Fonte | Origem | Tipo |
 |---|---|---|
-| `bep` | https://www.bep.gov.pt | Pesquisa avançada por Ministério da Saúde (+ keywords) |
+| `bep` | https://www.bep.gov.pt | Nível MS + varredura catálogo + keywords (filtro SNS/clínico) |
 | `cuf` | https://carreiras.cuf.pt/jobs.json | JSON Feed / Teamtailor |
 | `luz_saude` | CVWarehouse (Luz Saúde) | HTML público |
 | `lusiadas` | CVWarehouse (Lusíadas) | HTML público |
@@ -12,6 +12,7 @@ Fontes ativas nesta fase:
 | `joaquim_chaves` | https://recrutamento.jcs.pt/Offers | Harpoon `/GetOffersFiltered` |
 | `champalimaud` | https://www.fchampalimaud.org/pt-pt/posicoes-em-aberto | `/get-offers` JSON |
 | `germano_de_sousa` | https://www.germanodesousa.com/contactos/ofertas-de-emprego/ | HTML (portfolio) |
+| `hpa` | https://www.grupohpa.com/pt/empregos/ | HTML (Algarve, Alentejo, Madeira) |
 
 José de Mello Saúde usa o mesmo portal da CUF para recrutamento externo.
 
