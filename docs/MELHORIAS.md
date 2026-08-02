@@ -9,26 +9,28 @@
 
 | Métrica | Valor |
 |--------|------:|
-| Vagas publicadas | ~516 |
-| Privado / Público | ~499 / ~17 |
-| Fontes activas | CUF, Luz, Lusíadas, Trofa, JCS, Champalimaud, Germano de Sousa, HPA, BEP |
+| Vagas publicadas | ~493 (após colapso de 39 duplicados) |
+| Privado / Público | ~479 / ~14 |
+| Fontes activas | CUF, Luz, Lusíadas, Trofa, JCS, Champalimaud, Germano de Sousa, **HPA**, BEP |
+| Outros | ~11.6% (57) — era ~13% |
+| DedupeHash duplicados (published) | **0** grupos (era ~29) |
 | Alertas | Double opt-in, filtros, gestão/unsubscribe (Resend) |
 | Persistência | JSON files (`jobs.json`, `alerts.json`, …) |
 | Runtime | Next standalone + cron scrapers; app ainda em tmux |
 | Backups | Cron diário local (`backup.sh`) |
 
-**Já feito recentemente:** alertas, landings SEO (Fase 1), BEP expandido (catálogo + filtro SNS), HPA, heurísticas Outros, dedupe same-source, filtros mobile, fix de slugs BEP.
+**Já feito recentemente:** alertas, landings SEO (Fase 1), BEP expandido (catálogo + filtro SNS), HPA (+16), heurísticas Outros, dedupe same-source, filtros mobile, fix de slugs BEP.
 
-**Gaps principais:** teto baixo do BEP (~15–25 ofertas SNS activas no catálogo — não há 150–200 públicas abertas), IPSS/labs ainda a zero, interior/ilhas incompletos, backoffice read-mostly, dados em JSON.
+**Gaps principais:** teto baixo do BEP (~17 ofertas SNS no catálogo actual — meta 150–200 públicas exige fontes além do BEP: DR, sites ULS, IPSS), labs/Misericórdias a zero, interior ainda fino, backoffice read-mostly, dados em JSON.
 
 ### Fase 2 — Oferta (em curso)
 
 | Prioridade | Item | Estado |
 |---|---|---|
-| 1 | BEP: ULS/EPE/IPO via catálogo completo + filtro SNS (sem keyword exclusive) | Feito (teto = inventário real BEP) |
-| 2 | Fontes privadas em falta (HPA, SAMS, Misericórdias, labs…) | HPA feito; resto por scrapabilidade |
-| 3 | Cobertura geográfica (interior + ilhas) | HPA → Faro / Setúbal (Sines) / Madeira |
-| 4 | Qualidade: dedupeHash duplicados + Outros | Dedupe same-source + reclassify/collapse API |
+| 1 | BEP: ULS/EPE/IPO via catálogo completo + filtro SNS (sem keyword exclusive) | Feito — teto ≈ inventário real BEP (~17) |
+| 2 | Fontes privadas em falta (HPA, SAMS, Misericórdias, labs…) | **HPA em produção** (16); SAMS/Unilabs SPA; UMP sem listagem scrapável |
+| 3 | Cobertura geográfica (interior + ilhas) | HPA → Faro 8 / Madeira 6 / Setúbal+2 (Sines); Açores ainda fraco |
+| 4 | Qualidade: dedupeHash duplicados + Outros | **39 collapsed**; Outros 13%→11.6%; reclassify API |
 
 ---
 
