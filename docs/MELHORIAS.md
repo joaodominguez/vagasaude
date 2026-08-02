@@ -9,10 +9,10 @@
 
 | Métrica | Valor |
 |--------|------:|
-| Vagas publicadas | ~493 (após colapso de 39 duplicados) |
-| Privado / Público | ~479 / ~14 |
-| Fontes activas | CUF, Luz, Lusíadas, Trofa, JCS, Champalimaud, Germano de Sousa, **HPA**, BEP |
-| Outros | ~11.6% (57) — era ~13% |
+| Vagas publicadas | ~749 |
+| Privado / Público / IPSS | ~529 / **~214** / ~6 |
+| Fontes activas | BEP, **DR**, **IPO Porto**, **IEFP**, **SCML**, CUF, Luz, Lusíadas, Trofa, JCS, Champalimaud, Germano, HPA |
+| Outros | ~11.6% (baseline pré-DR; reavaliar após volume novo) |
 | DedupeHash duplicados (published) | **0** grupos (era ~29) |
 | Alertas | Double opt-in, filtros, gestão/unsubscribe (Resend) |
 | Persistência | JSON files (`jobs.json`, `alerts.json`, …) |
