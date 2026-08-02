@@ -1,27 +1,31 @@
 # Arquitetura & Infraestrutura — VagaSaúde
 
 Documento de apoio ao [`PLANO.md`](./PLANO.md). Contém a proposta concreta de
-`docker-compose.yml`, `Caddyfile`, configuração Cloudflare, backups e monitorização.
+`docker-compose.yml`, integração com o Apache existente, configuração
+Cloudflare, backups e monitorização.
 
 ---
 
 ## 1. Topologia
 
-Um único VPS Hetzner corre todos os serviços via Docker Compose, atrás da
-Cloudflare (proxy laranja ativo). A Cloudflare faz CDN, WAF e termina o TLS
-público; o Caddy no VPS serve como reverse proxy interno e termina o TLS de
-origem (certificado de origem da Cloudflare).
+O VPS Hetzner já aloja vários sites em Apache. A Cloudflare faz CDN, WAF e
+termina o TLS público; o Apache mantém o VirtualHost e o certificado Let's
+Encrypt do domínio, encaminhando os pedidos para o Next.js numa porta local.
 
 Dimensionamento inicial recomendado: **4 vCPU, 8 GB RAM e 80 GB SSD**. O
 Playwright é o componente com maior consumo transitório de memória. A base de
-dados, aplicação, backoffice, Redis, scrapers, Caddy e monitorização ficam na
+dados, aplicação, backoffice, Redis, scrapers, Apache e monitorização ficam na
 Hetzner; apenas Cloudflare e Resend são serviços externos de aplicação.
 
 ```
-Internet → Cloudflare (SSL público + WAF + CDN) → Caddy → Next.js → Postgres/Redis
-                                                          ↑
-                                              Scraper (cron) escreve na BD
+Internet → Cloudflare → Apache (:443) → Next.js (127.0.0.1:3010)
+                                              │
+                                      PostgreSQL / Redis
+                                              ↑
+                                         Scrapers
 ```
+
+Não instalar Caddy: Apache já ocupa as portas 80/443 e serve outros domínios.
 
 ---
 
@@ -36,8 +40,9 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    expose:
-      - "3000"
+    ports:
+      # A porta nunca fica exposta à Internet; só o Apache local acede.
+      - "127.0.0.1:3010:3000"
     networks: [internal]
 
   db:
@@ -75,26 +80,9 @@ services:
     command: ["python", "run.py", "--schedule"]
     networks: [internal]
 
-  caddy:
-    image: caddy:2
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - ./caddy/origin.crt:/etc/caddy/origin.crt:ro
-      - ./caddy/origin.key:/etc/caddy/origin.key:ro
-      - caddy_data:/data
-      - caddy_config:/config
-    depends_on: [web]
-    networks: [internal]
-
 volumes:
   pgdata:
   redisdata:
-  caddy_data:
-  caddy_config:
 
 networks:
   internal:
@@ -102,48 +90,58 @@ networks:
 ```
 
 Notas:
-- Só o Caddy expõe portas ao host; tudo o resto comunica pela rede `internal`.
-- O `web` usa `expose` (não `ports`) — só acessível internamente.
+- O Next.js fica ligado apenas a `127.0.0.1:3010`; nunca a `0.0.0.0`.
+- A porta 3000 já é usada por outro site no servidor e não deve ser reutilizada.
+- PostgreSQL e Redis do projeto permanecem na rede Docker interna.
 - Redis pode ser removido no MVP inicial se não for usado.
 
 ---
 
-## 3. `Caddyfile` (com certificado de origem Cloudflare)
+## 3. Apache (existente)
 
-Com Cloudflare em modo **Full (strict)**, gera um *Origin Certificate* na
-Cloudflare e coloca-o em `./caddy/origin.crt` / `./caddy/origin.key`.
+O VirtualHost HTTPS existente usa Let's Encrypt. No deploy, trocar apenas o
+`DocumentRoot` estático pelo reverse proxy, depois de guardar uma cópia do
+ficheiro atual:
 
+```apache
+<IfModule mod_ssl.c>
+<VirtualHost *:443>
+    ServerName vagasaude.pt
+    ServerAlias www.vagasaude.pt
+
+    ProxyPreserveHost On
+    ProxyPass / http://127.0.0.1:3010/ retry=0 timeout=60
+    ProxyPassReverse / http://127.0.0.1:3010/
+    RequestHeader set X-Forwarded-Proto "https"
+
+    ErrorLog ${APACHE_LOG_DIR}/vagasaude-error.log
+    CustomLog ${APACHE_LOG_DIR}/vagasaude-access.log combined
+
+    Include /etc/letsencrypt/options-ssl-apache.conf
+    SSLCertificateFile /etc/letsencrypt/live/vagasaude.pt/fullchain.pem
+    SSLCertificateKeyFile /etc/letsencrypt/live/vagasaude.pt/privkey.pem
+</VirtualHost>
+</IfModule>
 ```
-vagasaude.pt, www.vagasaude.pt {
-    tls /etc/caddy/origin.crt /etc/caddy/origin.key
 
-    encode zstd gzip
+Ativar uma única vez os módulos necessários:
 
-    # Redireciona www → apex (opcional)
-    @www host www.vagasaude.pt
-    redir @www https://vagasaude.pt{uri} permanent
-
-    reverse_proxy web:3000
-
-    header {
-        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
-        X-Content-Type-Options "nosniff"
-        Referrer-Policy "strict-origin-when-cross-origin"
-        X-Frame-Options "SAMEORIGIN"
-    }
-}
+```bash
+sudo a2enmod proxy proxy_http headers
+sudo apache2ctl configtest
+sudo systemctl reload apache2
 ```
 
-Alternativa (sem Cloudflare como proxy): usa `tls interno@email` e deixa o
-Caddy obter certificados Let's Encrypt automaticamente — mas nesse caso perdes
-CDN/WAF da Cloudflare.
+Executar `configtest` antes de cada reload. A configuração da porta 80 continua
+a redirecionar para HTTPS.
 
 ---
 
 ## 4. Cloudflare
 
 - **DNS:** `A` record de `vagasaude.pt` → IP do VPS, com **proxy ativado** (nuvem laranja). Igual para `www`.
-- **SSL/TLS:** modo **Full (strict)** + Origin Certificate no Caddy.
+- **SSL/TLS:** modo **Full (strict)**; o certificado Let's Encrypt existente
+  no Apache é válido na ligação Cloudflare → origem.
 - **Cache:** cache agressivo de estáticos (`/_next/static/*`, imagens). Regras de cache para não cachear páginas dinâmicas/API.
 - **WAF:** regras básicas + rate limiting no `/api/*`.
 - **Bot protection:** ativar para mitigar scraping do próprio site.
@@ -231,10 +229,12 @@ cópia nunca testada não é uma garantia de recuperação.
 
 1. Clonar o repo no VPS.
 2. Copiar `.env.example` → `.env` e preencher segredos.
-3. Colocar `origin.crt`/`origin.key` da Cloudflare em `./caddy/`.
-4. `docker compose build && docker compose up -d`.
+3. Ativar/iniciar Docker e executar `docker compose build && docker compose up -d`.
+4. Confirmar primeiro `curl http://127.0.0.1:3010/api/health`.
 5. Correr migrações: `docker compose exec web npx prisma migrate deploy`.
 6. Seed inicial: `docker compose exec web npx prisma db seed`.
-7. Configurar Cloudflare Access para `/admin/*` e testar o magic link.
-8. Configurar a Storage Box, executar um backup e testar o restauro.
-9. Verificar `https://vagasaude.pt` e `/api/health`.
+7. Guardar o VirtualHost atual, configurar o reverse proxy e executar
+   `sudo apache2ctl configtest` antes do reload.
+8. Configurar Cloudflare Access para `/admin/*` e testar o magic link.
+9. Configurar a Storage Box, executar um backup e testar o restauro.
+10. Verificar `https://vagasaude.pt` e `/api/health`.

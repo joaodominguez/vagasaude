@@ -14,7 +14,7 @@ gerar cada peça do projeto, por ordem de execução. Ajusta os detalhes entre
 ```
 És um engenheiro sénior a construir o VagaSaude.pt, um agregador de vagas de
 saúde em Portugal. Stack: Next.js 15 (App Router, TypeScript), Prisma,
-PostgreSQL, Python + Playwright para scraping, Docker Compose, Caddy, Cloudflare,
+PostgreSQL, Python + Playwright para scraping, Docker Compose, Apache, Cloudflare,
 Resend para emails. Inclui um backoffice /admin para um único administrador e
 publicação automática de vagas válidas. Segue docs/PLANO.md, docs/DESIGN.md e
 docs/BACKOFFICE.md. Escreve código limpo, tipado, acessível e mobile-first. Não
@@ -30,19 +30,20 @@ portal de empregador ou IA de matching).
 Cria o esqueleto do monorepo do VagaSaude com esta estrutura:
 apps/web (Next.js 15 + TypeScript + Tailwind + shadcn/ui),
 packages/database (Prisma), scrapers/ (Python + Playwright),
-docker-compose.yml, Caddyfile, .env.example.
+docker-compose.yml, deploy/apache/ e .env.example.
 Configura workspaces (pnpm) e scripts base. Mostra todos os ficheiros de config.
 ```
 
 ---
 
-## 2. Infraestrutura (Docker + Caddy + Cloudflare)
+## 2. Infraestrutura (Docker + Apache + Cloudflare)
 
 ```
 Com base em docs/ARQUITETURA.md, gera o docker-compose.yml final (web, db,
-redis opcional, scraper, caddy), o Caddyfile com certificado de origem da
-Cloudflare, e o .env.example. Explica os passos de deploy no VPS Hetzner e a
-configuração DNS/SSL na Cloudflare (Full strict).
+redis opcional e scraper). Publica o Next.js apenas em 127.0.0.1:3010. Gera um
+exemplo de VirtualHost para o Apache já instalado, usando o certificado Let's
+Encrypt existente e reverse proxy para essa porta. Não instales Caddy nem
+ocupes diretamente as portas 80/443. Inclui .env.example e explica o deploy.
 ```
 
 ---

@@ -44,7 +44,7 @@
 | Base de Dados        | PostgreSQL 16                  | Docker, com `pg_trgm` para dedup/pesquisa |
 | Cache / Filas        | Redis 7 (opcional no início)   | Cache de listagens + fila de emails |
 | Scraping             | Python 3.12 + Playwright       | Contentor separado, corre por cron |
-| Reverse Proxy        | Caddy 2                        | HTTPS automático (mas ver nota Cloudflare) |
+| Reverse Proxy        | Apache 2 (já instalado)        | VirtualHost + proxy para `127.0.0.1:3010` |
 | Orquestração         | Docker Compose                 | Tudo contentorizado |
 | DNS + CDN + Proteção | Cloudflare                     | Proxy ativado, cache de estáticos, WAF |
 | Hosting              | Hetzner VPS                    | 4 vCPU, 8 GB RAM e 80 GB SSD recomendados |
@@ -54,10 +54,10 @@
 
 **Decisões e justificações:**
 - **Prisma vs Drizzle:** recomendado **Prisma** para o MVP — melhor DX, migrações maduras e integração direta com Next.js. Drizzle é uma alternativa válida se quiseres SQL mais próximo do metal.
-- **Caddy + Cloudflare:** com o proxy da Cloudflare ativo, o SSL público é terminado na Cloudflare. Usa **Cloudflare "Full (strict)"** com um certificado de origem da Cloudflare no Caddy (ver [`ARQUITETURA.md`](./ARQUITETURA.md)).
+- **Apache + Cloudflare:** o Apache existente mantém os VirtualHosts e o certificado Let's Encrypt. A Cloudflare usa **Full (strict)** e o Apache encaminha o domínio para o Next.js em `127.0.0.1:3010` (ver [`ARQUITETURA.md`](./ARQUITETURA.md)).
 - **Redis opcional:** não é bloqueante para o MVP. Introduzir quando a listagem precisar de cache ou quando os emails precisarem de fila.
 - **Resend:** DX simples, bom free tier, ótimo para começar. Configurar SPF/DKIM/DMARC no domínio.
-- **Alojamento:** aplicação, backoffice, base de dados, Redis, scrapers, Caddy e monitorização correm na Hetzner. Cloudflare e Resend são os serviços externos aprovados.
+- **Alojamento:** aplicação, backoffice, base de dados, Redis, scrapers, Apache e monitorização correm na Hetzner. Cloudflare e Resend são os serviços externos aprovados.
 - **Backoffice:** integrado em `/admin`; sem sistema de equipas/RBAC no MVP, porque será usado por um único administrador.
 
 ---
@@ -72,11 +72,11 @@
         ┌────────────┴─────────────┐
         │        Hetzner VPS        │
         │  ┌─────────────────────┐  │
-        │  │  Caddy (80/443)     │  │  reverse proxy + TLS de origem
+        │  │  Apache (80/443)    │  │  VirtualHost existente + Let's Encrypt
         │  └──────────┬──────────┘  │
         │             │             │
         │  ┌──────────▼──────────┐  │
-        │  │  Next.js (web)      │  │  App Router, SSR/ISR + API routes
+        │  │  Next.js (:3010)    │  │  App Router, SSR/ISR + API routes
         │  └──────────┬──────────┘  │
         │             │             │
         │  ┌──────────▼──────────┐  │
@@ -91,7 +91,7 @@
         └───────────────────────────┘
 ```
 
-Detalhe completo (`docker-compose.yml`, `Caddyfile`, redes, volumes, backups) em [`ARQUITETURA.md`](./ARQUITETURA.md).
+Detalhe completo (`docker-compose.yml`, VirtualHost Apache, redes, volumes e backups) em [`ARQUITETURA.md`](./ARQUITETURA.md).
 
 ---
 
@@ -185,7 +185,8 @@ vagasaude/
 │   └── run.py               # orquestrador (cron)
 ├── docs/                    # este plano e documentos de apoio
 ├── docker-compose.yml
-├── Caddyfile
+├── deploy/
+│   └── apache/                # exemplo do VirtualHost/reverse proxy
 ├── .env.example
 └── README.md
 ```
@@ -199,7 +200,7 @@ Estrutura detalhada de componentes em [`COMPONENTES-REACT.md`](./COMPONENTES-REA
 Roadmap detalhado com checklist por tarefa em [`ROADMAP.md`](./ROADMAP.md). Resumo:
 
 ### Fase 1 — Fundação
-- Setup Docker Compose (Next.js + PostgreSQL + Caddy).
+- Setup Docker Compose (Next.js + PostgreSQL), integrado com o Apache existente.
 - Configuração Cloudflare + DNS.
 - Schema da base de dados (Prisma) + seed de distritos/profissões.
 - Design system claro/escuro + página inicial e listagem básica (dados seed/mock).
@@ -289,7 +290,7 @@ Nenhuma monetização é ativada no MVP. O foco é audiência e utilidade primei
 
 1. Criar o esqueleto do monorepo (`apps/web`, `packages/database`, `scrapers`).
 2. Implementar os tokens visuais, temas e componentes base de [`DESIGN.md`](./DESIGN.md).
-3. Subir `docker-compose.yml` + `Caddyfile` (ver [`ARQUITETURA.md`](./ARQUITETURA.md)).
+3. Subir `docker-compose.yml` e configurar o VirtualHost Apache para `127.0.0.1:3010` (ver [`ARQUITETURA.md`](./ARQUITETURA.md)).
 4. Definir e migrar o schema (ver [`MODELO-DADOS.md`](./MODELO-DADOS.md)) + seed de distritos/profissões.
 5. Construir a listagem com dados seed, autenticação e estrutura do backoffice.
 6. Implementar o primeiro scraper (BEP), publicação automática e fila de revisão.

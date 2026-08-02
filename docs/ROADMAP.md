@@ -10,8 +10,8 @@ As fases estão ordenadas por dependência técnica, não por calendário.
 **Objetivo:** infraestrutura reproduzível + esqueleto navegável.
 
 - [ ] Criar monorepo (`apps/web`, `packages/database`, `scrapers`, `docs`).
-- [ ] `docker-compose.yml` com `web`, `db`, `caddy` (Redis/scraper podem entrar depois).
-- [ ] `Caddyfile` + certificado de origem Cloudflare.
+- [ ] `docker-compose.yml` com `web` ligado apenas a `127.0.0.1:3010` e `db` (Redis/scraper podem entrar depois).
+- [ ] VirtualHost Apache como reverse proxy + certificado Let's Encrypt existente.
 - [ ] `.env.example` completo.
 - [ ] DNS na Cloudflare (`A` + proxy) e SSL **Full (strict)**.
 - [ ] Schema Prisma inicial, incluindo estados de vaga, `ScraperRun` e `AdminAuditLog`.
