@@ -48,3 +48,21 @@ class HttpClient:
         response = self.client.post(url, json=payload, headers=headers, **kwargs)
         response.raise_for_status()
         return response.json()
+
+    def post_form(self, url: str, data: dict[str, Any], **kwargs: Any) -> str:
+        response = self.post_form_response(url, data, **kwargs)
+        return response.text
+
+    def post_form_response(self, url: str, data: dict[str, Any], **kwargs: Any):
+        self._throttle()
+        response = self.client.post(
+            url,
+            data=data,
+            headers={
+                "Content-Type": "application/x-www-form-urlencoded",
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            },
+            **kwargs,
+        )
+        response.raise_for_status()
+        return response

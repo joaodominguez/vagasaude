@@ -137,9 +137,8 @@ export default async function AdminPage() {
               />
             </div>
             <p className="mt-6 rounded-xl bg-primary-soft p-3 text-xs leading-5 text-muted">
-              Scrapers privados ativos: CUF, Luz Saúde, Trofa Saúde, Lusíadas e
-              Joaquim Chaves.
-              O setor público (BEP) será ligado na fase seguinte.
+              Fontes ativas: BEP (público), CUF, Luz Saúde, Trofa Saúde, Lusíadas
+              e Joaquim Chaves. Histórico de scrapes em /admin/scrapers.
             </p>
           </section>
         </div>

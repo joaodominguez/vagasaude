@@ -76,10 +76,80 @@ function normalize(text: string) {
     .trim();
 }
 
+function normalizeCompany(company: string) {
+  let value = normalize(company);
+  value = value
+    .replace(/\b(hospital|clinica|grupo|saúde|saude)\b/g, " ")
+    .replace(/\b(e p e|epe|sa|s a)\b/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  // Aliases de grupos privados conhecidos.
+  if (value.includes("cuf") || value.includes("jose de mello")) return "cuf";
+  if (value.includes("luz")) return "luz saude";
+  if (value.includes("lusiadas")) return "lusiadas";
+  if (value.includes("trofa")) return "trofa saude";
+  if (value.includes("joaquim chaves") || value === "jcs") return "joaquim chaves";
+  return value;
+}
+
 export function makeDedupeHash(title: string, company: string, district: string) {
   return createHash("sha256")
-    .update(`${normalize(title)}|${normalize(company)}|${normalize(district)}`)
+    .update(
+      `${normalize(title)}|${normalizeCompany(company)}|${normalize(district)}`,
+    )
     .digest("hex");
+}
+
+export function guessProfession(title: string, fallback = "Outros") {
+  const t = normalize(title);
+  const rules: Array<[string[], string]> = [
+    [["enfermeir", "enfermagem"], "Enfermagem"],
+    [
+      ["auxiliar", "acao medica", "accao medica", "assistente operacional", "geriatr"],
+      "Auxiliares",
+    ],
+    [["medico", "medica ", "medicas", "cirurgi", "internato"], "Medicina"],
+    [["fisioterapeut", "fisioterap"], "Fisioterapia"],
+    [["farmaceut", "farmacia"], "Farmácia"],
+    [
+      [
+        "radiologia",
+        "cardiopneumolog",
+        "analises",
+        "laboratorio",
+        "diagnostico",
+        "terapeut",
+        "audiolog",
+        "imagiolog",
+        "ortoptic",
+        "ortotic",
+        "neurofisiolog",
+        "anatomia patol",
+        "oftalmolog",
+        "higienista",
+      ],
+      "Técnico de Saúde",
+    ],
+    [["psicolog"], "Psicologia"],
+    [["nutric", "dietista"], "Nutrição"],
+    [["assistente social"], "Assistência Social"],
+    [
+      [
+        "administrativ",
+        "recepcion",
+        "rececion",
+        "secretaria",
+        "assistente dent",
+        "gestor de cliente",
+        "contact center",
+      ],
+      "Administrativo",
+    ],
+  ];
+  for (const [needles, label] of rules) {
+    if (needles.some((needle) => t.includes(needle))) return label;
+  }
+  return fallback;
 }
 
 export function slugify(text: string) {
@@ -276,10 +346,11 @@ export async function ingestJobs(source: string, incoming: IngestJobInput[]) {
     const existingSameSource = bySourceId.get(`${source}:${sourceId}`);
     const existingHash = byHash.get(dedupeHash);
     const description = cleanDescription(item.description?.trim() || title);
-    const incomplete =
-      !description ||
-      description.length < 40 ||
-      !item.profession?.trim();
+    const profession =
+      !item.profession?.trim() || item.profession.trim() === "Outros"
+        ? guessProfession(title, item.profession?.trim() || "Outros")
+        : item.profession.trim();
+    const incomplete = !description || description.length < 40 || !profession;
 
     let status: StoredJob["status"] =
       item.status || (incomplete ? "pending_review" : "published");
@@ -300,7 +371,7 @@ export async function ingestJobs(source: string, incoming: IngestJobInput[]) {
       company,
       locationDistrict: district,
       locationConcelho: item.location_concelho?.trim() || null,
-      profession: item.profession?.trim() || "Outros",
+      profession,
       specialty: item.specialty?.trim() || null,
       sector: item.sector,
       contractType: item.contract_type?.trim() || null,
@@ -355,6 +426,25 @@ export async function ingestJobs(source: string, incoming: IngestJobInput[]) {
     review,
     total: file.jobs.filter((job) => job.status === "published").length,
   };
+}
+
+export async function reclassifyOutrosProfessions() {
+  const file = await readJobsFile();
+  let changed = 0;
+  const now = new Date().toISOString();
+  for (const job of file.jobs) {
+    if (job.profession !== "Outros") continue;
+    const next = guessProfession(job.title, "Outros");
+    if (next === "Outros") continue;
+    job.profession = next;
+    job.updatedAt = now;
+    changed += 1;
+  }
+  if (changed > 0) {
+    file.updatedAt = now;
+    await writeJobsFile(file);
+  }
+  return { changed, total: file.jobs.length };
 }
 
 export async function getJobStats() {

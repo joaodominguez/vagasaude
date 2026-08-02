@@ -298,6 +298,12 @@ select {
   background: var(--primary-soft);
 }
 
+.tag-danger {
+  border-color: color-mix(in srgb, var(--danger) 35%, var(--border));
+  color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 12%, var(--surface));
+}
+
 .section-title {
   margin-top: 0.45rem;
   font-size: clamp(1.65rem, 3vw, 2.25rem);

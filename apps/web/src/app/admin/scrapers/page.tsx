@@ -1,8 +1,14 @@
 import { getJobStats } from "@/lib/job-store";
+import { latestRunBySource, listScraperRuns } from "@/lib/scraper-runs";
 
 export const dynamic = "force-dynamic";
 
 const SCRAPERS = [
+  {
+    slug: "bep",
+    name: "BEP — Bolsa de Emprego Público",
+    schedule: "A cada 6 horas",
+  },
   {
     slug: "cuf",
     name: "CUF (Teamtailor)",
@@ -31,7 +37,11 @@ const SCRAPERS = [
 ];
 
 export default async function AdminScrapersPage() {
-  const stats = await getJobStats();
+  const [stats, latest, runs] = await Promise.all([
+    getJobStats(),
+    latestRunBySource(),
+    listScraperRuns(30),
+  ]);
 
   return (
     <main className="p-5 sm:p-8 lg:p-10">
@@ -51,29 +61,86 @@ export default async function AdminScrapersPage() {
 
         <section className="content-card mt-8 overflow-hidden">
           <div className="divide-y divide-border">
-            {SCRAPERS.map((scraper) => (
-              <article
-                key={scraper.slug}
-                className="grid gap-3 px-5 py-4 sm:grid-cols-[1fr_auto] sm:items-center"
-              >
-                <div>
-                  <h2 className="text-sm font-extrabold">{scraper.name}</h2>
-                  <p className="mt-1 text-xs text-muted">
-                    Cron: {scraper.schedule} · Publicadas:{" "}
-                    {stats.bySource[scraper.slug] || 0}
-                  </p>
-                </div>
-                <span className="tag tag-primary w-fit">Ativo</span>
-              </article>
-            ))}
+            {SCRAPERS.map((scraper) => {
+              const last = latest.get(scraper.slug);
+              const failed = last?.status === "error";
+              return (
+                <article
+                  key={scraper.slug}
+                  className="grid gap-3 px-5 py-4 sm:grid-cols-[1fr_auto] sm:items-center"
+                >
+                  <div>
+                    <h2 className="text-sm font-extrabold">{scraper.name}</h2>
+                    <p className="mt-1 text-xs text-muted">
+                      Cron: {scraper.schedule} · Publicadas:{" "}
+                      {stats.bySource[scraper.slug] || 0}
+                      {last
+                        ? ` · Última: ${new Date(last.finishedAt).toLocaleString("pt-PT")} (${last.found} encontradas)`
+                        : ""}
+                    </p>
+                    {failed && last?.error ? (
+                      <p className="mt-1 text-xs text-danger">{last.error}</p>
+                    ) : null}
+                  </div>
+                  <span
+                    className={`tag w-fit ${failed ? "tag-danger" : "tag-primary"}`}
+                  >
+                    {failed ? "Erro" : "Ativo"}
+                  </span>
+                </article>
+              );
+            })}
           </div>
         </section>
 
-        <p className="mt-5 text-sm leading-6 text-muted">
-          A execução manual e o histórico detalhado de erros entram na próxima
-          iteração do backoffice. Por agora a recolha corre via cron no
-          servidor.
-        </p>
+        <section className="mt-8">
+          <h2 className="text-lg font-extrabold tracking-[-0.03em]">
+            Histórico recente
+          </h2>
+          <div className="content-card mt-4 overflow-hidden">
+            <div className="divide-y divide-border">
+              {runs.length === 0 ? (
+                <p className="px-5 py-6 text-sm text-muted">
+                  Ainda não há execuções registadas.
+                </p>
+              ) : (
+                runs.map((run) => (
+                  <article
+                    key={run.id}
+                    className="flex flex-wrap items-start justify-between gap-3 px-5 py-3 text-sm"
+                  >
+                    <div>
+                      <p className="font-semibold">{run.source}</p>
+                      <p className="mt-0.5 text-xs text-muted">
+                        {run.found} encontradas
+                        {run.created != null ? ` · ${run.created} novas` : ""}
+                        {run.updated != null ? ` · ${run.updated} atualizadas` : ""}
+                        {run.elapsed != null ? ` · ${run.elapsed}s` : ""}
+                      </p>
+                      {run.error ? (
+                        <p className="mt-1 text-xs text-danger">{run.error}</p>
+                      ) : null}
+                    </div>
+                    <div className="text-right text-xs text-muted">
+                      <p
+                        className={
+                          run.status === "ok"
+                            ? "font-semibold text-success"
+                            : "font-semibold text-danger"
+                        }
+                      >
+                        {run.status === "ok" ? "OK" : "Erro"}
+                      </p>
+                      <p className="mt-1">
+                        {new Date(run.finishedAt).toLocaleString("pt-PT")}
+                      </p>
+                    </div>
+                  </article>
+                ))
+              )}
+            </div>
+          </div>
+        </section>
       </div>
     </main>
   );

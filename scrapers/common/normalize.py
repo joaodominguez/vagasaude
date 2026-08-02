@@ -198,9 +198,18 @@ def guess_district(city: str | None, region: str | None = None) -> str:
 def guess_profession(title: str, fallback: str | None = None) -> str:
     t = norm(title)
     rules = [
-        (("enfermeir",), "Enfermagem"),
-        (("auxiliar", "acao medica", "accao medica", "geriatr"), "Auxiliares"),
-        (("medico", "medica ", "cirurgi"), "Medicina"),
+        (("enfermeir", "enfermagem"), "Enfermagem"),
+        (
+            (
+                "auxiliar",
+                "acao medica",
+                "accao medica",
+                "assistente operacional",
+                "geriatr",
+            ),
+            "Auxiliares",
+        ),
+        (("medico", "medica ", "medicas", "cirurgi", "internato"), "Medicina"),
         (("fisioterapeut", "fisioterap"), "Fisioterapia"),
         (("farmaceut", "farmacia"), "Farmácia"),
         (
@@ -212,30 +221,59 @@ def guess_profession(title: str, fallback: str | None = None) -> str:
                 "laboratorio",
                 "tdt",
                 "diagnostico",
+                "terapeut",
                 "audiolog",
                 "imagiolog",
-                "terapeut",
+                "ortoptic",
+                "ortotic",
+                "neurofisiolog",
+                "anatomia patol",
+                "oftalmolog",
+                "higienista",
             ),
             "Técnico de Saúde",
         ),
         (("psicolog",), "Psicologia"),
         (("nutric", "dietista"), "Nutrição"),
         (("assistente social",), "Assistência Social"),
-        (("administrativ", "recepcion", "rececion", "secretaria"), "Administrativo"),
+        (
+            (
+                "administrativ",
+                "recepcion",
+                "rececion",
+                "secretaria",
+                "assistente dent",
+                "gestor de cliente",
+                "contact center",
+            ),
+            "Administrativo",
+        ),
+        (
+            (
+                "recursos humanos",
+                "qualidade",
+                "logistica",
+                "armazem",
+                "motorista",
+                "cozinheir",
+                "restauracao",
+                "manutencao",
+                "contabil",
+                "financeiro",
+                "helpdesk",
+                "informatica",
+                "sistemas",
+                "data analytics",
+                "engenheir",
+            ),
+            "Outros",
+        ),
     ]
     for needles, label in rules:
         if any(n in t for n in needles):
             return label
     if fallback:
-        fb = norm(fallback)
-        if "enferm" in fb:
-            return "Enfermagem"
-        if "auxiliar" in fb:
-            return "Auxiliares"
-        if "farmac" in fb:
-            return "Farmácia"
-        if "tecn" in fb or "diagn" in fb:
-            return "Técnico de Saúde"
+        return guess_profession(fallback)
     return "Outros"
 
 

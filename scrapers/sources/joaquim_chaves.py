@@ -5,7 +5,6 @@ import re
 from common.http import HttpClient
 from common.models import BaseScraper, JobPayload
 from common.normalize import (
-    guess_contract,
     guess_district,
     guess_profession,
     html_to_text,
@@ -118,10 +117,17 @@ def _guess_jcs_contract(
     description: str,
 ) -> str | None:
     params = process_parameters or ""
-    if "[P2:V1]" in params or "part-time" in title.lower():
+    blob = f"{title}\n{description[:500]}".lower()
+    if "[P2:V1]" in params or "part-time" in blob or "part time" in blob:
         return "Tempo parcial"
+    if "prestação de serviços" in blob or "prestacao de servicos" in blob:
+        return "Prestação de serviços"
     if "[P2:V2]" in params:
         return "Tempo inteiro"
-    if "prestação de serviços" in title.lower() or "prestacao de servicos" in title.lower():
-        return "Prestação de serviços"
-    return guess_contract(f"{title}\n{description[:400]}")
+    if "turno" in blob:
+        return "Turnos"
+    if "sem termo" in blob or "40 horas" in blob or "full-time" in blob:
+        return "Tempo inteiro"
+    if "substitui" in blob:
+        return "Contrato"
+    return None

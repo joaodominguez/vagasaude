@@ -6,6 +6,11 @@ const SOURCE_META: Record<
   string,
   { name: string; url: string; sector: string }
 > = {
+  bep: {
+    name: "BEP — Bolsa de Emprego Público",
+    url: "https://www.bep.gov.pt/pages/oferta/Oferta_Pesquisa_basica.aspx",
+    sector: "Público",
+  },
   cuf: {
     name: "CUF / José de Mello",
     url: "https://carreiras.cuf.pt/",
