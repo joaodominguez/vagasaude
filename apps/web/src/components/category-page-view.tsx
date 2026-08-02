@@ -58,7 +58,6 @@ export function CategoryPageView({
             >
               <ArrowLeft size={16} /> Voltar às vagas
             </Link>
-            <p className="section-kicker">Categoria</p>
             <h1 className="mt-2 text-3xl font-extrabold tracking-[-0.045em] sm:text-4xl">
               {category.title}
             </h1>
