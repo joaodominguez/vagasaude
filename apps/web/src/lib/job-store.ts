@@ -110,12 +110,10 @@ export function makeDedupeHash(title: string, company: string, district: string)
 
 export function guessProfession(title: string, fallback = "Outros") {
   const t = normalize(title);
-  // Só em títulos curtos — evita texto de descrição com a palavra "formação".
+  // Só títulos que começam por "Formação …" (não texto de descrição).
   if (
-    t.length < 90 &&
-    (t.startsWith("formacao ") ||
-      ` ${t} `.includes(" formacao de ") ||
-      ` ${t} `.includes(" formacao para ")) &&
+    t.length < 70 &&
+    t.startsWith("formacao ") &&
     !t.includes("interno") &&
     !t.includes("formacao especifica")
   ) {
