@@ -201,6 +201,13 @@ def guess_district(city: str | None, region: str | None = None) -> str:
 
 def guess_profession(title: str, fallback: str | None = None) -> str:
     t = norm(title)
+    # Só em títulos curtos — evita texto de descrição com a palavra "formação".
+    if len(t) < 90 and (
+        (t.startswith("formacao ") or " formacao de " in f" {t} " or " formacao para " in f" {t} ")
+        and "interno" not in t
+        and "formacao especifica" not in t
+    ):
+        return "Formação"
     rules = [
         # Formação antes de Enfermagem (ex.: "Formador de Enfermagem").
         (

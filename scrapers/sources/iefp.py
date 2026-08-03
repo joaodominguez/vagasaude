@@ -13,20 +13,47 @@ BASE = "https://iefponline.iefp.pt"
 SEARCH = f"{BASE}/IEFP/pesquisas/search.do"
 DETAIL = f"{BASE}/IEFP/pesquisas/detalheOfertas2.do"
 
-# Facetas dcpp (CNP) com volume útil em saúde.
+# Facetas CNP com volume útil em saúde clínica.
 DCPP_TERMS = [
     "ENFERMEIRO DE CUIDADOS GERAIS",
     "FISIOTERAPEUTA",
     "TERAPEUTA OCUPACIONAL",
     "TERAPEUTA DA FALA",
-    "FORMADOR",
-    "DELEGADO DE INFORMAÇÃO MÉDICA / FARMACÊUTICA",
 ]
 
-HEALTH_TITLE_RE = re.compile(
+# Pesquisa livre — o IEFP é difuso; filtramos no detalhe pelo título.
+TEXT_QUERIES = [
+    "formador",
+    "formadora",
+    "delegado informação médica",
+    "visitador médico",
+]
+
+CLINICAL_TITLE_RE = re.compile(
     r"enferm|fisioterap|terapeuta|auxiliar de sa|m[eé]dic|"
-    r"farmaceut|psicolog|nutric|radiolog|sa[uú]de|"
-    r"formador|delegad|visitador\s+m[eé]dic|comercial\s+farma",
+    r"farmaceut|psicolog|nutric|radiolog|sa[uú]de",
+    re.I,
+)
+
+FORMADOR_TITLE_RE = re.compile(
+    r"\bformador(?:a|es|as)?\b|"
+    r"instrutor(?:a)?\s+de\s+(?:socorros|sbv|suporte)|"
+    r"^forma[cç][aã]o\b",
+    re.I,
+)
+
+COMERCIAL_TITLE_RE = re.compile(
+    r"delegad[oa]\s+de\s+informa[cç][aã]o|"
+    r"visitador(?:a)?\s+m[eé]dic|"
+    r"comercial\s+farm",
+    re.I,
+)
+
+HEALTH_CONTEXT_RE = re.compile(
+    r"enferm|sa[uú]de|m[eé]dic|farm|fisioterap|terapeuta|"
+    r"socorros|sbv|suporte\s+b[aá]sico|auxiliar\s+de\s+a[cç]|"
+    r"cl[ií]nic|hospital|cuidados\s+de\s+sa|dent[aá]r|"
+    r"radiolog|psicolog|nutri[cç]",
     re.I,
 )
 
@@ -38,7 +65,6 @@ class IefpScraper(BaseScraper):
     def fetch(self) -> list[JobPayload]:
         client = HttpClient(timeout=60.0, min_interval=0.45)
         try:
-            # Headers de browser — o IEFP é sensível ao UA.
             client.client.headers.update(
                 {
                     "User-Agent": (
@@ -52,7 +78,13 @@ class IefpScraper(BaseScraper):
             ids: list[str] = []
             seen: set[str] = set()
             for dcpp in DCPP_TERMS:
-                for offer_id in self._list_ids(client, dcpp):
+                for offer_id in self._list_ids(client, dcpp=dcpp):
+                    if offer_id in seen:
+                        continue
+                    seen.add(offer_id)
+                    ids.append(offer_id)
+            for text in TEXT_QUERIES:
+                for offer_id in self._list_ids(client, text=text):
                     if offer_id in seen:
                         continue
                     seen.add(offer_id)
@@ -66,16 +98,23 @@ class IefpScraper(BaseScraper):
         finally:
             client.close()
 
-    def _list_ids(self, client: HttpClient, dcpp: str) -> list[str]:
-        query = urlencode(
-            {
-                "cat": "ofertaEmprego",
-                "dcpp": dcpp,
-                "currentPage": "1",
-                "resultsPerPage": "100",
-            }
-        )
-        html = client.get_text(f"{SEARCH}?{query}")
+    def _list_ids(
+        self,
+        client: HttpClient,
+        *,
+        dcpp: str | None = None,
+        text: str | None = None,
+    ) -> list[str]:
+        params: dict[str, str] = {
+            "cat": "ofertaEmprego",
+            "currentPage": "1",
+            "resultsPerPage": "100",
+        }
+        if dcpp:
+            params["dcpp"] = dcpp
+        if text:
+            params["text"] = text
+        html = client.get_text(f"{SEARCH}?{urlencode(params)}")
         ids: list[str] = []
         for offer_id in re.findall(r"idOferta=(\d+)", html):
             if offer_id not in ids:
@@ -85,13 +124,17 @@ class IefpScraper(BaseScraper):
     def _detail(self, client: HttpClient, offer_id: str) -> JobPayload | None:
         html = client.get_text(f"{DETAIL}?idOferta={offer_id}")
         posting = _json_ld_job(html)
-        title = (posting or {}).get("title") or _h1(html)
-        if not title or not HEALTH_TITLE_RE.search(title):
+        title = ((posting or {}).get("title") or _h1(html) or "").strip()
+        if not title:
             return None
 
         description = html_to_text((posting or {}).get("description") or "")
         if not description:
             description = _section_text(html) or title
+        blob = f"{title}\n{description}"
+
+        if not _is_relevant(title, blob):
+            return None
 
         locality = ""
         region = ""
@@ -112,7 +155,6 @@ class IefpScraper(BaseScraper):
             except ValueError:
                 amount = None
             if amount is not None and amount > 0:
-                # JSON-LD do IEFP por vezes marca valor horário como MONTH.
                 if amount < 80:
                     salary = f"{amount:g} €/hora"
                 else:
@@ -130,11 +172,10 @@ class IefpScraper(BaseScraper):
         if expires_at and len(expires_at) == 10:
             expires_at = f"{expires_at}T00:00:00+00:00"
 
-        # O JSON-LD do IEFP usa a plataforma como hiringOrganization.
         company = "Entidade anunciante (via IEFP)"
 
         return JobPayload(
-            title=title.strip(),
+            title=title,
             company=company,
             location_district=guess_district(locality, region),
             location_concelho=locality or None,
@@ -151,6 +192,14 @@ class IefpScraper(BaseScraper):
             published_at=published_at,
             expires_at=expires_at,
         )
+
+
+def _is_relevant(title: str, blob: str) -> bool:
+    if COMERCIAL_TITLE_RE.search(title):
+        return True
+    if FORMADOR_TITLE_RE.search(title):
+        return bool(HEALTH_CONTEXT_RE.search(blob))
+    return bool(CLINICAL_TITLE_RE.search(title))
 
 
 def _json_ld_job(html: str) -> dict | None:
