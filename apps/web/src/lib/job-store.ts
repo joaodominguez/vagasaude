@@ -666,12 +666,9 @@ export async function reclassifyOutrosProfessions() {
   const now = new Date().toISOString();
   for (const job of file.jobs) {
     if (job.status !== "published" && job.status !== "pending_review") continue;
-    const next = guessProfession(job.title, job.profession || "Outros");
+    // Sempre a partir do título — sem fallback para a categoria actual.
+    const next = guessProfession(job.title, "Outros");
     if (!next || next === job.profession) continue;
-    // Não descer para Outros se já tem categoria útil.
-    if (next === "Outros" && job.profession && job.profession !== "Outros") {
-      continue;
-    }
     job.profession = next;
     job.updatedAt = now;
     changed += 1;
