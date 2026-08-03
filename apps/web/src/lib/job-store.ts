@@ -399,7 +399,15 @@ function isPastExpiry(job: StoredJob) {
 
 export async function listJobCards() {
   const jobs = await listStoredJobs("published");
-  return jobs.filter((job) => !isPastExpiry(job)).map(toJobCard);
+  return jobs
+    .filter((job) => !isPastExpiry(job))
+    .map(toJobCard)
+    .sort((a, b) => {
+      // Anúncios mais recentes primeiro (não updatedAt de re-scrape).
+      const byPublished = b.publishedAt.localeCompare(a.publishedAt);
+      if (byPublished !== 0) return byPublished;
+      return a.title.localeCompare(b.title, "pt");
+    });
 }
 
 export async function getJobCard(slug: string) {

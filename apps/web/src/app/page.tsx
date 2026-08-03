@@ -22,6 +22,13 @@ export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const jobs = await getJobs();
+  const recentJobs = [...jobs]
+    .sort((a, b) => {
+      const byPublished = b.publishedAt.localeCompare(a.publishedAt);
+      if (byPublished !== 0) return byPublished;
+      return a.title.localeCompare(b.title, "pt");
+    })
+    .slice(0, 6);
   const districtCounts = jobs.reduce<Record<string, number>>((acc, job) => {
     const key = job.district || "Portugal";
     acc[key] = (acc[key] || 0) + 1;
@@ -85,7 +92,7 @@ export default async function Home() {
           </div>
 
           <div className="grid min-w-0 gap-3 sm:grid-cols-2">
-            {jobs.slice(0, 6).map((job) => (
+            {recentJobs.map((job) => (
               <JobCard key={job.slug} job={job} />
             ))}
           </div>
