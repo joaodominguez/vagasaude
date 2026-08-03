@@ -19,11 +19,14 @@ DCPP_TERMS = [
     "FISIOTERAPEUTA",
     "TERAPEUTA OCUPACIONAL",
     "TERAPEUTA DA FALA",
+    "FORMADOR",
+    "DELEGADO DE INFORMAÇÃO MÉDICA / FARMACÊUTICA",
 ]
 
 HEALTH_TITLE_RE = re.compile(
     r"enferm|fisioterap|terapeuta|auxiliar de sa|m[eé]dic|"
-    r"farmaceut|psicolog|nutric|radiolog|sa[uú]de",
+    r"farmaceut|psicolog|nutric|radiolog|sa[uú]de|"
+    r"formador|delegad|visitador\s+m[eé]dic|comercial\s+farma",
     re.I,
 )
 
