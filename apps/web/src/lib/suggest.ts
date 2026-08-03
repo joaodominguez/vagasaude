@@ -25,6 +25,10 @@ const ROLE_SEEDS = [
   "Rececionista",
   "Terapeuta da Fala",
   "Psicólogo",
+  "Formador",
+  "Delegado de Informação Médica",
+  "Key Account Manager",
+  "Coordenador de Enfermagem",
 ];
 
 function normalize(text: string) {

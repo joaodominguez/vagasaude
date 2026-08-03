@@ -50,6 +50,9 @@ const BY_PROFESSION: Record<
   Psicologia: { average: 1600, low: 1400, high: 2100 },
   Nutrição: { average: 1500, low: 1350, high: 1850 },
   "Assistência Social": { average: 1450, low: 1300, high: 1750 },
+  Formação: { average: 1600, low: 1300, high: 2200 },
+  "Comercial / Farma": { average: 2200, low: 1600, high: 3500 },
+  "Gestão & suporte": { average: 1800, low: 1400, high: 2800 },
   Administrativo: { average: 1150, low: 950, high: 1450 },
   Outros: { average: 1400, low: 1000, high: 2000 },
 };

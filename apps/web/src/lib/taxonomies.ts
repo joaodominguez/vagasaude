@@ -1,5 +1,9 @@
 import { districts as mainlandDistricts } from "@/lib/portugal-map";
 
+/**
+ * Áreas de saúde no produto — clínicas + ecossistema (formação, farma, suporte).
+ * Ordem: volume clínico habitual primeiro; depois áreas adjacentes.
+ */
 export const professions = [
   "Enfermagem",
   "Medicina",
@@ -7,6 +11,13 @@ export const professions = [
   "Auxiliares",
   "Técnico de Saúde",
   "Farmácia",
+  "Psicologia",
+  "Nutrição",
+  "Assistência Social",
+  "Formação",
+  "Comercial / Farma",
+  "Gestão & suporte",
+  "Administrativo",
 ] as const;
 
 export const sectors = ["Público", "Privado", "IPSS"] as const;

@@ -111,19 +111,69 @@ export function makeDedupeHash(title: string, company: string, district: string)
 export function guessProfession(title: string, fallback = "Outros") {
   const t = normalize(title);
   const rules: Array<[string[], string]> = [
-    [["enfermeir", "enfermagem", "nurse", "nursing"], "Enfermagem"],
+    // Formação antes de Enfermagem (ex.: "Formador de Enfermagem").
     [
       [
-        "auxiliar",
-        "acao medica",
-        "accao medica",
+        "formador",
+        "formadora",
+        "formadores",
+        "formadoras",
+        "tecnico de formacao",
+        "tecnica de formacao",
+        "responsavel de formacao",
+        "coordenador de formacao",
+        "coordenadora de formacao",
+        "instructor",
+        "instrutor",
+        "instrutora",
+        "e-learning",
+        "elearning",
+        "educacao clinica",
+        "treino clinico",
+      ],
+      "Formação",
+    ],
+    // Comercial/farma antes de Medicina/Farmácia (visitador médico, etc.).
+    [
+      [
+        "delegado de informacao",
+        "delegada de informacao",
+        "visitador medico",
+        "visitadora medica",
+        "medical science liaison",
+        "msl",
+        "key account",
+        "comercial farmaceut",
+        "comercial farma",
+        "sales medical",
+        "medical sales",
+        "business development",
+        "account manager",
+        "delegado comercial",
+        "delegada comercial",
+        "comercial de dispositivos",
+        "product specialist",
+        "especialista de produto",
+      ],
+      "Comercial / Farma",
+    ],
+    [
+      [
+        "auxiliar de acao medica",
+        "auxiliar de accao medica",
+        "auxiliar de acao",
+        "auxiliar de accao",
         "assistente operacional",
         "geriatr",
         "cuidador",
         "cuidados continuados",
+        "auxiliar de saude",
+        "auxiliar de enferm",
+        "auxiliar",
       ],
       "Auxiliares",
     ],
+    [["enfermeir", "enfermagem", "nurse", "nursing"], "Enfermagem"],
     // Antes de Medicina — "assistente de medicina dentária" não é médico.
     [["assistente dent", "assistente de medicina dent"], "Administrativo"],
     [
@@ -176,6 +226,33 @@ export function guessProfession(title: string, fallback = "Outros") {
     [["assistente social"], "Assistência Social"],
     [
       [
+        "coordenador",
+        "coordenadora",
+        "gestor de servico",
+        "gestora de servico",
+        "gestor hospital",
+        "director clinico",
+        "diretor clinico",
+        "diretora clinica",
+        "recursos humanos",
+        "qualidade",
+        "compliance",
+        "logistica",
+        "armazem",
+        "compras",
+        "aprovisionamento",
+        "manutencao",
+        "financeiro",
+        "contabil",
+        "administracao hospital",
+        "gestao de utentes",
+        "case manager",
+        "gestor de caso",
+      ],
+      "Gestão & suporte",
+    ],
+    [
+      [
         "administrativ",
         "recepcion",
         "rececion",
@@ -187,7 +264,7 @@ export function guessProfession(title: string, fallback = "Outros") {
     ],
   ];
   for (const [needles, label] of rules) {
-    if (needles.some((needle) => t.includes(needle))) return label;
+    if (needles.some((needle) => t.includes(normalize(needle)))) return label;
   }
   return fallback;
 }
@@ -575,9 +652,13 @@ export async function reclassifyOutrosProfessions() {
   let changed = 0;
   const now = new Date().toISOString();
   for (const job of file.jobs) {
-    if (job.profession !== "Outros") continue;
-    const next = guessProfession(job.title, "Outros");
-    if (next === "Outros") continue;
+    if (job.status !== "published" && job.status !== "pending_review") continue;
+    const next = guessProfession(job.title, job.profession || "Outros");
+    if (!next || next === job.profession) continue;
+    // Não descer para Outros se já tem categoria útil.
+    if (next === "Outros" && job.profession && job.profession !== "Outros") {
+      continue;
+    }
     job.profession = next;
     job.updatedAt = now;
     changed += 1;

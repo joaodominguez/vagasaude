@@ -8,14 +8,7 @@ import type { Metadata } from "next";
 
 export const CATEGORY_MIN_JOBS = 3;
 
-const PROFESSION_LABELS = [
-  ...taxonomyProfessions,
-  "Administrativo",
-  "Psicologia",
-  "Nutrição",
-  "Assistência Social",
-  "Outros",
-] as const;
+const PROFESSION_LABELS = [...taxonomyProfessions, "Outros"] as const;
 
 /** Distritos/regiões válidos para landings (continente + ilhas). */
 export const CATEGORY_DISTRICTS = categoryDistricts;
