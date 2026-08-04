@@ -193,12 +193,20 @@ export function guessProfession(title: string, fallback = "Outros") {
         "medicas",
         "medicina geral",
         "medicina dentar",
+        "medicina interna",
         "dentista",
         "cirurgi",
         "internato",
         "physician",
         "mgf",
         "clinica geral",
+        "assistente graduado",
+        "assistente hospitalar",
+        "neurolog",
+        "ginecolog",
+        "obstetr",
+        "pathologist",
+        "patologista",
       ],
       "Medicina",
     ],
@@ -219,6 +227,8 @@ export function guessProfession(title: string, fallback = "Outros") {
         "ortotic",
         "neurofisiolog",
         "anatomia patol",
+        "histopatholog",
+        "pathology",
         "oftalmolog",
         "higienista",
         "optometrist",
@@ -231,9 +241,9 @@ export function guessProfession(title: string, fallback = "Outros") {
       ],
       "Técnico de Saúde",
     ],
-    [["psicolog", "psychologist"], "Psicologia"],
+    [["psicolog", "psychologist", "neuropsychiatr"], "Psicologia"],
     [["nutric", "dietista"], "Nutrição"],
-    [["assistente social"], "Assistência Social"],
+    [["assistente social", "equipa comunitaria"], "Assistência Social"],
     [
       [
         "coordenador",
@@ -244,6 +254,7 @@ export function guessProfession(title: string, fallback = "Outros") {
         "gestor de unidade",
         "gestora de unidade",
         "administrador hospitalar",
+        "administrador",
         "director clinico",
         "diretor clinico",
         "diretora clinica",
@@ -257,10 +268,17 @@ export function guessProfession(title: string, fallback = "Outros") {
         "manutencao",
         "financeiro",
         "contabil",
+        "contas a receber",
         "administracao hospital",
         "gestao de utentes",
         "case manager",
         "gestor de caso",
+        "seguranca no trabalho",
+        "protecao de dados",
+        "cozinheir",
+        "restauracao",
+        "lab manager",
+        "lab administrator",
       ],
       "Gestão & suporte",
     ],
@@ -271,13 +289,35 @@ export function guessProfession(title: string, fallback = "Outros") {
         "rececion",
         "secretaria",
         "gestor de cliente",
+        "gestao do cliente",
+        "servico ao cliente",
         "contact center",
+        "assistente tecnico",
       ],
       "Administrativo",
     ],
   ];
   for (const [needles, label] of rules) {
     if (needles.some((needle) => t.includes(normalize(needle)))) return label;
+  }
+  // IT / investigação explícitos
+  if (
+    [
+      "motorista",
+      "helpdesk",
+      "informatica",
+      "sistemas",
+      "data analytics",
+      "engenheir",
+      "postdoc",
+      "postdoctoral",
+      "phd student",
+      "investigador",
+      "researcher",
+      "gestor aplicacional",
+    ].some((needle) => t.includes(needle))
+  ) {
+    return "Outros";
   }
   return fallback;
 }
@@ -490,7 +530,7 @@ function isPastExpiry(job: StoredJob) {
 export async function listJobCards() {
   const jobs = await listStoredJobs("published");
   return jobs
-    .filter((job) => !isPastExpiry(job))
+    .filter((job) => !isPastExpiry(job) && !isClosedNoticeTitle(job.title))
     .map(toJobCard)
     .sort((a, b) => {
       // Anúncios mais recentes primeiro (não updatedAt de re-scrape).
@@ -498,6 +538,16 @@ export async function listJobCards() {
       if (byPublished !== 0) return byPublished;
       return a.title.localeCompare(b.title, "pt");
     });
+}
+
+function isClosedNoticeTitle(title: string) {
+  const t = normalize(title);
+  return (
+    t.includes("lista de classificacao") ||
+    t.includes("lista de ordenacao") ||
+    t.includes("homologacao da lista") ||
+    t.includes("classificacao final")
+  );
 }
 
 export async function getJobCard(slug: string) {
@@ -666,6 +716,12 @@ export async function reclassifyOutrosProfessions() {
   const now = new Date().toISOString();
   for (const job of file.jobs) {
     if (job.status !== "published" && job.status !== "pending_review") continue;
+    if (isClosedNoticeTitle(job.title) && job.status === "published") {
+      job.status = "expired";
+      job.updatedAt = now;
+      changed += 1;
+      continue;
+    }
     // Sempre a partir do título — sem fallback para a categoria actual.
     const next = guessProfession(job.title, "Outros");
     if (!next || next === job.profession) continue;

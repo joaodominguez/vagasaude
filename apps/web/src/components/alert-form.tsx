@@ -8,10 +8,12 @@ export function AlertForm({
   compact = false,
   defaultDistrict = "",
   defaultProfession = "",
+  defaultSector = "",
 }: {
   compact?: boolean;
   defaultDistrict?: string;
   defaultProfession?: string;
+  defaultSector?: string;
 }) {
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">(
     "idle",
@@ -129,7 +131,7 @@ export function AlertForm({
             <span className="mb-2 block text-sm font-semibold">Sector</span>
             <select
               name="sector"
-              defaultValue=""
+              defaultValue={defaultSector}
               className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
             >
               <option value="">Todos</option>
@@ -145,6 +147,7 @@ export function AlertForm({
         <>
           <input type="hidden" name="district" value={defaultDistrict} />
           <input type="hidden" name="profession" value={defaultProfession} />
+          <input type="hidden" name="sector" value={defaultSector} />
         </>
       )}
 

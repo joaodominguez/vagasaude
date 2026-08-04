@@ -723,6 +723,16 @@ select {
   font-weight: 850;
 }
 
+.prose-page h3 {
+  margin-top: 1.25rem;
+  font-size: 1.02rem;
+  font-weight: 800;
+}
+
+.prose-page ol {
+  color: var(--muted);
+}
+
 .prose-page p {
   margin-top: 0.75rem;
   color: var(--muted);

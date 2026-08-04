@@ -31,6 +31,11 @@ const SOURCE_META: Record<
     url: "https://recrutamento.scml.pt/",
     sector: "IPSS",
   },
+  scm_esposende: {
+    name: "Santa Casa da Misericórdia de Esposende",
+    url: "https://www.scmesposende.pt/recrutamento",
+    sector: "IPSS",
+  },
   cuf: {
     name: "CUF / José de Mello",
     url: "https://carreiras.cuf.pt/",

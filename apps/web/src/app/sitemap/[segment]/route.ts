@@ -42,6 +42,7 @@ async function buildPagesSitemap() {
     urlEntry(`${SITE_URL}/`, now, "weekly", "1.0"),
     urlEntry(`${SITE_URL}/vagas`, now, "daily", "0.9"),
     urlEntry(`${SITE_URL}/alertas`, now, "weekly", "0.6"),
+    urlEntry(`${SITE_URL}/como-funciona`, now, "monthly", "0.5"),
     urlEntry(`${SITE_URL}/privacidade`, now, "weekly", "0.6"),
   ];
   return `<?xml version="1.0" encoding="UTF-8"?>

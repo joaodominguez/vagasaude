@@ -19,6 +19,9 @@ export function Footer() {
           <Link className="hover:text-primary" href="/alertas">
             Alertas
           </Link>
+          <Link className="hover:text-primary" href="/como-funciona">
+            Como funciona
+          </Link>
           <Link className="hover:text-primary" href="/privacidade">
             Privacidade
           </Link>

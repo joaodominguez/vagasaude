@@ -9,6 +9,7 @@ Fontes ativas nesta fase:
 | `iefp` | https://iefponline.iefp.pt | Facetas CNP saúde (enfermagem, fisio, TO, TF) |
 | `ipo_porto` | https://ipoporto.pt/nos-ipo/emprego-e-carreira/ | Procedimentos concursais IPO Porto |
 | `scml` | https://recrutamento.scml.pt/ | Santa Casa Lisboa (filtro saúde, sector IPSS) |
+| `scm_esposende` | https://www.scmesposende.pt/recrutamento | Santa Casa Esposende (IPSS) |
 | `cuf` | https://carreiras.cuf.pt/jobs.json | JSON Feed / Teamtailor |
 | `luz_saude` | CVWarehouse (Luz Saúde) | HTML público |
 | `lusiadas` | CVWarehouse (Lusíadas) | HTML público |

@@ -23,7 +23,8 @@ OPEN_RE = re.compile(
     re.I,
 )
 CLOSED_RE = re.compile(
-    r"homologa[cç][aã]o|lista de ordena[cç][aã]o|cessa[cç][aã]o|"
+    r"homologa[cç][aã]o|lista de ordena[cç][aã]o|lista de classifica[cç][aã]o|"
+    r"classifica[cç][aã]o final|cessa[cç][aã]o|"
     r"conclus[aã]o com sucesso|celebra[cç][aã]o de contrato|"
     r"declara[cç][aã]o de retifica|per[ií]odo experimental conclu",
     re.I,

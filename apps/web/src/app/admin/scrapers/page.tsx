@@ -30,6 +30,11 @@ const SCRAPERS = [
     schedule: "A cada 6 horas",
   },
   {
+    slug: "scm_esposende",
+    name: "Santa Casa Misericórdia Esposende",
+    schedule: "A cada 6 horas",
+  },
+  {
     slug: "cuf",
     name: "CUF (Teamtailor)",
     schedule: "A cada 6 horas",

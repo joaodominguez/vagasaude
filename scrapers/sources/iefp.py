@@ -25,8 +25,12 @@ DCPP_TERMS = [
 TEXT_QUERIES = [
     "formador",
     "formadora",
+    "formador enfermagem",
+    "formador saúde",
     "delegado informação médica",
     "visitador médico",
+    "comercial farmacêutico",
+    "key account saúde",
 ]
 
 CLINICAL_TITLE_RE = re.compile(

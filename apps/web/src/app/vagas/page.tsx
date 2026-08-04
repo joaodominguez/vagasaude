@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, SlidersHorizontal, X } from "lucide-react";
+import { AlertForm } from "@/components/alert-form";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { JobCard } from "@/components/job-card";
@@ -10,6 +11,11 @@ import {
   isCategoryEligible,
   listCategoryChips,
 } from "@/lib/categories";
+import {
+  CONTRACT_FILTERS,
+  contractBucket,
+  scoreJobRelevance,
+} from "@/lib/contracts";
 import { getJobs } from "@/lib/jobs-data";
 import { professions } from "@/lib/taxonomies";
 
@@ -42,10 +48,15 @@ type SearchParams = Promise<{
   distrito?: string;
   profissao?: string;
   setor?: string;
+  contrato?: string;
+  ordenar?: string;
   page?: string;
 }>;
 
-function buildJobsHref(params: Record<string, string | undefined>, page?: number) {
+function buildJobsHref(
+  params: Record<string, string | undefined>,
+  page?: number,
+) {
   const next = new URLSearchParams();
   Object.entries(params).forEach(([key, value]) => {
     if (key === "page") return;
@@ -62,37 +73,64 @@ export default async function JobsPage({
   searchParams: SearchParams;
 }) {
   const params = await searchParams;
-  const query = params.q?.trim().toLocaleLowerCase("pt") ?? "";
+  const queryRaw = params.q?.trim() ?? "";
+  const query = queryRaw.toLocaleLowerCase("pt");
   const district = params.distrito ?? "";
   const profession = params.profissao ?? "";
   const sector = params.setor ?? "";
+  const contract = params.contrato ?? "";
+  const sort =
+    params.ordenar === "relevancia" && queryRaw ? "relevancia" : "recentes";
   const page = Math.max(1, Number.parseInt(params.page || "1", 10) || 1);
   const jobs = await getJobs();
   const topCategories = listCategoryChips(jobs, 10);
 
-  const filteredJobs = jobs.filter((job) => {
+  let filteredJobs = jobs.filter((job) => {
     const haystack =
       `${job.title} ${job.company} ${job.profession}`.toLocaleLowerCase("pt");
     return (
       (!query || haystack.includes(query)) &&
       (!district || job.district === district) &&
       (!profession || job.profession === profession) &&
-      (!sector || job.sector === sector)
+      (!sector || job.sector === sector) &&
+      (!contract || contractBucket(job.contract) === contract)
     );
   });
+
+  if (sort === "relevancia") {
+    filteredJobs = [...filteredJobs].sort((a, b) => {
+      const score =
+        scoreJobRelevance(b, queryRaw) - scoreJobRelevance(a, queryRaw);
+      if (score !== 0) return score;
+      return b.publishedAt.localeCompare(a.publishedAt);
+    });
+  }
 
   const totalPages = Math.max(1, Math.ceil(filteredJobs.length / PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);
   const start = (currentPage - 1) * PAGE_SIZE;
   const pageJobs = filteredJobs.slice(start, start + PAGE_SIZE);
 
-  const hasFilters = Boolean(query || district || profession || sector);
+  const hasFilters = Boolean(
+    queryRaw || district || profession || sector || contract,
+  );
   const filterParams = {
     q: params.q,
     distrito: district || undefined,
     profissao: profession || undefined,
     setor: sector || undefined,
+    contrato: contract || undefined,
+    ordenar: sort === "relevancia" ? "relevancia" : undefined,
   };
+
+  const alertSummary = [
+    profession,
+    district ? `em ${district}` : "",
+    sector,
+    contract,
+  ]
+    .filter(Boolean)
+    .join(" · ");
 
   return (
     <>
@@ -143,27 +181,27 @@ export default async function JobsPage({
                   }))
                   .filter(({ count }) => count > 0)
                   .map(({ item, count }) => (
-                  <FilterLink
-                    key={item}
-                    label={item}
-                    name="profissao"
-                    value={item}
-                    active={profession === item}
-                    params={params}
-                    count={count}
-                    preferCategory={
-                      !query && !sector && !district
-                        ? isCategoryEligible(jobs, item, null)
-                          ? categoryPath(item, null)
-                          : null
-                        : !query && !sector && district
-                          ? isCategoryEligible(jobs, item, district)
-                            ? categoryPath(item, district)
+                    <FilterLink
+                      key={item}
+                      label={item}
+                      name="profissao"
+                      value={item}
+                      active={profession === item}
+                      params={filterParams}
+                      count={count}
+                      preferCategory={
+                        !queryRaw && !sector && !district && !contract
+                          ? isCategoryEligible(jobs, item, null)
+                            ? categoryPath(item, null)
                             : null
-                          : null
-                    }
-                  />
-                ))}
+                          : !queryRaw && !sector && !contract && district
+                            ? isCategoryEligible(jobs, item, district)
+                              ? categoryPath(item, district)
+                              : null
+                            : null
+                      }
+                    />
+                  ))}
               </FilterGroup>
 
               <FilterGroup title="Setor">
@@ -174,16 +212,36 @@ export default async function JobsPage({
                   }))
                   .filter(({ count }) => count > 0)
                   .map(({ item, count }) => (
-                  <FilterLink
-                    key={item}
-                    label={item}
-                    name="setor"
-                    value={item}
-                    active={sector === item}
-                    params={params}
-                    count={count}
-                  />
-                ))}
+                    <FilterLink
+                      key={item}
+                      label={item}
+                      name="setor"
+                      value={item}
+                      active={sector === item}
+                      params={filterParams}
+                      count={count}
+                    />
+                  ))}
+              </FilterGroup>
+
+              <FilterGroup title="Contrato">
+                {CONTRACT_FILTERS.map((item) => {
+                  const count = jobs.filter(
+                    (job) => contractBucket(job.contract) === item,
+                  ).length;
+                  if (!count) return null;
+                  return (
+                    <FilterLink
+                      key={item}
+                      label={item}
+                      name="contrato"
+                      value={item}
+                      active={contract === item}
+                      params={filterParams}
+                      count={count}
+                    />
+                  );
+                })}
               </FilterGroup>
 
               {hasFilters && (
@@ -198,7 +256,7 @@ export default async function JobsPage({
           </aside>
 
           <section className="min-w-0">
-            <div className="mb-5 flex items-center justify-between gap-3">
+            <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
               <div className="min-w-0">
                 <h2 className="text-xl font-extrabold tracking-[-0.03em]">
                   {filteredJobs.length}{" "}
@@ -207,13 +265,66 @@ export default async function JobsPage({
                     : "vagas encontradas"}
                 </h2>
                 <p className="mt-1 text-sm text-muted">
-                  Ordenadas pelas mais recentes
+                  {sort === "relevancia"
+                    ? "Ordenadas por relevância"
+                    : "Ordenadas pelas mais recentes"}
                   {totalPages > 1
                     ? ` · página ${currentPage} de ${totalPages}`
                     : ""}
                 </p>
               </div>
+              <div className="flex flex-wrap gap-2 text-sm">
+                <Link
+                  href={buildJobsHref({
+                    ...filterParams,
+                    ordenar: undefined,
+                  })}
+                  className={
+                    sort === "recentes"
+                      ? "font-bold text-primary"
+                      : "text-muted hover:text-primary"
+                  }
+                >
+                  Mais recentes
+                </Link>
+                <span className="text-border">·</span>
+                <Link
+                  href={buildJobsHref({
+                    ...filterParams,
+                    ordenar: queryRaw ? "relevancia" : undefined,
+                  })}
+                  className={
+                    sort === "relevancia"
+                      ? "font-bold text-primary"
+                      : "text-muted hover:text-primary"
+                  }
+                  aria-disabled={!queryRaw}
+                >
+                  Relevância
+                </Link>
+              </div>
             </div>
+
+            {hasFilters ? (
+              <div className="content-card mb-5 p-5">
+                <p className="text-sm font-extrabold">
+                  Queres ser avisado
+                  {alertSummary ? ` — ${alertSummary}` : ""}?
+                </p>
+                <p className="mt-1 text-sm text-muted">
+                  Cria um alerta com estes filtros e recebe email quando surgir
+                  uma vaga nova.
+                </p>
+                <div className="mt-4">
+                  <AlertForm
+                    compact
+                    defaultDistrict={district}
+                    defaultProfession={profession}
+                    defaultSector={sector}
+                  />
+                </div>
+              </div>
+            ) : null}
 
             {pageJobs.length > 0 ? (
               <>
@@ -267,7 +378,7 @@ export default async function JobsPage({
                 </p>
                 <div className="mt-6 flex flex-wrap justify-center gap-3">
                   <Link className="button button-secondary" href="/vagas">
-                    Limpar pesquisa
+                    Limpar filtros
                   </Link>
                   <Link className="button button-primary" href="/alertas">
                     Criar alerta

@@ -17,7 +17,8 @@ LIST_URLS = [
 HEALTH_RE = re.compile(
     r"enferm|auxiliar de a[cç][aã]o m[eé]dica|auxiliar de geriatr|"
     r"m[eé]dic|fisioterap|terapeuta|sa[uú]de|cuidador|"
-    r"psicolog|nutric|farmac",
+    r"psicolog|nutric|farmac|radiolog|formador|delegad|"
+    r"coordenador|qualidade|rececion",
     re.I,
 )
 SKIP_RE = re.compile(
