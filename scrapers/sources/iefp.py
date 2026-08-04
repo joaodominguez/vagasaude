@@ -183,7 +183,7 @@ class IefpScraper(BaseScraper):
             company=company,
             location_district=guess_district(locality, region),
             location_concelho=locality or None,
-            profession=guess_profession(title, description[:240]),
+            profession=guess_profession(title),
             specialty=None,
             sector="privado",
             contract_type=contract,
