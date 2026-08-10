@@ -29,7 +29,7 @@ import type { Job } from "@/lib/jobs";
 import { getJob, getJobs } from "@/lib/jobs-data";
 import { buildJobMetadata, buildJobPostingJsonLd, jobUrl } from "@/lib/seo";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 600;
 
 type Params = Promise<{ slug: string }>;
 

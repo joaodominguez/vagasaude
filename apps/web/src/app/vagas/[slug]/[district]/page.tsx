@@ -11,7 +11,7 @@ import {
 } from "@/lib/categories";
 import { getJobs } from "@/lib/jobs-data";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 600;
 
 type Params = Promise<{ slug: string; district: string }>;
 

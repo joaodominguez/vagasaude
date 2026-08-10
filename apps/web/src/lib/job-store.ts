@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 export type StoredJob = {
@@ -428,9 +428,18 @@ export function toJobCard(job: StoredJob): JobCardData {
   };
 }
 
+// Cache em memória do ficheiro (2.5 MB+) para não reler/parsear em cada pedido.
+// Invalida automaticamente quando o mtime do jobs.json muda (scrape/admin).
+let jobsCache: { mtimeMs: number; file: JobsFile } | null = null;
+
 async function readJobsFile(): Promise<JobsFile> {
+  const filePath = jobsFilePath();
   try {
-    const raw = await readFile(jobsFilePath(), "utf8");
+    const info = await stat(filePath);
+    if (jobsCache && jobsCache.mtimeMs === info.mtimeMs) {
+      return jobsCache.file;
+    }
+    const raw = await readFile(filePath, "utf8");
     const parsed = JSON.parse(raw) as JobsFile;
     const jobs = Array.isArray(parsed.jobs) ? parsed.jobs : [];
     const repaired = repairJobSlugs(jobs);
@@ -441,7 +450,9 @@ async function readJobsFile(): Promise<JobsFile> {
     if (repaired.changed) {
       file.updatedAt = new Date().toISOString();
       await writeJobsFile(file);
+      return file;
     }
+    jobsCache = { mtimeMs: info.mtimeMs, file };
     return file;
   } catch {
     return { updatedAt: new Date(0).toISOString(), jobs: [] };
@@ -465,6 +476,13 @@ function repairJobSlugs(jobs: StoredJob[]) {
 async function writeJobsFile(file: JobsFile) {
   await mkdir(dataDir(), { recursive: true });
   await writeFile(jobsFilePath(), JSON.stringify(file, null, 2), { mode: 0o600 });
+  // Manter o cache coerente após escrita (ingest/reclassify/repair).
+  try {
+    const info = await stat(jobsFilePath());
+    jobsCache = { mtimeMs: info.mtimeMs, file };
+  } catch {
+    jobsCache = null;
+  }
 }
 
 export async function listAllStoredJobs() {
