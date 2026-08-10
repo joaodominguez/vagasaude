@@ -2,9 +2,8 @@ from __future__ import annotations
 
 import re
 from html import unescape
-from urllib.parse import urljoin
 
-from common.http import HttpClient
+from common.browser import BrowserSession
 from common.models import BaseScraper, JobPayload
 from common.normalize import guess_profession, html_to_text
 
@@ -23,56 +22,37 @@ class IpoPortoScraper(BaseScraper):
     name = "IPO Porto (emprego)"
 
     def fetch(self) -> list[JobPayload]:
-        # O WordPress do IPO limita pedidos seguidos (429) e o WAF devolve 403
-        # ao User-Agent por defeito — usar headers de browser.
-        client = HttpClient(timeout=45.0, min_interval=1.2)
-        client.client.headers.update(
-            {
-                "User-Agent": (
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                    "AppleWebKit/537.36 (KHTML, like Gecko) "
-                    "Chrome/124.0.0.0 Safari/537.36"
-                ),
-                "Accept": (
-                    "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
-                ),
-                "Accept-Language": "pt-PT,pt;q=0.9",
-            }
-        )
-        try:
-            items = self._list(client)
+        # O IPO Porto serve um desafio anti-bot em JavaScript (wsidchk): só um
+        # browser real o resolve. Usamos o Chrome via Playwright (ver
+        # common.browser). Os cookies do desafio ficam na sessão, por isso as
+        # páginas de detalhe carregam logo depois da listagem.
+        with BrowserSession(min_interval=1.2) as browser:
+            items = self._list(browser)
             jobs: list[JobPayload] = []
             for item in items:
                 try:
-                    job = self._detail(client, item)
+                    job = self._detail(browser, item)
                 except Exception:
                     continue
                 if job:
                     jobs.append(job)
             return jobs
-        finally:
-            client.close()
 
-    def _list(self, client: HttpClient) -> list[dict]:
-        html = client.get_text(LIST_URL)
+    def _list(self, browser: BrowserSession) -> list[dict]:
+        browser.open(LIST_URL, wait_selector='a[href*="/emprego/"]')
         by_url: dict[str, dict] = {}
-        for href, label in re.findall(
-            r'<a[^>]+href="(https://ipoporto\.pt/emprego/[^"]+)"[^>]*>(.*?)</a>',
-            html,
-            re.I | re.S,
-        ):
-            title = re.sub(
-                r"\s+",
-                " ",
-                unescape(re.sub(r"<[^>]+>", " ", label)),
-            ).strip()
+        for anchor in browser.anchors('a[href*="/emprego/"]'):
+            href = (anchor.get("href") or "").split("#")[0].split("?")[0]
+            title = re.sub(r"\s+", " ", unescape(anchor.get("text") or "")).strip()
+            if not href.startswith(f"{BASE}/emprego/"):
+                continue
             if not title or href.rstrip("/") == f"{BASE}/emprego":
                 continue
-            by_url[href] = {"title": title, "url": href}
+            by_url.setdefault(href, {"title": title, "url": href})
         return list(by_url.values())
 
-    def _detail(self, client: HttpClient, item: dict) -> JobPayload | None:
-        html = client.get_text(item["url"])
+    def _detail(self, browser: BrowserSession, item: dict) -> JobPayload | None:
+        html = browser.get_text(item["url"], wait_selector="h1")
         title = _page_title(html) or item["title"]
         if CLOSED_RE.search(title):
             return None
