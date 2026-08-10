@@ -23,8 +23,22 @@ class IpoPortoScraper(BaseScraper):
     name = "IPO Porto (emprego)"
 
     def fetch(self) -> list[JobPayload]:
-        # O WordPress do IPO limita pedidos seguidos (429).
+        # O WordPress do IPO limita pedidos seguidos (429) e o WAF devolve 403
+        # ao User-Agent por defeito — usar headers de browser.
         client = HttpClient(timeout=45.0, min_interval=1.2)
+        client.client.headers.update(
+            {
+                "User-Agent": (
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                    "AppleWebKit/537.36 (KHTML, like Gecko) "
+                    "Chrome/124.0.0.0 Safari/537.36"
+                ),
+                "Accept": (
+                    "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+                ),
+                "Accept-Language": "pt-PT,pt;q=0.9",
+            }
+        )
         try:
             items = self._list(client)
             jobs: list[JobPayload] = []
