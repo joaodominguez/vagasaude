@@ -461,62 +461,77 @@ select {
 }
 
 .partners-section {
-  border-top: 1px solid var(--border);
-  background: var(--surface);
-  padding-block: 3.25rem 3.5rem;
+  overflow: hidden;
+  border-top: 1px solid color-mix(in srgb, #ffffff 10%, transparent);
+  background: #0b3d3a;
+  padding-block: 3.1rem 2.6rem;
 }
 
-.partners-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.75rem;
-  margin: 1.75rem 0 0;
-  padding: 0;
+.partners-kicker {
+  color: #5eead4;
+}
+
+.partners-title {
+  color: #f8fafc;
+}
+
+.partners-copy {
+  margin-top: 0.75rem;
+  color: color-mix(in srgb, #f8fafc 72%, transparent);
+  font-size: 0.95rem;
+  line-height: 1.65;
+}
+
+.partners-slider {
+  position: relative;
+  margin-top: 1.8rem;
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+
+.partners-track {
+  display: flex;
+  width: max-content;
+  gap: 2.75rem;
+  margin: 0;
+  padding: 0.35rem 2rem;
   list-style: none;
+  animation: partners-scroll 42s linear infinite;
 }
 
-@media (min-width: 640px) {
-  .partners-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-@media (min-width: 960px) {
-  .partners-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 0.9rem;
-  }
+.partners-slider:hover .partners-track {
+  animation-play-state: paused;
 }
 
 .partner-logo {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 4.4rem;
-  padding: 0.7rem 0.85rem;
-  border: 1px solid var(--border);
-  border-radius: 0.9rem;
-  background: #fff;
-  color: #0f172a;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+  min-width: 9.5rem;
+  height: 3.4rem;
+  opacity: 0.86;
+  transition: opacity 0.15s ease, transform 0.15s ease;
 }
 
 .partner-logo img {
   display: block;
-  width: 100%;
-  max-width: 11.5rem;
-  height: 2.15rem;
+  width: auto;
+  max-width: 11rem;
+  height: 1.55rem;
   object-fit: contain;
 }
 
 .partner-logo:hover {
-  border-color: color-mix(in srgb, var(--primary) 35%, var(--border));
-  box-shadow: var(--shadow);
+  opacity: 1;
   transform: translateY(-1px);
 }
 
-.dark .partner-logo {
-  background: #f8fafc;
+@keyframes partners-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .partners-track { animation: none; }
 }
 
 .portugal-map-panel {
