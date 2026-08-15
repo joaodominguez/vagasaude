@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
+import { Partners } from "@/components/partners";
 import { JobCard } from "@/components/job-card";
 import { PortugalJobsMap } from "@/components/portugal-jobs-map";
 import { SearchForm } from "@/components/search-form";
@@ -167,6 +168,7 @@ export default async function Home() {
           </div>
         </section>
       </main>
+      <Partners />
       <Footer />
     </>
   );

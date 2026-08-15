@@ -1,0 +1,130 @@
+export type JobSourceMeta = {
+  id: string;
+  name: string;
+  shortName: string;
+  url: string;
+  sector: "Público" | "Privado" | "IPSS";
+  logo: string;
+};
+
+export const JOB_SOURCES: JobSourceMeta[] = [
+  {
+    id: "bep",
+    name: "BEP — Bolsa de Emprego Público",
+    shortName: "BEP",
+    url: "https://www.bep.gov.pt/pages/oferta/Oferta_Pesquisa_basica.aspx",
+    sector: "Público",
+    logo: "/partners/bep.svg",
+  },
+  {
+    id: "dre",
+    name: "Diário da República",
+    shortName: "DRE",
+    url: "https://diariodarepublica.pt/dr/home",
+    sector: "Público",
+    logo: "/partners/dre.svg",
+  },
+  {
+    id: "iefp",
+    name: "IEFP — Ofertas de emprego",
+    shortName: "IEFP",
+    url: "https://iefponline.iefp.pt/IEFP/pesquisas/search.do?cat=ofertaEmprego",
+    sector: "Privado",
+    logo: "/partners/iefp.svg",
+  },
+  {
+    id: "ipo_porto",
+    name: "IPO Porto",
+    shortName: "IPO Porto",
+    url: "https://ipoporto.pt/nos-ipo/emprego-e-carreira/",
+    sector: "Público",
+    logo: "/partners/ipo-porto.svg",
+  },
+  {
+    id: "scml",
+    name: "Santa Casa da Misericórdia de Lisboa",
+    shortName: "Santa Casa Lisboa",
+    url: "https://recrutamento.scml.pt/",
+    sector: "IPSS",
+    logo: "/partners/scml.svg",
+  },
+  {
+    id: "scm_esposende",
+    name: "Santa Casa da Misericórdia de Esposende",
+    shortName: "SCM Esposende",
+    url: "https://www.scmesposende.pt/recrutamento",
+    sector: "IPSS",
+    logo: "/partners/scm-esposende.svg",
+  },
+  {
+    id: "cuf",
+    name: "CUF / José de Mello",
+    shortName: "CUF",
+    url: "https://carreiras.cuf.pt/",
+    sector: "Privado",
+    logo: "/partners/cuf.svg",
+  },
+  {
+    id: "luz_saude",
+    name: "Luz Saúde",
+    shortName: "Luz Saúde",
+    url: "https://www.hospitaldaluz.pt/",
+    sector: "Privado",
+    logo: "/partners/luz-saude.svg",
+  },
+  {
+    id: "trofa_saude",
+    name: "Trofa Saúde",
+    shortName: "Trofa Saúde",
+    url: "https://recrutamento.grupovnc.com/trofasaude/",
+    sector: "Privado",
+    logo: "/partners/trofa-saude.svg",
+  },
+  {
+    id: "lusiadas",
+    name: "Lusíadas",
+    shortName: "Lusíadas",
+    url: "https://www.lusiadas.pt/",
+    sector: "Privado",
+    logo: "/partners/lusiadas.svg",
+  },
+  {
+    id: "joaquim_chaves",
+    name: "Joaquim Chaves Saúde",
+    shortName: "Joaquim Chaves",
+    url: "https://recrutamento.jcs.pt/Offers",
+    sector: "Privado",
+    logo: "/partners/joaquim-chaves.svg",
+  },
+  {
+    id: "champalimaud",
+    name: "Fundação Champalimaud",
+    shortName: "Champalimaud",
+    url: "https://www.fchampalimaud.org/pt-pt/posicoes-em-aberto",
+    sector: "Privado",
+    logo: "/partners/champalimaud.svg",
+  },
+  {
+    id: "germano_de_sousa",
+    name: "Grupo Germano de Sousa",
+    shortName: "Germano de Sousa",
+    url: "https://www.germanodesousa.com/contactos/ofertas-de-emprego/",
+    sector: "Privado",
+    logo: "/partners/germano-de-sousa.svg",
+  },
+  {
+    id: "hpa",
+    name: "Grupo HPA Saúde",
+    shortName: "HPA Saúde",
+    url: "https://www.grupohpa.com/pt/empregos/",
+    sector: "Privado",
+    logo: "/partners/hpa.svg",
+  },
+];
+
+export const SOURCE_META = Object.fromEntries(
+  JOB_SOURCES.map((source) => [
+    source.id,
+    { name: source.name, url: source.url, sector: source.sector },
+  ]),
+) as Record<string, { name: string; url: string; sector: string }>;
