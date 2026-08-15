@@ -14,7 +14,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "BEP",
     url: "https://www.bep.gov.pt/pages/oferta/Oferta_Pesquisa_basica.aspx",
     sector: "Público",
-    logo: "/partners/bep.svg",
+    logo: "/partners/bep.jpg",
   },
   {
     id: "dre",
@@ -22,7 +22,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "DRE",
     url: "https://diariodarepublica.pt/dr/home",
     sector: "Público",
-    logo: "/partners/dre.svg",
+    logo: "/partners/dre.png",
   },
   {
     id: "iefp",
@@ -30,7 +30,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "IEFP",
     url: "https://iefponline.iefp.pt/IEFP/pesquisas/search.do?cat=ofertaEmprego",
     sector: "Privado",
-    logo: "/partners/iefp.svg",
+    logo: "/partners/iefp.png",
   },
   {
     id: "ipo_porto",
@@ -38,7 +38,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "IPO Porto",
     url: "https://ipoporto.pt/nos-ipo/emprego-e-carreira/",
     sector: "Público",
-    logo: "/partners/ipo-porto.svg",
+    logo: "/partners/ipo-porto.png",
   },
   {
     id: "scml",
@@ -62,7 +62,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "CUF",
     url: "https://carreiras.cuf.pt/",
     sector: "Privado",
-    logo: "/partners/cuf.svg",
+    logo: "/partners/cuf.png",
   },
   {
     id: "luz_saude",
@@ -94,7 +94,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "Joaquim Chaves",
     url: "https://recrutamento.jcs.pt/Offers",
     sector: "Privado",
-    logo: "/partners/joaquim-chaves.svg",
+    logo: "/partners/joaquim-chaves.png",
   },
   {
     id: "champalimaud",
@@ -118,7 +118,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "HPA Saúde",
     url: "https://www.grupohpa.com/pt/empregos/",
     sector: "Privado",
-    logo: "/partners/hpa.svg",
+    logo: "/partners/hpa.png",
   },
 ];
 
