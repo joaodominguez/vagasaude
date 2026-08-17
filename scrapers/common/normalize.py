@@ -144,6 +144,23 @@ CITY_TO_DISTRICT = {
     "linda a velha": "Lisboa",
     "faial": "Açores",
     "ilha do faial": "Açores",
+    "santo antonio dos cavaleiros": "Lisboa",
+    "amora": "Setúbal",
+    "carregado": "Lisboa",
+    "alenquer": "Lisboa",
+    "prior velho": "Lisboa",
+    "lumiar": "Lisboa",
+    "loures": "Lisboa",
+    "chiado": "Lisboa",
+    "avenidas novas": "Lisboa",
+    "arroios": "Lisboa",
+    "sao juliao do tojal": "Lisboa",
+    "tojal": "Lisboa",
+    "benfica": "Lisboa",
+    "principe real": "Lisboa",
+    "rossio": "Lisboa",
+    "mem martins": "Lisboa",
+    "sao joao da talha": "Lisboa",
 }
 
 

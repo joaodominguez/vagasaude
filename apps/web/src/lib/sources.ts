@@ -136,6 +136,14 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     sector: "Privado",
     logo: "/partners/aefful.png",
   },
+  {
+    id: "pharmabsc",
+    name: "PHARMABSC — Recrutamento farmácia",
+    shortName: "PHARMABSC",
+    url: "https://pharmabsc.pt/category/recrutamento/",
+    sector: "Privado",
+    logo: "/partners/pharmabsc.png",
+  },
 ];
 
 export const SOURCE_META = Object.fromEntries(

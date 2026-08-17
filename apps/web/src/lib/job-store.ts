@@ -101,6 +101,7 @@ function normalizeCompany(company: string) {
     return "hpa";
   }
   if (raw.includes("holon")) return "holon";
+  if (raw.includes("pharmabsc") || raw.includes("pharma bsc")) return "pharmabsc";
   return raw
     .replace(/\b(hospital|clinica|grupo|saúde|saude)\b/g, " ")
     .replace(/\b(e p e|epe|sa|s a)\b/g, " ")

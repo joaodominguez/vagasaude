@@ -84,6 +84,11 @@ const SCRAPERS = [
     name: "AEFFUL — Farmácia comunitária (HTML)",
     schedule: "A cada 6 horas",
   },
+  {
+    slug: "pharmabsc",
+    name: "PHARMABSC — Recrutamento farmácia (WordPress)",
+    schedule: "A cada 6 horas",
+  },
 ];
 
 export default async function AdminScrapersPage() {
