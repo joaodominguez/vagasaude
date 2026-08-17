@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-import json
 import re
+import time
 from datetime import datetime, timedelta, timezone
 from html import unescape
+from urllib.parse import urljoin
 
 import httpx
 from bs4 import BeautifulSoup
@@ -21,6 +22,7 @@ from common.normalize import (
 
 BASE = "https://pharmabsc.pt"
 API_URL = f"{BASE}/wp-json/wp/v2/posts"
+ARCHIVE_URL = f"{BASE}/category/recrutamento/"
 OPEN_CATEGORY = 9  # Recrutamento
 CLOSED_CATEGORY = 89  # Recrutamentos fechados
 # Posts esquecidos na categoria aberta (2024/2025) não são vagas activas.
@@ -41,6 +43,20 @@ APPLY_HOSTS = (
     "docs.google.com",
     "alertaemprego.pt",
 )
+PT_MONTHS = {
+    "janeiro": 1,
+    "fevereiro": 2,
+    "marco": 3,
+    "abril": 4,
+    "maio": 5,
+    "junho": 6,
+    "julho": 7,
+    "agosto": 8,
+    "setembro": 9,
+    "outubro": 10,
+    "novembro": 11,
+    "dezembro": 12,
+}
 
 
 class PharmabscScraper(BaseScraper):
@@ -50,68 +66,62 @@ class PharmabscScraper(BaseScraper):
     def fetch(self) -> list[JobPayload]:
         client = HttpClient(min_interval=0.35)
         try:
-            posts = self._list_posts(client)
-            jobs: list[JobPayload] = []
-            for post in posts:
-                job = self._to_job(client, post)
-                if job:
-                    jobs.append(job)
-            return jobs
+            jobs = self._fetch_http(client)
+            if jobs:
+                return jobs
         finally:
             client.close()
+        return self._fetch_browser()
 
-    def _list_posts(self, client: HttpClient) -> list[dict]:
+    def _fetch_http(self, client: HttpClient) -> list[JobPayload]:
         try:
             posts = _list_posts_http(client)
         except httpx.HTTPError:
-            posts = []
-        if posts:
-            return posts
-        return _list_posts_browser()
+            return []
+        if not posts:
+            return []
+        jobs: list[JobPayload] = []
+        challenged = 0
+        for post in posts:
+            url = (post.get("link") or "").strip()
+            try:
+                html = client.get_text(url)
+            except httpx.HTTPError:
+                challenged += 1
+                continue
+            if not _is_real_detail(html):
+                challenged += 1
+                continue
+            item = {
+                "title": _plain(post.get("title", {}).get("rendered") or ""),
+                "url": url,
+                "source_id": str(post.get("slug") or post.get("id") or "").strip(),
+                "published_at": post.get("date_gmt") or post.get("date"),
+                "categories": post.get("categories") or [],
+            }
+            job = _to_job(item, html)
+            if job:
+                jobs.append(job)
+        if challenged and not jobs:
+            return []
+        if challenged > max(2, len(posts) // 2):
+            return []
+        return jobs
 
-    def _to_job(self, client: HttpClient, post: dict) -> JobPayload | None:
-        if CLOSED_CATEGORY in (post.get("categories") or []):
-            return None
-        title = _plain(post.get("title", {}).get("rendered") or "")
-        if not title or _is_spontaneous(title):
-            return None
-        if _too_old(post.get("date_gmt") or post.get("date") or ""):
-            return None
-
-        url = (post.get("link") or "").strip()
-        source_id = str(post.get("id") or post.get("slug") or "").strip()
-        if not url or not source_id:
-            return None
-
-        html = _detail_html(client, url)
-        description = _extract_description(html) or _plain(
-            post.get("excerpt", {}).get("rendered") or ""
-        )
-        if len(description) < 80:
-            description = title
-        apply_url = _application_url(html, url)
-        _, place = _split_place(title)
-        district = guess_district(place, description[:280])
-        concelho = _concelho(place, district)
-        published = post.get("date_gmt") or post.get("date")
-
-        return JobPayload(
-            title=title,
-            company="PHARMABSC",
-            location_district=district,
-            location_concelho=concelho,
-            profession=guess_profession(title, description[:240]),
-            specialty=None,
-            sector="privado",
-            contract_type=guess_contract(f"{title} {description[:400]}"),
-            description=description[:8000],
-            requirements=None,
-            salary=None,
-            application_url=apply_url,
-            source=self.slug,
-            source_id=source_id,
-            published_at=published,
-        )
+    def _fetch_browser(self) -> list[JobPayload]:
+        with BrowserSession(min_interval=1.0) as browser:
+            items = _list_archive(browser)
+            jobs: list[JobPayload] = []
+            for item in items:
+                html = _browser_html(
+                    browser,
+                    item["url"],
+                    wait_selector=".mfn-builder-content, h1",
+                )
+                job = _to_job(item, html)
+                if job:
+                    jobs.append(job)
+            return jobs
 
 
 def _list_posts_http(client: HttpClient) -> list[dict]:
@@ -134,29 +144,105 @@ def _list_posts_http(client: HttpClient) -> list[dict]:
     return posts
 
 
-def _list_posts_browser() -> list[dict]:
-    with BrowserSession(min_interval=0.8) as browser:
-        html = browser.get_text(
-            f"{API_URL}?categories={OPEN_CATEGORY}&per_page=100&status=publish",
-            settle_ms=1500,
-        )
+def _list_archive(browser: BrowserSession) -> list[dict]:
+    items: list[dict] = []
+    seen: set[str] = set()
+    for page in range(1, 6):
+        url = ARCHIVE_URL if page == 1 else f"{ARCHIVE_URL}page/{page}/"
+        html = _browser_html(browser, url, wait_selector="article")
+        found = _parse_archive(html)
+        new = 0
+        for item in found:
+            if item["url"] in seen:
+                continue
+            seen.add(item["url"])
+            items.append(item)
+            new += 1
+        if new == 0:
+            break
+    return items
+
+
+def _parse_archive(html: str) -> list[dict]:
     soup = BeautifulSoup(html, "lxml")
-    raw = soup.get_text().strip()
-    data = json.loads(raw)
-    if isinstance(data, list):
-        return [item for item in data if isinstance(item, dict)]
-    return []
+    items: list[dict] = []
+    for article in soup.select("article"):
+        link = article.select_one(".post-title a[href], h2 a[href], h4 a[href]")
+        if not link:
+            continue
+        url = urljoin(BASE, (link.get("href") or "").strip())
+        title = re.sub(r"\s+", " ", link.get_text(" ", strip=True)).strip()
+        if not url or not title:
+            continue
+        date_el = article.select_one(".date_label, time")
+        published = _parse_pt_date(
+            date_el.get_text(" ", strip=True) if date_el else ""
+        ) or (date_el.get("datetime") if date_el is not None else None)
+        source_id = url.rstrip("/").rsplit("/", 1)[-1]
+        items.append(
+            {
+                "title": title,
+                "url": url.split("#")[0],
+                "source_id": source_id,
+                "published_at": published,
+                "categories": [OPEN_CATEGORY],
+            }
+        )
+    return items
 
 
-def _detail_html(client: HttpClient, url: str) -> str:
-    try:
-        html = client.get_text(url)
-    except httpx.HTTPError:
-        html = ""
-    if _is_real_detail(html):
-        return html
-    with BrowserSession(min_interval=0.8) as browser:
-        return browser.get_text(url, wait_selector=".mfn-builder-content, h1", settle_ms=1500)
+def _browser_html(
+    browser: BrowserSession, url: str, *, wait_selector: str | None = None
+) -> str:
+    last_error: Exception | None = None
+    for attempt in range(5):
+        try:
+            browser.open(url, wait_selector=wait_selector, settle_ms=1500)
+            html = browser.html()
+            if html and "Access denied by Imunify360" not in html:
+                return html
+        except Exception as exc:  # noqa: BLE001
+            last_error = exc
+            time.sleep(1.2 + attempt * 0.6)
+    if last_error:
+        raise last_error
+    return ""
+
+
+def _to_job(item: dict, html: str) -> JobPayload | None:
+    if CLOSED_CATEGORY in (item.get("categories") or []):
+        return None
+    title = item.get("title") or ""
+    if not title or _is_spontaneous(title):
+        return None
+    if _too_old(item.get("published_at") or ""):
+        return None
+    url = item.get("url") or ""
+    source_id = str(item.get("source_id") or "").strip()
+    if not url or not source_id:
+        return None
+    description = _extract_description(html)
+    if len(description) < 80:
+        description = title
+    _, place = _split_place(title)
+    district = guess_district(place, description[:280])
+    return JobPayload(
+        title=title,
+        company="PHARMABSC",
+        location_district=district,
+        location_concelho=_concelho(place, district),
+        profession=guess_profession(title, description[:240]),
+        specialty=None,
+        sector="privado",
+        contract_type=guess_contract(f"{title} {description[:400]}"),
+        description=description[:8000],
+        requirements=None,
+        salary=None,
+        application_url=_application_url(html, url),
+        source="pharmabsc",
+        source_id=source_id,
+        published_at=item.get("published_at"),
+    )
 
 
 def _is_real_detail(html: str) -> bool:
@@ -171,15 +257,40 @@ def _plain(value: str) -> str:
 
 
 def _too_old(date_str: str) -> bool:
-    if not date_str:
+    parsed = _parse_iso(date_str) or _parse_pt_date(date_str)
+    if not parsed:
         return False
     try:
-        parsed = datetime.fromisoformat(date_str.replace("Z", "+00:00"))
+        dt = datetime.fromisoformat(parsed.replace("Z", "+00:00"))
     except ValueError:
         return False
-    if parsed.tzinfo is None:
-        parsed = parsed.replace(tzinfo=timezone.utc)
-    return datetime.now(timezone.utc) - parsed > timedelta(days=MAX_AGE_DAYS)
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return datetime.now(timezone.utc) - dt > timedelta(days=MAX_AGE_DAYS)
+
+
+def _parse_iso(date_str: str) -> str | None:
+    if not date_str or not re.match(r"\d{4}-\d{2}-\d{2}", date_str):
+        return None
+    return date_str
+
+
+def _parse_pt_date(value: str) -> str | None:
+    match = re.search(
+        r"\b(janeiro|fevereiro|mar[cç]o|abril|maio|junho|julho|"
+        r"agosto|setembro|outubro|novembro|dezembro)\s+(\d{1,2}),\s*(\d{4})\b",
+        value or "",
+        re.I,
+    )
+    if not match:
+        return None
+    month_key = norm(match.group(1)).replace("ç", "c")
+    month = PT_MONTHS.get(month_key)
+    if not month:
+        return None
+    day = int(match.group(2))
+    year = int(match.group(3))
+    return f"{year:04d}-{month:02d}-{day:02d}T00:00:00+00:00"
 
 
 def _is_spontaneous(title: str) -> bool:
