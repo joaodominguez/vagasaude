@@ -78,27 +78,34 @@ function normalize(text: string) {
 }
 
 function normalizeCompany(company: string) {
-  let value = normalize(company);
-  value = value
+  const raw = normalize(company);
+  // Aliases de grupos privados conhecidos (antes de strip genérico).
+  if (raw.includes("cuf") || raw.includes("jose de mello")) return "cuf";
+  if (raw.includes("luz saude") || raw.includes("hospital da luz")) {
+    return "luz saude";
+  }
+  if (raw.includes("lusiadas")) return "lusiadas";
+  if (
+    raw.includes("trofa saude") ||
+    raw.includes("hospital da trofa") ||
+    raw.includes("grupo vnc")
+  ) {
+    return "trofa saude";
+  }
+  if (raw.includes("joaquim chaves") || raw === "jcs") return "joaquim chaves";
+  if (raw.includes("champalimaud")) return "champalimaud";
+  if (raw.includes("germano de sousa") || raw.includes("germano sousa")) {
+    return "germano de sousa";
+  }
+  if (raw.includes("hpa") || raw.includes("hospital particular do algarve")) {
+    return "hpa";
+  }
+  if (raw.includes("holon")) return "holon";
+  return raw
     .replace(/\b(hospital|clinica|grupo|saúde|saude)\b/g, " ")
     .replace(/\b(e p e|epe|sa|s a)\b/g, " ")
     .replace(/\s+/g, " ")
     .trim();
-  // Aliases de grupos privados conhecidos.
-  if (value.includes("cuf") || value.includes("jose de mello")) return "cuf";
-  if (value.includes("luz")) return "luz saude";
-  if (value.includes("lusiadas")) return "lusiadas";
-  if (value.includes("trofa")) return "trofa saude";
-  if (value.includes("joaquim chaves") || value === "jcs") return "joaquim chaves";
-  if (value.includes("champalimaud")) return "champalimaud";
-  if (value.includes("germano de sousa") || value.includes("germano sousa")) {
-    return "germano de sousa";
-  }
-  if (value.includes("hpa") || value.includes("hospital particular do algarve")) {
-    return "hpa";
-  }
-  if (value.includes("holon")) return "holon";
-  return value;
 }
 
 export function makeDedupeHash(title: string, company: string, district: string) {

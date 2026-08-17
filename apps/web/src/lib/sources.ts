@@ -128,6 +128,14 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     sector: "Privado",
     logo: "/partners/holon.png",
   },
+  {
+    id: "aefful",
+    name: "AEFFUL — Farmácia comunitária",
+    shortName: "AEFFUL",
+    url: "https://www.aefful.pt/farmacia/",
+    sector: "Privado",
+    logo: "/partners/aefful.png",
+  },
 ];
 
 export const SOURCE_META = Object.fromEntries(

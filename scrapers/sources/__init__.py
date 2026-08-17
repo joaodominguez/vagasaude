@@ -1,3 +1,4 @@
+from sources.aefful import AeffulScraper
 from sources.bep import BepScraper
 from sources.champalimaud import ChampalimaudScraper
 from sources.cuf import CufScraper
@@ -28,4 +29,5 @@ SCRAPERS = {
     GermanoDeSousaScraper.slug: GermanoDeSousaScraper,
     HpaScraper.slug: HpaScraper,
     HolonScraper.slug: HolonScraper,
+    AeffulScraper.slug: AeffulScraper,
 }

@@ -79,6 +79,11 @@ const SCRAPERS = [
     name: "Farmácias Holon (CVWarehouse)",
     schedule: "A cada 6 horas",
   },
+  {
+    slug: "aefful",
+    name: "AEFFUL — Farmácia comunitária (HTML)",
+    schedule: "A cada 6 horas",
+  },
 ];
 
 export default async function AdminScrapersPage() {
