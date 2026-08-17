@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 import re
+import time
 from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
+import httpx
 
+from common.browser import BrowserSession
 from common.http import HttpClient
 from common.models import BaseScraper, JobPayload
 from common.normalize import (
@@ -51,12 +54,23 @@ class AeffulScraper(BaseScraper):
     name = "AEFFUL — Farmácia comunitária"
 
     def fetch(self) -> list[JobPayload]:
-        client = HttpClient(min_interval=0.35)
-        try:
-            html = client.get_text(LIST_URL)
-            return self._parse(html)
-        finally:
-            client.close()
+        html = self._fetch_html()
+        return self._parse(html)
+
+    def _fetch_html(self) -> str:
+        html = _fetch_via_http()
+        if _is_real_listing(html):
+            return html
+        # O VPS Hetzner recebe um desafio JS (403 / página de cookie).
+        with BrowserSession(min_interval=0.8) as browser:
+            browser.open(LIST_URL, wait_selector="h2.elementor-heading-title")
+            html = browser.html()
+            for _ in range(8):
+                if html.count("elementor-heading-title") >= 30:
+                    break
+                time.sleep(0.8)
+                html = browser.html()
+            return html
 
     def _parse(self, html: str) -> list[JobPayload]:
         soup = BeautifulSoup(html, "lxml")
@@ -65,11 +79,8 @@ class AeffulScraper(BaseScraper):
         seen_ids: set[str] = set()
 
         for index, section in enumerate(sections):
-            heading_el = section.select_one("h2.elementor-heading-title")
-            if heading_el is None:
-                continue
-            heading = re.sub(r"\s+", " ", heading_el.get_text(" ", strip=True)).strip()
-            if not heading or not HEADING_SPLIT_RE.search(heading):
+            heading = _section_heading(section)
+            if not heading:
                 continue
 
             body_html, body_text = _next_body(sections, index)
@@ -112,11 +123,37 @@ class AeffulScraper(BaseScraper):
         return jobs
 
 
+def _section_heading(section) -> str:
+    # O Elementor no Chrome por vezes deixa um <h2> vazio à frente do título real.
+    for heading_el in section.select("h2"):
+        heading = re.sub(r"\s+", " ", heading_el.get_text(" ", strip=True)).strip()
+        if heading and HEADING_SPLIT_RE.search(heading):
+            return heading
+    return ""
+
+
+def _fetch_via_http() -> str:
+    client = HttpClient(min_interval=0.35)
+    try:
+        try:
+            return client.get_text(LIST_URL)
+        except httpx.HTTPStatusError:
+            return ""
+    finally:
+        client.close()
+
+
+def _is_real_listing(html: str) -> bool:
+    if len(html) < 20_000:
+        return False
+    return html.count("elementor-heading-title") >= 5
+
+
 def _next_body(sections: list, index: int) -> tuple[str, str]:
     if index + 1 >= len(sections):
         return "", ""
     nxt = sections[index + 1]
-    if nxt.select_one("h2.elementor-heading-title"):
+    if _section_heading(nxt):
         return "", ""
     editors = nxt.select(".elementor-widget-text-editor")
     if not editors:
