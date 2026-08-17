@@ -97,6 +97,7 @@ function normalizeCompany(company: string) {
   if (value.includes("hpa") || value.includes("hospital particular do algarve")) {
     return "hpa";
   }
+  if (value.includes("holon")) return "holon";
   return value;
 }
 
@@ -168,6 +169,21 @@ export function guessProfession(title: string, fallback = "Outros") {
     ],
     [
       [
+        "farmaceut",
+        "farmacia",
+        "pharmacist",
+        "tecnico de farmacia",
+        "tecnica de farmacia",
+        "auxiliar de farmacia",
+        "diretor tec",
+        "director tec",
+        "diretor tecnico",
+        "taf",
+      ],
+      "Farmácia",
+    ],
+    [
+      [
         "auxiliar de acao medica",
         "auxiliar de accao medica",
         "auxiliar de acao",
@@ -211,7 +227,6 @@ export function guessProfession(title: string, fallback = "Outros") {
       "Medicina",
     ],
     [["fisioterapeut", "fisioterap", "physiotherapist", "physiotherapy"], "Fisioterapia"],
-    [["farmaceut", "farmacia", "pharmacist"], "Farmácia"],
     [
       [
         "radiologia",

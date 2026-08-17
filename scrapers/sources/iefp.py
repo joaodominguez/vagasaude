@@ -31,11 +31,17 @@ TEXT_QUERIES = [
     "visitador médico",
     "comercial farmacêutico",
     "key account saúde",
+    "farmacêutico",
+    "farmaceutico",
+    "técnico de farmácia",
+    "tecnico de farmacia",
+    "auxiliar de farmácia",
+    "TAF farmácia",
 ]
 
 CLINICAL_TITLE_RE = re.compile(
     r"enferm|fisioterap|terapeuta|auxiliar de sa|m[eé]dic|"
-    r"farmaceut|psicolog|nutric|radiolog|sa[uú]de",
+    r"farmaceut|farm[aá]cia|\btaf\b|psicolog|nutric|radiolog|sa[uú]de",
     re.I,
 )
 

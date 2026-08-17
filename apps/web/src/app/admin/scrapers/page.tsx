@@ -74,6 +74,11 @@ const SCRAPERS = [
     name: "Grupo HPA Saúde (HTML)",
     schedule: "A cada 6 horas",
   },
+  {
+    slug: "holon",
+    name: "Farmácias Holon (CVWarehouse)",
+    schedule: "A cada 6 horas",
+  },
 ];
 
 export default async function AdminScrapersPage() {

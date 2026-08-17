@@ -16,6 +16,8 @@ from common.normalize import (
 
 LUZ_GUID = "5498d2b5-b889-48e2-b434-d850c72bc42e"
 LUSIADAS_GUID = "af1a9847-a9ab-4cd7-904e-d48470afea9a"
+HOLON_GUID = "1037b978-b846-4df6-98ad-b3cc4d24f206"
+HOLON_DERMO_GUID = "30536c2b-6af6-429a-b468-9f4c37ffe8d3"
 
 JOB_BLOCK_PATTERN = re.compile(
     r'<div data-item-collection="jobCollection-[^"]+"([^>]*)>([\s\S]*?)'
@@ -42,29 +44,35 @@ class CvWarehouseScraper(BaseScraper):
     name: str
     company_guid: str
     default_company: str
+    extra_company_guids: list[str] = []
 
-    def landing_url(self) -> str:
+    def landing_url(self, guid: str | None = None) -> str:
+        company = guid or self.company_guid
         return (
             "https://jobpage.cvwarehouse.com/"
-            f"?companyGuid={self.company_guid}&lang=pt-PT"
+            f"?companyGuid={company}&lang=pt-PT"
         )
 
-    def section_url(self, section_id: str) -> str:
-        return f"{self.landing_url()}&section={section_id}"
+    def section_url(self, section_id: str, guid: str | None = None) -> str:
+        return f"{self.landing_url(guid)}&section={section_id}"
 
     def fetch(self) -> list[JobPayload]:
         client = HttpClient()
+        pages: list[tuple[str, str]] = []
         try:
-            landing_html = client.get_text(self.landing_url())
-            pages = [landing_html]
-            for section_id in self._discover_sections(landing_html):
-                pages.append(client.get_text(self.section_url(section_id)))
+            for guid in [self.company_guid, *self.extra_company_guids]:
+                landing_html = client.get_text(self.landing_url(guid))
+                pages.append((guid, landing_html))
+                for section_id in self._discover_sections(landing_html):
+                    pages.append(
+                        (guid, client.get_text(self.section_url(section_id, guid)))
+                    )
         finally:
             client.close()
 
         by_id: dict[str, JobPayload] = {}
-        for html in pages:
-            for job in self._parse_jobs(html):
+        for guid, html in pages:
+            for job in self._parse_jobs(html, guid):
                 by_id[job.source_id] = job
         return list(by_id.values())
 
@@ -75,7 +83,8 @@ class CvWarehouseScraper(BaseScraper):
                 seen.append(section_id)
         return seen
 
-    def _parse_jobs(self, html: str) -> list[JobPayload]:
+    def _parse_jobs(self, html: str, guid: str | None = None) -> list[JobPayload]:
+        company_guid = guid or self.company_guid
         jobs: list[JobPayload] = []
         for attrs, body in JOB_BLOCK_PATTERN.findall(html):
 
@@ -103,7 +112,7 @@ class CvWarehouseScraper(BaseScraper):
 
             application_url = urljoin(
                 "https://jobpage.cvwarehouse.com/",
-                f"?companyGuid={self.company_guid}&lang=pt-PT&job={job_id}",
+                f"?companyGuid={company_guid}&lang=pt-PT&job={job_id}",
             )
             jobs.append(
                 JobPayload(
@@ -175,3 +184,21 @@ class LusiadasScraper(CvWarehouseScraper):
     name = "Lusíadas Saúde"
     company_guid = LUSIADAS_GUID
     default_company = "Lusíadas Saúde"
+
+
+class HolonScraper(CvWarehouseScraper):
+    slug = "holon"
+    name = "Farmácias Holon"
+    company_guid = HOLON_GUID
+    extra_company_guids = [HOLON_DERMO_GUID]
+    default_company = "Farmácias Holon"
+
+    def _resolve_location(
+        self, title: str, city: str | None, region: str
+    ) -> tuple[str | None, str]:
+        place_match = re.search(r"\(([^)]+)\)\s*$", title)
+        place = place_match.group(1).strip() if place_match else None
+        district = guess_district(place, city or region)
+        if district == "Portugal":
+            district = guess_district(city, region)
+        return place or city, district

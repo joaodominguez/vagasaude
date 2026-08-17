@@ -120,6 +120,14 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     sector: "Privado",
     logo: "/partners/hpa.png",
   },
+  {
+    id: "holon",
+    name: "Farmácias Holon",
+    shortName: "Holon",
+    url: "https://www.farmaciasholon.pt/candidaturas/",
+    sector: "Privado",
+    logo: "/partners/holon.png",
+  },
 ];
 
 export const SOURCE_META = Object.fromEntries(
