@@ -16,6 +16,9 @@ export function Footer() {
           <Link className="hover:text-primary" href="/vagas">
             Vagas
           </Link>
+          <Link className="hover:text-primary" href="/favoritos">
+            Favoritos
+          </Link>
           <Link className="hover:text-primary" href="/alertas">
             Alertas
           </Link>

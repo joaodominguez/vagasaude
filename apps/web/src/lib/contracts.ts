@@ -50,7 +50,12 @@ export function contractBucket(contract: string | null | undefined): string {
 }
 
 export function scoreJobRelevance(
-  job: { title: string; company: string; profession: string },
+  job: {
+    title: string;
+    company: string;
+    profession: string;
+    description?: string;
+  },
   query: string,
 ) {
   const q = query.trim().toLocaleLowerCase("pt");
@@ -65,5 +70,10 @@ export function scoreJobRelevance(
   if (company.includes(q)) return 25;
   const words = q.split(/\s+/).filter(Boolean);
   if (words.length > 1 && words.every((w) => title.includes(w))) return 50;
+  if (job.description) {
+    const desc = job.description.toLocaleLowerCase("pt");
+    if (desc.includes(q)) return 15;
+    if (words.length > 1 && words.every((w) => desc.includes(w))) return 10;
+  }
   return 0;
 }

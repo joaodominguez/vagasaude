@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { AlertForm } from "@/components/alert-form";
 import { CategoryPageView } from "@/components/category-page-view";
+import { FavoriteButton } from "@/components/favorite-button";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { JobCard } from "@/components/job-card";
@@ -107,6 +108,27 @@ export default async function VagasSlugPage({ params }: { params: Params }) {
   return <ActiveJobView job={found.job} allJobs={allJobs} />;
 }
 
+function scoreRelated(candidate: Job, target: Job): number {
+  let score = 0;
+  if (candidate.profession === target.profession) score += 5;
+  if (candidate.district === target.district) score += 3;
+  if (candidate.sector === target.sector) score += 2;
+  const tWords = new Set(
+    target.title
+      .toLocaleLowerCase("pt")
+      .split(/\s+/)
+      .filter((w) => w.length > 3),
+  );
+  for (const w of candidate.title
+    .toLocaleLowerCase("pt")
+    .split(/\s+/)
+    .filter((w) => w.length > 3)) {
+    if (tWords.has(w)) score += 1;
+  }
+  if (candidate.company === target.company) score += 1;
+  return score;
+}
+
 function ActiveJobView({ job, allJobs }: { job: Job; allJobs: Job[] }) {
   const related = allJobs
     .filter(
@@ -114,7 +136,8 @@ function ActiveJobView({ job, allJobs }: { job: Job; allJobs: Job[] }) {
         item.slug !== job.slug &&
         (item.profession === job.profession || item.district === job.district),
     )
-    .slice(0, 3);
+    .sort((a, b) => scoreRelated(b, job) - scoreRelated(a, job))
+    .slice(0, 6);
 
   const jsonLd = buildJobPostingJsonLd(job);
   const shareUrl = jobUrl(job.slug);
@@ -170,11 +193,14 @@ function ActiveJobView({ job, allJobs }: { job: Job; allJobs: Job[] }) {
                     ))}
                   </div>
                 )}
-                <ShareButtons
-                  url={shareUrl}
-                  title={job.title}
-                  summary={`${job.company} · ${job.city}`}
-                />
+                <div className="mt-5 flex items-center gap-3">
+                  <FavoriteButton slug={job.slug} size={20} className="detail-fav-button" />
+                  <ShareButtons
+                    url={shareUrl}
+                    title={job.title}
+                    summary={`${job.company} · ${job.city}`}
+                  />
+                </div>
               </header>
 
               <div className="job-content">
@@ -245,8 +271,16 @@ function ActiveJobView({ job, allJobs }: { job: Job; allJobs: Job[] }) {
 
           {related.length > 0 && (
             <section className="mt-12 border-t border-border pt-9">
-              <h2 className="section-title">Vagas relacionadas</h2>
-              <div className="mt-5 grid min-w-0 gap-3 lg:grid-cols-3">
+              <div className="flex items-center justify-between gap-3">
+                <h2 className="section-title">Vagas relacionadas</h2>
+                <Link
+                  href={`/vagas?profissao=${encodeURIComponent(job.profession)}${job.district ? `&distrito=${encodeURIComponent(job.district)}` : ""}`}
+                  className="text-sm font-bold text-primary hover:underline"
+                >
+                  Ver mais
+                </Link>
+              </div>
+              <div className="mt-5 grid min-w-0 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {related.map((item) => (
                   <JobCard key={item.slug} job={item} />
                 ))}
@@ -282,6 +316,7 @@ function ExpiredJobView({ job, allJobs }: { job: Job; allJobs: Job[] }) {
         item.slug !== job.slug &&
         (item.profession === job.profession || item.district === job.district),
     )
+    .sort((a, b) => scoreRelated(b, job) - scoreRelated(a, job))
     .slice(0, 6);
   const categoryLinks = buildJobCategoryLinks(job, allJobs);
 

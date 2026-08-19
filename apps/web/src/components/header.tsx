@@ -3,11 +3,13 @@
 import Link from "next/link";
 import { useEffect, useId, useState } from "react";
 import { Menu, X } from "lucide-react";
+import { FavoritesBadge } from "./favorites-badge";
 import { Logo } from "./logo";
 import { ThemeToggle } from "./theme-toggle";
 
 const NAV_ITEMS = [
   { href: "/vagas", label: "Procurar vagas" },
+  { href: "/favoritos", label: "Favoritos" },
   { href: "/alertas", label: "Criar alerta" },
   { href: "/como-funciona", label: "Como funciona" },
 ] as const;
@@ -50,6 +52,7 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <FavoritesBadge />
           <ThemeToggle />
           <button
             type="button"

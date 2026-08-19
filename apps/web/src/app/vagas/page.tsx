@@ -5,6 +5,7 @@ import { AlertForm } from "@/components/alert-form";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { JobCard } from "@/components/job-card";
+import { MobileFilterSheet } from "@/components/mobile-filter-sheet";
 import { SearchForm } from "@/components/search-form";
 import {
   categoryPath,
@@ -17,7 +18,7 @@ import {
   scoreJobRelevance,
 } from "@/lib/contracts";
 import { getJobs } from "@/lib/jobs-data";
-import { professions } from "@/lib/taxonomies";
+import { districts, professions } from "@/lib/taxonomies";
 
 export const dynamic = "force-dynamic";
 
@@ -49,6 +50,7 @@ type SearchParams = Promise<{
   profissao?: string;
   setor?: string;
   contrato?: string;
+  periodo?: string;
   ordenar?: string;
   page?: string;
 }>;
@@ -79,21 +81,28 @@ export default async function JobsPage({
   const profession = params.profissao ?? "";
   const sector = params.setor ?? "";
   const contract = params.contrato ?? "";
+  const period = params.periodo ?? "";
   const sort =
     params.ordenar === "relevancia" && queryRaw ? "relevancia" : "recentes";
   const page = Math.max(1, Number.parseInt(params.page || "1", 10) || 1);
   const jobs = await getJobs();
   const topCategories = listCategoryChips(jobs, 10);
 
+  const periodDays = period === "24h" ? 1 : period === "7d" ? 7 : period === "30d" ? 30 : 0;
+  const periodCutoff = periodDays
+    ? new Date(Date.now() - periodDays * 86_400_000).toISOString()
+    : "";
+
   let filteredJobs = jobs.filter((job) => {
     const haystack =
-      `${job.title} ${job.company} ${job.profession}`.toLocaleLowerCase("pt");
+      `${job.title} ${job.company} ${job.profession} ${job.description}`.toLocaleLowerCase("pt");
     return (
       (!query || haystack.includes(query)) &&
       (!district || job.district === district) &&
       (!profession || job.profession === profession) &&
       (!sector || job.sector === sector) &&
-      (!contract || contractBucket(job.contract) === contract)
+      (!contract || contractBucket(job.contract) === contract) &&
+      (!periodCutoff || job.publishedAt >= periodCutoff)
     );
   });
 
@@ -112,7 +121,7 @@ export default async function JobsPage({
   const pageJobs = filteredJobs.slice(start, start + PAGE_SIZE);
 
   const hasFilters = Boolean(
-    queryRaw || district || profession || sector || contract,
+    queryRaw || district || profession || sector || contract || period,
   );
   const filterParams = {
     q: params.q,
@@ -120,6 +129,7 @@ export default async function JobsPage({
     profissao: profession || undefined,
     setor: sector || undefined,
     contrato: contract || undefined,
+    periodo: period || undefined,
     ordenar: sort === "relevancia" ? "relevancia" : undefined,
   };
 
@@ -166,7 +176,7 @@ export default async function JobsPage({
         </section>
 
         <div className="page-container grid min-w-0 gap-8 py-10 lg:grid-cols-[15rem_minmax(0,1fr)]">
-          <aside className="min-w-0">
+          <aside className="hidden min-w-0 lg:block">
             <div className="content-card p-5 lg:sticky lg:top-24">
               <div className="flex items-center gap-2 font-extrabold">
                 <SlidersHorizontal size={18} />
@@ -200,6 +210,27 @@ export default async function JobsPage({
                               : null
                             : null
                       }
+                    />
+                  ))}
+              </FilterGroup>
+
+              <FilterGroup title="Distrito">
+                {districts
+                  .map((item) => ({
+                    item,
+                    count: jobs.filter((job) => job.district === item).length,
+                  }))
+                  .filter(({ count }) => count > 0)
+                  .sort((a, b) => b.count - a.count)
+                  .map(({ item, count }) => (
+                    <FilterLink
+                      key={item}
+                      label={item}
+                      name="distrito"
+                      value={item}
+                      active={district === item}
+                      params={filterParams}
+                      count={count}
                     />
                   ))}
               </FilterGroup>
@@ -244,6 +275,40 @@ export default async function JobsPage({
                 })}
               </FilterGroup>
 
+              <FilterGroup title="Período">
+                {(
+                  [
+                    ["24h", "Últimas 24 horas"],
+                    ["7d", "Últimos 7 dias"],
+                    ["30d", "Últimos 30 dias"],
+                  ] as const
+                ).map(([value, label]) => (
+                  <FilterLink
+                    key={value}
+                    label={label}
+                    name="periodo"
+                    value={value}
+                    active={period === value}
+                    params={filterParams}
+                    count={
+                      jobs.filter(
+                        (job) =>
+                          job.publishedAt >=
+                          new Date(
+                            Date.now() -
+                              (value === "24h"
+                                ? 1
+                                : value === "7d"
+                                  ? 7
+                                  : 30) *
+                                86_400_000,
+                          ).toISOString(),
+                      ).length
+                    }
+                  />
+                ))}
+              </FilterGroup>
+
               {hasFilters && (
                 <Link
                   href="/vagas"
@@ -256,6 +321,128 @@ export default async function JobsPage({
           </aside>
 
           <section className="min-w-0">
+            <MobileFilterSheet
+              activeCount={
+                [profession, district, sector, contract, period].filter(Boolean)
+                  .length
+              }
+            >
+              <FilterGroup title="Profissão">
+                {professions
+                  .map((item) => ({
+                    item,
+                    count: jobs.filter((job) => job.profession === item).length,
+                  }))
+                  .filter(({ count }) => count > 0)
+                  .map(({ item, count }) => (
+                    <FilterLink
+                      key={item}
+                      label={item}
+                      name="profissao"
+                      value={item}
+                      active={profession === item}
+                      params={filterParams}
+                      count={count}
+                    />
+                  ))}
+              </FilterGroup>
+              <FilterGroup title="Distrito">
+                {districts
+                  .map((item) => ({
+                    item,
+                    count: jobs.filter((job) => job.district === item).length,
+                  }))
+                  .filter(({ count }) => count > 0)
+                  .sort((a, b) => b.count - a.count)
+                  .map(({ item, count }) => (
+                    <FilterLink
+                      key={item}
+                      label={item}
+                      name="distrito"
+                      value={item}
+                      active={district === item}
+                      params={filterParams}
+                      count={count}
+                    />
+                  ))}
+              </FilterGroup>
+              <FilterGroup title="Setor">
+                {["Público", "Privado", "IPSS"]
+                  .map((item) => ({
+                    item,
+                    count: jobs.filter((job) => job.sector === item).length,
+                  }))
+                  .filter(({ count }) => count > 0)
+                  .map(({ item, count }) => (
+                    <FilterLink
+                      key={item}
+                      label={item}
+                      name="setor"
+                      value={item}
+                      active={sector === item}
+                      params={filterParams}
+                      count={count}
+                    />
+                  ))}
+              </FilterGroup>
+              <FilterGroup title="Contrato">
+                {CONTRACT_FILTERS.map((item) => {
+                  const count = jobs.filter(
+                    (job) => contractBucket(job.contract) === item,
+                  ).length;
+                  if (!count) return null;
+                  return (
+                    <FilterLink
+                      key={item}
+                      label={item}
+                      name="contrato"
+                      value={item}
+                      active={contract === item}
+                      params={filterParams}
+                      count={count}
+                    />
+                  );
+                })}
+              </FilterGroup>
+              <FilterGroup title="Período">
+                {(
+                  [
+                    ["24h", "Últimas 24 horas"],
+                    ["7d", "Últimos 7 dias"],
+                    ["30d", "Últimos 30 dias"],
+                  ] as const
+                ).map(([value, label]) => (
+                  <FilterLink
+                    key={value}
+                    label={label}
+                    name="periodo"
+                    value={value}
+                    active={period === value}
+                    params={filterParams}
+                    count={
+                      jobs.filter(
+                        (job) =>
+                          job.publishedAt >=
+                          new Date(
+                            Date.now() -
+                              (value === "24h" ? 1 : value === "7d" ? 7 : 30) *
+                                86_400_000,
+                          ).toISOString(),
+                      ).length
+                    }
+                  />
+                ))}
+              </FilterGroup>
+              {hasFilters && (
+                <Link
+                  href="/vagas"
+                  className="mt-6 inline-flex items-center gap-1.5 text-sm font-bold text-primary"
+                >
+                  <X size={15} /> Limpar filtros
+                </Link>
+              )}
+            </MobileFilterSheet>
+
             <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
               <div className="min-w-0">
                 <h2 className="text-xl font-extrabold tracking-[-0.03em]">
