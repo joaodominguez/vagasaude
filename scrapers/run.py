@@ -2,7 +2,10 @@
 from __future__ import annotations
 
 import argparse
+import contextlib
+import fcntl
 import json
+import os
 import sys
 import time
 from datetime import datetime, timezone
@@ -17,13 +20,41 @@ from common.scraper_runs import report_scraper_run
 from sources import SCRAPERS
 
 
+CHROME_SERIALIZED_SOURCES = {"ipo_porto", "pharmabsc"}
+CHROME_LOCK_PATH = "/tmp/vagasaude-chrome-scraper.lock"
+
+
+@contextlib.contextmanager
+def chrome_serialized_source(slug: str):
+    """
+    Some sources require a full Chrome/Playwright session.
+    If the host is running multiple scraper invocations concurrently
+    (e.g. via cron overlap), those sessions can conflict.
+    """
+
+    if slug not in CHROME_SERIALIZED_SOURCES:
+        yield
+        return
+
+    # File-lock so separate runs don't overlap these heavy Chrome scrapers.
+    with open(CHROME_LOCK_PATH, "w") as lock_fh:
+        print(f"[{slug}] aguardando lock Chrome em {CHROME_LOCK_PATH}")
+        fcntl.flock(lock_fh, fcntl.LOCK_EX)
+        try:
+            yield
+        finally:
+            # LOCK is released automatically on fd close, but keep it explicit.
+            fcntl.flock(lock_fh, fcntl.LOCK_UN)
+
+
 def run_source(slug: str, dry_run: bool = False) -> dict:
     scraper_cls = SCRAPERS[slug]
     scraper = scraper_cls()
     started = time.time()
     started_at = datetime.now(timezone.utc).isoformat()
     try:
-        jobs = scraper.fetch()
+        with chrome_serialized_source(slug):
+            jobs = scraper.fetch()
         elapsed = round(time.time() - started, 2)
         print(f"[{slug}] {len(jobs)} vagas em {elapsed}s")
 
