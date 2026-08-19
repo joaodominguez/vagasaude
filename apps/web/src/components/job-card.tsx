@@ -40,11 +40,11 @@ export function JobCard({ job }: { job: Job }) {
                 {job.company}
               </span>
             </span>
-            <span className="flex shrink-0 flex-col items-end gap-1.5 pt-0.5 text-xs text-muted">
+            <span className="flex shrink-0 items-center gap-2 pt-0.5 text-xs text-muted">
               <span className="whitespace-nowrap">{job.publishedLabel}</span>
-              <FavoriteButton slug={job.slug} size={16} />
+              <FavoriteButton slug={job.slug} size={15} />
               <ArrowUpRight
-                size={18}
+                size={17}
                 className="text-muted transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary"
               />
             </span>
