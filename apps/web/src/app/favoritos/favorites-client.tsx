@@ -92,11 +92,9 @@ export function FavoritesClient() {
         ))}
         {slugs.length > jobs.length && (
           <p className="mt-4 text-sm text-muted">
-            {slugs.length - jobs.length} vaga
-            {slugs.length - jobs.length !== 1 ? "s" : ""} guardada
-            {slugs.length - jobs.length !== 1 ? "s" : ""} já não está
-            {slugs.length - jobs.length !== 1 ? "ão" : ""} disponível
-            {slugs.length - jobs.length !== 1 ? "eis" : ""}.
+            {slugs.length - jobs.length === 1
+              ? "1 vaga guardada já não está disponível."
+              : `${slugs.length - jobs.length} vagas guardadas já não estão disponíveis.`}
           </p>
         )}
       </div>
