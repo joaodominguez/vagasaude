@@ -193,14 +193,11 @@ function ActiveJobView({ job, allJobs }: { job: Job; allJobs: Job[] }) {
                     ))}
                   </div>
                 )}
-                <div className="mt-5 flex items-center gap-3">
-                  <FavoriteButton slug={job.slug} size={20} className="detail-fav-button" />
-                  <ShareButtons
-                    url={shareUrl}
-                    title={job.title}
-                    summary={`${job.company} · ${job.city}`}
-                  />
-                </div>
+                <ShareButtons
+                  url={shareUrl}
+                  title={job.title}
+                  summary={`${job.company} · ${job.city}`}
+                />
               </header>
 
               <div className="job-content">
@@ -238,15 +235,18 @@ function ActiveJobView({ job, allJobs }: { job: Job; allJobs: Job[] }) {
                 <div className="mt-4">
                   <SalaryInsight job={job} />
                 </div>
-                <a
-                  href={job.applicationUrl}
-                  target="_blank"
-                  rel="noopener noreferrer nofollow"
-                  className="button button-primary mt-5 w-full text-center"
-                >
-                  <span className="truncate">Candidatar no site da entidade</span>
-                  <ExternalLink size={16} className="shrink-0" />
-                </a>
+                <div className="mt-5 flex gap-2">
+                  <a
+                    href={job.applicationUrl}
+                    target="_blank"
+                    rel="noopener noreferrer nofollow"
+                    className="button button-primary flex-1 text-center"
+                  >
+                    <span className="truncate">Candidatar</span>
+                    <ExternalLink size={16} className="shrink-0" />
+                  </a>
+                  <FavoriteButton slug={job.slug} size={18} className="detail-fav-button" />
+                </div>
                 <p className="mt-3 flex items-center justify-center gap-1.5 text-center text-xs text-muted">
                   <ShieldCheck size={14} className="text-primary" />
                   A candidatura é feita no site da entidade.
