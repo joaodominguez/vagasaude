@@ -12,20 +12,23 @@ export function FavoritesClient() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const slugsKey = slugs.join(",");
+
   useEffect(() => {
-    if (slugs.length === 0) {
+    if (!slugsKey) {
       setJobs([]);
       setLoading(false);
       return;
     }
     let cancelled = false;
     setLoading(true);
-    fetch(`/api/favorites?slugs=${encodeURIComponent(slugs.join(","))}`)
+    fetch(`/api/favorites?slugs=${encodeURIComponent(slugsKey)}`)
       .then((res) => (res.ok ? res.json() : { jobs: [] }))
       .then((data: { jobs: Job[] }) => {
         if (!cancelled) {
-          const ordered = slugs
-            .map((slug) => data.jobs.find((j) => j.slug === slug))
+          const currentSlugs = slugsKey.split(",");
+          const ordered = currentSlugs
+            .map((s) => data.jobs.find((j) => j.slug === s))
             .filter(Boolean) as Job[];
           setJobs(ordered);
         }
@@ -39,7 +42,7 @@ export function FavoritesClient() {
     return () => {
       cancelled = true;
     };
-  }, [slugs]);
+  }, [slugsKey]);
 
   if (loading) {
     return (

@@ -886,36 +886,6 @@ select {
   transform: scale(0.88);
 }
 
-.job-card-wrapper {
-  position: relative;
-}
-
-.job-card-wrapper .job-card {
-  display: block;
-}
-
-.job-card-fav {
-  position: absolute;
-  top: 0.65rem;
-  right: 0.65rem;
-  opacity: 0;
-  transition: opacity 160ms ease, color 160ms ease, transform 160ms ease;
-}
-
-.job-card-fav.is-active {
-  opacity: 1;
-}
-
-.job-card-wrapper:hover .job-card-fav,
-.job-card-wrapper:focus-within .job-card-fav {
-  opacity: 1;
-}
-
-@media (hover: none) {
-  .job-card-fav {
-    opacity: 1;
-  }
-}
 
 .detail-fav-button {
   padding: 0.4rem 0.6rem;
