@@ -19,7 +19,7 @@ import {
 import { getJobs } from "@/lib/jobs-data";
 import { professions } from "@/lib/jobs";
 
-export const revalidate = 600;
+export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const jobs = await getJobs();
