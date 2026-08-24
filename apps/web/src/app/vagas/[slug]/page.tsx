@@ -213,8 +213,8 @@ function ActiveJobView({ job, allJobs }: { job: Job; allJobs: Job[] }) {
               </div>
             </article>
 
-            <aside className="space-y-4">
-              <div className="content-card sticky top-24 p-5">
+            <aside className="space-y-4 lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:overscroll-contain">
+              <div className="content-card p-5">
                 <h2 className="font-extrabold">Resumo da vaga</h2>
                 <dl className="mt-4 divide-y divide-border rounded-xl border border-border text-sm">
                   {[
