@@ -18,6 +18,7 @@ Fontes ativas nesta fase:
 | `champalimaud` | https://www.fchampalimaud.org/pt-pt/posicoes-em-aberto | `/get-offers` JSON |
 | `germano_de_sousa` | https://www.germanodesousa.com/contactos/ofertas-de-emprego/ | HTML (portfolio) |
 | `hpa` | https://www.grupohpa.com/pt/empregos/ | HTML (Algarve, Alentejo, Madeira) |
+| `net_empregos` | https://www.net-empregos.com/emprego-saude-medicina-enfermagem.asp | Categoria saúde, 3 páginas, Portugal + profissões clínicas |
 
 José de Mello Saúde usa o mesmo portal da CUF para recrutamento externo.
 

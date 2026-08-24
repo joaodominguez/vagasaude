@@ -89,6 +89,11 @@ const SCRAPERS = [
     name: "PHARMABSC — Recrutamento farmácia (WordPress)",
     schedule: "A cada 6 horas",
   },
+  {
+    slug: "net_empregos",
+    name: "Net-Empregos — Saúde (HTML + RSS, filtrado)",
+    schedule: "A cada 6 horas",
+  },
 ];
 
 export default async function AdminScrapersPage() {

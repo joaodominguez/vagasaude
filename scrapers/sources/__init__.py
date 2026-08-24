@@ -9,6 +9,7 @@ from sources.hpa import HpaScraper
 from sources.iefp import IefpScraper
 from sources.ipo_porto import IpoPortoScraper
 from sources.joaquim_chaves import JoaquimChavesScraper
+from sources.net_empregos import NetEmpregosScraper
 from sources.pharmabsc import PharmabscScraper
 from sources.scm_esposende import ScmEsposendeScraper
 from sources.scml import ScmlScraper
@@ -32,4 +33,5 @@ SCRAPERS = {
     HolonScraper.slug: HolonScraper,
     AeffulScraper.slug: AeffulScraper,
     PharmabscScraper.slug: PharmabscScraper,
+    NetEmpregosScraper.slug: NetEmpregosScraper,
 }

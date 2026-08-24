@@ -161,6 +161,10 @@ CITY_TO_DISTRICT = {
     "rossio": "Lisboa",
     "mem martins": "Lisboa",
     "sao joao da talha": "Lisboa",
+    "esmoriz": "Aveiro",
+    "lordelo": "Braga",
+    "alfena": "Porto",
+    "valongo": "Porto",
 }
 
 

@@ -20,7 +20,7 @@ from common.scraper_runs import report_scraper_run
 from sources import SCRAPERS
 
 
-CHROME_SERIALIZED_SOURCES = {"ipo_porto", "pharmabsc"}
+CHROME_SERIALIZED_SOURCES = {"ipo_porto", "pharmabsc", "aefful", "net_empregos"}
 CHROME_LOCK_PATH = "/tmp/vagasaude-chrome-scraper.lock"
 
 

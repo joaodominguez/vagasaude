@@ -144,6 +144,14 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     sector: "Privado",
     logo: "/partners/pharmabsc.png",
   },
+  {
+    id: "net_empregos",
+    name: "Net-Empregos — Saúde / Medicina / Enfermagem",
+    shortName: "Net-Empregos",
+    url: "https://www.net-empregos.com/emprego-saude-medicina-enfermagem.asp",
+    sector: "Privado",
+    logo: "/partners/net-empregos.svg",
+  },
 ];
 
 export const SOURCE_META = Object.fromEntries(
