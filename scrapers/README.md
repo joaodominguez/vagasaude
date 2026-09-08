@@ -20,6 +20,16 @@ Fontes ativas nesta fase:
 | `hpa` | https://www.grupohpa.com/pt/empregos/ | HTML (Algarve, Alentejo, Madeira) |
 | `net_empregos` | https://www.net-empregos.com/emprego-saude-medicina-enfermagem.asp | Categoria saúde, 3 páginas, Portugal + profissões clínicas |
 | `sapo_emprego` | https://emprego.sapo.pt/offers?categoria=saude | Categoria saúde + pesquisas clínicas; dedupe com fontes directas |
+| `scmp` | https://scmp.pt/oportunidades-de-recrutamento | JSON CMS — ofertas IPSS Porto |
+| `scm_faro` | https://misericordiafaro.pt/category/ofertas-de-emprego/ | RSS Misericórdia Faro |
+| `ipst` | https://www.ipst.pt (procedimentos concursais) | Público — TAS/TS/TSDT + BEP |
+| `inem` | https://www.inem.pt/category/institucional/recrutamento/ | Público — enfermagem/TEPH |
+| `uls_sao_jose` | https://www.ulssjose.min-saude.pt/concursos-… | Concursos Em Curso (WP) |
+| `uls_coimbra` | https://www.ulscoimbra.min-saude.pt/concursos/ | Concursos Em Curso (WP) |
+| `uls_sao_joao` | https://concursosrh-ulssjoao.min-saude.pt/processos-ativos | WireRecruit processos abertos |
+
+> **Indeed:** não integrado — `robots.txt`/ToS bloqueiam scraping e há forte overlap com CUF/Trofa/ATS diretos.
+> **UMP:** sem bolsa pública de emprego (só email ad-hoc).
 
 José de Mello Saúde usa o mesmo portal da CUF para recrutamento externo.
 

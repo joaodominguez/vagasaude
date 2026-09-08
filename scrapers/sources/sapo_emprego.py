@@ -32,6 +32,8 @@ TEXT_QUERIES = [
     "técnico de farmácia",
     "auxiliar de ação médica",
     "auxiliar de saude",
+    "técnico auxiliar de saúde",
+    "assistente operacional",
     "médico",
     "medico",
     "terapeuta da fala",
@@ -39,15 +41,25 @@ TEXT_QUERIES = [
     "psicólogo",
     "psicologo",
     "nutricionista",
+    "audiologista",
+    "assistente dentário",
+    "assistente dentario",
+    "profissional de saúde",
+    "ajudante familiar",
+    "cuidador",
+    "optometrista",
 ]
 
 CLINICAL_RE = re.compile(
     r"enferm|fisioterap|terapeuta|farmaceut|farm[aá]cia|\btaf\b|"
     r"m[eé]dic|auxiliar\s+de\s+(?:a[cç][aã]o\s+m[eé]dica|sa[uú]de|lar)|"
-    r"t[eé]cnic[oa].{0,20}(?:sa[uú]de|radiolog|an[aá]lis|cardiopneum|"
-    r"patologia|farm)|psicolog|nutric|dietista|odontolog|estomatolog|"
-    r"radiolog|imagiolog|ortopt|podolog|osteopat|massagista\s+de\s+reabil|"
-    r"cuidados\s+paliativos|ucci|lar\s+de\s+idosos|resid[eê]ncia\s+s[eé]nior",
+    r"t[eé]cnic[oa].{0,40}(?:sa[uú]de|radiolog|an[aá]lis|cardiopneum|"
+    r"patologia|farm|esteriliz)|psicolog|nutric|dietista|odontolog|estomatolog|"
+    r"radiolog|imagiolog|ortopt|podolog|osteopat|audiolog|optometr|"
+    r"assistente\s+dent|profissional\s+de\s+sa[uú]de|"
+    r"assistente\s+operacional|ajudante\s+familiar|cuidador|"
+    r"massagista\s+de\s+reabil|cuidados\s+paliativos|ucci|"
+    r"lar\s+de\s+idosos|resid[eê]ncia\s+s[eé]nior|esteriliza",
     re.I,
 )
 
