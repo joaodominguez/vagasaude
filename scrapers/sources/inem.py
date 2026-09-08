@@ -8,6 +8,7 @@ from bs4 import BeautifulSoup
 from common.http import HttpClient
 from common.models import BaseScraper, JobPayload
 from common.normalize import guess_profession, html_to_text
+from common.title import shorten_job_title
 
 LIST = "https://www.inem.pt/category/institucional/recrutamento/"
 BASE = "https://www.inem.pt"
@@ -89,13 +90,14 @@ def _parse(html: str) -> list[JobPayload]:
         desc = title
         if block:
             desc = html_to_text(block.get_text("\n", strip=True))[:3500] or title
+        short_title = shorten_job_title(title)
         jobs.append(
             JobPayload(
-                title=title,
+                title=short_title,
                 company="INEM, I.P.",
                 location_district="Lisboa",
                 location_concelho="Lisboa",
-                profession=guess_profession(title),
+                profession=guess_profession(short_title),
                 specialty=None,
                 sector="publico",
                 contract_type="Contrato",

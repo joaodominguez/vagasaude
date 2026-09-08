@@ -8,6 +8,7 @@ from bs4 import BeautifulSoup
 from common.http import HttpClient
 from common.models import BaseScraper, JobPayload
 from common.normalize import guess_profession, html_to_text
+from common.title import shorten_job_title
 
 # Sites SNS WordPress (template snsch-contests) — acessíveis a partir do VPS.
 MAX_PAGES = 8
@@ -102,13 +103,14 @@ def _parse_tenders(html: str, scraper: _UlsWpBase) -> list[JobPayload]:
         if not source_id:
             source_id = href.rstrip("/").rsplit("/", 1)[-1]
         desc = excerpt or title
+        short_title = shorten_job_title(title)
         jobs.append(
             JobPayload(
-                title=title,
+                title=short_title,
                 company=scraper.company,
                 location_district=scraper.district,
                 location_concelho=scraper.district,
-                profession=guess_profession(title, excerpt[:240]),
+                profession=guess_profession(short_title, excerpt[:240]),
                 specialty=None,
                 sector="publico",
                 contract_type="Contrato",

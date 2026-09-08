@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { normalizeInlineLists } from "@/lib/format-job-text";
+import { shortenJobTitle } from "@/lib/shorten-job-title";
 
 export type StoredJob = {
   id: string;
@@ -643,7 +644,7 @@ export async function ingestJobs(source: string, incoming: IngestJobInput[]) {
   let review = 0;
 
   for (const item of incoming) {
-    const title = item.title?.trim();
+    const title = shortenJobTitle(item.title?.trim() || "");
     const company = item.company?.trim();
     const district = item.location_district?.trim();
     const applicationUrl = item.application_url?.trim();
@@ -773,6 +774,33 @@ export async function reclassifyOutrosProfessions() {
     const next = guessProfession(job.title, "Outros");
     if (!next || next === job.profession) continue;
     job.profession = next;
+    job.updatedAt = now;
+    changed += 1;
+  }
+  if (changed > 0) {
+    file.updatedAt = now;
+    await writeJobsFile(file);
+  }
+  return { changed, total: file.jobs.length };
+}
+
+/** Encurta títulos burocráticos (concursos públicos) para a função. */
+export async function shortenPublishedJobTitles() {
+  const file = await readJobsFile();
+  let changed = 0;
+  const now = new Date().toISOString();
+  for (const job of file.jobs) {
+    if (job.status !== "published" && job.status !== "pending_review") continue;
+    const nextTitle = shortenJobTitle(job.title);
+    if (!nextTitle || nextTitle === job.title) continue;
+    job.title = nextTitle;
+    job.dedupeHash = makeDedupeHash(
+      nextTitle,
+      job.company,
+      job.locationDistrict,
+    );
+    const nextProfession = guessProfession(nextTitle, job.profession || "Outros");
+    if (nextProfession) job.profession = nextProfession;
     job.updatedAt = now;
     changed += 1;
   }

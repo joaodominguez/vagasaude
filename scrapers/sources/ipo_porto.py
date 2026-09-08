@@ -6,6 +6,7 @@ from html import unescape
 from common.browser import BrowserSession
 from common.models import BaseScraper, JobPayload
 from common.normalize import guess_profession, html_to_text
+from common.title import shorten_job_title
 
 BASE = "https://ipoporto.pt"
 LIST_URL = f"{BASE}/nos-ipo/emprego-e-carreira/"
@@ -105,9 +106,7 @@ def _extract_body(html: str) -> str:
 def _clean_title(title: str) -> str:
     # "proc. 021/2026 CONTRATAÇÃO DE 20 ENFERMEIROS..."
     cleaned = re.sub(r"^proc\.?\s*\d+/\d+\s*", "", title, flags=re.I).strip()
-    if len(cleaned) > 160:
-        cleaned = cleaned[:157].rstrip() + "…"
-    return cleaned or title
+    return shorten_job_title(cleaned) or cleaned
 
 
 def _published_at(html: str) -> str | None:

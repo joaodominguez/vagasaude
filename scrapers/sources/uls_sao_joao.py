@@ -8,6 +8,7 @@ from bs4 import BeautifulSoup
 from common.http import HttpClient
 from common.models import BaseScraper, JobPayload
 from common.normalize import guess_profession, html_to_text
+from common.title import shorten_job_title
 
 BASE = "https://concursosrh-ulssjoao.min-saude.pt"
 LIST = f"{BASE}/processos-ativos"
@@ -51,13 +52,14 @@ def _parse(html: str) -> list[JobPayload]:
         parent = a.find_parent(["div", "section", "article", "li"]) or a.parent
         blob = parent.get_text("\n", strip=True) if parent else title
         desc = html_to_text(blob)[:4000] or title
+        short_title = shorten_job_title(title)
         jobs.append(
             JobPayload(
-                title=title,
+                title=short_title,
                 company="ULS São João, EPE",
                 location_district="Porto",
                 location_concelho="Porto",
-                profession=guess_profession(title, desc[:240]),
+                profession=guess_profession(short_title, desc[:240]),
                 specialty=None,
                 sector="publico",
                 contract_type="Contrato",

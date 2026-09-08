@@ -9,6 +9,7 @@ from pathlib import Path
 
 from common.models import BaseScraper, JobPayload
 from common.normalize import guess_district, guess_profession, html_to_text
+from common.title import shorten_job_title
 
 ROOT = Path(__file__).resolve().parents[1]
 SEARCH_SCRIPT = ROOT / "tools" / "dre_search.mjs"
@@ -105,15 +106,13 @@ def _to_job(src: dict, cutoff) -> JobPayload | None:
     application_url = _detail_url(src)
     company = (src.get("emissor") or "Administração Pública").strip()
     role = designacao or sumario or title_raw
-    # Título legível: função + organismo
-    title = role.strip()
-    if len(title) > 160:
-        title = title[:157].rstrip() + "…"
+    # Título legível: função (sem jargão concursal)
+    title = shorten_job_title(role.strip())
     district = guess_district(
         src.get("concelho") or "",
         f"{company} {role}",
     )
-    profession = guess_profession(role)
+    profession = guess_profession(title or role)
     description = "\n\n".join(
         p
         for p in (

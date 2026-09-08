@@ -8,6 +8,7 @@ from bs4 import BeautifulSoup
 from common.http import HttpClient
 from common.models import BaseScraper, JobPayload
 from common.normalize import guess_district, guess_profession, html_to_text
+from common.title import shorten_job_title
 
 BASE = "https://www.ipst.pt"
 YEAR_URL = (
@@ -106,11 +107,9 @@ def _title_from_procedure(raw: str) -> str:
     body = re.sub(r"^Procedimento Concursal[^\|]*\|?\s*", "", raw, flags=re.I).strip()
     if "|" in raw:
         body = raw.split("|", 1)[1].strip()
-    # Shorten
-    body = re.sub(r"\s+", " ", body)
-    if len(body) > 160:
-        body = body[:157].rstrip() + "…"
-    return body or "Procedimento concursal IPST"
+    body = re.sub(r"\s+", " ", body).strip()
+    shortened = shorten_job_title(body)
+    return shortened or "Procedimento concursal IPST"
 
 
 def _location(raw: str) -> str | None:
