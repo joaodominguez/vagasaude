@@ -133,6 +133,8 @@ function cleanRole(role: string): string {
   role = role.replace(/^t[eé]cnicos?\s+superior(?:es)?\b/i, "Técnico Superior");
   role = role.replace(/^t[eé]cnicos?\s+auxiliares?\b/i, "Técnico Auxiliar");
   role = role.replace(/\boperacionais\b/i, "Operacional");
+  role = role.replace(/\s*,?\s*ip\.?\s*$/i, "");
+  role = role.replace(/^postos?\s+de\s+trabalho\s+(?:da\s+carreira\s+(?:de\s+)?)?/i, "");
   role = role.replace(
     /t[eé]cnico\s+superior\s+das\s+[aá]reas\s+de\s+diagn[oó]stico\s+e\s+terap[eê]utica/i,
     "Técnico Superior de Diagnóstico e Terapêutica",

@@ -200,7 +200,8 @@ def _clean_role(role: str) -> str:
     role = re.sub(r"(?i)^m[eé]dicos\b", "Médico", role)
     role = re.sub(r"(?i)^t[eé]cnicos?\s+superior(?:es)?\b", "Técnico Superior", role)
     role = re.sub(r"(?i)^t[eé]cnicos?\s+auxiliares?\b", "Técnico Auxiliar", role)
-    role = re.sub(r"(?i)\boperacionais\b", "Operacional", role)
+    role = re.sub(r"(?i)\s*,?\s*ip\.?\s*$", "", role)
+    role = re.sub(r"(?i)^postos?\s+de\s+trabalho\s+(?:da\s+carreira\s+(?:de\s+)?)?", "", role)
     role = re.sub(
         r"(?i)t[eé]cnico\s+superior\s+das\s+[aá]reas\s+de\s+diagn[oó]stico\s+e\s+terap[eê]utica",
         "Técnico Superior de Diagnóstico e Terapêutica",
