@@ -41,7 +41,10 @@ class IpstScraper(BaseScraper):
             }
         )
         try:
-            html = client.get_text(YEAR_URL)
+            try:
+                html = client.get_text(YEAR_PRINT_URL)
+            except Exception:  # noqa: BLE001
+                html = client.get_text(YEAR_URL)
         finally:
             client.close()
         return _parse_year_page(html)

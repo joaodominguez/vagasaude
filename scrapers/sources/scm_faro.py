@@ -36,17 +36,25 @@ class ScmFaroScraper(BaseScraper):
                     "AppleWebKit/537.36 (KHTML, like Gecko) "
                     "Chrome/124.0.0.0 Safari/537.36"
                 ),
-                "Accept": "application/rss+xml, application/xml, text/xml, text/html, */*",
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
                 "Accept-Language": "pt-PT,pt;q=0.9",
             }
         )
         try:
+            jobs: list[JobPayload] = []
             try:
                 xml = client.get_text(FEED)
-                return _parse_feed(xml)
+                jobs = _parse_feed(xml)
             except Exception:  # noqa: BLE001
+                jobs = []
+            if not jobs:
                 html = client.get_text(CATEGORY)
-                return _parse_category_html(html)
+                jobs = _parse_category_html(html)
+            if not jobs:
+                raise RuntimeError(
+                    "SCM Faro: nenhuma oferta encontrada (RSS/HTML bloqueados ou vazios)"
+                )
+            return jobs
         finally:
             client.close()
 
