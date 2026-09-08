@@ -150,7 +150,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "Net-Empregos",
     url: "https://www.net-empregos.com/emprego-saude-medicina-enfermagem.asp",
     sector: "Privado",
-    logo: "/partners/net-empregos.svg",
+    logo: "/partners/net-empregos.png",
   },
   {
     id: "sapo_emprego",
@@ -158,7 +158,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "SAPO Emprego",
     url: "https://emprego.sapo.pt/offers?categoria=saude",
     sector: "Privado",
-    logo: "/partners/sapo-emprego.svg",
+    logo: "/partners/sapo-emprego.png",
   },
   {
     id: "scmp",
@@ -174,7 +174,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "SCM Faro",
     url: "https://misericordiafaro.pt/category/ofertas-de-emprego/",
     sector: "IPSS",
-    logo: "/partners/scm-faro.svg",
+    logo: "/partners/scm-faro.png",
   },
   {
     id: "ipst",
@@ -182,7 +182,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "IPST",
     url: "https://www.ipst.pt/index.php/pt/procedimentos-concursais",
     sector: "Público",
-    logo: "/partners/ipst.svg",
+    logo: "/partners/ipst.png",
   },
   {
     id: "inem",
