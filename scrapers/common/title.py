@@ -15,10 +15,10 @@ _PREFIX_RE = re.compile(
         (?:com\s+car[aá]ter\s+urgente\s*)?
         (?:conducente\s+(?:ao\s+)?(?:recrutamento|à\s+constitui[cç][aã]o)[^.]*?)?
         (?:para\s+)?|
+        (?:com\s+vista\s+[aà]\s+)?contrata[cç][aã]o\s+de\s+|
         constitui[cç][aã]o\s+de\s+bolsa\s+de\s+reservas?\s+(?:de\s+)?|
         constitui[cç][aã]o\s+de\s+reserva\s+de\s+recrutamento\s+(?:para\s+)?|
         reserva\s+de\s+recrutamento\s+(?:para\s+)?|
-        contrata[cç][aã]o\s+de\s+|
         recrutamento\s+(?:de\s+|por\s+mobilidade\s+para\s+)?|
         call\s+for\s+(?:the\s+)?recruitment\s+of\s+|
         call\s+for\s+(?:one\s+|1\s+)?|
@@ -284,15 +284,56 @@ def _extract_specialty(text: str, role: str) -> str | None:
     return _title_case_pt(spec)
 
 
+def _repair_common_glitches(text: str) -> str:
+    """Corrige restos de títulos já truncados ou mal encurtados."""
+    text = re.sub(
+        r"(?i)t[eé]cnicos?\s+superior(?:es)?\s+das\s+\S+\s+de\s+"
+        r"diagn[oó]stico\s+e\s+terap\S*",
+        "Técnico Superior de Diagnóstico e Terapêutica",
+        text,
+    )
+    text = re.sub(
+        r"(?i)t[eé]cnico\s+superior\s+de\s+diagn[oó]stico\s+e\s+terap[eê]utica\s+"
+        r"(fisioterap\w*|radioterap\w*|radiologia|farm[aá]cia)",
+        r"Técnico Superior de Diagnóstico e Terapêutica — \1",
+        text,
+    )
+    text = re.sub(r"(?i)\s*[—\-–―]\s*aviso\s+n\.?º?.*$", "", text)
+    text = re.sub(r"(?i)\s*[—\-–―]\s*\d{4}\s*$", "", text)
+    text = re.sub(r"(?i)^com\s+vista\s+[aà]\s+contrata[cç][aã]o\s+de\s+", "", text)
+    text = re.sub(r"(?i)^contrata[cç][aã]o\s+de\s+", "", text)
+    text = re.sub(
+        r"(?i)^(?:carreira\s+)?(?:especial\s+)?m[eé]dica(?:\s+ou\s+especial)?\s+"
+        r"m[eé]dica\s+hospitalar.*$",
+        "Médico — Carreira Hospitalar",
+        text,
+    )
+    text = re.sub(r"(?i)\s*\(tsdt\)\s*", " ", text)
+    text = re.sub(r"(?i)\s*[—\-–―]\s*fis\s*$", " — Fisioterapia", text)
+    text = re.sub(r"(?i)\s*[—\-–―]\s*anatomia\s+patol\s*$", " — Anatomia Patológica", text)
+    text = re.sub(r"(?i)\s*[—\-–―]\s*t[eé]cnico\s+de\s*$", "", text)
+    text = re.sub(r"(?i)\s*[—\-–―]\s*[aá]rea\s+(?:de\s+)?", " — ", text)
+    text = re.sub(r"(?i)^farmac[eê]uticos\s+assistentes\b", "Farmacêutico Assistente", text)
+    text = re.sub(
+        r"(?i)t[eé]cnicos?\s+superior(?:es)?\s+das\s+\S+\s+de\s+"
+        r"diagn[oó]stico\s+e\s+terap\S*",
+        "Técnico Superior de Diagnóstico e Terapêutica",
+        text,
+    )
+    return _WHITESPACE_RE.sub(" ", text).strip(" ,;—-–―")
+
+
 def shorten_job_title(title: str, *, max_len: int = 96) -> str:
     """Encurta títulos burocráticos para a função (ex.: Assistente Técnico)."""
     raw = _ELLIPSIS_RE.sub("", _WHITESPACE_RE.sub(" ", (title or "").strip()))
     if not raw:
         return raw
 
-    # Títulos já curtos e sem jargão concursal: manter.
+    raw = _repair_common_glitches(raw)
+
+    # Títulos já curtos e sem jargão concursal: manter (após repair).
     if len(raw) <= 70 and not _BUREAUCRATIC_HINT_RE.search(raw):
-        return raw
+        return raw[:max_len]
 
     count = _extract_count(raw)
     working = raw

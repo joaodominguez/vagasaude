@@ -3,7 +3,7 @@ const ELLIPSIS_RE = /(?:\u2026|\.{2,})\s*$/;
 
 // Prefixes típicos de avisos públicos / DRE / BEP / ULS / IPST.
 const PREFIX_RE =
-  /^(?:(?:abertura\s+d[ae]\s+)?procedimento\s+concursal\s*(?:\(?(?:comum|urgente|simplificado)\)?\s*)*(?:com\s+car[aá]ter\s+urgente\s*)?(?:conducente\s+(?:ao\s+)?(?:recrutamento|à\s+constitui[cç][aã]o)[^.]*?)?(?:para\s+)?|constitui[cç][aã]o\s+de\s+bolsa\s+de\s+reservas?\s+(?:de\s+)?|constitui[cç][aã]o\s+de\s+reserva\s+de\s+recrutamento\s+(?:para\s+)?|reserva\s+de\s+recrutamento\s+(?:para\s+)?|contrata[cç][aã]o\s+de\s+|recrutamento\s+(?:de\s+|por\s+mobilidade\s+para\s+)?|call\s+for\s+(?:the\s+)?recruitment\s+of\s+|call\s+for\s+(?:one\s+|1\s+)?|an[uú]ncio\s+de\s+abertura\s+(?:de\s+)?|aviso\s+(?:de\s+abertura\s+)?(?:de\s+)?)/i;
+  /^(?:(?:abertura\s+d[ae]\s+)?procedimento\s+concursal\s*(?:\(?(?:comum|urgente|simplificado)\)?\s*)*(?:com\s+car[aá]ter\s+urgente\s*)?(?:conducente\s+(?:ao\s+)?(?:recrutamento|à\s+constitui[cç][aã]o)[^.]*?)?(?:para\s+)?|(?:com\s+vista\s+[aà]\s+)?contrata[cç][aã]o\s+de\s+|constitui[cç][aã]o\s+de\s+bolsa\s+de\s+reservas?\s+(?:de\s+)?|constitui[cç][aã]o\s+de\s+reserva\s+de\s+recrutamento\s+(?:para\s+)?|reserva\s+de\s+recrutamento\s+(?:para\s+)?|recrutamento\s+(?:de\s+|por\s+mobilidade\s+para\s+)?|call\s+for\s+(?:the\s+)?recruitment\s+of\s+|call\s+for\s+(?:one\s+|1\s+)?|an[uú]ncio\s+de\s+abertura\s+(?:de\s+)?|aviso\s+(?:de\s+abertura\s+)?(?:de\s+)?)/i;
 
 const MID_NOISE_RE =
   /(?:,\s*)?(?:na|com)\s+modalidade\s+de\s+v[ií]nculo[^,.;]*|(?:,\s*)?(?:em\s+regime\s+de\s+)?contrato\s+(?:de\s+trabalho\s+)?(?:em\s+fun[cç][oõ]es\s+p[uú]blicas\s+)?(?:por\s+tempo\s+indeterminado|a\s+termo)[^,.;]*|(?:,\s*)?contrato\s+individual\s+de\s+trabalho[^,.;]*|(?:,\s*)?do\s+mapa\s+de\s+pessoal[^,.;]*|(?:,\s*)?rem\s+r[^,.;]*|(?:,\s*)?cit\s+(?:a\s+termo)?[^,.;]*|(?:,\s*)?m\s*\/\s*f\.?|(?:,\s*)?proc\.?\s*ci[\s./\d-]+|(?:,\s*)?\(?(?:compete|feder|pi|ga)\d[^)]*\)?/gi;
@@ -196,6 +196,32 @@ function extractSpecialty(text: string, role: string): string | null {
   return titleCasePt(spec);
 }
 
+function repairCommonGlitches(text: string): string {
+  text = text.replace(
+    /t[eé]cnicos?\s+superior(?:es)?\s+das\s+\S+\s+de\s+diagn[oó]stico\s+e\s+terap\S*/gi,
+    "Técnico Superior de Diagnóstico e Terapêutica",
+  );
+  text = text.replace(
+    /t[eé]cnico\s+superior\s+de\s+diagn[oó]stico\s+e\s+terap[eê]utica\s+(fisioterap\w*|radioterap\w*|radiologia|farm[aá]cia)/gi,
+    "Técnico Superior de Diagnóstico e Terapêutica — $1",
+  );
+  text = text.replace(/\s*[—\-–―]\s*aviso\s+n\.?º?.*$/i, "");
+  text = text.replace(/\s*[—\-–―]\s*\d{4}\s*$/i, "");
+  text = text.replace(/^com\s+vista\s+[aà]\s+contrata[cç][aã]o\s+de\s+/i, "");
+  text = text.replace(/^contrata[cç][aã]o\s+de\s+/i, "");
+  text = text.replace(
+    /^(?:carreira\s+)?(?:especial\s+)?m[eé]dica(?:\s+ou\s+especial)?\s+m[eé]dica\s+hospitalar.*$/i,
+    "Médico — Carreira Hospitalar",
+  );
+  text = text.replace(/\s*\(tsdt\)\s*/gi, " ");
+  text = text.replace(/\s*[—\-–―]\s*fis\s*$/i, " — Fisioterapia");
+  text = text.replace(/\s*[—\-–―]\s*anatomia\s+patol\s*$/i, " — Anatomia Patológica");
+  text = text.replace(/\s*[—\-–―]\s*t[eé]cnico\s+de\s*$/i, "");
+  text = text.replace(/\s*[—\-–―]\s*[aáÁA]rea\s+(?:de\s+)?/gi, " — ");
+  text = text.replace(/^farmac[eê]uticos\s+assistentes\b/i, "Farmacêutico Assistente");
+  return text.replace(WHITESPACE_RE, " ").replace(/^[ ,;—\-–―]+|[ ,;—\-–―]+$/g, "");
+}
+
 /** Encurta títulos burocráticos para a função (ex.: Assistente Técnico). */
 export function shortenJobTitle(title: string, maxLen = 96): string {
   let raw = (title || "").trim().replace(WHITESPACE_RE, " ");
@@ -204,8 +230,10 @@ export function shortenJobTitle(title: string, maxLen = 96): string {
     return raw;
   }
 
+  raw = repairCommonGlitches(raw);
+
   if (raw.length <= 70 && !BUREAUCRATIC_HINT_RE.test(raw)) {
-    return raw;
+    return raw.slice(0, maxLen);
   }
 
   const count = extractCount(raw);

@@ -594,7 +594,10 @@ function isClosedNoticeTitle(title: string) {
     t.includes("lista de classificacao") ||
     t.includes("lista de ordenacao") ||
     t.includes("homologacao da lista") ||
-    t.includes("classificacao final")
+    t.includes("classificacao final") ||
+    t.includes("anulacao do ato") ||
+    t.includes("anulacao da referencia") ||
+    t.startsWith("anulacao ")
   );
 }
 
