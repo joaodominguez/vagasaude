@@ -76,6 +76,24 @@ export function categoryPath(
   return "/vagas";
 }
 
+/** Título H1 / SEO da landing (profissão, distrito ou combo). */
+export function categoryHeading(
+  kind: CategoryKind,
+  profession: string | null,
+  district: string | null,
+) {
+  if (kind === "combo" && profession && district) {
+    return `Vagas de ${profession} em ${district}`;
+  }
+  if (kind === "profession" && profession) {
+    return `Vagas de ${profession} em Portugal`;
+  }
+  if (district) {
+    return `Emprego na saúde em ${district}`;
+  }
+  return "Vagas de saúde";
+}
+
 export function resolveCategoryFromSegments(
   a: string,
   b?: string,
@@ -89,7 +107,7 @@ export function resolveCategoryFromSegments(
       profession,
       district,
       path: categoryPath(profession, district),
-      title: `Vagas de ${profession} em ${district}`,
+      title: categoryHeading("combo", profession, district),
     };
   }
 
@@ -100,7 +118,7 @@ export function resolveCategoryFromSegments(
       profession,
       district: null,
       path: categoryPath(profession, null),
-      title: `Vagas de ${profession}`,
+      title: categoryHeading("profession", profession, null),
     };
   }
 
@@ -111,7 +129,7 @@ export function resolveCategoryFromSegments(
       profession: null,
       district,
       path: categoryPath(null, district),
-      title: `Vagas de saúde em ${district}`,
+      title: categoryHeading("district", null, district),
     };
   }
 
@@ -199,7 +217,7 @@ export function listEligibleCategories(jobs: Job[]): CategoryRef[] {
       profession,
       district: null,
       path: categoryPath(profession, null),
-      title: `Vagas de ${profession}`,
+      title: categoryHeading("profession", profession, null),
     });
   }
 
@@ -214,7 +232,7 @@ export function listEligibleCategories(jobs: Job[]): CategoryRef[] {
       profession: null,
       district,
       path: categoryPath(null, district),
-      title: `Vagas de saúde em ${district}`,
+      title: categoryHeading("district", null, district),
     });
   }
 
@@ -227,7 +245,7 @@ export function listEligibleCategories(jobs: Job[]): CategoryRef[] {
         profession,
         district,
         path: categoryPath(profession, district),
-        title: `Vagas de ${profession} em ${district}`,
+        title: categoryHeading("combo", profession, district),
       });
     }
   }
@@ -323,7 +341,13 @@ export function buildCategoryMetadata(
   ref: CategoryRef,
   count: number,
 ): Metadata {
-  const title = `${ref.title} — ${count} ${count === 1 ? "oferta" : "ofertas"}`;
+  const offerWord = count === 1 ? "oferta activa" : "ofertas activas";
+  const title =
+    ref.kind === "combo"
+      ? `${ref.profession} em ${ref.district}: ${count} ${offerWord}`
+      : ref.kind === "profession"
+        ? `${ref.profession}: ${count} vagas de saúde em Portugal`
+        : `Saúde em ${ref.district}: ${count} ${offerWord}`;
   const description = truncateMeta(
     professionDistrictDescription(ref, count),
     160,
@@ -350,13 +374,14 @@ export function buildCategoryMetadata(
 }
 
 function professionDistrictDescription(ref: CategoryRef, count: number) {
+  const n = count === 1 ? "1 vaga" : `${count} vagas`;
   if (ref.kind === "combo") {
-    return `${count} vagas de ${ref.profession} em ${ref.district}. Consulta ofertas actualizadas no sector da saúde e candidata-te no site da entidade.`;
+    return `${n} de ${ref.profession} em ${ref.district}. Ofertas actualizadas de hospitais, clínicas e IPSS — candidata-te no site da entidade.`;
   }
   if (ref.kind === "profession") {
-    return `${count} vagas de ${ref.profession} em Portugal. Agregamos oportunidades do sector público, privado e IPSS.`;
+    return `${n} de ${ref.profession} em Portugal. Público, privado e IPSS agregados no VagaSaúde — filtra por distrito e candidata-te.`;
   }
-  return `${count} vagas de saúde em ${ref.district}. Encontra enfermagem, medicina, técnicos e mais no VagaSaúde.`;
+  return `${n} de saúde em ${ref.district}. Enfermagem, medicina, técnicos e outras profissões — pesquisa e cria alertas no VagaSaúde.`;
 }
 
 export function buildItemListJsonLd(ref: CategoryRef, jobs: Job[]) {

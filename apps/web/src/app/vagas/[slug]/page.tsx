@@ -55,16 +55,8 @@ export async function generateMetadata({
   }
 
   const found = await getJob(slug);
-  if (!found) return { title: "Vaga não encontrada" };
-  const meta = buildJobMetadata(found.job);
-  if (found.expired) {
-    return {
-      ...meta,
-      title: `${found.job.title} (vaga encerrada)`,
-      robots: { index: true, follow: true },
-    };
-  }
-  return meta;
+  if (!found) return { title: "Vaga não encontrada", robots: { index: false } };
+  return buildJobMetadata(found.job, { expired: found.expired });
 }
 
 export default async function VagasSlugPage({ params }: { params: Params }) {

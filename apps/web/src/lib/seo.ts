@@ -7,7 +7,39 @@ export const SITE_URL =
 export const SITE_NAME = "VagaSaúde";
 
 export const DEFAULT_DESCRIPTION =
-  "Todas as vagas de saúde em Portugal num só sítio. Encontra oportunidades no setor público, privado e IPSS.";
+  "Vagas de saúde em Portugal: enfermagem, medicina, fisioterapia e mais. Público, privado e IPSS num só sítio — pesquisa e candidata-te.";
+
+export const HOME_TITLE = `${SITE_NAME} — Vagas de saúde em Portugal`;
+
+export const HOME_DESCRIPTION = DEFAULT_DESCRIPTION;
+
+export function buildHomeMetadata(jobCount?: number): Metadata {
+  const countLine =
+    typeof jobCount === "number" && jobCount > 0
+      ? ` Mais de ${jobCount} ofertas activas.`
+      : "";
+  const description = truncateMeta(`${HOME_DESCRIPTION}${countLine}`, 160);
+  const title = HOME_TITLE;
+
+  return {
+    title: { absolute: title },
+    description,
+    alternates: { canonical: "/" },
+    openGraph: {
+      title,
+      description,
+      url: "/",
+      type: "website",
+      siteName: SITE_NAME,
+      locale: "pt_PT",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
+  };
+}
 
 const EMPLOYMENT_TYPE_MAP: Record<string, string> = {
   "tempo inteiro": "FULL_TIME",
@@ -86,15 +118,29 @@ export function safeDatePosted(value: string) {
   return date.toISOString();
 }
 
-export function buildJobMetadata(job: Job): Metadata {
-  const title = `${job.title} — ${job.company}`;
-  const description = jobMetaDescription(job);
+export function buildJobMetadata(
+  job: Job,
+  options?: { expired?: boolean },
+): Metadata {
+  const expired = Boolean(options?.expired);
+  const title = expired
+    ? `${job.title} (vaga encerrada) — ${job.company}`
+    : `${job.title} — ${job.company}`;
+  const description = expired
+    ? truncateMeta(
+        `Esta vaga de ${job.profession} em ${job.city} já não está activa. Explora ofertas semelhantes de saúde no VagaSaúde.`,
+        160,
+      )
+    : jobMetaDescription(job);
   const url = jobPath(job.slug);
 
   return {
     title,
     description,
     alternates: { canonical: url },
+    robots: expired
+      ? { index: false, follow: true }
+      : { index: true, follow: true },
     openGraph: {
       title,
       description,
@@ -126,6 +172,8 @@ export function buildJobPostingJsonLd(job: Job) {
     datePosted,
     ...(validThrough ? { validThrough } : {}),
     employmentType: mapEmploymentType(job.contract),
+    occupationalCategory: job.profession,
+    industry: "Healthcare",
     hiringOrganization: {
       "@type": "Organization",
       name: job.company,
@@ -134,7 +182,7 @@ export function buildJobPostingJsonLd(job: Job) {
       "@type": "Place",
       address: {
         "@type": "PostalAddress",
-        addressLocality: job.city,
+        addressLocality: job.city || job.district,
         addressRegion: job.district,
         addressCountry: "PT",
       },

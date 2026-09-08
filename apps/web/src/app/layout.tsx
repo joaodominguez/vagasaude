@@ -50,8 +50,8 @@ export const metadata: Metadata = {
     telephone: false,
   },
   openGraph: {
-    title: SITE_NAME,
-    description: "A tua próxima oportunidade na saúde começa aqui.",
+    title: `${SITE_NAME} — Vagas de saúde em Portugal`,
+    description: DEFAULT_DESCRIPTION,
     url: SITE_URL,
     siteName: SITE_NAME,
     locale: "pt_PT",
@@ -59,8 +59,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: SITE_NAME,
-    description: "A tua próxima oportunidade na saúde começa aqui.",
+    title: `${SITE_NAME} — Vagas de saúde em Portugal`,
+    description: DEFAULT_DESCRIPTION,
   },
   robots: {
     index: true,

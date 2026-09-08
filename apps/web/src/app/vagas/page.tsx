@@ -26,22 +26,22 @@ export const dynamic = "force-dynamic";
 const PAGE_SIZE = 20;
 
 export const metadata: Metadata = {
-  title: "Vagas de saúde",
+  title: "Vagas de saúde em Portugal — pesquisa e filtros",
   description:
-    "Pesquisa vagas de enfermagem, medicina, fisioterapia e outras profissões de saúde em Portugal.",
+    "Pesquisa vagas de enfermagem, medicina, fisioterapia e outras profissões de saúde em Portugal. Filtra por distrito, sector e contrato.",
   alternates: { canonical: "/vagas" },
   openGraph: {
-    title: "Vagas de saúde | VagaSaúde",
+    title: "Vagas de saúde em Portugal — pesquisa e filtros",
     description:
-      "Pesquisa vagas de enfermagem, medicina, fisioterapia e outras profissões de saúde em Portugal.",
+      "Pesquisa vagas de enfermagem, medicina, fisioterapia e outras profissões de saúde em Portugal. Filtra por distrito, sector e contrato.",
     url: "/vagas",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Vagas de saúde | VagaSaúde",
+    title: "Vagas de saúde em Portugal — pesquisa e filtros",
     description:
-      "Pesquisa vagas de enfermagem, medicina, fisioterapia e outras profissões de saúde em Portugal.",
+      "Pesquisa vagas de enfermagem, medicina, fisioterapia e outras profissões de saúde em Portugal. Filtra por distrito, sector e contrato.",
   },
 };
 

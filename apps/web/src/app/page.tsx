@@ -18,8 +18,14 @@ import {
 } from "@/lib/categories";
 import { getJobs } from "@/lib/jobs-data";
 import { professions } from "@/lib/jobs";
+import { buildHomeMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata() {
+  const jobs = await getJobs();
+  return buildHomeMetadata(jobs.length);
+}
 
 export default async function Home() {
   const jobs = await getJobs();
