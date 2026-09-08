@@ -11,6 +11,7 @@ from sources.ipo_porto import IpoPortoScraper
 from sources.joaquim_chaves import JoaquimChavesScraper
 from sources.net_empregos import NetEmpregosScraper
 from sources.pharmabsc import PharmabscScraper
+from sources.sapo_emprego import SapoEmpregoScraper
 from sources.scm_esposende import ScmEsposendeScraper
 from sources.scml import ScmlScraper
 from sources.trofa import TrofaSaudeScraper
@@ -34,4 +35,5 @@ SCRAPERS = {
     AeffulScraper.slug: AeffulScraper,
     PharmabscScraper.slug: PharmabscScraper,
     NetEmpregosScraper.slug: NetEmpregosScraper,
+    SapoEmpregoScraper.slug: SapoEmpregoScraper,
 }

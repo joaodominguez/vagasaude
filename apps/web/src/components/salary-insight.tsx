@@ -57,12 +57,12 @@ export function SalaryInsight({ job, variant = "full" }: Props) {
               <span className="text-muted">{announced}</span>
             </p>
           ) : null}
-          <p className="mt-2 flex items-start gap-1 text-[11px] leading-4 text-muted">
-            <CircleHelp size={12} className="mt-0.5 shrink-0" aria-hidden="true" />
-            <span>{benchmark.source}</span>
-          </p>
         </div>
       </div>
+      <p className="mt-2.5 flex items-start gap-1.5 text-[11px] leading-4 text-muted">
+        <CircleHelp size={12} className="mt-0.5 shrink-0" aria-hidden="true" />
+        <span>{benchmark.source}</span>
+      </p>
     </div>
   );
 }

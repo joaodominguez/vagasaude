@@ -152,6 +152,14 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     sector: "Privado",
     logo: "/partners/net-empregos.svg",
   },
+  {
+    id: "sapo_emprego",
+    name: "SAPO Emprego — Saúde",
+    shortName: "SAPO Emprego",
+    url: "https://emprego.sapo.pt/offers?categoria=saude",
+    sector: "Privado",
+    logo: "/partners/sapo-emprego.svg",
+  },
 ];
 
 export const SOURCE_META = Object.fromEntries(

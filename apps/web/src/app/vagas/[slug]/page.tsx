@@ -16,6 +16,7 @@ import { FavoriteButton } from "@/components/favorite-button";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { JobCard } from "@/components/job-card";
+import { JobDescription } from "@/components/job-description";
 import { SalaryInsight } from "@/components/salary-insight";
 import { ShareButtons } from "@/components/share-buttons";
 import {
@@ -195,7 +196,7 @@ function ActiveJobView({ job, allJobs }: { job: Job; allJobs: Job[] }) {
               <div className="job-content">
                 <section>
                   <h2>Sobre a vaga</h2>
-                  <p>{job.description}</p>
+                  <JobDescription text={job.description} />
                 </section>
                 <CheckList title="O que procuramos" items={job.requirements} />
                 <CheckList

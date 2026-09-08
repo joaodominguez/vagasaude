@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { normalizeInlineLists } from "@/lib/format-job-text";
 
 export type StoredJob = {
   id: string;
@@ -377,7 +378,7 @@ function isListItem(line: string) {
 }
 
 function cleanDescription(text: string) {
-  const lines = text
+  const lines = normalizeInlineLists(text)
     .replace(/\r/g, "")
     .split("\n")
     .map((line) => line.replace(/[ \t]+/g, " ").trim())
