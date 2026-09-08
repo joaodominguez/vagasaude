@@ -67,6 +67,29 @@ HEALTH_CONTEXT_RE = re.compile(
     re.I,
 )
 
+# Campos HTML das "Condições Requeridas" → linhas de requirements.
+REQUIREMENT_LABELS = (
+    "Habilitações Mínimas",
+    "Formação Profissional Exigida",
+    "Experiência anterior",
+    "Tipo(s) de carta condução",
+    "Data Prevista para início do Trabalho",
+    "Cumprimento de Quotas? Recrutamento de pessoas com deficiência (Lei 4/2019)?",
+    "Normas específicas de higiene e segurança no trabalho",
+)
+
+# Campos HTML das "Condições Oferecidas" → texto extra na descrição.
+OFFERED_LABELS = (
+    "Tipo de contrato",
+    "Regime de trabalho",
+    "Regime Horário",
+    "Nº de Horas",
+    "Formas de Prestação de Trabalho",
+    "Remuneração base ilíquida",
+    "Subsídio de refeição",
+    "IRCT",
+)
+
 
 class IefpScraper(BaseScraper):
     slug = "iefp"
@@ -138,11 +161,12 @@ class IefpScraper(BaseScraper):
         if not title:
             return None
 
-        description = html_to_text((posting or {}).get("description") or "")
-        if not description:
-            description = _section_text(html) or title
-        blob = f"{title}\n{description}"
+        fields = _labeled_fields(html)
+        profile = html_to_text((posting or {}).get("description") or "")
+        if not profile:
+            profile = _section_text(html) or title
 
+        blob = f"{title}\n{profile}"
         if not _is_relevant(title, blob):
             return None
 
@@ -156,24 +180,11 @@ class IefpScraper(BaseScraper):
         if not locality:
             locality = _locality_fallback(html)
 
-        salary = None
-        base_salary = (posting or {}).get("baseSalary") or {}
-        value = (base_salary.get("value") or {}) if isinstance(base_salary, dict) else {}
-        if isinstance(value, dict) and value.get("value") not in (None, ""):
-            try:
-                amount = float(str(value["value"]).replace(",", "."))
-            except ValueError:
-                amount = None
-            if amount is not None and amount > 0:
-                if amount < 80:
-                    salary = f"{amount:g} €/hora"
-                else:
-                    salary = f"{amount:g} €/mês"
-
-        contract = None
-        emp = (posting or {}).get("employmentType")
-        if emp:
-            contract = "Tempo inteiro" if "FULL" in str(emp).upper() else str(emp)
+        salary = _salary_from_fields(fields) or _salary_from_jsonld(posting)
+        contract = _contract_from_fields(fields) or _contract_from_jsonld(posting)
+        requirements = _requirements_from_fields(fields)
+        vacancies = _vacancies(html)
+        description = _compose_description(profile, fields, vacancies)
 
         published_at = (posting or {}).get("datePosted")
         if published_at and len(published_at) == 10:
@@ -182,6 +193,7 @@ class IefpScraper(BaseScraper):
         if expires_at and len(expires_at) == 10:
             expires_at = f"{expires_at}T00:00:00+00:00"
 
+        # O IEFP não expõe o empregador real (JSON-LD = "IEFP I.P.").
         company = "Entidade anunciante (via IEFP)"
 
         return JobPayload(
@@ -194,7 +206,7 @@ class IefpScraper(BaseScraper):
             sector="privado",
             contract_type=contract,
             description=description,
-            requirements=None,
+            requirements=requirements,
             salary=salary,
             application_url=f"{DETAIL}?idOferta={offer_id}",
             source=self.slug,
@@ -256,3 +268,175 @@ def _section_text(html: str) -> str:
     if not match:
         return ""
     return html_to_text(match.group(1))
+
+
+def _clean_label_text(value: str) -> str:
+    text = unescape(re.sub(r"<[^>]+>", " ", value))
+    text = text.replace("\xa0", " ").replace("&nbsp;", " ")
+    return re.sub(r"\s+", " ", text).strip(" ;")
+
+
+def _labeled_fields(html: str) -> dict[str, str]:
+    """Extrai pares label/valor do detalhe IEFP (Condições Oferecidas/Requeridas)."""
+    fields: dict[str, str] = {}
+    pattern = re.compile(
+        r'<div class="text-muted text-uppercase">(.*?)</div>\s*'
+        r"<div><strong>(.*?)</strong></div>",
+        re.I | re.S,
+    )
+    for raw_label, raw_value in pattern.findall(html):
+        label = _clean_label_text(raw_label)
+        value = _clean_label_text(raw_value)
+        if not label or not value:
+            continue
+        # Primeiro valor ganha (evita duplicados do layout responsivo).
+        fields.setdefault(label, value)
+    return fields
+
+
+def _field(fields: dict[str, str], *names: str) -> str | None:
+    for name in names:
+        value = fields.get(name)
+        if value:
+            return value
+        # Match case-insensitive / accents-tolerant.
+        target = _norm_key(name)
+        for key, val in fields.items():
+            if _norm_key(key) == target and val:
+                return val
+    return None
+
+
+def _norm_key(text: str) -> str:
+    return (
+        text.encode("ascii", "ignore")
+        .decode("ascii")
+        .lower()
+        .replace(" ", "")
+    )
+
+
+def _vacancies(html: str) -> str | None:
+    match = re.search(
+        r"N\.?\s*º\s*de\s*Vagas.*?<div class=\"fs-3\">\s*(\d+)\s*</div>",
+        html,
+        re.I | re.S,
+    )
+    if not match:
+        return None
+    return match.group(1)
+
+
+def _salary_from_jsonld(posting: dict | None) -> str | None:
+    if not posting:
+        return None
+    base_salary = posting.get("baseSalary") or {}
+    value = (base_salary.get("value") or {}) if isinstance(base_salary, dict) else {}
+    if not isinstance(value, dict) or value.get("value") in (None, ""):
+        return None
+    try:
+        amount = float(str(value["value"]).replace(",", "."))
+    except ValueError:
+        return None
+    if amount <= 0:
+        return None
+    unit = str(value.get("unitText") or "").upper()
+    if unit == "HOUR" or amount < 80:
+        return f"{amount:g} €/hora"
+    return f"{amount:g} €/mês"
+
+
+def _salary_from_fields(fields: dict[str, str]) -> str | None:
+    raw = _field(fields, "Remuneração base ilíquida")
+    if not raw:
+        return None
+    # Ex.: "1499.15 EUR/Mês"
+    match = re.search(
+        r"([\d.,]+)\s*(?:EUR|€)?\s*/?\s*(m[eê]s|hora|h\b|month|hour)?",
+        raw,
+        re.I,
+    )
+    if not match:
+        return raw
+    try:
+        amount = float(match.group(1).replace(",", "."))
+    except ValueError:
+        return raw
+    unit = (match.group(2) or "").lower()
+    if unit.startswith("hora") or unit == "h" or unit == "hour" or amount < 80:
+        return f"{amount:g} €/hora"
+    return f"{amount:g} €/mês"
+
+
+def _contract_from_jsonld(posting: dict | None) -> str | None:
+    if not posting:
+        return None
+    emp = posting.get("employmentType")
+    if not emp:
+        return None
+    blob = str(emp).upper()
+    if "PART" in blob:
+        return "Tempo parcial"
+    if "FULL" in blob:
+        return "Tempo inteiro"
+    return str(emp)
+
+
+def _contract_from_fields(fields: dict[str, str]) -> str | None:
+    tipo = _field(fields, "Tipo de contrato")
+    regime = _field(fields, "Regime de trabalho")
+    parts: list[str] = []
+    if tipo:
+        parts.append(tipo)
+    if regime:
+        # Evita repetir "A tempo completo" se já estiver no tipo.
+        if not tipo or _norm_key(regime) not in _norm_key(tipo):
+            parts.append(regime)
+    if not parts:
+        return None
+    joined = " · ".join(parts)
+    # Normaliza para buckets de filtro do site quando possível.
+    low = joined.lower()
+    if "parcial" in low:
+        return f"{joined}" if tipo else "Tempo parcial"
+    if "completo" in low or "inteiro" in low or "sem termo" in low:
+        return joined
+    return joined
+
+
+def _requirements_from_fields(fields: dict[str, str]) -> str | None:
+    lines: list[str] = []
+    for label in REQUIREMENT_LABELS:
+        value = _field(fields, label)
+        if not value:
+            continue
+        # Encurtar label demasiado longa (quotas).
+        short = label
+        if "Quotas" in label or "deficiência" in label:
+            short = "Recrutamento de pessoas com deficiência (Lei 4/2019)"
+        if "início do Trabalho" in label or "inicio do Trabalho" in label:
+            short = "Início previsto"
+        if "carta condução" in label:
+            short = "Carta de condução"
+        if "higiene e segurança" in label:
+            short = "Normas de higiene e segurança no trabalho"
+        lines.append(f"- {short}: {value}")
+    return "\n".join(lines) if lines else None
+
+
+def _compose_description(
+    profile: str,
+    fields: dict[str, str],
+    vacancies: str | None,
+) -> str:
+    blocks = [profile.strip()]
+    offered: list[str] = []
+    for label in OFFERED_LABELS:
+        value = _field(fields, label)
+        if value:
+            offered.append(f"- {label}: {value}")
+    if vacancies:
+        offered.append(f"- N.º de vagas: {vacancies}")
+    if offered:
+        blocks.append("Condições oferecidas:\n" + "\n".join(offered))
+    return "\n\n".join(block for block in blocks if block).strip()

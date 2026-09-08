@@ -423,6 +423,11 @@ export function toJobCard(job: StoredJob): JobCardData {
   const description = cleanDescription(job.description);
   const requirements = splitList(job.requirements);
   const descriptionLines = splitList(description);
+  // Com requirements reais, "Responsabilidades" usa só o 1.º bloco da
+  // descrição (perfil), para não misturar com "Condições oferecidas".
+  const profileBlock = description.split(/\n\n+/)[0] || description;
+  const responsibilitySource =
+    requirements.length > 0 ? splitList(profileBlock) : descriptionLines;
   return {
     slug: job.slug,
     title: job.title,
@@ -443,8 +448,8 @@ export function toJobCard(job: StoredJob): JobCardData {
           ? descriptionLines.slice(0, 4)
           : ["Consulta os detalhes e candidata-te no site da entidade."],
     responsibilities:
-      descriptionLines.slice(0, 5).length > 0
-        ? descriptionLines.slice(0, 5)
+      responsibilitySource.slice(0, 5).length > 0
+        ? responsibilitySource.slice(0, 5)
         : ["Consultar descrição completa na página da entidade."],
     applicationUrl: job.applicationUrl,
     salary: job.salary,
