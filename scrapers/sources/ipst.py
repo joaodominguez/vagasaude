@@ -14,6 +14,8 @@ YEAR_URL = (
     f"{BASE}/index.php/pt/procedimentos-concursais/"
     "1131-procedimentos-concursais-ano-2026"
 )
+YEAR_PRINT_URL = f"{YEAR_URL}?tmpl=component&print=1&page="
+
 
 BEP_RE = re.compile(r"OE\d{6}/\d+", re.I)
 LOC_RE = re.compile(
@@ -27,7 +29,17 @@ class IpstScraper(BaseScraper):
     name = "IPST — Procedimentos concursais"
 
     def fetch(self) -> list[JobPayload]:
-        client = HttpClient(timeout=45.0, min_interval=0.4)
+        client = HttpClient(timeout=90.0, min_interval=0.4)
+        client.client.headers.update(
+            {
+                "User-Agent": (
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                    "AppleWebKit/537.36 (KHTML, like Gecko) "
+                    "Chrome/124.0.0.0 Safari/537.36"
+                ),
+                "Accept-Language": "pt-PT,pt;q=0.9",
+            }
+        )
         try:
             html = client.get_text(YEAR_URL)
         finally:
