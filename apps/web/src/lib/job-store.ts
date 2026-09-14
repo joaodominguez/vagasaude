@@ -258,6 +258,7 @@ export function guessProfession(title: string, fallback = "Outros") {
         "higienista",
         "optometrist",
         "podolog",
+        "psicomotr",
         "research technician",
         "tecnico de investig",
         "biolog",
