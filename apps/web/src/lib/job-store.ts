@@ -631,7 +631,11 @@ export type IngestJobInput = {
   review_reason?: string | null;
 };
 
-export async function ingestJobs(source: string, incoming: IngestJobInput[]) {
+export async function ingestJobs(
+  source: string,
+  incoming: IngestJobInput[],
+  options: { expireMissing?: boolean } = {},
+) {
   const file = await readJobsFile();
   const now = new Date().toISOString();
   const bySourceId = new Map(
@@ -736,15 +740,19 @@ export async function ingestJobs(source: string, incoming: IngestJobInput[]) {
   }
 
   // Soft-expire jobs from this source that disappeared from the latest scrape.
-  const seen = new Set(incoming.map((item) => String(item.source_id)));
-  for (const job of file.jobs) {
-    if (
-      job.source === source &&
-      job.status === "published" &&
-      !seen.has(job.sourceId)
-    ) {
-      job.status = "expired";
-      job.updatedAt = now;
+  // Fontes com scrape parcial (ex.: Net-Empregos atrás de login) podem pedir
+  // expireMissing=false para não apagar o inventário inteiro.
+  if (options.expireMissing !== false) {
+    const seen = new Set(incoming.map((item) => String(item.source_id)));
+    for (const job of file.jobs) {
+      if (
+        job.source === source &&
+        job.status === "published" &&
+        !seen.has(job.sourceId)
+      ) {
+        job.status = "expired";
+        job.updatedAt = now;
+      }
     }
   }
 
