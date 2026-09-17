@@ -14,6 +14,7 @@ def ingest_jobs(
     *,
     base_url: str | None = None,
     token: str | None = None,
+    expire_missing: bool = True,
 ) -> dict[str, Any]:
     base = (base_url or os.environ.get("INGEST_BASE_URL") or "http://127.0.0.1:3010").rstrip(
         "/"
@@ -22,6 +23,7 @@ def ingest_jobs(
     payload = {
         "source": source,
         "jobs": [job.to_dict() for job in jobs],
+        "expireMissing": expire_missing,
     }
     headers = {"Content-Type": "application/json"}
     if auth:
