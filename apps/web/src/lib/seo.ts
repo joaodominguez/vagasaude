@@ -7,16 +7,17 @@ export const SITE_URL =
 export const SITE_NAME = "VagaSaúde";
 
 export const DEFAULT_DESCRIPTION =
-  "Vagas de saúde em Portugal: enfermagem, medicina, fisioterapia e mais. Público, privado e IPSS num só sítio — pesquisa e candidata-te.";
+  "Emprego saúde em Portugal: enfermagem, medicina, fisioterapia e mais. Público, privado e IPSS num só sítio — pesquisa e candidata-te.";
 
-export const HOME_TITLE = `${SITE_NAME} — Vagas de saúde em Portugal`;
+/** Alinha com consultas GSC como "emprego saude" / "emprego enfermagem". */
+export const HOME_TITLE = `${SITE_NAME} — Emprego na saúde em Portugal`;
 
 export const HOME_DESCRIPTION = DEFAULT_DESCRIPTION;
 
 export function buildHomeMetadata(jobCount?: number): Metadata {
   const countLine =
     typeof jobCount === "number" && jobCount > 0
-      ? ` Mais de ${jobCount} ofertas activas.`
+      ? ` Mais de ${jobCount} vagas activas.`
       : "";
   const description = truncateMeta(`${HOME_DESCRIPTION}${countLine}`, 160);
   const title = HOME_TITLE;

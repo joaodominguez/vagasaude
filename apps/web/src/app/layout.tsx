@@ -35,8 +35,11 @@ export const metadata: Metadata = {
   description: DEFAULT_DESCRIPTION,
   applicationName: SITE_NAME,
   keywords: [
-    "vagas saúde",
+    "emprego saúde",
     "emprego enfermagem",
+    "emprego enfermagem porto",
+    "emprego enfermagem lisboa",
+    "vagas saúde",
     "emprego medicina",
     "vagas hospital",
     "emprego Portugal",
