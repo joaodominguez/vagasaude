@@ -123,7 +123,10 @@ export default async function Home() {
                   href={category.path}
                   className="filter-chip"
                 >
-                  {category.title.replace(/^Vagas (de )?/i, "")}
+                  {category.title.replace(
+                    /^(Vagas (de )?|Emprego (de )?|Emprego na saúde em )/i,
+                    "",
+                  )}
                 </Link>
               ))}
             </div>
@@ -171,6 +174,22 @@ export default async function Home() {
                 <p className="mt-1.5 text-sm leading-6 text-muted">{copy}</p>
               </article>
             ))}
+          </div>
+        </section>
+
+        <section className="border-t border-border bg-surface">
+          <div className="page-container flex flex-col gap-4 py-12 sm:flex-row sm:items-end sm:justify-between">
+            <div className="max-w-xl">
+              <span className="section-kicker">Guias</span>
+              <h2 className="section-title">Antes de te candidatares</h2>
+              <p className="mt-2 text-sm leading-6 text-muted sm:text-base">
+                CV, carta de apresentação, concursos/BEP e alertas — textos
+                curtos para quem procura emprego em saúde.
+              </p>
+            </div>
+            <Link href="/artigos" className="button button-secondary shrink-0">
+              Ver guias <ArrowRight size={16} />
+            </Link>
           </div>
         </section>
       </main>

@@ -42,9 +42,24 @@ async function buildPagesSitemap() {
     urlEntry(`${SITE_URL}/`, now, "weekly", "1.0"),
     urlEntry(`${SITE_URL}/vagas`, now, "daily", "0.9"),
     urlEntry(`${SITE_URL}/alertas`, now, "weekly", "0.6"),
+    urlEntry(`${SITE_URL}/artigos`, now, "weekly", "0.7"),
     urlEntry(`${SITE_URL}/como-funciona`, now, "monthly", "0.5"),
     urlEntry(`${SITE_URL}/privacidade`, now, "weekly", "0.6"),
   ];
+  // Artigos editoriais (estáticos)
+  const { articles } = await import("@/content/articles");
+  for (const article of articles) {
+    const published = Date.parse(article.publishedAt);
+    const lastmod = Number.isNaN(published) ? now : new Date(published);
+    entries.push(
+      urlEntry(
+        `${SITE_URL}/artigos/${article.slug}`,
+        lastmod,
+        "monthly",
+        "0.65",
+      ),
+    );
+  }
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${entries.join("\n")}

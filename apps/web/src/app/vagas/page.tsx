@@ -19,31 +19,44 @@ import {
   scoreJobRelevance,
 } from "@/lib/contracts";
 import { getJobs } from "@/lib/jobs-data";
+import { SITE_NAME, truncateMeta } from "@/lib/seo";
 import { districts, professions } from "@/lib/taxonomies";
 
 export const dynamic = "force-dynamic";
 
 const PAGE_SIZE = 20;
 
-export const metadata: Metadata = {
-  title: "Vagas de saúde em Portugal — pesquisa e filtros",
-  description:
-    "Pesquisa vagas de enfermagem, medicina, fisioterapia e outras profissões de saúde em Portugal. Filtra por distrito, sector e contrato.",
-  alternates: { canonical: "/vagas" },
-  openGraph: {
-    title: "Vagas de saúde em Portugal — pesquisa e filtros",
-    description:
-      "Pesquisa vagas de enfermagem, medicina, fisioterapia e outras profissões de saúde em Portugal. Filtra por distrito, sector e contrato.",
-    url: "/vagas",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Vagas de saúde em Portugal — pesquisa e filtros",
-    description:
-      "Pesquisa vagas de enfermagem, medicina, fisioterapia e outras profissões de saúde em Portugal. Filtra por distrito, sector e contrato.",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const jobs = await getJobs();
+  const count = jobs.length;
+  const title =
+    count > 0
+      ? `Emprego na saúde em Portugal — ${count} vagas`
+      : "Emprego na saúde em Portugal — pesquisa e filtros";
+  const description = truncateMeta(
+    count > 0
+      ? `Emprego na saúde: ${count} vagas de enfermagem, medicina, fisioterapia e outras profissões. Filtra por distrito, sector e contrato no VagaSaúde.`
+      : "Pesquisa emprego na saúde em Portugal: enfermagem, medicina, fisioterapia e mais. Filtra por distrito, sector e contrato.",
+    160,
+  );
+  return {
+    title,
+    description,
+    alternates: { canonical: "/vagas" },
+    openGraph: {
+      title,
+      description,
+      url: "/vagas",
+      type: "website",
+      siteName: SITE_NAME,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
+  };
+}
 
 type SearchParams = Promise<{
   q?: string;
@@ -168,7 +181,10 @@ export default async function JobsPage({
                     href={category.path}
                     className="filter-chip"
                   >
-                    {category.title.replace(/^Vagas (de )?/i, "")}
+                    {category.title.replace(
+                      /^(Vagas (de )?|Emprego (de )?|Emprego na saúde em )/i,
+                      "",
+                    )}
                   </Link>
                 ))}
               </div>
