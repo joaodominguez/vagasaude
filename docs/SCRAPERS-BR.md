@@ -175,13 +175,17 @@ Estilo PT (`cuf.py`, `net_empregos.py`, `scm_faro.py`):
 ```
 scrapers-br/sources/
   __init__.py
-  gupy.py                      # cliente partilhado (parse __NEXT_DATA__) + employers Gupy
+  gupy.py                      # cliente partilhado + employers Gupy
   einstein.py                  # Vagas.com employer
   hcor.py                      # Pandapé / InfoJobs
   mater_dei.py                 # JobConvo
   hsl_sirio.py                 # SuccessFactors (hospital privado)
+  pci_concursos.py             # BEP-analogue (editais saúde)
+  agsus.py                     # WP REST Trabalhe Conosco
+  inca.py                      # IPO-analogue (oncologia pública)
   # employers Gupy registados em gupy.py:
-  #   rededor, hapvida, irssl, santa_casa_bh, redeamericas, moinhos, bp, haoc
+  #   rededor, hapvida, irssl, santa_casa_bh, santa_casa_poa,
+  #   santa_casa_ba, aacd, redeamericas, moinhos, bp, haoc
 ```
 
 Registar slugs em `apps/web-br/src/lib/sources.ts` com `sector: "Público" | "Privado" | "Filantrópico"`.
@@ -294,3 +298,56 @@ Isolado do PT (`:3010` / `vagasaude.pt`). App BR em `:3011`.
 **Resend / VPS (produção):** em `/var/www/vagasaudebr/.env.production` — `RESEND_API_KEY` (mesma conta PT), `EMAIL_FROM` quoted, `NEXT_PUBLIC_SITE_URL=https://vagasaude.com.br`. Admin `/admin/sistema` → Resend **Configurado**. Domínio `vagasaude.com.br` no Resend com DKIM (`resend._domainkey` TXT). Sem DNS verificado, envios falham.
 
 Digest: `scrapers-br/run-scrapers.sh` faz `POST /api/alerts/digest` em `:3011` após o scrape. Cron portal (VPS): `45 */6 * * * …/vagasaudebr/scrapers/run-scrapers.sh`.
+
+---
+
+## 10. Expansão Público / SUS / INCA / Filantrópico (audit Out 2026)
+
+Objetivo: fechar o gap vs PT (BEP / ULS / IPO / IPSS). Probes HTTP + páginas públicas.
+
+### Tabela de pesquisa
+
+| Nome | URL | Sector | ATS | ≈ abertas | Dificuldade | Pri | Status |
+|---|---|---|---|---:|---|---|---|
+| **PCI Concursos (saúde)** | https://www.pciconcursos.com.br/vagas/saude/ (+ enfermagem/médico) | `publico` | HTML listagem `div.ca` | **~200** editais/página | Fácil | **P0** | **`pci_concursos` OK** |
+| **AgSUS Trabalhe Conosco** | https://agenciasus.org.br/trabalheconosco/ · WP `/wp-json/wp/v2/posts?categories=50\|105` | `publico` | WordPress REST | **~5** abertos (cat 105) + ~163 histórico Trabalhe Conosco | Fácil | **P0** | **`agsus` OK** |
+| **MS Concursos e seleções** | https://www.gov.br/saude/pt-br/acesso-a-informacao/concursos-e-selecoes | `publico` | Plone | event-driven / baixo contínuo | Média (WAF ocasional) | P1 | Skip MVP (PCI cobre eco) |
+| **INCA concurso / ensino** | https://www.gov.br/inca/pt-br/acesso-a-informacao/institucional/concurso-publico | `publico` | Plone cards + notícias | **baixo** (CPNU / residência / fellow event-driven) | Média | **P1** | **`inca` OK** (volume baixo) |
+| **HU Brasil / Ebserh** | https://www.gov.br/hubrasil/pt-br (ex-ebserh) | `publico` | Editais em bancas (FGV/AOCP); pastas gov.br 404 | event-driven | Má (sem board estável) | P1 | Via **PCI** quando publicado; skip scraper dedicado |
+| **HCs / secretarias UF** | sites próprios fragmentados | `publico` | HTML/e-mail | baixo por órgão | Má | P2 | Skip até agregador |
+| **IRSSL (OSS Sírio)** | https://irssl.gupy.io/ | `publico` | Gupy | ~180 | Fácil | P0 | já activo |
+| **Santa Casa BH** | https://santacasabh.gupy.io/ | `ipss` | Gupy | ~257 | Fácil | P0 | já activo |
+| **Santa Casa POA** | https://santacasa.gupy.io/ | `ipss` | Gupy | **~51** | Fácil | **P1** | **`santa_casa_poa` OK** |
+| **Santa Casa BA** | https://santacasaba.gupy.io/ | `ipss` | Gupy | **~66** | Fácil | **P1** | **`santa_casa_ba` OK** |
+| **Santa Casa SP** | santacasasp.org.br | `ipss` | e-mail / LinkedIn | — | — | Skip | sem board |
+| **AACD** | https://aacd.gupy.io/ | `ipss` | Gupy | **~51** | Fácil | **P1** | **`aacd` OK** |
+| **HCor** | Pandapé | `ipss` | Pandapé | ~15–20 | Média | P2 | já activo |
+| **Emprega Brasil / SINE** | servicos.mte.gov.br | — | Login GOV.BR | — | — | Skip | |
+| **Fiocruz concursos** | portal.fiocruz.br | `publico` | HTML / 403 | event-driven | Má | P2 | Skip MVP |
+
+### Analogias PT → BR (actualizado)
+
+| PT | BR implementado |
+|---|---|
+| BEP | **PCI Concursos** (`pci_concursos`) + AgSUS (`agsus`) |
+| ULS / SNS | IRSSL + ISHAOC (HAOC) + editais Ebserh via PCI |
+| IPO | **INCA** (`inca`) — volume contínuo baixo |
+| IPSS / Misericórdias | Santa Casa BH + **POA** + **BA** + AACD + HCor |
+
+### Notas operacionais
+
+1. Concursos/PSS são **editais**, não CLT diário — `contract_type` = Concurso / PSS / Residência.
+2. Einstein / Vagas.com: **CF 1005 no VPS Hetzner** — scrape off-VPS + ingest `:3011`.
+3. Ebserh/HU Brasil não tem pasta pública estável de “vagas abertas”; o sinal chega via PCI + bancas.
+4. INCA: scraper colhe cards/notícias com hint de edital; esperar **0–poucas** vagas na maioria dos ciclos.
+
+### Estado scrapers novos (esta ronda)
+
+| Slug | Sector ingest | Notas |
+|---|---|---|
+| `pci_concursos` | `publico` | Lista `/vagas/saude|enfermagem|medico`; enriquece até 80 detalhes |
+| `agsus` | `publico` | Cats WP 105 + 50; janela 180 dias |
+| `inca` | `publico` | Plone concurso + ensino + search |
+| `santa_casa_poa` | `ipss` | Gupy `santacasa` · filtro hospital |
+| `santa_casa_ba` | `ipss` | Gupy `santacasaba` · filtro hospital |
+| `aacd` | `ipss` | Gupy `aacd` · filtro hospital |

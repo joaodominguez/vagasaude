@@ -7,11 +7,17 @@ Fontes do mercado brasileiro. **Ingest só em** `http://127.0.0.1:3011` / `vagas
 
 | Slug | Empregador | ATS | Sector | Notas |
 |---|---|---|---|---|
+| `pci_concursos` | PCI Concursos (saúde) | HTML | publico | Analogia BEP — editais |
+| `agsus` | AgSUS | WP REST | publico | PSS / Trabalhe Conosco |
+| `inca` | INCA | Plone gov.br | publico | Analogia IPO — volume baixo |
 | `rededor` | Rede D’Or (incl. Vila Nova Star / Copa Star) | Gupy | privado | Agregador — não criar scraper Star |
 | `hapvida` | Hapvida NDI | Gupy | privado | |
 | `irssl` | IRSSL (Sírio social/OSS) | Gupy | publico | Braço público do Sírio |
 | `hsl_sirio` | Hospital Sírio-Libanês (privado) | SuccessFactors | privado | Volume público baixo; SF |
 | `santa_casa_bh` | Santa Casa BH | Gupy | ipss → Filantrópico | |
+| `santa_casa_poa` | Santa Casa Porto Alegre | Gupy | ipss → Filantrópico | |
+| `santa_casa_ba` | Santa Casa da Bahia | Gupy | ipss → Filantrópico | |
+| `aacd` | AACD | Gupy | ipss → Filantrópico | |
 | `redeamericas` | Rede Américas (Samaritano, Nove de Julho…) | Gupy | privado | Agregador Ímpar |
 | `moinhos` | Hospital Moinhos de Vento | Gupy | privado | Filtro hospitalar alargado |
 | `bp` | Beneficência Portuguesa SP | Gupy | privado | Filtro hospitalar alargado |

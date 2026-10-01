@@ -217,6 +217,38 @@ class SantaCasaBhScraper(GupyScraper):
     max_detail_fetches = 250
 
 
+class SantaCasaPoaScraper(GupyScraper):
+    slug = "santa_casa_poa"
+    name = "Santa Casa Porto Alegre"
+    subdomain = "santacasa"
+    company = "Santa Casa de Misericórdia de Porto Alegre"
+    sector = "ipss"
+    filter_mode = "hospital"
+    max_detail_fetches = 80
+
+
+class SantaCasaBaScraper(GupyScraper):
+    slug = "santa_casa_ba"
+    name = "Santa Casa da Bahia"
+    subdomain = "santacasaba"
+    company = "Santa Casa da Bahia"
+    sector = "ipss"
+    filter_mode = "hospital"
+    max_detail_fetches = 100
+
+
+class AacdScraper(GupyScraper):
+    """AACD — Associação de Assistência à Criança Deficiente (filantrópico)."""
+
+    slug = "aacd"
+    name = "AACD"
+    subdomain = "aacd"
+    company = "AACD — Associação de Assistência à Criança Deficiente"
+    sector = "ipss"
+    filter_mode = "hospital"
+    max_detail_fetches = 80
+
+
 class RedeAmericasScraper(GupyScraper):
     slug = "redeamericas"
     name = "Rede Américas (Ímpar)"

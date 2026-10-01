@@ -89,6 +89,12 @@ def guess_contract(text: str | None) -> str | None:
     t = norm(text or "")
     if not t:
         return None
+    if "residenc" in t:
+        return "Residência"
+    if "concurso" in t:
+        return "Concurso"
+    if re.search(r"\bpss\b", t) or "processo seletivo" in t or "selecao publica" in t:
+        return "PSS"
     if "clt" in t or "efetiv" in t:
         return "CLT"
     if "pessoa juridica" in t or re.search(r"\bpj\b", t):

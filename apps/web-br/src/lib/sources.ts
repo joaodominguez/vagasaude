@@ -12,6 +12,30 @@ export type JobSourceMeta = {
  */
 export const JOB_SOURCES: JobSourceMeta[] = [
   {
+    id: "pci_concursos",
+    name: "PCI Concursos — Saúde",
+    shortName: "PCI Concursos",
+    url: "https://www.pciconcursos.com.br/vagas/saude/",
+    sector: "Público",
+    logo: "/partners/pci-concursos.svg",
+  },
+  {
+    id: "agsus",
+    name: "AgSUS — Agência Brasileira de Apoio à Gestão do SUS",
+    shortName: "AgSUS",
+    url: "https://agenciasus.org.br/trabalheconosco/",
+    sector: "Público",
+    logo: "/partners/agsus.svg",
+  },
+  {
+    id: "inca",
+    name: "INCA — Instituto Nacional de Câncer",
+    shortName: "INCA",
+    url: "https://www.gov.br/inca/pt-br/acesso-a-informacao/institucional/concurso-publico",
+    sector: "Público",
+    logo: "/partners/inca.svg",
+  },
+  {
     id: "rededor",
     name: "Rede D'Or São Luiz",
     shortName: "Rede D'Or",
@@ -50,6 +74,30 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     url: "https://santacasabh.gupy.io/",
     sector: "Filantrópico",
     logo: "/partners/santa-casa-bh.png",
+  },
+  {
+    id: "santa_casa_poa",
+    name: "Santa Casa de Misericórdia de Porto Alegre",
+    shortName: "Santa Casa POA",
+    url: "https://santacasa.gupy.io/",
+    sector: "Filantrópico",
+    logo: "/partners/santa-casa-poa.svg",
+  },
+  {
+    id: "santa_casa_ba",
+    name: "Santa Casa da Bahia",
+    shortName: "Santa Casa BA",
+    url: "https://santacasaba.gupy.io/",
+    sector: "Filantrópico",
+    logo: "/partners/santa-casa-ba.svg",
+  },
+  {
+    id: "aacd",
+    name: "AACD — Associação de Assistência à Criança Deficiente",
+    shortName: "AACD",
+    url: "https://aacd.gupy.io/",
+    sector: "Filantrópico",
+    logo: "/partners/aacd.svg",
   },
   {
     id: "redeamericas",
