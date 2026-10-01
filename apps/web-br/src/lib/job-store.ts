@@ -421,15 +421,52 @@ function splitList(text: string | null): string[] {
     .slice(0, 8);
 }
 
+const SECTION_HEADING_RE =
+  /^(condi[cç][oõ]es\s+oferecidas|requisitos|perfil|responsabilidades|o\s+que\s+oferecemos|benef[ií]cios|fun[cç][aã]o|descri[cç][aã]o)\s*:?\s*$/i;
+
+/** Extrai bullets sob um heading (ex.: "Responsabilidades:") da descrição. */
+function extractSectionBullets(
+  description: string,
+  heading: RegExp,
+): string[] {
+  const lines = cleanDescription(description).split("\n");
+  let capturing = false;
+  const items: string[] = [];
+  for (const raw of lines) {
+    const line = raw.trim();
+    if (!line) continue;
+    const asHeading = line.replace(/:$/, "").trim();
+    if (SECTION_HEADING_RE.test(asHeading) || SECTION_HEADING_RE.test(line)) {
+      capturing = heading.test(asHeading);
+      continue;
+    }
+    if (!capturing) continue;
+    const bullet = line.replace(/^[-•*\d.)\s]+/, "").trim();
+    if (bullet.length > 8) items.push(bullet);
+  }
+  return items.slice(0, 8);
+}
+
 export function toJobCard(job: StoredJob): JobCardData {
   const description = cleanDescription(job.description);
   const requirements = splitList(job.requirements);
   const descriptionLines = splitList(description);
-  // Com requirements reais, "Responsabilidades" usa só o 1.º bloco da
-  // descrição (perfil), para não misturar com "Condições oferecidas".
+  const thinDescription =
+    description.length < 80 && !/\n/.test(description.trim());
+  // Preferir bullets da secção "Responsabilidades" (scrapers Gupy/IEFP).
+  const sectionResponsibilities = extractSectionBullets(
+    description,
+    /^responsabilidades$/i,
+  );
+  // Com requirements reais e sem secção, "Responsabilidades" usa só o 1.º
+  // bloco da descrição (perfil), para não misturar com "Condições oferecidas".
   const profileBlock = description.split(/\n\n+/)[0] || description;
   const responsibilitySource =
-    requirements.length > 0 ? splitList(profileBlock) : descriptionLines;
+    sectionResponsibilities.length > 0
+      ? sectionResponsibilities
+      : requirements.length > 0
+        ? splitList(profileBlock)
+        : descriptionLines;
   return {
     slug: job.slug,
     title: job.title,
@@ -446,7 +483,7 @@ export function toJobCard(job: StoredJob): JobCardData {
     requirements:
       requirements.length > 0
         ? requirements
-        : descriptionLines.slice(0, 4).length > 0
+        : !thinDescription && descriptionLines.slice(0, 4).length > 0
           ? descriptionLines.slice(0, 4)
           : ["Consulte os detalhes e candidate-se no site da entidade."],
     responsibilities:

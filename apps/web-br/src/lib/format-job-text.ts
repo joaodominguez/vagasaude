@@ -9,7 +9,7 @@ export type JobTextBlock =
   | { type: "list"; items: string[] };
 
 const HEADING_RE =
-  /^(condi[cç][oõ]es\s+oferecidas|requisitos|perfil|responsabilidades|o\s+que\s+oferecemos|fun[cç][aã]o|descri[cç][aã]o)\s*:?\s*$/i;
+  /^(condi[cç][oõ]es\s+oferecidas|requisitos|perfil|responsabilidades|o\s+que\s+oferecemos|benef[ií]cios|fun[cç][aã]o|descri[cç][aã]o)\s*:?\s*$/i;
 
 export function formatJobDescriptionText(raw: string): JobTextBlock[] {
   const normalized = normalizeInlineLists(raw);

@@ -21,6 +21,22 @@ NEXT_DATA_RE = re.compile(
 )
 
 
+def compose_gupy_description(
+    description: str,
+    responsibilities: str,
+    benefits: str,
+) -> str:
+    """Monta o texto da vaga com secções legíveis no detalhe (padrão IEFP PT)."""
+    blocks: list[str] = []
+    if description:
+        blocks.append(description.strip())
+    if responsibilities:
+        blocks.append(f"Responsabilidades:\n{responsibilities.strip()}")
+    if benefits:
+        blocks.append(f"O que oferecemos:\n{benefits.strip()}")
+    return "\n\n".join(blocks).strip()
+
+
 class GupyScraper(BaseScraper):
     """Cliente partilhado para boards públicos `*.gupy.io`."""
 
@@ -34,7 +50,9 @@ class GupyScraper(BaseScraper):
     filter_mode: str = "health"
     health_only: bool = True  # legacy; prefer filter_mode
     enrich_details: bool = True
-    max_detail_fetches: int = 350
+    # None = enriquecer TODAS as vagas filtradas (o board Rede D'Or passa de 1k).
+    # Um teto baixo deixava a maioria só com "título — departamento".
+    max_detail_fetches: int | None = None
 
     @property
     def board_url(self) -> str:
@@ -56,7 +74,8 @@ class GupyScraper(BaseScraper):
         return looks_like_health_job(title, dept)
 
     def fetch(self) -> list[JobPayload]:
-        client = HttpClient()
+        # Gupy: muitos detalhes; 0.2s × ~1500 ≈ 5 min (aceitável no cron BR).
+        client = HttpClient(min_interval=0.2)
         try:
             return self._fetch_board(client, self.subdomain, self.company, self.sector)
         finally:
@@ -77,7 +96,13 @@ class GupyScraper(BaseScraper):
 
         details: dict[str, dict[str, Any]] = {}
         if self.enrich_details:
-            for item in listing[: self.max_detail_fetches]:
+            limit = self.max_detail_fetches
+            targets = listing if limit is None else listing[: max(0, limit)]
+            print(
+                f"[{self.slug}] {subdomain}: a enriquecer "
+                f"{len(targets)}/{len(listing)} detalhes"
+            )
+            for item in targets:
                 job_id = item.get("id")
                 if job_id is None:
                     continue
@@ -85,7 +110,7 @@ class GupyScraper(BaseScraper):
                     detail_html = client.get_text(
                         f"https://{subdomain}.gupy.io/jobs/{job_id}"
                     )
-                    detail = self._parse_detail(detail_html)
+                    detail = self._parse_detail_html(detail_html, subdomain)
                     if detail:
                         details[str(job_id)] = detail
                 except Exception as exc:  # noqa: BLE001
@@ -109,15 +134,14 @@ class GupyScraper(BaseScraper):
                 detail.get("addressState") or address.get("state"),
             )
 
-            description = html_to_text(detail.get("description"))
+            profile = html_to_text(detail.get("description"))
             responsibilities = html_to_text(detail.get("responsibilities"))
             prerequisites = html_to_text(detail.get("prerequisites"))
-            if responsibilities:
-                description = (
-                    f"{description}\n\nResponsabilidades:\n{responsibilities}"
-                    if description
-                    else responsibilities
-                )
+            # Em Gupy, "relevantExperiences" costuma trazer benefícios / condições.
+            benefits = html_to_text(detail.get("relevantExperiences"))
+            description = compose_gupy_description(
+                profile, responsibilities, benefits
+            )
             if not description:
                 dept = item.get("department") or ""
                 description = f"{title}" + (f" — {dept}" if dept else "")
@@ -164,7 +188,12 @@ class GupyScraper(BaseScraper):
         return jobs
 
     def _parse_detail(self, html: str) -> dict[str, Any] | None:
-        data = self._next_data(html, self.subdomain)
+        return self._parse_detail_html(html, self.subdomain)
+
+    def _parse_detail_html(
+        self, html: str, subdomain: str
+    ) -> dict[str, Any] | None:
+        data = self._next_data(html, subdomain)
         props = data.get("props", {}).get("pageProps", {})
         job = props.get("job")
         return job if isinstance(job, dict) else None
@@ -184,7 +213,6 @@ class RedeDorScraper(GupyScraper):
     company = "Rede D'Or"
     sector = "privado"
     filter_mode = "health"
-    max_detail_fetches = 400
 
 
 class HapvidaScraper(GupyScraper):
@@ -194,7 +222,6 @@ class HapvidaScraper(GupyScraper):
     company = "Hapvida NotreDame Intermédica"
     sector = "privado"
     filter_mode = "health"
-    max_detail_fetches = 350
 
 
 class IrsslScraper(GupyScraper):
@@ -204,7 +231,6 @@ class IrsslScraper(GupyScraper):
     company = "IRSSL — Instituto de Responsabilidade Social Sírio-Libanês"
     sector = "publico"
     filter_mode = "health"
-    max_detail_fetches = 250
 
 
 class SantaCasaBhScraper(GupyScraper):
@@ -214,7 +240,6 @@ class SantaCasaBhScraper(GupyScraper):
     company = "Santa Casa de Misericórdia de Belo Horizonte"
     sector = "ipss"
     filter_mode = "health"
-    max_detail_fetches = 250
 
 
 class SantaCasaPoaScraper(GupyScraper):
@@ -224,7 +249,6 @@ class SantaCasaPoaScraper(GupyScraper):
     company = "Santa Casa de Misericórdia de Porto Alegre"
     sector = "ipss"
     filter_mode = "hospital"
-    max_detail_fetches = 80
 
 
 class SantaCasaBaScraper(GupyScraper):
@@ -234,7 +258,6 @@ class SantaCasaBaScraper(GupyScraper):
     company = "Santa Casa da Bahia"
     sector = "ipss"
     filter_mode = "hospital"
-    max_detail_fetches = 100
 
 
 class AacdScraper(GupyScraper):
@@ -246,7 +269,6 @@ class AacdScraper(GupyScraper):
     company = "AACD — Associação de Assistência à Criança Deficiente"
     sector = "ipss"
     filter_mode = "hospital"
-    max_detail_fetches = 80
 
 
 class RedeAmericasScraper(GupyScraper):
@@ -256,7 +278,6 @@ class RedeAmericasScraper(GupyScraper):
     company = "Rede Américas"
     sector = "privado"
     filter_mode = "health"
-    max_detail_fetches = 300
 
 
 class MoinhosScraper(GupyScraper):
@@ -266,7 +287,6 @@ class MoinhosScraper(GupyScraper):
     company = "Hospital Moinhos de Vento"
     sector = "privado"
     filter_mode = "hospital"
-    max_detail_fetches = 80
 
 
 class BpScraper(GupyScraper):
@@ -276,7 +296,6 @@ class BpScraper(GupyScraper):
     company = "BP — Beneficência Portuguesa de São Paulo"
     sector = "privado"
     filter_mode = "hospital"
-    max_detail_fetches = 80
 
 
 class HaocScraper(GupyScraper):
@@ -288,7 +307,6 @@ class HaocScraper(GupyScraper):
     company = "Hospital Alemão Oswaldo Cruz"
     sector = "privado"
     filter_mode = "hospital"
-    max_detail_fetches = 80
     enrich_details = True
 
     # (subdomain, company label, sector, source_id prefix)
@@ -326,7 +344,7 @@ class HaocScraper(GupyScraper):
     ]
 
     def fetch(self) -> list[JobPayload]:
-        client = HttpClient()
+        client = HttpClient(min_interval=0.2)
         try:
             jobs: list[JobPayload] = []
             seen_urls: set[str] = set()
