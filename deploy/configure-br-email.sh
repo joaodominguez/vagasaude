@@ -38,7 +38,7 @@ else
 fi
 
 # Digest cron (portal crontab) if missing
-CRON_LINE='15 */6 * * * /var/www/vagasaudebr/scrapers/run-scrapers.sh >> /var/www/vagasaudebr/data/scrapers.log 2>&1'
+CRON_LINE='45 */6 * * * /var/www/vagasaudebr/scrapers/run-scrapers.sh >> /var/www/vagasaudebr/data/scrapers.log 2>&1'
 if crontab -l 2>/dev/null | grep -q 'vagasaudebr/scrapers/run-scrapers.sh'; then
   echo "Digest/scraper cron already present."
 else

@@ -40,7 +40,7 @@ python run.py --source all
 ## Cron (servidor)
 
 ```bash
-15 */6 * * * /var/www/vagasaudebr/scrapers/run-scrapers.sh >> /var/www/vagasaudebr/data/scrapers.log 2>&1
+45 */6 * * * /var/www/vagasaudebr/scrapers/run-scrapers.sh >> /var/www/vagasaudebr/data/scrapers.log 2>&1
 ```
 
 O wrapper corre os scrapers e, se `RESEND_API_KEY` + `SCRAPER_API_TOKEN` existirem em
@@ -49,14 +49,15 @@ O wrapper corre os scrapers e, se `RESEND_API_KEY` + `SCRAPER_API_TOKEN` existir
 
 ### Email (Resend)
 
-Em `.env.production` BR:
+Em `.env.production` BR (produção já configurada no VPS):
 
 ```bash
 RESEND_API_KEY=re_…          # mesma conta PT ok; não commitar
 EMAIL_FROM="VagaSaúde Brasil <alertas@vagasaude.com.br>"
 ```
 
-No [Resend](https://resend.com/domains): adicionar e verificar `vagasaude.com.br`
-(SPF + DKIM). Sem DNS verificado, envios de `alertas@vagasaude.com.br` falham.
+Domínio `vagasaude.com.br` no Resend com DKIM (`resend._domainkey`). Sem DNS
+verificado, envios de `alertas@vagasaude.com.br` falham. Admin `/admin/sistema`
+mostra Resend **Configurado** quando a key está no env.
 
-Ver também `docs/SCRAPERS-BR.md`.
+Ver também `docs/SCRAPERS-BR.md` e `deploy/configure-br-email.sh`.

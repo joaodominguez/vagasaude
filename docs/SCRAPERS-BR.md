@@ -291,7 +291,6 @@ Isolado do PT (`:3010` / `vagasaude.pt`). App BR em `:3011`.
 | `EMAIL_FROM` | `"VagaSaúde Brasil <alertas@vagasaude.com.br>"` (com aspas) |
 | `NEXT_PUBLIC_SITE_URL` | `https://vagasaude.com.br` |
 
-**Obrigatório no Resend:** Domains → adicionar `vagasaude.com.br` → publicar SPF + DKIM.  
-Sem verificação DNS, envios de `alertas@vagasaude.com.br` são rejeitados.
+**Resend / VPS (produção):** em `/var/www/vagasaudebr/.env.production` — `RESEND_API_KEY` (mesma conta PT), `EMAIL_FROM` quoted, `NEXT_PUBLIC_SITE_URL=https://vagasaude.com.br`. Admin `/admin/sistema` → Resend **Configurado**. Domínio `vagasaude.com.br` no Resend com DKIM (`resend._domainkey` TXT). Sem DNS verificado, envios falham.
 
-Digest: `scrapers-br/run-scrapers.sh` faz `POST /api/alerts/digest` em `:3011` após o scrape (espelho de `deploy/run-scrapers.sh` PT).
+Digest: `scrapers-br/run-scrapers.sh` faz `POST /api/alerts/digest` em `:3011` após o scrape. Cron portal (VPS): `45 */6 * * * …/vagasaudebr/scrapers/run-scrapers.sh`.

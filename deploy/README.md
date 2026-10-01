@@ -24,11 +24,9 @@
 #         deploy/apache/vagasaude.com.br.htaccess → public/.htaccess
 # Quote EMAIL_FROM in .env.production (angle brackets break `source` in start.sh).
 #
-# Email / Resend (BR):
+# Email / Resend (BR) — script: deploy/configure-br-email.sh (no VPS):
 #   RESEND_API_KEY=…   # pode reutilizar a mesma key da conta PT
 #   EMAIL_FROM="VagaSaúde Brasil <alertas@vagasaude.com.br>"
-#   No Resend dashboard: verificar domínio vagasaude.com.br (SPF + DKIM)
-#   antes de alertas@vagasaude.com.br enviar com sucesso.
-# Digest cron (após scrapers BR — espelho do PT em deploy/run-scrapers.sh):
-#   15 */6 * * * /var/www/vagasaudebr/scrapers/run-scrapers.sh >> /var/www/vagasaudebr/data/scrapers.log 2>&1
-#   (o wrapper faz POST http://127.0.0.1:3011/api/alerts/digest se Resend+token existirem)
+#   Domínio vagasaude.com.br no Resend (SPF + DKIM; TXT resend._domainkey)
+# Digest cron (portal; wrapper POST :3011/api/alerts/digest se Resend+token):
+#   45 */6 * * * /var/www/vagasaudebr/scrapers/run-scrapers.sh >> /var/www/vagasaudebr/data/scrapers.log 2>&1
