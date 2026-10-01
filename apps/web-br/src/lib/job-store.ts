@@ -773,15 +773,24 @@ export async function ingestJobs(source: string, incoming: IngestJobInput[]) {
   }
 
   // Soft-expire jobs from this source that disappeared from the latest scrape.
-  const seen = new Set(incoming.map((item) => String(item.source_id)));
-  for (const job of file.jobs) {
-    if (
-      job.source === source &&
-      job.status === "published" &&
-      !seen.has(job.sourceId)
-    ) {
-      job.status = "expired";
-      job.updatedAt = now;
+  // Skip when the payload looks like a partial repair (ex.: 1 job) so we do not
+  // wipe the board — only full-ish scrapes may expire missing IDs.
+  const existingPublished = file.jobs.filter(
+    (job) => job.source === source && job.status === "published",
+  ).length;
+  const shouldExpireMissing =
+    incoming.length >= Math.max(5, Math.floor(existingPublished * 0.5));
+  if (shouldExpireMissing) {
+    const seen = new Set(incoming.map((item) => String(item.source_id)));
+    for (const job of file.jobs) {
+      if (
+        job.source === source &&
+        job.status === "published" &&
+        !seen.has(job.sourceId)
+      ) {
+        job.status = "expired";
+        job.updatedAt = now;
+      }
     }
   }
 
