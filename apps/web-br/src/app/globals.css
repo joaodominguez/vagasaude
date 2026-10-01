@@ -647,6 +647,61 @@ select {
   min-width: 0;
 }
 
+/* Brazil homepage map: UF list left, choropleth map right */
+@media (min-width: 900px) {
+  .brazil-map-panel {
+    grid-template-columns: minmax(18rem, 1.05fr) minmax(16rem, 0.95fr);
+    align-items: start;
+  }
+}
+
+.brazil-map-svg {
+  max-height: 32rem;
+}
+
+.brazil-state {
+  stroke: color-mix(in srgb, var(--foreground) 18%, transparent);
+  stroke-width: 0.9;
+  stroke-linejoin: round;
+  transition:
+    fill 160ms ease,
+    stroke 160ms ease,
+    filter 160ms ease;
+}
+
+.brazil-state-empty {
+  fill: color-mix(in srgb, var(--map-land) 55%, var(--map-sea-to));
+  opacity: 0.55;
+}
+
+.brazil-state-low {
+  fill: var(--map-marker-low);
+}
+
+.brazil-state-mid {
+  fill: var(--map-marker-mid);
+}
+
+.brazil-state-hot {
+  fill: var(--map-marker-hot);
+}
+
+.brazil-state-group {
+  cursor: pointer;
+  outline: none;
+}
+
+.brazil-state-group:hover .brazil-state,
+.brazil-state-group:focus-visible .brazil-state {
+  filter: brightness(1.12);
+  stroke: var(--foreground);
+  stroke-width: 1.6;
+}
+
+.brazil-state-group-empty {
+  pointer-events: none;
+}
+
 .district-row {
   display: flex;
   align-items: center;
