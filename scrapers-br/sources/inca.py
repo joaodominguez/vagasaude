@@ -14,7 +14,6 @@ BASE = "https://www.gov.br/inca/pt-br"
 CONCURSO_INDEX = f"{BASE}/acesso-a-informacao/institucional/concurso-publico"
 CONCURSO_YEARS = (
     f"{CONCURSO_INDEX}/2025",
-    f"{CONCURSO_INDEX}/2024",
 )
 ENSINO_PAGES = (
     f"{BASE}/assuntos/ensino/residencias/medica",
