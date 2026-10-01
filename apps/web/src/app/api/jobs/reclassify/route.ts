@@ -1,9 +1,11 @@
+import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import {
   collapseDuplicateHashes,
   reclassifyOutrosProfessions,
   shortenPublishedJobTitles,
 } from "@/lib/job-store";
+import { JOBS_CACHE_TAG } from "@/lib/jobs-data";
 
 export const dynamic = "force-dynamic";
 
@@ -19,6 +21,7 @@ export async function POST(request: Request) {
   const shortened = await shortenPublishedJobTitles();
   const reclassified = await reclassifyOutrosProfessions();
   const deduped = await collapseDuplicateHashes();
+  revalidateTag(JOBS_CACHE_TAG, "max");
   return NextResponse.json({
     ok: true,
     shortenedTitles: shortened.changed,
