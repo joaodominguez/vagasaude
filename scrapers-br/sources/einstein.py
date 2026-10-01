@@ -12,7 +12,7 @@ from common.normalize import (
     guess_contract,
     guess_profession,
     html_to_text,
-    looks_like_health_job,
+    looks_like_hospital_employer_job,
     state_from_uf,
 )
 
@@ -78,7 +78,7 @@ class EinsteinScraper(BaseScraper):
                     print(f"[einstein] detalhe {job_id}: {exc}")
                     continue
                 job = self._parse_detail(job_id, application_url, detail_html)
-                if job and looks_like_health_job(job.title):
+                if job and looks_like_hospital_employer_job(job.title):
                     jobs.append(job)
             return jobs
         finally:

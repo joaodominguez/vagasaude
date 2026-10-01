@@ -107,7 +107,7 @@ def guess_contract(text: str | None) -> str | None:
 def guess_profession(title: str, fallback: str | None = None) -> str:
     t = norm(title)
     rules: list[tuple[tuple[str, ...], str]] = [
-        (("enfermeir", "tecnic de enfermagem", "tecnica de enfermagem", "auxiliar de enfermagem"), "Enfermagem"),
+        (("enfermeir", "enfermagem", "tecnic de enfermagem", "tecnica de enfermagem", "auxiliar de enfermagem"), "Enfermagem"),
         (("medico", "médico", "psiquiatra", "pediatra", "cirurgiao", "anestesi"), "Medicina"),
         (("fisioterap",), "Fisioterapia"),
         (("nutricion", "nutri "), "Nutrição"),
@@ -138,6 +138,7 @@ HEALTH_KEYWORDS = (
     "médico",
     "fisioterap",
     "nutricion",
+    "nutri ",
     "psicolog",
     "farmaceut",
     "farmacia",
@@ -158,7 +159,9 @@ HEALTH_KEYWORDS = (
     "saúde",
     "hospital",
     "uti",
+    "uco",
     "pronto socorro",
+    "pronto atendimento",
     "centro cirurgico",
     "centro cirúrgico",
     "cme",
@@ -179,8 +182,73 @@ HEALTH_KEYWORDS = (
     "imagem",
     "ressonancia",
     "tomografia",
+    "endoscopia",
     "enfermagem",
     "assistencial",
+    # Hospital ops / patient-facing
+    "atendimento ao paciente",
+    "recepcion",
+    "agendamento",
+    "contas medicas",
+    "contas médicas",
+    "faturamento",
+    "prontuario",
+    "prontuário",
+    "internacao",
+    "internação",
+    "semi intensiva",
+    "semi-intensiva",
+    "opme",
+    "farmacia hospitalar",
+    "servico de nutricao",
+    "serviço de nutrição",
+    "dietetica",
+    "dietética",
+    "higienizacao",
+    "higienização",
+    "central de exames",
+    "medicina diagnostica",
+    "medicina diagnóstica",
+    "corpo clinico",
+    "corpo clínico",
+    "bloco cirurgico",
+    "bloco cirúrgico",
+    "hemoterapia",
+    "banco de sangue",
+    "nefrolog",
+    "dialise",
+    "diálise",
+    "anestesi",
+)
+
+# Hard excludes for dedicated hospital boards (keep patient-facing admin)
+HOSPITAL_HARD_EXCLUDE = (
+    "desenvolvedor",
+    "software",
+    "devops",
+    "fullstack",
+    "front end",
+    "back end",
+    "engenheiro de dados",
+    "cientista de dados",
+    "analista de sistemas",
+    "advogad",
+    "juridic",
+    "jurídic",
+    "motorista",
+    "segurança patrimonial",
+    "vigilante",
+    "jardinagem",
+    "marketing digital",
+    "social media",
+    "designer",
+    "contabil",
+    "contábil",
+    "contador",
+    "folha de pagamento",
+    "banco de talentos",
+    "cadastre o seu curriculo",
+    "cadastre o seu currículo",
 )
 
 
@@ -188,7 +256,6 @@ def looks_like_health_job(title: str, department: str | None = None) -> bool:
     blob = norm(f"{title} {department or ''}")
     if not blob:
         return False
-    # Exclude obvious non-clinical corporate roles unless health keyword present
     exclude = (
         "desenvolvedor",
         "software",
@@ -198,9 +265,45 @@ def looks_like_health_job(title: str, department: str | None = None) -> bool:
         "segurança patrimonial",
         "zelador",
         "jardinagem",
+        "banco de talentos",
     )
     if any(x in blob for x in exclude) and not any(
         k in blob for k in ("enfermeir", "medico", "fisioterap", "saude", "hospital")
     ):
         return False
     return any(k in blob for k in HEALTH_KEYWORDS)
+
+
+def looks_like_hospital_employer_job(
+    title: str, department: str | None = None
+) -> bool:
+    """Filtro alargado para boards de um único hospital (Moinhos, BP, HAOC…).
+
+    Mantém funções hospitalares (recepção, agendamento, nutrição, etc.) e
+    descarta só IT/jurídico/banco de talentos genérico.
+    """
+    blob = norm(f"{title} {department or ''}")
+    if not blob:
+        return False
+    # Talent pools are evergreen CV forms — not open vacancies
+    if "banco de talentos" in blob or "cadastre o seu curriculo" in blob:
+        return False
+    if any(x in blob for x in HOSPITAL_HARD_EXCLUDE):
+        if any(
+            k in blob
+            for k in (
+                "enfermeir",
+                "enfermagem",
+                "medico",
+                "fisioterap",
+                "farmaceut",
+                "farmacia",
+                "nutric",
+                "psicolog",
+                "uti",
+                "cme",
+            )
+        ):
+            return True
+        return False
+    return True

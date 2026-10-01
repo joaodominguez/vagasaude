@@ -175,24 +175,13 @@ Estilo PT (`cuf.py`, `net_empregos.py`, `scm_faro.py`):
 ```
 scrapers-br/sources/
   __init__.py
-  gupy.py                      # cliente partilhado (parse __NEXT_DATA__)
-  vagas_com.py                 # cliente employer Vagas.com
-  rededor.py
-  hapvida.py
-  irssl.py
-  santa_casa_bh.py
-  santa_casa_poa.py
-  santa_casa_ba.py             # P1/P2
-  moinhos.py
-  beneficencia_portuguesa.py
-  einstein.py
-  fleury.py
-  sabin.py
-  dasa.py                      # agrega subdomains assistencial+atendimento
-  pci_concursos.py
-  agsus.py
-  ms_concursos.py              # P1
-  hsl_sirio.py                 # P2 SuccessFactors
+  gupy.py                      # cliente partilhado (parse __NEXT_DATA__) + employers Gupy
+  einstein.py                  # Vagas.com employer
+  hcor.py                      # Pandapé / InfoJobs
+  mater_dei.py                 # JobConvo
+  hsl_sirio.py                 # SuccessFactors (hospital privado)
+  # employers Gupy registados em gupy.py:
+  #   rededor, hapvida, irssl, santa_casa_bh, redeamericas, moinhos, bp, haoc
 ```
 
 Registar slugs em `apps/web-br/src/lib/sources.ts` com `sector: "Público" | "Privado" | "Filantrópico"`.
@@ -274,14 +263,23 @@ Probe HTTP + páginas de carreira públicas (Out 2026). Objetivo: decidir **mód
 | Skip | Star / Samaritano Américas / Nove de Julho standalone | Redundante com agregadores |
 | Skip | Samaritano Goiânia / Campinas e-mail | Form/e-mail; baixo ROI |
 
-### Implicação no Top MVP (§4)
+### Estado de implementação (Out 2026)
 
-Acrescentar após Hapvida/Rede D’Or:
+| Hospital (lista user) | Fonte / URL | Scraper | Status | ≈ jobs (probe) |
+|---|---|---|---|---:|
+| 1. Albert Einstein | https://trabalheconosco.vagas.com.br/alberteinstein/oportunidades | `einstein` | OK (paginação p1–p2; CF 1005 no VPS) | ~18 listagem |
+| 2. Sírio-Libanês (hospital) | https://vagas.hsl.org.br/ | `hsl_sirio` | OK (SF; board público frequentemente vazio) | 0–baixo |
+| 2b. Sírio OSS / IRSSL | https://irssl.gupy.io/ | `irssl` | OK | ~180 |
+| 3. Moinhos de Vento | https://hospitalmoinhos.gupy.io/ | `moinhos` | OK (filtro hospitalar alargado) | ~40+ |
+| 4. Alemão Oswaldo Cruz | multi-Gupy + ISHAOC | `haoc` | OK (5 boards) | ~30 |
+| 5. HCor | https://hcoracao.pandape.infojobs.com.br/ | `hcor` | OK (Pandapé) | ~15–20 |
+| 6. Vila Nova Star / Copa Star | https://rededor.gupy.io/ | `rededor` | Coberto (agregador) | Star ~133 no board |
+| 7. Samaritano (SP/RJ) | https://redeamericas.gupy.io/ | `redeamericas` | Coberto (agregador) | board ~236 |
+| 8. Mater Dei | JobConvo careers | `mater_dei` | OK (board por vezes 0) | 0–~25 |
+| 9. Nove de Julho | https://redeamericas.gupy.io/ | `redeamericas` | Coberto (agregador) | via rede |
+| 10. BP SP | https://vemserbp.gupy.io/ | `bp` | OK (filtro hospitalar alargado) | ~25+ |
 
-- **`redeamericas.py`** (Gupy, `privado`) — 2ª/3ª rede hospitalar; captura Samaritano + Nove de Julho sem scrapers dedicados.
-- Manter HAOC/HCor/Mater Dei/Sírio-SF fora do primeiro corte de implementação.
-
----
+**O que faltava antes:** scrapers dedicados HAOC / HCor / Mater Dei / Sírio-SF; filtro clínico demasiado apertado em Moinhos/BP (descartava recepção, agendamento, nutrição hospitalar); Einstein já existia mas o filtro clínico também podia cortar volume.
 
 ## 7. Alertas por email (Resend) — BR
 

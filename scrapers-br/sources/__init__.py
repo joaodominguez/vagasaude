@@ -1,6 +1,7 @@
 from sources.einstein import EinsteinScraper
 from sources.gupy import (
     BpScraper,
+    HaocScraper,
     HapvidaScraper,
     IrsslScraper,
     MoinhosScraper,
@@ -8,6 +9,9 @@ from sources.gupy import (
     RedeDorScraper,
     SantaCasaBhScraper,
 )
+from sources.hcor import HcorScraper
+from sources.hsl_sirio import HslSirioScraper
+from sources.mater_dei import MaterDeiScraper
 
 SCRAPERS = {
     RedeDorScraper.slug: RedeDorScraper,
@@ -18,4 +22,8 @@ SCRAPERS = {
     MoinhosScraper.slug: MoinhosScraper,
     BpScraper.slug: BpScraper,
     EinsteinScraper.slug: EinsteinScraper,
+    HaocScraper.slug: HaocScraper,
+    HcorScraper.slug: HcorScraper,
+    MaterDeiScraper.slug: MaterDeiScraper,
+    HslSirioScraper.slug: HslSirioScraper,
 }

@@ -36,6 +36,14 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     logo: "/partners/irssl.png",
   },
   {
+    id: "hsl_sirio",
+    name: "Hospital Sírio-Libanês",
+    shortName: "Sírio-Libanês",
+    url: "https://vagas.hsl.org.br/",
+    sector: "Privado",
+    logo: "/partners/hsl-sirio.svg",
+  },
+  {
     id: "santa_casa_bh",
     name: "Santa Casa de Misericórdia de Belo Horizonte",
     shortName: "Santa Casa BH",
@@ -74,6 +82,30 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     url: "https://trabalheconosco.vagas.com.br/alberteinstein/oportunidades",
     sector: "Privado",
     logo: "/partners/einstein.svg",
+  },
+  {
+    id: "haoc",
+    name: "Hospital Alemão Oswaldo Cruz",
+    shortName: "Oswaldo Cruz",
+    url: "https://www.hospitaloswaldocruz.org.br/trabalhe-conosco/",
+    sector: "Privado",
+    logo: "/partners/haoc.svg",
+  },
+  {
+    id: "hcor",
+    name: "HCor — Hospital do Coração",
+    shortName: "HCor",
+    url: "https://hcoracao.pandape.infojobs.com.br/",
+    sector: "Filantrópico",
+    logo: "/partners/hcor.svg",
+  },
+  {
+    id: "mater_dei",
+    name: "Rede Mater Dei de Saúde",
+    shortName: "Mater Dei",
+    url: "https://app.jobconvo.com/pt-br/careers/hospital-mater-dei/6fcf22e3-009f-40e9-94ea-25e36ed95d22/",
+    sector: "Privado",
+    logo: "/partners/mater-dei.svg",
   },
 ];
 
