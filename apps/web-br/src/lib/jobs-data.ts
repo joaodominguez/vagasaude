@@ -28,6 +28,11 @@ export const getJobs = cache(async (): Promise<Job[]> => {
 
 export const getJob = cache(
   async (slug: string): Promise<{ job: Job; expired: boolean } | null> => {
+    // Preferir o Data Cache de cards (evita caminho fs no hot path).
+    const jobs = await getJobs();
+    const active = jobs.find((job) => job.slug === slug);
+    if (active) return { job: active, expired: false };
+
     const stored = await getJobCard(slug);
     if (stored) return stored;
     const seed = seedJobs.find((job) => job.slug === slug);
