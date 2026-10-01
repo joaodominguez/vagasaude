@@ -5,7 +5,7 @@ import Script from "next/script";
 import { usePathname, useSearchParams } from "next/navigation";
 
 export const GA_MEASUREMENT_ID =
-  process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ?? "G-2FTGH5C1GQ";
+  process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ?? "G-0Q3135XVVY";
 
 declare global {
   interface Window {

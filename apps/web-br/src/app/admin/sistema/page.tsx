@@ -9,7 +9,7 @@ export default async function AdminSystemPage() {
     ["Site", SITE_URL],
     ["Ambiente", process.env.NODE_ENV || "production"],
     ["DATA_DIR", process.env.DATA_DIR || "(default)"],
-    ["GA4", process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "G-2FTGH5C1GQ"],
+    ["GA4", process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "G-0Q3135XVVY"],
     ["Resend", process.env.RESEND_API_KEY ? "Configurado" : "Por configurar"],
     [
       "Última ingestão",
