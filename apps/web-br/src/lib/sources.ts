@@ -65,7 +65,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "Sírio-Libanês",
     url: "https://vagas.hsl.org.br/",
     sector: "Privado",
-    logo: "/partners/hsl-sirio.svg",
+    logo: "/partners/hsl-sirio-v2.svg",
   },
   {
     id: "santa_casa_bh",
@@ -137,7 +137,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "Oswaldo Cruz",
     url: "https://www.hospitaloswaldocruz.org.br/trabalhe-conosco/",
     sector: "Privado",
-    logo: "/partners/haoc.svg",
+    logo: "/partners/haoc-v2.svg",
   },
   {
     id: "hcor",
@@ -145,7 +145,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "HCor",
     url: "https://hcoracao.pandape.infojobs.com.br/",
     sector: "Filantrópico",
-    logo: "/partners/hcor.svg",
+    logo: "/partners/hcor-v2.svg",
   },
   {
     id: "mater_dei",
