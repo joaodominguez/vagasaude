@@ -33,7 +33,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "IRSSL",
     url: "https://irssl.gupy.io/",
     sector: "Público",
-    logo: "/partners/irssl.svg",
+    logo: "/partners/irssl.png",
   },
   {
     id: "santa_casa_bh",
@@ -49,7 +49,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "Rede Américas",
     url: "https://redeamericas.gupy.io/",
     sector: "Privado",
-    logo: "/partners/redeamericas.svg",
+    logo: "/partners/redeamericas.png",
   },
   {
     id: "moinhos",
@@ -57,7 +57,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "Moinhos",
     url: "https://hospitalmoinhos.gupy.io/",
     sector: "Privado",
-    logo: "/partners/moinhos.svg",
+    logo: "/partners/moinhos.png",
   },
   {
     id: "bp",
@@ -65,7 +65,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "BP",
     url: "https://vemserbp.gupy.io/",
     sector: "Privado",
-    logo: "/partners/bp.svg",
+    logo: "/partners/bp.png",
   },
   {
     id: "einstein",
