@@ -345,9 +345,11 @@ Objetivo: fechar o gap vs PT (BEP / ULS / IPO / IPSS). Probes HTTP + páginas p�
 
 | Slug | Sector ingest | Notas |
 |---|---|---|
-| `pci_concursos` | `publico` | Lista `/vagas/saude|enfermagem|medico`; enriquece até 80 detalhes |
-| `agsus` | `publico` | Cats WP 105 + 50; janela 180 dias |
-| `inca` | `publico` | Plone concurso + ensino + search |
-| `santa_casa_poa` | `ipss` | Gupy `santacasa` · filtro hospital |
-| `santa_casa_ba` | `ipss` | Gupy `santacasaba` · filtro hospital |
-| `aacd` | `ipss` | Gupy `aacd` · filtro hospital |
+| `pci_concursos` | `publico` | Lista `/vagas/saude|enfermagem|medico`; enriquece até 80 detalhes · **404** ingest |
+| `agsus` | `publico` | Cats WP 105 + 50; janela 180 dias · **101** ingest |
+| `inca` | `publico` | Plone concurso + ensino + search · **3** ingest (event-driven) |
+| `santa_casa_poa` | `ipss` | Gupy `santacasa` · filtro hospital · **49** ingest |
+| `santa_casa_ba` | `ipss` | Gupy `santacasaba` · filtro hospital · **63** ingest |
+| `aacd` | `ipss` | Gupy `aacd` · filtro hospital · **50** ingest |
+
+**Total novos nesta ronda ≈ 670** (store BR ~3243 jobs após ingest).
