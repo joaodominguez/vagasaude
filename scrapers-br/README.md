@@ -1,31 +1,41 @@
 # Scrapers — VagaSaúde Brasil
 
-Espelho da pasta `scrapers/` (Portugal), para fontes do mercado brasileiro.
+Fontes do mercado brasileiro. **Ingest só em** `http://127.0.0.1:3011` / `vagasaude.com.br`  
+(`DATA_DIR=/var/www/vagasaudebr/data`). Nunca usar a API do `.pt`.
 
-## Estado
+## Fontes (MVP)
 
-Ainda sem fontes activas. A app `apps/web-br` está pronta a ingerir via
-`POST /api/ingest` (mesmo contrato que o `.pt`).
+| Slug | Empregador | ATS | Sector |
+|---|---|---|---|
+| `rededor` | Rede D’Or (incl. Star) | Gupy | privado |
+| `hapvida` | Hapvida NDI | Gupy | privado |
+| `irssl` | IRSSL (Sírio social/OSS) | Gupy | publico |
+| `santa_casa_bh` | Santa Casa BH | Gupy | ipss → Filantrópico |
+| `redeamericas` | Rede Américas (Samaritano, Nove de Julho…) | Gupy | privado |
+| `moinhos` | Hospital Moinhos de Vento | Gupy | privado |
+| `bp` | Beneficência Portuguesa SP | Gupy | privado |
+| `einstein` | Albert Einstein | Vagas.com | privado |
 
-## Como adicionar uma fonte
+Cliente partilhado Gupy: `sources/gupy.py`.
 
-1. Copia um scraper de `scrapers/sources/` como ponto de partida.
-2. Adapta selectors / RSS / API ao portal BR.
-3. Filtra só saúde.
-4. Faz POST para o ingest da app BR (`DATA_DIR` / token próprios).
-5. Regista o `slug` em `apps/web-br/src/lib/sources.ts` e no admin.
-
-## Arranque local (quando houver fontes)
+## Uso
 
 ```bash
 cd scrapers-br
-python -m venv .venv
-source .venv/bin/activate
+python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-# python run.py  (a criar a partir do run.py do PT)
+
+export INGEST_BASE_URL=http://127.0.0.1:3011
+export SCRAPER_API_TOKEN=…   # do .env.production BR
+
+python run.py --source moinhos --dry-run
+python run.py --source all
 ```
 
-## Domínio
+## Cron (servidor)
 
-Site: https://vagasaude.com.br  
-App: `apps/web-br` (porta local 3011)
+```bash
+15 */6 * * * /var/www/vagasaudebr/scrapers/run-scrapers.sh >> /var/www/vagasaudebr/data/scrapers.log 2>&1
+```
+
+Ver também `docs/SCRAPERS-BR.md`.

@@ -1,12 +1,14 @@
 import { getJobStats } from "@/lib/job-store";
 import { latestRunBySource, listScraperRuns } from "@/lib/scraper-runs";
+import { JOB_SOURCES } from "@/lib/sources";
 
 export const dynamic = "force-dynamic";
 
-/** Fontes BR — preencher à medida que scrapers-br/sources forem criados. */
-const SCRAPERS: { slug: string; name: string; schedule: string }[] = [
-  // { slug: "exemplo", name: "Fonte exemplo BR", schedule: "A cada 6 horas" },
-];
+const SCRAPERS = JOB_SOURCES.map((source) => ({
+  slug: source.id,
+  name: source.name,
+  schedule: "A cada 6 horas",
+}));
 
 export default async function AdminScrapersPage() {
   const [stats, latest, runs] = await Promise.all([
@@ -23,54 +25,43 @@ export default async function AdminScrapersPage() {
           Fontes e corridas
         </h1>
         <p className="mt-2 max-w-2xl text-sm text-muted">
-          Estrutura pronta. Conecte scrapers em{" "}
-          <code className="text-xs">scrapers-br/sources</code> e registre-os
-          aqui. Estatísticas atuais: {stats.published} publicadas ·{" "}
-          {stats.total} total.
+          Dados só em <code className="text-xs">/var/www/vagasaudebr/data</code>
+          . Publicadas: {stats.published} · total: {stats.total}.
         </p>
       </div>
 
-      {SCRAPERS.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-border bg-surface p-6 text-sm text-muted">
-          Ainda não há scrapers BR configurados. Copie o padrão de{" "}
-          <code className="text-xs">scrapers/</code> (PT) para{" "}
-          <code className="text-xs">scrapers-br/</code> e adapte as fontes ao
-          mercado brasileiro.
-        </div>
-      ) : (
-        <div className="overflow-x-auto rounded-xl border border-border">
-          <table className="min-w-full text-left text-sm">
-            <thead className="bg-surface text-xs uppercase tracking-wide text-muted">
-              <tr>
-                <th className="px-4 py-3">Fonte</th>
-                <th className="px-4 py-3">Agenda</th>
-                <th className="px-4 py-3">Última corrida</th>
-                <th className="px-4 py-3">Estado</th>
-              </tr>
-            </thead>
-            <tbody>
-              {SCRAPERS.map((scraper) => {
-                const run = latest.get(scraper.slug);
-                return (
-                  <tr key={scraper.slug} className="border-t border-border">
-                    <td className="px-4 py-3 font-medium">{scraper.name}</td>
-                    <td className="px-4 py-3 text-muted">{scraper.schedule}</td>
-                    <td className="px-4 py-3 text-muted">
-                      {run?.finishedAt || run?.startedAt || "—"}
-                    </td>
-                    <td className="px-4 py-3">{run?.status || "—"}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      )}
+      <div className="overflow-x-auto rounded-xl border border-border">
+        <table className="min-w-full text-left text-sm">
+          <thead className="bg-surface text-xs uppercase tracking-wide text-muted">
+            <tr>
+              <th className="px-4 py-3">Fonte</th>
+              <th className="px-4 py-3">Agenda</th>
+              <th className="px-4 py-3">Última corrida</th>
+              <th className="px-4 py-3">Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            {SCRAPERS.map((scraper) => {
+              const run = latest.get(scraper.slug);
+              return (
+                <tr key={scraper.slug} className="border-t border-border">
+                  <td className="px-4 py-3 font-medium">{scraper.name}</td>
+                  <td className="px-4 py-3 text-muted">{scraper.schedule}</td>
+                  <td className="px-4 py-3 text-muted">
+                    {run?.finishedAt || run?.startedAt || "—"}
+                  </td>
+                  <td className="px-4 py-3">{run?.status || "—"}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
 
       <div>
         <h2 className="text-lg font-bold">Corridas recentes</h2>
         {runs.length === 0 ? (
-          <p className="mt-2 text-sm text-muted">Sem corridas registradas.</p>
+          <p className="mt-2 text-sm text-muted">Sem corridas registadas.</p>
         ) : (
           <ul className="mt-3 space-y-2 text-sm">
             {runs.map((run) => (
