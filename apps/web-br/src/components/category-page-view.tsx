@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft, Bell } from "lucide-react";
 import { AlertForm } from "@/components/alert-form";
+import { ArticlesGuideCta } from "@/components/articles-guide-cta";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { JobCard } from "@/components/job-card";
@@ -135,6 +136,8 @@ export function CategoryPageView({
                 />
               </div>
             </div>
+
+            <ArticlesGuideCta profession={category.profession ?? undefined} />
 
             {(siblings.length > 0 || related.length > 0) && (
               <div className="content-card p-5">

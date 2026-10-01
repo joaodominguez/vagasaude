@@ -11,6 +11,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { AlertForm } from "@/components/alert-form";
+import { ArticlesGuideCta } from "@/components/articles-guide-cta";
 import { CategoryPageView } from "@/components/category-page-view";
 import { FavoriteButton } from "@/components/favorite-button";
 import { Footer } from "@/components/footer";
@@ -259,6 +260,11 @@ function ActiveJobView({ job, allJobs }: { job: Job; allJobs: Job[] }) {
                   />
                 </div>
               </div>
+
+              <ArticlesGuideCta
+                profession={job.profession}
+                sector={job.sector}
+              />
             </aside>
           </div>
 

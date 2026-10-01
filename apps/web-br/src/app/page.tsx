@@ -173,6 +173,23 @@ export default async function Home() {
             ))}
           </div>
         </section>
+
+        <section className="border-t border-border bg-surface">
+          <div className="page-container flex flex-col gap-4 py-12 sm:flex-row sm:items-end sm:justify-between">
+            <div className="max-w-xl">
+              <span className="section-kicker">Guias</span>
+              <h2 className="section-title">Antes de se candidatar</h2>
+              <p className="mt-2 text-sm leading-6 text-muted sm:text-base">
+                Currículo, carta de apresentação, editais de concurso e
+                alertas — textos curtos para quem busca emprego em saúde no
+                Brasil.
+              </p>
+            </div>
+            <Link href="/artigos" className="button button-secondary shrink-0">
+              Ver guias <ArrowRight size={16} />
+            </Link>
+          </div>
+        </section>
       </main>
       <Partners />
       <Footer />
