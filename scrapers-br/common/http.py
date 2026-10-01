@@ -8,14 +8,21 @@ import httpx
 DEFAULT_HEADERS = {
     "User-Agent": "VagaSaudeBRBot/1.0 (+https://vagasaude.com.br/bot)",
     "Accept": "application/json, text/html, */*",
+    "Accept-Language": "pt-BR,pt;q=0.9,en;q=0.8",
 }
 
 
 class HttpClient:
-    def __init__(self, timeout: float = 40.0, min_interval: float = 0.35):
+    def __init__(
+        self,
+        timeout: float = 40.0,
+        min_interval: float = 0.35,
+        headers: dict[str, str] | None = None,
+    ):
+        merged = {**DEFAULT_HEADERS, **(headers or {})}
         self.client = httpx.Client(
             timeout=timeout,
-            headers=DEFAULT_HEADERS,
+            headers=merged,
             follow_redirects=True,
         )
         self.min_interval = min_interval

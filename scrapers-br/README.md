@@ -14,9 +14,23 @@ Fontes do mercado brasileiro. **Ingest só em** `http://127.0.0.1:3011` / `vagas
 | `redeamericas` | Rede Américas (Samaritano, Nove de Julho…) | Gupy | privado |
 | `moinhos` | Hospital Moinhos de Vento | Gupy | privado |
 | `bp` | Beneficência Portuguesa SP | Gupy | privado |
-| `einstein` | Albert Einstein | Vagas.com | privado |
+| `einstein` | Albert Einstein | Vagas.com (`trabalheconosco…/alberteinstein`) | privado |
 
 Cliente partilhado Gupy: `sources/gupy.py`.
+
+### Einstein / Vagas.com — Cloudflare no VPS
+
+O board oficial é
+https://trabalheconosco.vagas.com.br/alberteinstein/oportunidades
+(~18 abertas; filtro saúde no scraper).
+
+Do VPS Hetzner (`91.99…`) o domínio `vagas.com.br` responde **403 / Cloudflare error 1005**
+mesmo com UA/browser headers — o IP/ASN está bloqueado. Headers não resolvem.
+
+Workaround operacional: correr `python run.py --source einstein` a partir de um host
+não bloqueado com `INGEST_BASE_URL=https://vagasaude.com.br` (ou `http://127.0.0.1:3011`
+via túnel) e `SCRAPER_API_TOKEN` do `.env.production` BR. O cron no VPS continua a
+reportar erro nesta fonte até haver IP allowlist / proxy outbound.
 
 ## Uso
 

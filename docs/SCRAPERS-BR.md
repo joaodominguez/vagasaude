@@ -92,7 +92,7 @@ Legenda volume saúde: **low** &lt; ~30 · **med** 30–200 · **high** &gt; 200
 |---|---|---|---|---|---|---|
 | **Rede D’Or** | https://rededor.gupy.io/ | Privado | Gupy JSON embutido | **high** | Nacional | **P0** |
 | **Hapvida NotreDame** | https://hapvidandi.gupy.io/ | Privado | Gupy (portal antigo `sistemahapvida` descontinuado) | **high** | Nacional | **P0** |
-| **Albert Einstein** | https://trabalheconosco.vagas.com.br/alberteinstein/oportunidades | Privado | Vagas.com employer HTML (Cloudflare) | med (~18+ na listagem) | SP / GO | **P1** |
+| **Albert Einstein** | https://trabalheconosco.vagas.com.br/alberteinstein/oportunidades | Privado | Vagas.com employer HTML + JobPosting JSON-LD; **CF 1005 no VPS Hetzner** (correr fora do VPS / ingest remoto) | med (~18 listagem; ~11 saúde) | SP / GO | **P1** (activo `einstein.py`) |
 | **Sírio-Libanês (hospital)** | https://vagas.hsl.org.br/ · https://hospitalsiriolibanes.org.br/trabalhe-conosco | Privado | **SAP SuccessFactors** (sessão/cookies) | med | SP / DF / etc. | **P2** (usar IRSSL primeiro) |
 | **Moinhos de Vento** | https://hospitalmoinhos.gupy.io/ | Privado | Gupy | med | RS | **P1** |
 | **BP — Beneficência Portuguesa SP** | https://vemserbp.gupy.io/ | Privado* | Gupy | med | SP | **P1** |
@@ -237,7 +237,7 @@ Probe HTTP + páginas de carreira públicas (Out 2026). Objetivo: decidir **mód
 
 | Hospital | Careers URL | ATS | Roles~ | Saúde? | Feasibility | WAF / login | Sector | Geo | Pri |
 |---|---|---|---:|---|---|---|---|---|---|
-| **1. Albert Einstein** | https://trabalheconosco.vagas.com.br/alberteinstein/oportunidades · hub https://www.einstein.br/n/o-einstein/carreiras | **Vagas.com** employer | **~18** (~11 clínicas no snapshot) | Sim | Boa (HTML employer; partilhar `vagas_com.py` c/ Fleury) | Cloudflare / challenge-platform (médio) | Privado* (Sociedade Beneficente) | SP + GO | **P1** |
+| **1. Albert Einstein** | https://trabalheconosco.vagas.com.br/alberteinstein/oportunidades · hub https://www.einstein.br/n/o-einstein/carreiras | **Vagas.com** employer | **~18** (~11 saúde após filtro) | Sim | Boa (HTML + JSON-LD JobPosting; `einstein.py` activo) | **CF 1005 no VPS Hetzner** (ASN bloqueado; scrape off-VPS + ingest BR) | Privado* (Sociedade Beneficente) | SP + GO | **P1** |
 | **2. Sírio-Libanês (hospital)** | https://vagas.hsl.org.br/ · https://hospitalsiriolibanes.org.br/trabalhe-conosco | **SAP SuccessFactors** | Lista pública vazia/JS+cookie wall; volume real opaco | Sim (quando abertas) | Má — sessão/cookies/JS | Cookie “clique para continuar”; sem JSON estável | Filantrópico / Privado | SP / DF | **P2** (hospital) |
 | **2b. IRSSL (Sírio OSS/SUS)** | https://irssl.gupy.io/ | **Gupy** | **183** (~122 saúde) | Sim | Excelente (`__NEXT_DATA__`) | Baixo–médio (CloudFront) | Público* / Filantrópico | SP (equip. públicos) | **P0** (já no MVP) |
 | **3. Moinhos de Vento** | https://hospitalmoinhos.gupy.io/ | **Gupy** | **52** (~25 saúde) | Sim | Excelente | Baixo–médio | Privado / Associação | RS (POA) | **P1** |
