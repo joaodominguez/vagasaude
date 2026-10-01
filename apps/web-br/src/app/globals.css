@@ -428,6 +428,7 @@ select {
   padding: 0.9rem;
   background: var(--surface);
   overflow: hidden;
+  overflow-x: clip;
   transition:
     transform 160ms ease,
     border-color 160ms ease,
@@ -438,6 +439,35 @@ select {
   transform: translateY(-2px);
   border-color: color-mix(in srgb, var(--primary) 45%, var(--border));
   box-shadow: var(--shadow);
+}
+
+.job-card-body,
+.job-card-main,
+.job-card-title-block,
+.job-card-meta,
+.job-card-salary {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.job-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.job-card-title-block {
+  flex: 1 1 auto;
+}
+
+.job-card-aside {
+  padding-top: 0.125rem;
+}
+
+.job-card-salary {
+  flex: 1 1 auto;
 }
 
 .alert-card {
@@ -950,6 +980,30 @@ select {
   .content-card {
     max-width: 100%;
     min-width: 0;
+  }
+}
+
+/* Narrow phones: stack date/actions and force salary onto its own row
+   so long "Média BR · R$ …" strings never clip the card edge. */
+@media (max-width: 539px) {
+  .job-card-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.45rem;
+  }
+
+  .job-card-aside {
+    padding-top: 0;
+    align-self: flex-start;
+  }
+
+  .job-card-salary {
+    flex: 1 1 100%;
+    width: 100%;
+  }
+
+  .job-card-meta {
+    row-gap: 0.45rem;
   }
 }
 

@@ -18,9 +18,9 @@ export function SalaryInsight({ job, variant = "full" }: Props) {
 
   if (variant === "compact") {
     return (
-      <span className="inline-flex items-center gap-1 text-xs text-muted">
+      <span className="inline-flex max-w-full min-w-0 items-center gap-1 text-xs text-muted">
         <Wallet size={12} className="shrink-0 opacity-70" aria-hidden="true" />
-        <span>
+        <span className="min-w-0 break-words">
           Média BR · {formatBRL(benchmark.average)}
           <span className="sr-only">
             {" "}

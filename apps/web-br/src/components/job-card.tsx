@@ -19,7 +19,7 @@ function JobIcon({ profession }: { profession: string }) {
         : ShieldPlus;
 
   return (
-    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary sm:h-12 sm:w-12">
+    <span className="job-card-icon flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary sm:h-12 sm:w-12">
       <Icon size={22} strokeWidth={1.8} />
     </span>
   );
@@ -28,11 +28,11 @@ function JobIcon({ profession }: { profession: string }) {
 export function JobCard({ job }: { job: Job }) {
   return (
     <Link href={`/vagas/${job.slug}`} className="job-card group">
-      <span className="flex min-w-0 items-start gap-3">
+      <span className="job-card-body flex min-w-0 items-start gap-3">
         <JobIcon profession={job.profession} />
-        <span className="min-w-0 flex-1">
-          <span className="flex items-start justify-between gap-3">
-            <span className="min-w-0">
+        <span className="job-card-main min-w-0 flex-1">
+          <span className="job-card-header">
+            <span className="job-card-title-block min-w-0">
               <span className="block break-words font-bold leading-snug tracking-[-0.02em] text-foreground group-hover:text-primary">
                 {job.title}
               </span>
@@ -40,7 +40,7 @@ export function JobCard({ job }: { job: Job }) {
                 {job.company}
               </span>
             </span>
-            <span className="flex shrink-0 items-center gap-2 pt-0.5 text-xs text-muted">
+            <span className="job-card-aside flex shrink-0 items-center gap-2 text-xs text-muted">
               <span className="whitespace-nowrap">{job.publishedLabel}</span>
               <FavoriteButton slug={job.slug} size={15} />
               <ArrowUpRight
@@ -49,14 +49,16 @@ export function JobCard({ job }: { job: Job }) {
               />
             </span>
           </span>
-          <span className="mt-2.5 flex flex-wrap items-center gap-1.5 text-xs text-muted">
-            <span className="inline-flex items-center gap-1">
-              <MapPin size={13} />
-              {job.city}
+          <span className="job-card-meta mt-2.5 flex flex-wrap items-center gap-1.5 text-xs text-muted">
+            <span className="inline-flex min-w-0 max-w-full items-center gap-1">
+              <MapPin size={13} className="shrink-0" />
+              <span className="truncate">{job.city}</span>
             </span>
             <span className="tag tag-primary">{job.sector}</span>
             <span className="tag">{job.contract}</span>
-            <SalaryInsight job={job} variant="compact" />
+            <span className="job-card-salary min-w-0 max-w-full">
+              <SalaryInsight job={job} variant="compact" />
+            </span>
           </span>
         </span>
       </span>
