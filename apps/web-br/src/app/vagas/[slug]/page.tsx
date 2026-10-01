@@ -32,6 +32,8 @@ import type { Job } from "@/lib/jobs";
 import { getJob, getJobs } from "@/lib/jobs-data";
 import { buildJobMetadata, buildJobPostingJsonLd, jobUrl } from "@/lib/seo";
 
+// ISR / soft-expire: detalhe regenera no máximo a cada 10 min; dados de
+// jobs usam unstable_cache a 120s + invalidação no ingest.
 export const revalidate = 600;
 
 type Params = Promise<{ slug: string }>;
