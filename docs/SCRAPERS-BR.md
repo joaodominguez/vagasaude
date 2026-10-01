@@ -216,3 +216,67 @@ Registar slugs em `apps/web-br/src/lib/sources.ts` com `sector: "Público" | "Pr
 2. Implementar `gupy.py` + 2–3 employers P0.
 3. Seeds reais via ingest no `DATA_DIR` BR.
 4. Preencher `JOB_SOURCES` em `apps/web-br/src/lib/sources.ts`.
+
+---
+
+## 9. Hospitais premium investigados
+
+Probe HTTP + páginas de carreira públicas (Out 2026). Objetivo: decidir **módulo próprio** vs **cobertos por agregador de rede** (Rede D’Or / Rede Américas).
+
+### Clarificações de rede (crítico)
+
+| Marca | Rede real | Portal de vagas | Nota |
+|---|---|---|---|
+| **Vila Nova Star / Copa Star** (+ DF Star, Maternidade Star) | **Rede D’Or** | `rededor.gupy.io` | ~133 títulos com “Star”; **não** criar módulo Star separado |
+| **Samaritano Higienópolis / Paulista / Botafogo / Barra** | **Rede Américas** (Amil+Dasa / ex-UHG Americas) | `redeamericas.gupy.io` | **Não** é Rede D’Or |
+| **Hospital Nove de Julho** | **Rede Américas** (via Rede Ímpar / Dasa) | `redeamericas.gupy.io` | **Não** está na lista de unidades Rede D’Or; ouvidoria `americasmed.com.br` |
+| **Samaritano Goiânia** (`hospsamaritano.com.br`) | Independente (GO) | formulário HTML | Homónimo — **não** confundir com Samaritano SP/RJ |
+| **Samaritano Campinas / Americana** | Samaritano Saúde (interior SP) | e-mail RH | Homónimo — skip MVP |
+
+### Tabela — 10 hospitais
+
+| Hospital | Careers URL | ATS | Roles~ | Saúde? | Feasibility | WAF / login | Sector | Geo | Pri |
+|---|---|---|---:|---|---|---|---|---|---|
+| **1. Albert Einstein** | https://trabalheconosco.vagas.com.br/alberteinstein/oportunidades · hub https://www.einstein.br/n/o-einstein/carreiras | **Vagas.com** employer | **~18** (~11 clínicas no snapshot) | Sim | Boa (HTML employer; partilhar `vagas_com.py` c/ Fleury) | Cloudflare / challenge-platform (médio) | Privado* (Sociedade Beneficente) | SP + GO | **P1** |
+| **2. Sírio-Libanês (hospital)** | https://vagas.hsl.org.br/ · https://hospitalsiriolibanes.org.br/trabalhe-conosco | **SAP SuccessFactors** | Lista pública vazia/JS+cookie wall; volume real opaco | Sim (quando abertas) | Má — sessão/cookies/JS | Cookie “clique para continuar”; sem JSON estável | Filantrópico / Privado | SP / DF | **P2** (hospital) |
+| **2b. IRSSL (Sírio OSS/SUS)** | https://irssl.gupy.io/ | **Gupy** | **183** (~122 saúde) | Sim | Excelente (`__NEXT_DATA__`) | Baixo–médio (CloudFront) | Público* / Filantrópico | SP (equip. públicos) | **P0** (já no MVP) |
+| **3. Moinhos de Vento** | https://hospitalmoinhos.gupy.io/ | **Gupy** | **52** (~25 saúde) | Sim | Excelente | Baixo–médio | Privado / Associação | RS (POA) | **P1** |
+| **4. Alemão Oswaldo Cruz (HAOC)** | Hub https://www.hospitaloswaldocruz.org.br/trabalhe-conosco/ → multi-Gupy | **Gupy** (4 boards + ISHAOC) | Assist **5** + Admin **11** + Ops **2** + Lead **0**; ISHAOC **14** | Sim (assistencial) | Boa mas **fragmentada** (múltiplos subdomains) | Baixo–médio | Privado; ISHAOC = OSS/público | SP (+ Mogi/Santos no ISHAOC) | **P2** (privado) / **P1** ISHAOC se quiserem OSS |
+| **5. HCor** | https://hcoracao.pandape.infojobs.com.br/ · hub https://www.hcor.com.br/sobre-o-hcor/trabalhe-conosco/ | **Pandapé / InfoJobs** | **~20** (várias enfermagem/farmácia) | Sim | Média (HTML Pandapé; ATS novo vs Gupy/Vagas.com) | Baixo | Filantrópico (Assoc. Beneficente Síria) → `ipss` | SP | **P2** |
+| **6. Vila Nova Star / Copa Star** | https://rededor.gupy.io/ (títulos com unidade) | **Gupy** = Rede D’Or | Star no board: **~133** (~102 saúde); VNS **~50**, Copa **~18** | Sim | N/A — **coberto por `rededor.py`** | = Rede D’Or | Privado | SP / RJ (+ DF Star) | **Skip módulo** (usar agregador D’Or) |
+| **7. Samaritano (SP/RJ Américas)** | https://redeamericas.gupy.io/ · site https://www.hospitalsamaritano.com.br/ | **Gupy** = Rede Américas | Board Américas **236** (~82 saúde); Samaritano nomeado esparso | Sim | N/A — **coberto por agregador Américas** | = Gupy | Privado | SP + RJ | **Skip módulo** (usar `redeamericas.py`) |
+| **8. Mater Dei** | https://app.jobconvo.com/pt-br/careers/hospital-mater-dei/6fcf22e3-009f-40e9-94ea-25e36ed95d22/ (link no site materdei.com.br) | **JobConvo** (custom) | **0–~25** (volátil; SSR por vezes “Nenhuma vaga”) | Sim quando listadas | Média — HTML/JobConvo sem API pública estável | Baixo | Privado (capital aberto) | MG + BA (+ rede 4 UF) | **P1**/P2 |
+| **9. Nove de Julho** | https://redeamericas.gupy.io/ (Rede Américas / Ímpar) | **Gupy** = Rede Américas | Sem título “Nove de Julho” no snapshot; cai no board de **236** | Sim (via rede) | N/A — **não** é Rede D’Or | = Gupy | Privado | SP | **Skip módulo** (usar `redeamericas.py`) |
+| **10. BP — Beneficência Portuguesa SP** | https://vemserbp.gupy.io/ · https://www.bp.org.br/institucional/trabalhe-conosco | **Gupy** | **37** (~17 saúde) | Sim | Excelente | Baixo–médio | Privado* / Filantrópico histórico → `privado` ou `ipss` | SP | **P1** |
+
+\*Einstein/BP: marca filantrópica histórica; recrutamento CLT hospitalar — ingest `privado` no MVP (ou `ipss` se branding Filantrópico).
+
+### Recomendação: módulos próprios vs agregadores
+
+**Cobertos por agregador — não criar scraper por hospital**
+
+1. **Rede D’Or** (`rededor.py` / `rededor.gupy.io`) — inclui **Vila Nova Star, Copa Star, DF Star, Maternidade Star** e restante da rede. Filtrar `title` por unidade se quiserem landing “Star”.
+2. **Rede Américas** (`redeamericas.py` **novo P0/P1**) — inclui **Samaritano Higienópolis/Botafogo/etc.** e **Nove de Julho** (Ímpar). **Não** misturar com Rede D’Or.
+
+**Módulos próprios (prioridade)**
+
+| Pri | Módulo | Motivo |
+|---|---|---|
+| P0 | `irssl.py` | Já no MVP — braço público do ecossistema Sírio |
+| P1 | `einstein.py` | Marca premium; Vagas.com partilhável |
+| P1 | `moinhos.py` | Gupy trivial; Sul |
+| P1 | `beneficencia_portuguesa.py` | Gupy trivial; SP |
+| P1 | `redeamericas.py` | 236 jobs; cobre Samaritano + Nove de Julho + Leforte/Ímpar |
+| P1–P2 | `mater_dei.py` | JobConvo; volume médio/volátil; MG/BA |
+| P2 | `haoc.py` | Multi-board Gupy; ROI baixo até consolidar boards |
+| P2 | `hcor.py` | Pandapé (cliente novo); ~20 roles |
+| P2 | `hsl_sirio.py` | SuccessFactors — só se IRSSL não bastar para marca Sírio privada |
+| Skip | Star / Samaritano Américas / Nove de Julho standalone | Redundante com agregadores |
+| Skip | Samaritano Goiânia / Campinas e-mail | Form/e-mail; baixo ROI |
+
+### Implicação no Top MVP (§4)
+
+Acrescentar após Hapvida/Rede D’Or:
+
+- **`redeamericas.py`** (Gupy, `privado`) — 2ª/3ª rede hospitalar; captura Samaritano + Nove de Julho sem scrapers dedicados.
+- Manter HAOC/HCor/Mater Dei/Sírio-SF fora do primeiro corte de implementação.
