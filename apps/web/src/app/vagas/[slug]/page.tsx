@@ -32,6 +32,9 @@ import { getJob, getJobs } from "@/lib/jobs-data";
 import { buildJobMetadata, buildJobPostingJsonLd, jobUrl } from "@/lib/seo";
 import { emLocal } from "@/lib/pt-locative";
 
+// force-static + revalidate: HTML ISR on-demand (revalidate sozinho não
+// chega se a árvore for tratada como dinâmica por I/O).
+export const dynamic = "force-static";
 export const revalidate = 600;
 
 type Params = Promise<{ slug: string }>;

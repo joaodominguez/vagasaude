@@ -150,14 +150,73 @@ porque é mais explícita e eficiente.
 
 ## 4. Cloudflare
 
-- **DNS:** `A` record de `vagasaude.pt` → IP do VPS, com **proxy ativado** (nuvem laranja). Igual para `www`.
+- **DNS:** `A` record de `vagasaude.pt` → IP do VPS, com **proxy ativado** (nuvem laranja). Igual para `www`. O mesmo para `vagasaude.com.br`.
 - **SSL/TLS:** modo **Full (strict)**; o certificado Let's Encrypt existente
   no Apache é válido na ligação Cloudflare → origem.
-- **Cache:** cache agressivo de estáticos (`/_next/static/*`, imagens). Regras de cache para não cachear páginas dinâmicas/API.
+- **Cache (estáticos):** cache agressivo de `/_next/static/*` e imagens (comportamento por defeito do CF costuma bastar).
+- **Cache (HTML anónimo):** a origem emite
+  `Cache-Control: public, s-maxage=120, stale-while-revalidate=600` em `/`,
+  `/vagas/:slug` e `/vagas/:slug/:district`. Por defeito o Cloudflare
+  **não** cacheia HTML (`cf-cache-status: DYNAMIC`). Sem a regra abaixo o
+  `s-maxage` não reduz carga na origem.
 - **WAF:** regras básicas + rate limiting no `/api/*`.
 - **Bot protection:** ativar para mitigar scraping do próprio site.
-- **Access:** proteger `vagasaude.pt/admin/*`, permitindo apenas o email do
-  administrador. A aplicação continua a validar a sessão no servidor.
+- **Access:** proteger `vagasaude.pt/admin/*` (e BR `/admin/*`), permitindo
+  apenas o email do administrador. A aplicação continua a validar a sessão
+  no servidor.
+
+### Cache Rules recomendadas (PT e BR — uma zona cada)
+
+Criar em **Caching → Cache Rules** (ou Rules → Cache Rules). Aplicar a
+**ambas** as zonas (`vagasaude.pt` e `vagasaude.com.br`).
+
+#### Regra 1 — Cache HTML anónimo (prioridade alta)
+
+| Campo | Valor |
+| --- | --- |
+| Nome | `Cache anonymous HTML (home + vagas)` |
+| When incoming requests match… | Custom filter expression |
+| Expression | `(http.request.method eq "GET" and (http.request.uri.path eq "/" or starts_with(http.request.uri.path, "/vagas/")) and not starts_with(http.request.uri.path, "/api/") and not starts_with(http.request.uri.path, "/admin/") and not http.cookie contains "session" and not http.cookie contains "admin")` |
+| Then | **Eligible for cache** |
+| Edge TTL | Override / Respect origin (`s-maxage=120`) — preferir **Respect existing headers** se disponível; senão Override = 2 minutes |
+| Browser TTL | Respect origin / Bypass |
+| Cache key | Standard (sem cookies) |
+
+Expressão mais simples (equivalente prática, se o editor bloquear headers):
+
+```text
+(http.request.method eq "GET")
+and (
+  http.request.uri.path eq "/"
+  or starts_with(http.request.uri.path, "/vagas/")
+)
+and not starts_with(http.request.uri.path, "/api/")
+and not starts_with(http.request.uri.path, "/admin/")
+and not http.cookie contains "session"
+```
+
+Notas:
+
+- **Não** incluir `/vagas` (listagem com `?distrito=` / filtros) — deve
+  continuar dinâmica.
+- Com cookie de sessão/admin o pedido deve ser **Bypass** (regra 2).
+- Após activar: `cf-cache-status` deve passar a `MISS` → `HIT`/`EXPIRED`
+  em visitas anónimas; origem deixa de ver o pico em cada reload.
+
+#### Regra 2 — Bypass API / admin / autenticado (prioridade mais alta)
+
+| Campo | Valor |
+| --- | --- |
+| Nome | `Bypass API admin auth` |
+| Expression | `(starts_with(http.request.uri.path, "/api/") or starts_with(http.request.uri.path, "/admin/") or http.cookie contains "session" or http.cookie contains "admin")` |
+| Then | **Bypass cache** |
+
+#### O que **não** fazer
+
+- Não depender só do Cloudflare sem ISR/Data Cache na origem: HTML dinâmico
+  (`force-dynamic` / `private, no-store`) nunca fica elegível.
+- Não usar “Cache Everything” global sem bypass de `/api/*` e cookies —
+  risco de servir páginas de admin ou respostas personalizadas.
 
 ---
 

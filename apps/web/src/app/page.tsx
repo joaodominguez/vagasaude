@@ -20,7 +20,8 @@ import { getJobs } from "@/lib/jobs-data";
 import { professions } from "@/lib/jobs";
 import { buildHomeMetadata } from "@/lib/seo";
 
-export const dynamic = "force-dynamic";
+// Soft-expire alinhado ao Data Cache de jobs (ingest ≤2 min).
+export const revalidate = 120;
 
 export async function generateMetadata() {
   const jobs = await getJobs();
