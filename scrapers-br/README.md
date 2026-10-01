@@ -38,4 +38,20 @@ python run.py --source all
 15 */6 * * * /var/www/vagasaudebr/scrapers/run-scrapers.sh >> /var/www/vagasaudebr/data/scrapers.log 2>&1
 ```
 
+O wrapper corre os scrapers e, se `RESEND_API_KEY` + `SCRAPER_API_TOKEN` existirem em
+`/var/www/vagasaudebr/.env.production`, faz `POST http://127.0.0.1:3011/api/alerts/digest`
+(espelho do digest PT — nunca aponta para :3010).
+
+### Email (Resend)
+
+Em `.env.production` BR:
+
+```bash
+RESEND_API_KEY=re_…          # mesma conta PT ok; não commitar
+EMAIL_FROM="VagaSaúde Brasil <alertas@vagasaude.com.br>"
+```
+
+No [Resend](https://resend.com/domains): adicionar e verificar `vagasaude.com.br`
+(SPF + DKIM). Sem DNS verificado, envios de `alertas@vagasaude.com.br` falham.
+
 Ver também `docs/SCRAPERS-BR.md`.

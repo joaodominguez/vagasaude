@@ -22,7 +22,8 @@ export function isEmailConfigured() {
 
 export function getEmailFrom() {
   return (
-    process.env.EMAIL_FROM?.trim() || "VagaSaúde <alertas@vagasaude.com.br>"
+    process.env.EMAIL_FROM?.trim() ||
+    "VagaSaúde Brasil <alertas@vagasaude.com.br>"
   );
 }
 
@@ -80,12 +81,16 @@ function emailShell(title: string, bodyHtml: string, token: string) {
 <html lang="pt-BR">
   <body style="margin:0;padding:0;background:#f8fafc;color:#0f172a;">
     <div style="font-family:Arial,Helvetica,sans-serif;max-width:560px;margin:0 auto;padding:28px 20px;">
-      <p style="margin:0 0 18px;font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#0f766e;">VagaSaúde</p>
+      <p style="margin:0 0 18px;font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#0f766e;">VagaSaúde Brasil</p>
       <h1 style="margin:0 0 12px;font-size:24px;line-height:1.25;">${title}</h1>
       ${bodyHtml}
       <p style="margin:28px 0 0;font-size:12px;line-height:1.6;color:#94a3b8;">
         Gerenciar ou cancelar alerta:
         <a href="${manageUrl(token)}" style="color:#0f766e;">${manageUrl(token)}</a>
+      </p>
+      <p style="margin:12px 0 0;font-size:11px;line-height:1.5;color:#cbd5e1;">
+        <a href="${SITE_URL}" style="color:#94a3b8;text-decoration:none;">vagasaude.com.br</a>
+        — vagas de saúde no Brasil
       </p>
     </div>
   </body>
@@ -169,9 +174,9 @@ export function newJobsDigestHtml(
     .join("");
 
   return emailShell(
-    "Novas vagas de saúde",
+    "Novas vagas de saúde no Brasil",
     `<p style="margin:0 0 18px;font-size:15px;line-height:1.65;color:#475569;">
-        Encontramos ${jobs.length} nova${jobs.length === 1 ? "" : "s"} oportunidade${jobs.length === 1 ? "" : "s"} para você.
+        Encontramos ${jobs.length} nova${jobs.length === 1 ? "" : "s"} oportunidade${jobs.length === 1 ? "" : "s"} para você no VagaSaúde Brasil.
       </p>
       <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;">
         ${items}

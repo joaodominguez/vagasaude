@@ -10,6 +10,8 @@ Cópia estrutural de `apps/web` adaptada ao mercado brasileiro.
 - Moeda: R$ (BRL)
 - Scrapers: `scrapers-br/` (ainda vazios)
 - Dev: `pnpm dev` → http://127.0.0.1:3011
+- Email: Resend (`RESEND_API_KEY` + `EMAIL_FROM="VagaSaúde Brasil <alertas@vagasaude.com.br>"`).
+  Verificar DNS do domínio `vagasaude.com.br` no dashboard Resend (SPF/DKIM) antes de enviar.
 
 ```bash
 cd apps/web-br

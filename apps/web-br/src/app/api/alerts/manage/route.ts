@@ -51,7 +51,7 @@ export async function PATCH(request: Request) {
     if (isEmailConfigured() && alert.status === "active") {
       await sendEmail({
         to: alert.email,
-        subject: "Seu alerta VagaSaúde está confirmado",
+        subject: "Seu alerta VagaSaúde Brasil está confirmado",
         html: alertConfirmedEmailHtml(alert),
       }).catch(() => null);
     }

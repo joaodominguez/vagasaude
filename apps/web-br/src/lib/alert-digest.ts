@@ -75,7 +75,7 @@ export async function sendNewJobsDigest(limit = 12) {
       subject:
         pending.length === 1
           ? `Nova vaga: ${pending[0].title}`
-          : `${pending.length} novas vagas de saúde no VagaSaúde`,
+          : `${pending.length} novas vagas de saúde no VagaSaúde Brasil`,
       html: newJobsDigestHtml(
         pending.map((job) => ({
           title: job.title,

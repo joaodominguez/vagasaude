@@ -54,7 +54,7 @@ export async function POST(request: Request) {
   if (isEmailConfigured() && needsConfirmation) {
     const result = await sendEmail({
       to: email,
-      subject: "Confirme seu alerta VagaSaúde",
+      subject: "Confirme seu alerta — VagaSaúde Brasil",
       html: alertConfirmEmailHtml(alert),
     });
     emailSent = result.ok;

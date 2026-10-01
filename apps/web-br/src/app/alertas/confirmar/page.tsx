@@ -129,7 +129,7 @@ async function ConfirmBody({ token }: { token?: string }) {
   if (isEmailConfigured()) {
     await sendEmail({
       to: alert.email,
-      subject: "Seu alerta VagaSaúde está confirmado",
+      subject: "Seu alerta VagaSaúde Brasil está confirmado",
       html: alertConfirmedEmailHtml(alert),
     }).catch(() => null);
   }

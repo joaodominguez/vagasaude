@@ -280,3 +280,20 @@ Acrescentar após Hapvida/Rede D’Or:
 
 - **`redeamericas.py`** (Gupy, `privado`) — 2ª/3ª rede hospitalar; captura Samaritano + Nove de Julho sem scrapers dedicados.
 - Manter HAOC/HCor/Mater Dei/Sírio-SF fora do primeiro corte de implementação.
+
+---
+
+## 7. Alertas por email (Resend) — BR
+
+Isolado do PT (`:3010` / `vagasaude.pt`). App BR em `:3011`.
+
+| Var | Valor típico |
+|---|---|
+| `RESEND_API_KEY` | Mesma conta Resend do PT (não commitar) |
+| `EMAIL_FROM` | `"VagaSaúde Brasil <alertas@vagasaude.com.br>"` (com aspas) |
+| `NEXT_PUBLIC_SITE_URL` | `https://vagasaude.com.br` |
+
+**Obrigatório no Resend:** Domains → adicionar `vagasaude.com.br` → publicar SPF + DKIM.  
+Sem verificação DNS, envios de `alertas@vagasaude.com.br` são rejeitados.
+
+Digest: `scrapers-br/run-scrapers.sh` faz `POST /api/alerts/digest` em `:3011` após o scrape (espelho de `deploy/run-scrapers.sh` PT).
