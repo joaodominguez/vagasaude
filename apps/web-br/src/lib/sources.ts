@@ -17,7 +17,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "Rede D'Or",
     url: "https://rededor.gupy.io/",
     sector: "Privado",
-    logo: "/partners/rededor.svg",
+    logo: "/partners/rededor.png",
   },
   {
     id: "hapvida",
@@ -25,7 +25,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "Hapvida",
     url: "https://hapvidandi.gupy.io/",
     sector: "Privado",
-    logo: "/partners/hapvida.svg",
+    logo: "/partners/hapvida.png",
   },
   {
     id: "irssl",
@@ -49,7 +49,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "Santa Casa BH",
     url: "https://santacasabh.gupy.io/",
     sector: "Filantrópico",
-    logo: "/partners/santa-casa-bh.svg",
+    logo: "/partners/santa-casa-bh.png",
   },
   {
     id: "redeamericas",
@@ -81,7 +81,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "Einstein",
     url: "https://trabalheconosco.vagas.com.br/alberteinstein/oportunidades",
     sector: "Privado",
-    logo: "/partners/einstein.svg",
+    logo: "/partners/einstein.png",
   },
   {
     id: "haoc",
