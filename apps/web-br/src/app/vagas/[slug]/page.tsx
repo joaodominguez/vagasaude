@@ -32,6 +32,9 @@ import type { Job } from "@/lib/jobs";
 import { getJob, getJobs } from "@/lib/jobs-data";
 import { buildJobMetadata, buildJobPostingJsonLd, jobUrl } from "@/lib/seo";
 
+// force-static + revalidate: HTML ISR on-demand (revalidate sozinho não
+// chega porque os dados vinham de fs sem Data Cache). Soft-expire 10 min.
+export const dynamic = "force-static";
 export const revalidate = 600;
 
 type Params = Promise<{ slug: string }>;
