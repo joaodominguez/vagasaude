@@ -1,7 +1,11 @@
 import Link from "next/link";
 import { MapPinned } from "lucide-react";
 import { categoryPath } from "@/lib/categories";
-import { BRAZIL_MAP_VIEWBOX, BRAZIL_STATE_PATHS } from "@/lib/brazil-map";
+import {
+  BRAZIL_MAP_VIEWBOX,
+  BRAZIL_STATE_CENTROIDS,
+  BRAZIL_STATE_PATHS,
+} from "@/lib/brazil-map";
 import { BRAZIL_STATES } from "@/lib/brazil-states";
 
 type BrazilJobsMapProps = {
@@ -17,6 +21,23 @@ function intensityClass(count: number, max: number) {
   return "brazil-state-low";
 }
 
+function markerClass(count: number, max: number) {
+  if (count <= 0) return "map-marker-empty";
+  const ratio = count / max;
+  if (ratio > 0.66) return "map-marker-hot";
+  if (ratio > 0.33) return "map-marker-mid";
+  return "map-marker-low";
+}
+
+function markerRadius(count: number, max: number) {
+  if (count <= 0) return 4.5;
+  const digits = String(count).length;
+  const base = digits >= 3 ? 9.5 : digits === 2 ? 8 : 7;
+  const span = digits >= 3 ? 9 : 7.5;
+  const cap = digits >= 3 ? 19 : 15;
+  return Math.min(cap, base + (count / max) * span);
+}
+
 function stateHref(name: string, count: number) {
   if (count >= 3) return categoryPath(null, name);
   return `/vagas?distrito=${encodeURIComponent(name)}`;
@@ -27,6 +48,7 @@ export function BrazilJobsMap({ counts, total }: BrazilJobsMapProps) {
     ...state,
     count: counts[state.name] || 0,
     path: BRAZIL_STATE_PATHS[state.uf] || "",
+    centroid: BRAZIL_STATE_CENTROIDS[state.uf],
   })).sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, "pt-BR"));
 
   const max = Math.max(1, ...ranked.map((item) => item.count));
@@ -131,6 +153,58 @@ export function BrazilJobsMap({ counts, total }: BrazilJobsMapProps) {
               >
                 {pathEl}
                 <title>{`${state.name} (${state.uf}): ${state.count} vagas`}</title>
+              </a>
+            );
+          })}
+
+          {/* Count bubbles on top (Portugal-style), so numbers stay readable */}
+          {ranked.map((state) => {
+            if (!state.centroid) return null;
+            const { x, y } = state.centroid;
+            const active = state.count > 0;
+            const radius = markerRadius(state.count, max);
+            const marker = (
+              <>
+                <circle
+                  cx={x}
+                  cy={y}
+                  r={radius}
+                  className={`brazil-map-marker ${markerClass(state.count, max)}`}
+                />
+                {active && (
+                  <text
+                    x={x}
+                    y={y + 0.8}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    className={`map-marker-label brazil-map-marker-label${
+                      String(state.count).length >= 3
+                        ? " brazil-map-marker-label-lg"
+                        : ""
+                    }`}
+                  >
+                    {state.count}
+                  </text>
+                )}
+              </>
+            );
+
+            if (!active) {
+              return (
+                <g key={`m-${state.uf}`} opacity={0.4} aria-hidden="true">
+                  {marker}
+                </g>
+              );
+            }
+
+            return (
+              <a
+                key={`m-${state.uf}`}
+                href={stateHref(state.name, state.count)}
+                aria-label={`${state.count} vagas em ${state.name}`}
+                className="map-marker-group brazil-map-marker-group"
+              >
+                {marker}
               </a>
             );
           })}
