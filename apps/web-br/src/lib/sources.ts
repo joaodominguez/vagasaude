@@ -8,7 +8,7 @@ export type JobSourceMeta = {
 };
 
 /**
- * Fontes BR activas (scrapers-br/). Logos opcionais — sem asset usa texto no admin.
+ * Fontes BR activas (scrapers-br/). Logos na home — grelha igual ao PT.
  */
 export const JOB_SOURCES: JobSourceMeta[] = [
   {
@@ -17,7 +17,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "Rede D'Or",
     url: "https://rededor.gupy.io/",
     sector: "Privado",
-    logo: "/partners/placeholder.svg",
+    logo: "/partners/rededor.svg",
   },
   {
     id: "hapvida",
@@ -25,7 +25,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "Hapvida",
     url: "https://hapvidandi.gupy.io/",
     sector: "Privado",
-    logo: "/partners/placeholder.svg",
+    logo: "/partners/hapvida.svg",
   },
   {
     id: "irssl",
@@ -33,7 +33,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "IRSSL",
     url: "https://irssl.gupy.io/",
     sector: "Público",
-    logo: "/partners/placeholder.svg",
+    logo: "/partners/irssl.svg",
   },
   {
     id: "santa_casa_bh",
@@ -41,7 +41,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "Santa Casa BH",
     url: "https://santacasabh.gupy.io/",
     sector: "Filantrópico",
-    logo: "/partners/placeholder.svg",
+    logo: "/partners/santa-casa-bh.svg",
   },
   {
     id: "redeamericas",
@@ -49,7 +49,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "Rede Américas",
     url: "https://redeamericas.gupy.io/",
     sector: "Privado",
-    logo: "/partners/placeholder.svg",
+    logo: "/partners/redeamericas.svg",
   },
   {
     id: "moinhos",
@@ -57,7 +57,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "Moinhos",
     url: "https://hospitalmoinhos.gupy.io/",
     sector: "Privado",
-    logo: "/partners/placeholder.svg",
+    logo: "/partners/moinhos.svg",
   },
   {
     id: "bp",
@@ -65,7 +65,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "BP",
     url: "https://vemserbp.gupy.io/",
     sector: "Privado",
-    logo: "/partners/placeholder.svg",
+    logo: "/partners/bp.svg",
   },
   {
     id: "einstein",
@@ -73,7 +73,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "Einstein",
     url: "https://trabalheconosco.vagas.com.br/alberteinstein/oportunidades",
     sector: "Privado",
-    logo: "/partners/placeholder.svg",
+    logo: "/partners/einstein.svg",
   },
 ];
 

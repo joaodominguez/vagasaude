@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 80" role="img" aria-label="Einstein">
+  <rect width="200" height="80" rx="10" fill="#F8FAFC"/>
+  <rect x="1" y="1" width="198" height="78" rx="9" fill="none" stroke="#0F766E" stroke-opacity="0.18"/>
+  <circle cx="22" cy="40" r="7" fill="#0F766E"/>
+
+  <text x="100" y="52" text-anchor="middle" font-family="Manrope, system-ui, sans-serif" font-size="22" font-weight="800" fill="#0F766E">Einstein</text>
+</svg>
