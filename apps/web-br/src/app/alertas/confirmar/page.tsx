@@ -40,7 +40,7 @@ async function ConfirmBody({ token }: { token?: string }) {
       <>
         <h1 className="text-2xl font-extrabold tracking-[-0.04em]">Link inválido</h1>
         <p className="mt-3 text-sm leading-6 text-muted">
-          Falta o token de confirmação. Usa o link do email.
+          Falta o token de confirmação. Use o link do email.
         </p>
         <p className="mt-6">
           <Link className="font-bold text-primary" href="/alertas">
@@ -59,7 +59,7 @@ async function ConfirmBody({ token }: { token?: string }) {
           Link inválido ou expirado
         </h1>
         <p className="mt-3 text-sm leading-6 text-muted">
-          Não encontrámos esta inscrição. Cria um novo alerta.
+          Não encontramos esta inscrição. Crie um novo alerta.
         </p>
         <p className="mt-6">
           <Link className="font-bold text-primary" href="/alertas">
@@ -77,7 +77,7 @@ async function ConfirmBody({ token }: { token?: string }) {
           Inscrição cancelada
         </h1>
         <p className="mt-3 text-sm leading-6 text-muted">
-          Esta inscrição foi cancelada. Podes criar um novo alerta quando quiseres.
+          Esta inscrição foi cancelada. Você pode criar um novo alerta quando quiser.
         </p>
         <p className="mt-6">
           <Link className="font-bold text-primary" href="/alertas">
@@ -93,14 +93,14 @@ async function ConfirmBody({ token }: { token?: string }) {
       <>
         <h1 className="text-2xl font-extrabold tracking-[-0.04em]">Já confirmado</h1>
         <p className="mt-3 text-sm leading-6 text-muted">
-          O alerta para <strong>{existing.email}</strong> já está activo.
+          O alerta para <strong>{existing.email}</strong> já está ativo.
         </p>
         <p className="mt-6">
           <Link
             className="font-bold text-primary"
             href={`/alertas/gerir?token=${encodeURIComponent(token)}`}
           >
-            Gerir preferências
+            Gerenciar preferências
           </Link>
         </p>
       </>
@@ -115,7 +115,7 @@ async function ConfirmBody({ token }: { token?: string }) {
           Não foi possível confirmar
         </h1>
         <p className="mt-3 text-sm leading-6 text-muted">
-          Tenta novamente ou cria um novo alerta.
+          Tente novamente ou crie um novo alerta.
         </p>
         <p className="mt-6">
           <Link className="font-bold text-primary" href="/alertas">
@@ -129,7 +129,7 @@ async function ConfirmBody({ token }: { token?: string }) {
   if (isEmailConfigured()) {
     await sendEmail({
       to: alert.email,
-      subject: "O teu alerta VagaSaúde está confirmado",
+      subject: "Seu alerta VagaSaúde está confirmado",
       html: alertConfirmedEmailHtml(alert),
     }).catch(() => null);
   }
@@ -138,15 +138,15 @@ async function ConfirmBody({ token }: { token?: string }) {
     <>
       <h1 className="text-2xl font-extrabold tracking-[-0.04em]">Alerta confirmado</h1>
       <p className="mt-3 text-sm leading-6 text-muted">
-        A inscrição de <strong>{alert.email}</strong> está activa. Vamos enviar
-        vagas novas quando corresponderem às tuas preferências.
+        A inscrição de <strong>{alert.email}</strong> está ativa. Vamos enviar
+        vagas novas quando corresponderem às suas preferências.
       </p>
       <p className="mt-6 flex flex-wrap gap-4 text-sm">
         <Link
           className="font-bold text-primary"
           href={`/alertas/gerir?token=${encodeURIComponent(alert.token)}`}
         >
-          Gerir preferências
+          Gerenciar preferências
         </Link>
         <Link className="font-bold text-primary" href="/vagas">
           Ver vagas

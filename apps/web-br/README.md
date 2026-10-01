@@ -5,7 +5,9 @@ Cópia estrutural de `apps/web` adaptada ao mercado brasileiro.
 - Domínio: https://vagasaude.com.br
 - Locale: `pt-BR`
 - Localização: estados (UF), não distritos PT
-- Sectores: Público · Privado · Filantrópico
+- Setores: Público · Privado · Filantrópico
+- Contratos: CLT · PJ · estágio · temporário · plantão
+- Moeda: R$ (BRL)
 - Scrapers: `scrapers-br/` (ainda vazios)
 - Dev: `pnpm dev` → http://127.0.0.1:3011
 

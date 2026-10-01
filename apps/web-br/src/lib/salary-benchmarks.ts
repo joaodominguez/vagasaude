@@ -1,7 +1,7 @@
 /**
- * Referências indicativas de vencimento médio bruto mensal no Brasil
- * para funções de saúde. Baseado em tabelas públicas (TRU / carreiras SNS)
- * e intervalos de mercado privado/Filantrópico (2025–2026).
+ * Referências indicativas de salário médio bruto mensal no Brasil
+ * para funções de saúde. Baseado em pisos salariais, tabelas públicas
+ * e intervalos de mercado privado/filantrópico (2025–2026).
  *
  * Não substitui a remuneração anunciada na vaga.
  */
@@ -9,7 +9,7 @@
 export type SalaryBenchmark = {
   /** Rótulo da função usada na estimativa (pode ser mais específico que a categoria). */
   label: string;
-  /** Média / ponto médio (€ bruto / mês). */
+  /** Média / ponto médio (R$ bruto / mês). */
   average: number;
   /** Intervalo inferior típico. */
   low: number;
@@ -36,206 +36,202 @@ function norm(text: string) {
     .trim();
 }
 
-/** Médias por categoria (fallback). */
+/** Médias por categoria (fallback) — R$ bruto / mês. */
 const BY_PROFESSION: Record<
   string,
   Omit<SalaryBenchmark, "label" | "source"> & { label?: string }
 > = {
-  Enfermagem: { average: 1750, low: 1550, high: 2200 },
-  Medicina: { average: 4200, low: 2800, high: 6500 },
-  Fisioterapia: { average: 1550, low: 1350, high: 1900 },
-  Auxiliares: { average: 1050, low: 920, high: 1250 },
-  "Técnico de Saúde": { average: 1550, low: 1400, high: 1900 },
-  Farmácia: { average: 1950, low: 1600, high: 2500 },
-  Psicologia: { average: 1600, low: 1400, high: 2100 },
-  Nutrição: { average: 1500, low: 1350, high: 1850 },
-  "Assistência Social": { average: 1450, low: 1300, high: 1750 },
-  Formação: { average: 1600, low: 1300, high: 2200 },
-  "Comercial / Farma": { average: 2200, low: 1600, high: 3500 },
-  "Gestão & suporte": { average: 1800, low: 1400, high: 2800 },
-  Administrativo: { average: 1150, low: 950, high: 1450 },
-  Outros: { average: 1400, low: 1000, high: 2000 },
+  Enfermagem: { average: 4500, low: 3500, high: 7000 },
+  Medicina: { average: 12000, low: 8000, high: 25000 },
+  Fisioterapia: { average: 4000, low: 3000, high: 6000 },
+  Auxiliares: { average: 2500, low: 1800, high: 3500 },
+  "Técnico de Saúde": { average: 3800, low: 2800, high: 5500 },
+  Farmácia: { average: 5500, low: 4000, high: 9000 },
+  Psicologia: { average: 4500, low: 3000, high: 8000 },
+  Nutrição: { average: 4000, low: 3000, high: 6000 },
+  "Assistência Social": { average: 3500, low: 2800, high: 5000 },
+  Formação: { average: 4000, low: 3000, high: 7000 },
+  "Comercial / Farma": { average: 6000, low: 4000, high: 12000 },
+  "Gestão & suporte": { average: 5500, low: 3500, high: 10000 },
+  Administrativo: { average: 2800, low: 2000, high: 4500 },
+  Outros: { average: 3500, low: 2500, high: 6000 },
 };
 
 /**
  * Regras por palavras no título — mais específicas primeiro.
- * Valores: bruto mensal típico no Brasil (saúde).
+ * Valores: bruto mensal típico no Brasil (saúde), em R$.
  */
 const TITLE_RULES: BenchmarkRule[] = [
-  // Enfermagem antes de regras médicas genéricas (ex.: "enfermeiro especialista").
   {
     needles: [
       "cuidados intensivos",
+      "uti",
       "urgencia",
+      "emergencia",
+      "centro cirurgico",
       "bloco operatorio",
-      "atendimento permanente",
     ],
-    label: "Enfermagem (UCI / urgência / bloco)",
-    average: 1900,
-    low: 1650,
-    high: 2400,
+    label: "Enfermagem (UTI / urgência / centro cirúrgico)",
+    average: 5200,
+    low: 4000,
+    high: 8000,
   },
   {
     needles: ["enfermeiro", "enfermeira", "enfermagem"],
     label: "Enfermagem",
-    average: 1750,
-    low: 1550,
-    high: 2200,
-  },
-  // Auxiliares / admin (antes de "medicina dentária" médica)
-  {
-    needles: ["assistente de medicina dent", "assistente dent"],
-    label: "Assistente de medicina dentária",
-    average: 1100,
-    low: 950,
-    high: 1400,
-  },
-  {
-    needles: ["auxiliar de acao medica", "auxiliar de accao medica", "acao medica"],
-    label: "Auxiliar de ação médica",
-    average: 1050,
-    low: 920,
-    high: 1250,
-  },
-  {
-    needles: ["assistente operacional"],
-    label: "Assistente operacional",
-    average: 980,
-    low: 920,
-    high: 1150,
-  },
-  {
-    needles: ["rececion", "recepcion"],
-    label: "Rececionista",
-    average: 1100,
-    low: 950,
-    high: 1350,
-  },
-  // Medicina
-  {
-    needles: ["dentista", "medicina dentar", "medico dentista"],
-    label: "Médico dentista",
-    average: 3500,
-    low: 2200,
-    high: 5500,
-  },
-  {
-    needles: ["medicina geral", "mgf", "clinica geral"],
-    label: "Medicina Geral e Familiar",
     average: 4500,
-    low: 3200,
-    high: 6500,
-  },
-  {
-    needles: ["internato", "interno de formacao", "medico interno"],
-    label: "Internato médico",
-    average: 2200,
-    low: 1800,
-    high: 2800,
-  },
-  {
-    needles: [
-      "assistente graduado",
-      "assistente hospitalar",
-      "medico especialista",
-      "medica especialista",
-    ],
-    label: "Médico especialista (hospitalar)",
-    average: 4800,
     low: 3500,
     high: 7000,
   },
   {
-    needles: ["cirurgi"],
-    label: "Médico cirurgião",
-    average: 5500,
-    low: 4000,
-    high: 8000,
-  },
-  // Técnicos / terapias
-  {
-    needles: ["fisioterapeut"],
-    label: "Fisioterapia",
-    average: 1550,
-    low: 1350,
-    high: 1900,
+    needles: ["tecnico de enfermagem", "técnica de enfermagem", "tec enfermagem"],
+    label: "Técnico de enfermagem",
+    average: 2800,
+    low: 2000,
+    high: 3800,
   },
   {
-    needles: ["cardiopneumolog", "neurofisiolog"],
-    label: "Técnico de cardiopneumologia / neurofisiologia",
-    average: 1600,
-    low: 1450,
-    high: 1950,
+    needles: ["auxiliar de enfermagem", "auxiliar enfermagem"],
+    label: "Auxiliar de enfermagem",
+    average: 2200,
+    low: 1600,
+    high: 3000,
   },
   {
-    needles: ["radiolog", "imagiolog"],
-    label: "Técnico de radiologia",
-    average: 1550,
-    low: 1400,
-    high: 1900,
+    needles: ["assistente de odontologia", "auxiliar de dentista", "assistente dent"],
+    label: "Auxiliar / assistente de odontologia",
+    average: 2400,
+    low: 1800,
+    high: 3500,
   },
   {
-    needles: ["terapeuta da fala", "terapeuta ocupacional"],
-    label: "Terapeuta",
-    average: 1500,
-    low: 1350,
-    high: 1850,
+    needles: ["recepcion"],
+    label: "Recepcionista",
+    average: 2200,
+    low: 1600,
+    high: 3000,
+  },
+  {
+    needles: ["dentista", "cirurgiao dentista", "cirurgião-dentista", "odonto"],
+    label: "Cirurgião-dentista",
+    average: 9000,
+    low: 5000,
+    high: 18000,
+  },
+  {
+    needles: ["clinica geral", "medico clinico", "clínico geral", "ubs"],
+    label: "Médico clínico geral",
+    average: 11000,
+    low: 7000,
+    high: 18000,
+  },
+  {
+    needles: ["residencia", "residente", "medico residente"],
+    label: "Residência médica",
+    average: 4500,
+    low: 3500,
+    high: 6000,
   },
   {
     needles: [
-      "diagnostico e terapeut",
-      "tecnico superior de saude",
-      "tecnico auxiliar de saude",
+      "medico especialista",
+      "medica especialista",
+      "especialista hospitalar",
     ],
-    label: "Técnico de diagnóstico e terapêutica",
-    average: 1550,
-    low: 1400,
-    high: 1900,
+    label: "Médico especialista (hospitalar)",
+    average: 15000,
+    low: 10000,
+    high: 28000,
+  },
+  {
+    needles: ["cirurgi"],
+    label: "Médico cirurgião",
+    average: 18000,
+    low: 12000,
+    high: 35000,
+  },
+  {
+    needles: ["fisioterapeut"],
+    label: "Fisioterapia",
+    average: 4000,
+    low: 3000,
+    high: 6000,
+  },
+  {
+    needles: ["radiolog", "imagem", "tomograf", "ressonancia"],
+    label: "Técnico em radiologia",
+    average: 3800,
+    low: 2800,
+    high: 5500,
+  },
+  {
+    needles: ["fonoaudiolog", "terapeuta ocupacional"],
+    label: "Terapeuta",
+    average: 3800,
+    low: 2800,
+    high: 5500,
+  },
+  {
+    needles: [
+      "tecnico em saude",
+      "tecnico de saude",
+      "tecnico laboratorial",
+      "analises clinicas",
+    ],
+    label: "Técnico de saúde",
+    average: 3800,
+    low: 2800,
+    high: 5500,
   },
   {
     needles: ["farmaceut", "farmacia"],
     label: "Farmácia",
-    average: 1950,
-    low: 1600,
-    high: 2500,
+    average: 5500,
+    low: 4000,
+    high: 9000,
   },
   {
     needles: ["psicolog"],
     label: "Psicologia",
-    average: 1600,
-    low: 1400,
-    high: 2100,
+    average: 4500,
+    low: 3000,
+    high: 8000,
   },
   {
     needles: ["nutric", "dietista"],
     label: "Nutrição",
-    average: 1500,
-    low: 1350,
-    high: 1850,
+    average: 4000,
+    low: 3000,
+    high: 6000,
   },
   {
-    needles: ["administrador hospitalar"],
+    needles: ["administrador hospitalar", "gestor hospitalar"],
     label: "Administrador hospitalar",
-    average: 2800,
-    low: 2200,
-    high: 3800,
+    average: 9000,
+    low: 6000,
+    high: 15000,
   },
 ];
 
 const SOURCE =
-  "Estimativa indicativa (tabelas públicas TRU/SNS e referências de mercado 2025–2026). Não é o salário desta vaga.";
+  "Estimativa indicativa (pisos salariais e referências de mercado Brasil 2025–2026). Não é o salário desta vaga.";
 
-export function formatEuro(value: number) {
-  return new Intl.NumberFormat("pt-PT", {
+export function formatBRL(value: number) {
+  return new Intl.NumberFormat("pt-BR", {
     style: "currency",
-    currency: "EUR",
+    currency: "BRL",
     maximumFractionDigits: 0,
   }).format(value);
 }
 
-export function formatEuroRange(low: number, high: number) {
-  return `${formatEuro(low)} – ${formatEuro(high)}`;
+export function formatBRLRange(low: number, high: number) {
+  return `${formatBRL(low)} – ${formatBRL(high)}`;
 }
+
+/** @deprecated use formatBRL */
+export const formatEuro = formatBRL;
+/** @deprecated use formatBRLRange */
+export const formatEuroRange = formatBRLRange;
 
 /** Ajuste leve por setor (público tende a tabelas; privado mais disperso). */
 function applySector(

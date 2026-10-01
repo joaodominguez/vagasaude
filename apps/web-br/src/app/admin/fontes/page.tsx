@@ -14,12 +14,12 @@ export default async function AdminSourcesPage() {
     <main className="p-5 sm:p-8 lg:p-10">
       <div className="mx-auto max-w-6xl">
         <header>
-          <p className="section-kicker">Recolha</p>
+          <p className="section-kicker">Coleta</p>
           <h1 className="mt-2 text-3xl font-extrabold tracking-[-0.045em]">
             Fontes
           </h1>
           <p className="mt-1 text-sm text-muted">
-            Origens privadas ligadas neste momento.
+            Origens privadas conectadas neste momento.
           </p>
         </header>
 

@@ -55,11 +55,11 @@ export default async function Home() {
                 Emprego em saúde, simplificado
               </span>
               <h1 className="hero-title">
-                A tua próxima oportunidade
+                Sua próxima oportunidade
                 <br className="hidden sm:block" /> na saúde começa aqui.
               </h1>
               <p className="hero-copy">
-                Todas as vagas de saúde no Brasil num só sítio.
+                Todas as vagas de saúde no Brasil em um só site.
               </p>
             </div>
 
@@ -136,8 +136,8 @@ export default async function Home() {
               <span className="section-kicker">Por localidade</span>
               <h2 className="section-title">Vagas no Brasil</h2>
               <p className="mt-3 text-sm leading-6 text-muted sm:text-base">
-                Descobre onde há mais oportunidades neste momento e salta
-                direto para o distrito que te interessa.
+                Descubra onde há mais oportunidades neste momento e vá
+                direto para o estado que interessa a você.
               </p>
             </div>
             <BrazilJobsMap counts={districtCounts} total={jobs.length} />
@@ -149,8 +149,8 @@ export default async function Home() {
             {[
               {
                 icon: BriefcaseMedical,
-                title: "Tudo num só sítio",
-                copy: "Reunimos oportunidades do setor público, privado e Filantrópico.",
+                title: "Tudo em um só site",
+                copy: "Reunimos oportunidades do setor público, privado e filantrópico.",
               },
               {
                 icon: CheckCircle2,
@@ -160,7 +160,7 @@ export default async function Home() {
               {
                 icon: ShieldCheck,
                 title: "Candidatura segura",
-                copy: "Encaminhamos-te sempre para o site oficial da entidade.",
+                copy: "Encaminhamos você sempre para o site oficial da entidade.",
               },
             ].map(({ icon: Icon, title, copy }) => (
               <article key={title} className="feature-card">

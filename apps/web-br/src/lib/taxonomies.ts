@@ -20,7 +20,7 @@ export const professions = [
   "Administrativo",
 ] as const;
 
-/** Público (SUS), privado e filantrópico — espelha o modelo PT (IPSS → Filantrópico). */
+/** Público (SUS), privado e filantrópico. */
 export const sectors = ["Público", "Privado", "Filantrópico"] as const;
 
 /** Estados brasileiros para filtros e landings. */

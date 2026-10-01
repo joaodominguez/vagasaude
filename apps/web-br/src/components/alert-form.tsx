@@ -19,7 +19,7 @@ export function AlertForm({
     "idle",
   );
   const [message, setMessage] = useState(
-    "Enviámos um email de confirmação. Confirma a inscrição para activar o alerta.",
+    "Enviamos um email de confirmação. Confirme a inscrição para ativar o alerta.",
   );
 
   async function submit(event: FormEvent<HTMLFormElement>) {
@@ -52,14 +52,14 @@ export function AlertForm({
       setMessage(data.message);
     } else if (data?.needsConfirmation && data.emailSent) {
       setMessage(
-        "Enviámos um email de confirmação. Confirma a inscrição para activar o alerta.",
+        "Enviamos um email de confirmação. Confirme a inscrição para ativar o alerta.",
       );
     } else if (data?.needsConfirmation) {
       setMessage(
-        "O teu email ficou registado. Se não receberes a confirmação, verifica mais tarde.",
+        "Seu email ficou registrado. Se não receber a confirmação, verifique mais tarde.",
       );
     } else {
-      setMessage("Preferências actualizadas. O teu alerta continua activo.");
+      setMessage("Preferências atualizadas. Seu alerta continua ativo.");
     }
 
     setStatus("success");
@@ -80,14 +80,14 @@ export function AlertForm({
   return (
     <form onSubmit={submit} className={compact ? "space-y-3" : "space-y-4"}>
       <label className="block">
-        <span className="mb-2 block text-sm font-semibold">O teu email</span>
+        <span className="mb-2 block text-sm font-semibold">Seu email</span>
         <span className="input-shell">
           <Mail aria-hidden="true" size={18} />
           <input
             required
             type="email"
             name="email"
-            placeholder="nome@exemplo.pt"
+            placeholder="nome@exemplo.com.br"
             autoComplete="email"
           />
         </span>
@@ -128,7 +128,7 @@ export function AlertForm({
           </label>
 
           <label className="block">
-            <span className="mb-2 block text-sm font-semibold">Sector</span>
+            <span className="mb-2 block text-sm font-semibold">Setor</span>
             <select
               name="sector"
               defaultValue={defaultSector}
@@ -163,12 +163,12 @@ export function AlertForm({
       </button>
       {status === "error" && (
         <p className="text-sm text-danger">
-          Não foi possível criar o alerta. Tenta novamente.
+          Não foi possível criar o alerta. Tente novamente.
         </p>
       )}
       {!compact && (
         <p className="text-xs leading-5 text-muted">
-          Sem spam. Confirmas por email e podes cancelar a qualquer momento.
+          Sem spam. Você confirma por email e pode cancelar a qualquer momento.
         </p>
       )}
     </form>

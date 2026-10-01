@@ -1,8 +1,8 @@
 import { CircleHelp, Wallet } from "lucide-react";
 import type { Job } from "@/lib/jobs";
 import {
-  formatEuro,
-  formatEuroRange,
+  formatBRL,
+  formatBRLRange,
   getSalaryBenchmark,
 } from "@/lib/salary-benchmarks";
 
@@ -21,10 +21,11 @@ export function SalaryInsight({ job, variant = "full" }: Props) {
       <span className="inline-flex items-center gap-1 text-xs text-muted">
         <Wallet size={12} className="shrink-0 opacity-70" aria-hidden="true" />
         <span>
-          Média PT · {formatEuro(benchmark.average)}
+          Média BR · {formatBRL(benchmark.average)}
           <span className="sr-only">
             {" "}
-            brutos/mês para {benchmark.label} ({formatEuroRange(benchmark.low, benchmark.high)})
+            brutos/mês para {benchmark.label} (
+            {formatBRLRange(benchmark.low, benchmark.high)})
           </span>
         </span>
       </span>
@@ -39,17 +40,17 @@ export function SalaryInsight({ job, variant = "full" }: Props) {
         </span>
         <div className="min-w-0 flex-1">
           <p className="text-xs font-bold uppercase tracking-wide text-muted">
-            Vencimento médio no Brasil
+            Salário médio no Brasil
           </p>
           <p className="mt-1 text-lg font-extrabold tracking-[-0.03em] text-foreground">
-            {formatEuro(benchmark.average)}
+            {formatBRL(benchmark.average)}
             <span className="ml-1 text-sm font-semibold text-muted">
               brutos/mês
             </span>
           </p>
           <p className="mt-0.5 text-xs text-muted">
             {benchmark.label} · tipicamente{" "}
-            {formatEuroRange(benchmark.low, benchmark.high)}
+            {formatBRLRange(benchmark.low, benchmark.high)}
           </p>
           {announced ? (
             <p className="mt-2 text-xs leading-5 text-foreground">

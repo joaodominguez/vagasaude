@@ -3,7 +3,7 @@ import { describeAlertFilters, listAlerts } from "@/lib/alerts";
 export const dynamic = "force-dynamic";
 
 const STATUS_LABEL: Record<string, string> = {
-  active: "Activo",
+  active: "Ativo",
   pending_confirm: "Por confirmar",
   unsubscribed: "Cancelado",
 };
@@ -20,13 +20,13 @@ export default async function AdminAlertsPage() {
     <main className="p-5 sm:p-8 lg:p-10">
       <div className="mx-auto max-w-6xl">
         <header>
-          <p className="section-kicker">Subscritores</p>
+          <p className="section-kicker">Assinantes</p>
           <h1 className="mt-2 text-3xl font-extrabold tracking-[-0.045em]">
             Alertas
           </h1>
           <p className="mt-1 text-sm text-muted">
             {alerts.length} email{alerts.length === 1 ? "" : "s"} · {active}{" "}
-            activo{active === 1 ? "" : "s"} · {pending} por confirmar
+            ativo{active === 1 ? "" : "s"} · {pending} por confirmar
           </p>
         </header>
 
@@ -38,15 +38,15 @@ export default async function AdminAlertsPage() {
           }`}
         >
           {resendConfigured
-            ? "Resend activo — confirmações e digests de novas vagas podem ser enviados."
-            : "Resend ainda não está configurado. Os emails ficam só guardados."}
+            ? "Resend ativo — confirmações e digests de novas vagas podem ser enviados."
+            : "Resend ainda não está configurado. Os emails ficam só salvos."}
         </div>
 
         <section className="content-card mt-6 overflow-hidden">
           <div className="divide-y divide-border">
             {alerts.length === 0 && (
               <p className="px-5 py-8 text-sm text-muted">
-                Ainda não há subscritores.
+                Ainda não há assinantes.
               </p>
             )}
             {alerts.map((alert) => (
@@ -73,7 +73,7 @@ export default async function AdminAlertsPage() {
                     {STATUS_LABEL[alert.status] || alert.status}
                   </p>
                   <p className="mt-1">
-                    {new Date(alert.createdAt).toLocaleString("pt-PT")}
+                    {new Date(alert.createdAt).toLocaleString("pt-BR")}
                   </p>
                 </div>
               </article>

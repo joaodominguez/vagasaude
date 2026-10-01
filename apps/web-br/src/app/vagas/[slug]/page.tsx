@@ -235,7 +235,7 @@ function ActiveJobView({ job, allJobs }: { job: Job; allJobs: Job[] }) {
                     rel="noopener noreferrer nofollow"
                     className="button button-primary flex-1 text-center"
                   >
-                    <span className="truncate">Candidatar</span>
+                    <span className="truncate">Candidate-se</span>
                     <ExternalLink size={16} className="shrink-0" />
                   </a>
                   <FavoriteButton slug={job.slug} size={18} className="detail-fav-button" />
@@ -247,7 +247,7 @@ function ActiveJobView({ job, allJobs }: { job: Job; allJobs: Job[] }) {
               </div>
 
               <div className="alert-card">
-                <h2 className="font-extrabold">Recebe vagas semelhantes</h2>
+                <h2 className="font-extrabold">Receba vagas semelhantes</h2>
                 <p className="mt-1.5 text-sm leading-6 text-muted">
                   Avisamos quando surgir uma oportunidade relevante.
                 </p>
@@ -290,7 +290,7 @@ function ActiveJobView({ job, allJobs }: { job: Job; allJobs: Job[] }) {
           rel="noopener noreferrer nofollow"
           className="button button-primary w-full"
         >
-          Candidatar <ExternalLink size={16} />
+          Candidate-se <ExternalLink size={16} />
         </a>
       </div>
       <Footer />
@@ -336,7 +336,7 @@ function ExpiredJobView({ job, allJobs }: { job: Job; allJobs: Job[] }) {
               {job.company} · {job.city}
             </p>
             <p className="mt-4 text-sm leading-6 text-muted">
-              Esta vaga já não está activa. Podes explorar oportunidades
+              Esta vaga já não está ativa. Você pode explorar oportunidades
               semelhantes abaixo ou criar um alerta para {job.profession}
               {job.district ? ` em ${job.district}` : ""}.
             </p>
@@ -362,7 +362,7 @@ function ExpiredJobView({ job, allJobs }: { job: Job; allJobs: Job[] }) {
                 </div>
               ) : (
                 <p className="mt-4 text-sm text-muted">
-                  Neste momento não há vagas semelhantes activas.{" "}
+                  Neste momento não há vagas semelhantes ativas.{" "}
                   <Link href="/vagas" className="font-bold text-primary">
                     Ver todas
                   </Link>
@@ -373,7 +373,7 @@ function ExpiredJobView({ job, allJobs }: { job: Job; allJobs: Job[] }) {
               <div className="alert-card">
                 <h2 className="font-extrabold">Criar alerta</h2>
                 <p className="mt-1.5 text-sm leading-6 text-muted">
-                  Avisamos-te quando surgirem novas oportunidades.
+                  Avisamos você quando surgirem novas oportunidades.
                 </p>
                 <div className="mt-4">
                   <AlertForm

@@ -62,7 +62,7 @@ export default async function AdminPage() {
             icon={Bell}
             label="Alertas ativos"
             value={alerts.length}
-            detail="Subscritores"
+            detail="Assinantes"
           />
           <MetricCard
             icon={Activity}
@@ -70,7 +70,7 @@ export default async function AdminPage() {
             value="Online"
             detail={
               stats.updatedAt && stats.updatedAt !== new Date(0).toISOString()
-                ? `Dados: ${new Date(stats.updatedAt).toLocaleString("pt-PT")}`
+                ? `Dados: ${new Date(stats.updatedAt).toLocaleString("pt-BR")}`
                 : "Todos os sistemas"
             }
             healthy

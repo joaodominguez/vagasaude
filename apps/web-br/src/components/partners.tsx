@@ -11,8 +11,8 @@ export function Partners() {
               De onde vêm as vagas
             </h2>
             <p className="mt-3 text-sm leading-6 text-muted sm:text-base">
-              Estamos a ligar as primeiras fontes de emprego em saúde no Brasil.
-              A candidatura fará-se sempre no site de origem.
+              Estamos ligando as primeiras fontes de emprego em saúde no Brasil.
+              A candidatura será feita sempre no site de origem.
             </p>
           </div>
         </div>
@@ -29,7 +29,7 @@ export function Partners() {
             De onde vêm as vagas
           </h2>
           <p className="mt-3 text-sm leading-6 text-muted sm:text-base">
-            Agregamos anúncios oficiais destas entidades. A candidatura faz-se
+            Agregamos anúncios oficiais destas entidades. A candidatura é feita
             sempre no site de origem.
           </p>
         </div>

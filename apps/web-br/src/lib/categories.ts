@@ -10,7 +10,7 @@ export const CATEGORY_MIN_JOBS = 3;
 
 const PROFESSION_LABELS = [...taxonomyProfessions, "Outros"] as const;
 
-/** Distritos/regiões válidos para landings (continente + ilhas). */
+/** Estados brasileiros válidos para landings. */
 export const CATEGORY_DISTRICTS = categoryDistricts;
 
 function normalizeKey(text: string) {
@@ -76,7 +76,7 @@ export function categoryPath(
   return "/vagas";
 }
 
-/** Título H1 / SEO da landing (profissão, distrito ou combo). */
+/** Título H1 / SEO da landing (profissão, estado ou combo). */
 export function categoryHeading(
   kind: CategoryKind,
   profession: string | null,
@@ -309,25 +309,25 @@ export function buildCategoryIntro(
 
   const focus =
     profession && district
-      ? `Esta página reúne oportunidades de ${profession.toLowerCase()} ${where}, actualizadas a partir de fontes públicas e privadas.`
+      ? `Esta página reúne oportunidades de ${profession.toLowerCase()} ${where}, atualizadas a partir de fontes públicas e privadas.`
       : profession
-        ? `Aqui encontras ${what} em vários estados, com filtros por localização e sector.`
-        : `Aqui encontras ${what} ${where}, agregadas de hospitais, laboratórios e outras entidades.`;
+        ? `Aqui você encontra ${what} em vários estados, com filtros por localização e setor.`
+        : `Aqui você encontra ${what} ${where}, agregadas de hospitais, laboratórios e outras entidades.`;
 
   const employerLine = companies
-    ? `Entre as entidades que estão a contratar neste momento destacam-se ${companies}.`
+    ? `Entre as entidades que estão contratando neste momento destacam-se ${companies}.`
     : `As ofertas vêm de entidades de saúde em todo o país.`;
 
   const mixLine = sectors
-    ? `Neste momento há ${stats.count} ${stats.count === 1 ? "oferta" : "ofertas"} activas: ${sectors}.`
-    : `Neste momento há ${stats.count} ${stats.count === 1 ? "oferta activa" : "ofertas activas"}.`;
+    ? `Neste momento há ${stats.count} ${stats.count === 1 ? "oferta" : "ofertas"} ativas: ${sectors}.`
+    : `Neste momento há ${stats.count} ${stats.count === 1 ? "oferta ativa" : "ofertas ativas"}.`;
 
   const contractLine = contracts
     ? `Os tipos de contrato mais comuns são ${contracts}.`
     : "";
 
   const cta =
-    "Podes candidatar-te directamente no site da entidade ou criar um alerta para receber novas oportunidades por email.";
+    "Você pode se candidatar diretamente no site da entidade ou criar um alerta para receber novas oportunidades por email.";
 
   const text = [focus, mixLine, employerLine, contractLine, cta]
     .filter(Boolean)
@@ -341,7 +341,7 @@ export function buildCategoryMetadata(
   ref: CategoryRef,
   count: number,
 ): Metadata {
-  const offerWord = count === 1 ? "oferta activa" : "ofertas activas";
+  const offerWord = count === 1 ? "oferta ativa" : "ofertas ativas";
   const title =
     ref.kind === "combo"
       ? `${ref.profession} em ${ref.district}: ${count} ${offerWord}`
@@ -376,12 +376,12 @@ export function buildCategoryMetadata(
 function professionDistrictDescription(ref: CategoryRef, count: number) {
   const n = count === 1 ? "1 vaga" : `${count} vagas`;
   if (ref.kind === "combo") {
-    return `${n} de ${ref.profession} em ${ref.district}. Ofertas actualizadas de hospitais, clínicas e Filantrópico — candidata-te no site da entidade.`;
+    return `${n} de ${ref.profession} em ${ref.district}. Ofertas atualizadas de hospitais, clínicas e filantrópico — candidate-se no site da entidade.`;
   }
   if (ref.kind === "profession") {
-    return `${n} de ${ref.profession} no Brasil. Público, privado e Filantrópico agregados no VagaSaúde — filtra por estado e candidata-te.`;
+    return `${n} de ${ref.profession} no Brasil. Público, privado e filantrópico agregados no VagaSaúde — filtre por estado e candidate-se.`;
   }
-  return `${n} de saúde em ${ref.district}. Enfermagem, medicina, técnicos e outras profissões — pesquisa e cria alertas no VagaSaúde.`;
+  return `${n} de saúde em ${ref.district}. Enfermagem, medicina, técnicos e outras profissões — pesquise e crie alertas no VagaSaúde.`;
 }
 
 export function buildItemListJsonLd(ref: CategoryRef, jobs: Job[]) {

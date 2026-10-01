@@ -16,7 +16,7 @@ export function FavoriteButton({ slug, size = 18, className = "" }: Props) {
   return (
     <button
       type="button"
-      aria-label={active ? "Remover dos favoritos" : "Guardar nos favoritos"}
+      aria-label={active ? "Remover dos favoritos" : "Salvar nos favoritos"}
       aria-pressed={active}
       className={`favorite-button ${active ? "is-active" : ""} ${className}`}
       onClick={(e) => {

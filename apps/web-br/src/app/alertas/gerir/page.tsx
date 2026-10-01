@@ -6,7 +6,7 @@ import { getAlertByToken } from "@/lib/alerts";
 import { ManageAlertClient } from "./manage-alert-client";
 
 export const metadata: Metadata = {
-  title: "Gerir alerta",
+  title: "Gerenciar alerta",
   robots: { index: false, follow: false },
 };
 
@@ -23,7 +23,7 @@ export default async function ManageAlertPage({ searchParams }: Props) {
       <main className="page-container min-h-[70vh] py-14">
         <section className="mx-auto max-w-xl content-card p-6 sm:p-8">
           <h1 className="text-2xl font-extrabold tracking-[-0.04em]">
-            Gerir alerta
+            Gerenciar alerta
           </h1>
           <ManageBody token={token} />
         </section>
@@ -37,9 +37,9 @@ async function ManageBody({ token }: { token?: string }) {
   if (!token) {
     return (
       <p className="mt-3 text-sm leading-6 text-muted">
-        Falta o token. Usa o link do email ou{" "}
+        Falta o token. Use o link do email ou{" "}
         <Link className="font-bold text-primary" href="/alertas">
-          cria um novo alerta
+          crie um novo alerta
         </Link>
         .
       </p>
@@ -50,7 +50,7 @@ async function ManageBody({ token }: { token?: string }) {
   if (!alert) {
     return (
       <p className="mt-3 text-sm leading-6 text-muted">
-        Não encontrámos esta inscrição.{" "}
+        Não encontramos esta inscrição.{" "}
         <Link className="font-bold text-primary" href="/alertas">
           Criar alerta
         </Link>

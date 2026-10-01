@@ -14,7 +14,7 @@ export default async function AdminSystemPage() {
     [
       "Última ingestão",
       stats.updatedAt
-        ? new Date(stats.updatedAt).toLocaleString("pt-PT")
+        ? new Date(stats.updatedAt).toLocaleString("pt-BR")
         : "—",
     ],
     ["Total vagas", String(stats.total)],

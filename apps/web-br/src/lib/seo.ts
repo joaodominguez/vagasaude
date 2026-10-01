@@ -7,7 +7,7 @@ export const SITE_URL =
 export const SITE_NAME = "VagaSaúde";
 
 export const DEFAULT_DESCRIPTION =
-  "Vagas de saúde no Brasil: enfermagem, medicina, fisioterapia e mais. Público, privado e filantrópico num só site — pesquise e candidate-se.";
+  "Vagas de saúde no Brasil: enfermagem, medicina, fisioterapia e mais. Público, privado e filantrópico em um só site — pesquise e candidate-se.";
 
 export const HOME_TITLE = `${SITE_NAME} — Vagas de saúde no Brasil`;
 
@@ -16,7 +16,7 @@ export const HOME_DESCRIPTION = DEFAULT_DESCRIPTION;
 export function buildHomeMetadata(jobCount?: number): Metadata {
   const countLine =
     typeof jobCount === "number" && jobCount > 0
-      ? ` Mais de ${jobCount} ofertas activas.`
+      ? ` Mais de ${jobCount} ofertas ativas.`
       : "";
   const description = truncateMeta(`${HOME_DESCRIPTION}${countLine}`, 160);
   const title = HOME_TITLE;
@@ -42,9 +42,12 @@ export function buildHomeMetadata(jobCount?: number): Metadata {
 }
 
 const EMPLOYMENT_TYPE_MAP: Record<string, string> = {
+  clt: "FULL_TIME",
   "tempo inteiro": "FULL_TIME",
   "full time": "FULL_TIME",
   "full-time": "FULL_TIME",
+  "meio periodo": "PART_TIME",
+  "meio período": "PART_TIME",
   "tempo parcial": "PART_TIME",
   "part time": "PART_TIME",
   "part-time": "PART_TIME",
@@ -52,9 +55,12 @@ const EMPLOYMENT_TYPE_MAP: Record<string, string> = {
   estagio: "INTERN",
   temporário: "TEMPORARY",
   temporario: "TEMPORARY",
+  pj: "CONTRACTOR",
   "prestação de serviços": "CONTRACTOR",
   "prestacao de servicos": "CONTRACTOR",
   contrato: "CONTRACTOR",
+  plantão: "OTHER",
+  plantao: "OTHER",
   turnos: "OTHER",
 };
 
@@ -128,7 +134,7 @@ export function buildJobMetadata(
     : `${job.title} — ${job.company}`;
   const description = expired
     ? truncateMeta(
-        `Esta vaga de ${job.profession} em ${job.city} já não está activa. Explora ofertas semelhantes de saúde no VagaSaúde.`,
+        `Esta vaga de ${job.profession} em ${job.city} já não está ativa. Explore ofertas semelhantes de saúde no VagaSaúde.`,
         160,
       )
     : jobMetaDescription(job);
@@ -204,7 +210,7 @@ export function buildWebsiteJsonLd() {
     name: SITE_NAME,
     url: SITE_URL,
     description: DEFAULT_DESCRIPTION,
-    inLanguage: "pt-PT",
+    inLanguage: "pt-BR",
     potentialAction: {
       "@type": "SearchAction",
       target: {

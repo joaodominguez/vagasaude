@@ -63,7 +63,7 @@ export function CategoryPageView({
             </h1>
             <p className="mt-2 text-sm font-semibold text-primary">
               {stats.count}{" "}
-              {stats.count === 1 ? "oferta activa" : "ofertas activas"}
+              {stats.count === 1 ? "oferta ativa" : "ofertas ativas"}
             </p>
             <p className="mt-4 max-w-3xl text-sm leading-7 text-muted sm:text-base">
               {intro}
@@ -121,7 +121,7 @@ export function CategoryPageView({
                 <Bell size={18} /> Alerta desta categoria
               </h2>
               <p className="mt-1.5 text-sm leading-6 text-muted">
-                Recebe novas{" "}
+                Receba novas{" "}
                 {category.profession
                   ? `vagas de ${category.profession.toLowerCase()}`
                   : "vagas de saúde"}

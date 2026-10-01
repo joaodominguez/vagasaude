@@ -28,12 +28,12 @@ const PAGE_SIZE = 20;
 export const metadata: Metadata = {
   title: "Vagas de saúde no Brasil — pesquisa e filtros",
   description:
-    "Pesquisa vagas de enfermagem, medicina, fisioterapia e outras profissões de saúde no Brasil. Filtra por estado, sector e contrato.",
+    "Pesquise vagas de enfermagem, medicina, fisioterapia e outras profissões de saúde no Brasil. Filtre por estado, setor e contrato.",
   alternates: { canonical: "/vagas" },
   openGraph: {
     title: "Vagas de saúde no Brasil — pesquisa e filtros",
     description:
-      "Pesquisa vagas de enfermagem, medicina, fisioterapia e outras profissões de saúde no Brasil. Filtra por estado, sector e contrato.",
+      "Pesquise vagas de enfermagem, medicina, fisioterapia e outras profissões de saúde no Brasil. Filtre por estado, setor e contrato.",
     url: "/vagas",
     type: "website",
   },
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Vagas de saúde no Brasil — pesquisa e filtros",
     description:
-      "Pesquisa vagas de enfermagem, medicina, fisioterapia e outras profissões de saúde no Brasil. Filtra por estado, sector e contrato.",
+      "Pesquise vagas de enfermagem, medicina, fisioterapia e outras profissões de saúde no Brasil. Filtre por estado, setor e contrato.",
   },
 };
 
@@ -151,7 +151,7 @@ export default async function JobsPage({
           <div className="page-container">
             <p className="section-kicker">Oportunidades no Brasil</p>
             <h1 className="mt-2 text-3xl font-extrabold tracking-[-0.045em] sm:text-4xl">
-              Encontra a vaga certa para ti
+              Encontre a vaga certa para você
             </h1>
             <div className="mt-6">
               <SearchForm
@@ -270,11 +270,11 @@ export default async function JobsPage({
             {hasFilters ? (
               <div className="content-card mb-5 p-5">
                 <p className="text-sm font-extrabold">
-                  Queres ser avisado
+                  Quer ser avisado
                   {alertSummary ? ` — ${alertSummary}` : ""}?
                 </p>
                 <p className="mt-1 text-sm text-muted">
-                  Cria um alerta com estes filtros e recebe email quando surgir
+                  Crie um alerta com estes filtros e receba email quando surgir
                   uma vaga nova.
                 </p>
                 <div className="mt-4">
@@ -332,10 +332,10 @@ export default async function JobsPage({
             ) : (
               <div className="content-card px-6 py-14 text-center">
                 <h2 className="text-xl font-extrabold">
-                  Ainda não encontrámos essa vaga
+                  Ainda não encontramos essa vaga
                 </h2>
                 <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-muted">
-                  Experimenta remover alguns filtros ou cria um alerta para
+                  Experimente remover alguns filtros ou crie um alerta para
                   receber novas oportunidades.
                 </p>
                 <div className="mt-6 flex flex-wrap justify-center gap-3">

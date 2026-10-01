@@ -5,7 +5,7 @@ import { Header } from "@/components/header";
 export const metadata: Metadata = {
   title: "Privacidade",
   description:
-    "Política de privacidade do VagaSaúde: que dados recolhemos e como os usamos.",
+    "Política de privacidade do VagaSaúde: quais dados coletamos e como os usamos.",
   alternates: { canonical: "/privacidade" },
   robots: { index: true, follow: true },
 };
@@ -19,20 +19,24 @@ export default function PrivacyPage() {
           <p className="section-kicker">Transparência</p>
           <h1>Privacidade</h1>
           <p>
-            O VagaSaúde recolhe apenas os dados necessários para prestar os
-            serviços pedidos, como o endereço de email usado na criação de
+            O VagaSaúde coleta apenas os dados necessários para prestar os
+            serviços solicitados, como o endereço de email usado na criação de
             alertas.
           </p>
           <h2>Alertas de vagas</h2>
           <p>
             O email é utilizado exclusivamente para enviar oportunidades e
-            comunicações relacionadas com o alerta. Não vendemos dados pessoais
-            nem os partilhamos para publicidade de terceiros.
+            comunicações relacionadas ao alerta. Não vendemos dados pessoais
+            nem os compartilhamos para publicidade de terceiros.
           </p>
-          <h2>Cancelamento e eliminação</h2>
+          <h2>Cancelamento e exclusão</h2>
           <p>
-            Podes pedir o cancelamento do alerta ou a eliminação dos teus dados
-            através de <a href="mailto:privacidade@vagasaude.com.br">privacidade@vagasaude.com.br</a>.
+            Você pode pedir o cancelamento do alerta ou a exclusão dos seus dados
+            através de{" "}
+            <a href="mailto:privacidade@vagasaude.com.br">
+              privacidade@vagasaude.com.br
+            </a>
+            .
           </p>
           <h2>Candidaturas</h2>
           <p>

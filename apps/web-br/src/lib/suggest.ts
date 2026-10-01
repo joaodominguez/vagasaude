@@ -5,30 +5,30 @@ export type SuggestItem = {
   label: string;
   value: string;
   kind: "profession" | "district" | "role" | "company";
-  /** Se existir, navegar directamente (ex.: landing de categoria). */
+  /** Se existir, navegar diretamente (ex.: landing de categoria). */
   href?: string;
   hint?: string;
 };
 
 const ROLE_SEEDS = [
   "Enfermeiro",
-  "Enfermeiro UCI",
-  "Enfermeiro Bloco Operatório",
+  "Enfermeiro UTI",
+  "Enfermeiro Centro Cirúrgico",
   "Médico",
-  "Medicina Geral e Familiar",
-  "Médico Dentista",
+  "Clínico geral",
+  "Cirurgião-dentista",
   "Fisioterapeuta",
-  "Auxiliar de Ação Médica",
-  "Técnico de Radiologia",
-  "Técnico Auxiliar de Saúde",
+  "Técnico de enfermagem",
+  "Técnico em radiologia",
+  "Auxiliar de enfermagem",
   "Farmacêutico",
-  "Rececionista",
-  "Terapeuta da Fala",
+  "Recepcionista",
+  "Fonoaudiólogo",
   "Psicólogo",
-  "Formador",
-  "Delegado de Informação Médica",
+  "Nutricionista",
+  "Representante farmacêutico",
   "Key Account Manager",
-  "Coordenador de Enfermagem",
+  "Coordenador de enfermagem",
 ];
 
 function normalize(text: string) {
@@ -54,7 +54,7 @@ function scoreMatch(label: string, query: string) {
   return 0;
 }
 
-/** Sugestões a partir do inventário actual + taxonomias. */
+/** Sugestões a partir do inventário atual + taxonomias. */
 export function buildSuggestions(
   jobs: Job[],
   query: string,

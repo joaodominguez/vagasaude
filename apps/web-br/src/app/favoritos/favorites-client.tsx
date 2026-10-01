@@ -47,7 +47,7 @@ export function FavoritesClient() {
   if (loading) {
     return (
       <p className="py-12 text-center text-sm text-muted">
-        A carregar favoritos...
+        Carregando favoritos...
       </p>
     );
   }
@@ -58,7 +58,7 @@ export function FavoritesClient() {
         <Heart size={36} className="mx-auto text-muted" strokeWidth={1.4} />
         <h2 className="mt-4 text-xl font-extrabold">Ainda sem favoritos</h2>
         <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-muted">
-          Carrega no coração em qualquer vaga para a guardar aqui.
+          Toque no coração em qualquer vaga para salvá-la aqui.
         </p>
         <Link className="button button-primary mt-6 inline-flex" href="/vagas">
           Ver vagas
@@ -71,7 +71,7 @@ export function FavoritesClient() {
     <>
       <div className="mb-5 flex items-center justify-between gap-3">
         <p className="text-sm text-muted">
-          {jobs.length} vaga{jobs.length !== 1 ? "s" : ""} guardada
+          {jobs.length} vaga{jobs.length !== 1 ? "s" : ""} salva
           {jobs.length !== 1 ? "s" : ""}
         </p>
         <button
@@ -93,8 +93,8 @@ export function FavoritesClient() {
         {slugs.length > jobs.length && (
           <p className="mt-4 text-sm text-muted">
             {slugs.length - jobs.length === 1
-              ? "1 vaga guardada já não está disponível."
-              : `${slugs.length - jobs.length} vagas guardadas já não estão disponíveis.`}
+              ? "1 vaga salva já não está disponível."
+              : `${slugs.length - jobs.length} vagas salvas já não estão disponíveis.`}
           </p>
         )}
       </div>

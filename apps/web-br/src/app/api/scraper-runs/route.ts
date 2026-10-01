@@ -41,7 +41,7 @@ export async function POST(request: Request) {
   const source = typeof body?.source === "string" ? body.source.trim() : "";
   const status = body?.status === "error" ? "error" : "ok";
   if (!source) {
-    return NextResponse.json({ error: "source em falta." }, { status: 400 });
+    return NextResponse.json({ error: "source ausente." }, { status: 400 });
   }
 
   const run = await recordScraperRun({

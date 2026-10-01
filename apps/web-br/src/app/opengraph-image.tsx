@@ -65,7 +65,7 @@ export default function OpenGraphImage() {
             Emprego na saúde no Brasil
           </div>
           <div style={{ fontSize: 28, color: "#99f6e4", maxWidth: 820 }}>
-            Todas as vagas num só sítio — público, privado e Filantrópico.
+            Todas as vagas em um só site — público, privado e filantrópico.
           </div>
         </div>
 

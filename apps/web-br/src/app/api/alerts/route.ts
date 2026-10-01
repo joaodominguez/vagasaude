@@ -54,7 +54,7 @@ export async function POST(request: Request) {
   if (isEmailConfigured() && needsConfirmation) {
     const result = await sendEmail({
       to: email,
-      subject: "Confirma o teu alerta VagaSaúde",
+      subject: "Confirme seu alerta VagaSaúde",
       html: alertConfirmEmailHtml(alert),
     });
     emailSent = result.ok;
@@ -63,9 +63,9 @@ export async function POST(request: Request) {
 
   const message = needsConfirmation
     ? emailSent
-      ? "Enviámos um email de confirmação. Confirma a inscrição para activar o alerta."
-      : "O teu email ficou registado. Se não receberes a confirmação, verifica mais tarde."
-    : "Preferências actualizadas. O teu alerta continua activo.";
+      ? "Enviamos um email de confirmação. Confirme a inscrição para ativar o alerta."
+      : "Seu email ficou registrado. Se não receber a confirmação, verifique mais tarde."
+    : "Preferências atualizadas. Seu alerta continua ativo.";
 
   return NextResponse.json(
     {

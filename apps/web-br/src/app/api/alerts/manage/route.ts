@@ -32,7 +32,7 @@ export async function PATCH(request: Request) {
   const action = typeof body?.action === "string" ? body.action.trim() : "";
 
   if (!token) {
-    return NextResponse.json({ error: "Token em falta." }, { status: 400 });
+    return NextResponse.json({ error: "Token ausente." }, { status: 400 });
   }
 
   if (action === "unsubscribe") {
@@ -51,7 +51,7 @@ export async function PATCH(request: Request) {
     if (isEmailConfigured() && alert.status === "active") {
       await sendEmail({
         to: alert.email,
-        subject: "O teu alerta VagaSaúde está confirmado",
+        subject: "Seu alerta VagaSaúde está confirmado",
         html: alertConfirmedEmailHtml(alert),
       }).catch(() => null);
     }

@@ -23,18 +23,18 @@ export default async function AdminScrapersPage() {
           Fontes e corridas
         </h1>
         <p className="mt-2 max-w-2xl text-sm text-muted">
-          Estrutura pronta. Liga scrapers em{" "}
-          <code className="text-xs">scrapers-br/sources</code> e regista-os
-          aqui. Estatísticas actuais: {stats.published} publicadas ·{" "}
+          Estrutura pronta. Conecte scrapers em{" "}
+          <code className="text-xs">scrapers-br/sources</code> e registre-os
+          aqui. Estatísticas atuais: {stats.published} publicadas ·{" "}
           {stats.total} total.
         </p>
       </div>
 
       {SCRAPERS.length === 0 ? (
         <div className="rounded-xl border border-dashed border-border bg-surface p-6 text-sm text-muted">
-          Ainda não há scrapers BR configurados. Copia o padrão de{" "}
+          Ainda não há scrapers BR configurados. Copie o padrão de{" "}
           <code className="text-xs">scrapers/</code> (PT) para{" "}
-          <code className="text-xs">scrapers-br/</code> e adapta as fontes ao
+          <code className="text-xs">scrapers-br/</code> e adapte as fontes ao
           mercado brasileiro.
         </div>
       ) : (
@@ -70,7 +70,7 @@ export default async function AdminScrapersPage() {
       <div>
         <h2 className="text-lg font-bold">Corridas recentes</h2>
         {runs.length === 0 ? (
-          <p className="mt-2 text-sm text-muted">Sem corridas registadas.</p>
+          <p className="mt-2 text-sm text-muted">Sem corridas registradas.</p>
         ) : (
           <ul className="mt-3 space-y-2 text-sm">
             {runs.map((run) => (

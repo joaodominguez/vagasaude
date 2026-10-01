@@ -40,10 +40,10 @@ export function ManageAlertClient({ token, email, status, filters }: Props) {
       });
       const payload = (await response.json()) as { error?: string };
       if (!response.ok) {
-        setError(payload.error || "Não foi possível guardar.");
+        setError(payload.error || "Não foi possível salvar.");
         return;
       }
-      setMessage("Preferências actualizadas.");
+      setMessage("Preferências atualizadas.");
     } catch {
       setError("Erro de rede.");
     } finally {
@@ -67,7 +67,7 @@ export function ManageAlertClient({ token, email, status, filters }: Props) {
         return;
       }
       setGone(true);
-      setMessage("Alerta cancelado. Já não vais receber emails.");
+      setMessage("Alerta cancelado. Você não vai mais receber emails.");
     } catch {
       setError("Erro de rede.");
     } finally {
@@ -89,7 +89,7 @@ export function ManageAlertClient({ token, email, status, filters }: Props) {
         Email: <strong className="text-foreground">{email}</strong>
         {status === "pending_confirm" ? (
           <span className="mt-1 block text-xs text-danger">
-            Ainda falta confirmar o email — verifica a caixa de entrada.
+            Ainda falta confirmar o email — verifique a caixa de entrada.
           </span>
         ) : null}
       </p>
@@ -127,7 +127,7 @@ export function ManageAlertClient({ token, email, status, filters }: Props) {
       </label>
 
       <label className="block">
-        <span className="mb-2 block text-sm font-semibold">Sector</span>
+        <span className="mb-2 block text-sm font-semibold">Setor</span>
         <select
           value={sector}
           onChange={(event) => setSector(event.target.value)}
@@ -148,7 +148,7 @@ export function ManageAlertClient({ token, email, status, filters }: Props) {
           className="button button-primary"
           disabled={loading}
         >
-          {loading ? "A guardar…" : "Guardar"}
+          {loading ? "Salvando…" : "Salvar"}
         </button>
         <button
           type="button"

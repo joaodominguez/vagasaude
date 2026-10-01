@@ -54,7 +54,7 @@ ${entries.join("\n")}
 
 async function buildJobsSitemap() {
   const now = new Date();
-  // getJobs() devolve só vagas publicadas (activas) — expiradas ficam fora do sitemap.
+  // getJobs() devolve só vagas publicadas (ativas) — expiradas ficam fora do sitemap.
   const jobs = await getJobs();
   const entries = jobs.map((job) => {
     const published = Date.parse(job.publishedAt);

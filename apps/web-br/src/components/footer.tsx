@@ -8,7 +8,7 @@ export function Footer() {
         <div>
           <Logo />
           <p className="mt-3 max-w-md text-sm leading-6 text-muted">
-            Todas as vagas de saúde no Brasil num só sítio. Simples,
+            Todas as vagas de saúde no Brasil em um só site. Simples,
             atualizado e fácil de usar.
           </p>
         </div>

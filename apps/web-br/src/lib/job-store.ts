@@ -371,7 +371,7 @@ function publishedLabel(value: string | null) {
   if (diffDays <= 0) return "Hoje";
   if (diffDays === 1) return "Ontem";
   if (diffDays < 7) return `Há ${diffDays} dias`;
-  return date.toLocaleDateString("pt-PT");
+  return date.toLocaleDateString("pt-BR");
 }
 
 function isListItem(line: string) {
@@ -448,7 +448,7 @@ export function toJobCard(job: StoredJob): JobCardData {
         ? requirements
         : descriptionLines.slice(0, 4).length > 0
           ? descriptionLines.slice(0, 4)
-          : ["Consulta os detalhes e candidata-te no site da entidade."],
+          : ["Consulte os detalhes e candidate-se no site da entidade."],
     responsibilities:
       responsibilitySource.slice(0, 5).length > 0
         ? responsibilitySource.slice(0, 5)
@@ -773,7 +773,7 @@ export async function reclassifyOutrosProfessions() {
       changed += 1;
       continue;
     }
-    // Sempre a partir do título — sem fallback para a categoria actual.
+    // Sempre a partir do título — sem fallback para a categoria atual.
     const next = guessProfession(job.title, "Outros");
     if (!next || next === job.profession) continue;
     job.profession = next;

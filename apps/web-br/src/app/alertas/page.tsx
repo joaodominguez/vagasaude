@@ -7,12 +7,12 @@ import { Header } from "@/components/header";
 export const metadata: Metadata = {
   title: "Criar alerta de vagas",
   description:
-    "Recebe por email as novas oportunidades de emprego em saúde que correspondem aos teus interesses.",
+    "Receba por email as novas oportunidades de emprego em saúde que correspondem aos seus interesses.",
   alternates: { canonical: "/alertas" },
   openGraph: {
     title: "Criar alerta de vagas | VagaSaúde",
     description:
-      "Recebe por email as novas oportunidades de emprego em saúde que correspondem aos teus interesses.",
+      "Receba por email as novas oportunidades de emprego em saúde que correspondem aos seus interesses.",
     url: "/alertas",
     type: "website",
   },
@@ -29,18 +29,18 @@ export default function AlertsPage() {
             Alertas gratuitos
           </span>
           <h1 className="mt-5 max-w-2xl text-4xl font-extrabold leading-tight tracking-[-0.055em] sm:text-5xl">
-            Não deixes passar a próxima oportunidade.
+            Não deixe passar a próxima oportunidade.
           </h1>
           <p className="mt-5 max-w-xl text-base leading-7 text-muted sm:text-lg">
-            Diz-nos onde te podemos contactar e recebe as novas vagas de saúde
+            Informe onde podemos contatá-lo e receba as novas vagas de saúde
             assim que forem publicadas.
           </p>
 
           <div className="mt-9 grid gap-4 sm:grid-cols-3">
             {[
-              [MailCheck, "Direto no email", "Sem teres de visitar vários sites."],
+              [MailCheck, "Direto no email", "Sem precisar visitar vários sites."],
               [CheckCircle2, "Vagas relevantes", "Só oportunidades na área da saúde."],
-              [ShieldCheck, "Controlo total", "Cancela quando quiseres."],
+              [ShieldCheck, "Controle total", "Cancele quando quiser."],
             ].map(([Icon, title, copy]) => {
               const ItemIcon = Icon as typeof MailCheck;
               return (
@@ -64,8 +64,8 @@ export default function AlertsPage() {
             Criar o meu alerta
           </h2>
           <p className="mt-2 mb-6 text-sm leading-6 text-muted">
-            Escolhe estado, profissão ou sector (opcional) e confirma o email
-            para activar. Podes alterar ou cancelar a qualquer momento.
+            Escolha estado, profissão ou setor (opcional) e confirme o email
+            para ativar. Você pode alterar ou cancelar a qualquer momento.
           </p>
           <AlertForm />
         </aside>
