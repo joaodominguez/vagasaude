@@ -10,6 +10,21 @@ Documento de pesquisa para `scrapers-br/` (espelho de `scrapers/` PT).
 
 ---
 
+## Modo actual: estabilizar / SEO hold (Out 2026)
+
+**Parar expansão de scrapers.** Mercado BR fica em hold para Google organic — sem novos módulos, sem blast de emails, sem redesign.
+
+| Item | Estado |
+|---|---|
+| **Ebserh / HU Brasil** (HUs federais) | **Adiado** — sem board estável; editais via **PCI** quando publicados. Sem scraper dedicado. |
+| **Santa Casa SP** | **Adiado / Skip** — só e-mail + LinkedIn; sem bolsa scrapeável. |
+| Scrapers activos | Manter cron `45 */6` em `:3011` / `vagasaudebr` (isolado do PT). |
+| Produto | Estabilizar SEO (robots, sitemap, GA `G-0Q3135XVVY`, títulos/canonicals). |
+
+Quando retomar volume: rever só estes gaps; não reabrir agregadores genéricos (Catho/Indeed/LinkedIn).
+
+---
+
 ## 1. Padrão PT → BR
 
 | Categoria PT | Analogia BR |
@@ -313,13 +328,13 @@ Objetivo: fechar o gap vs PT (BEP / ULS / IPO / IPSS). Probes HTTP + páginas p�
 | **AgSUS Trabalhe Conosco** | https://agenciasus.org.br/trabalheconosco/ · WP `/wp-json/wp/v2/posts?categories=50\|105` | `publico` | WordPress REST | **~5** abertos (cat 105) + ~163 histórico Trabalhe Conosco | Fácil | **P0** | **`agsus` OK** |
 | **MS Concursos e seleções** | https://www.gov.br/saude/pt-br/acesso-a-informacao/concursos-e-selecoes | `publico` | Plone | event-driven / baixo contínuo | Média (WAF ocasional) | P1 | Skip MVP (PCI cobre eco) |
 | **INCA concurso / ensino** | https://www.gov.br/inca/pt-br/acesso-a-informacao/institucional/concurso-publico | `publico` | Plone cards + notícias | **baixo** (CPNU / residência / fellow event-driven) | Média | **P1** | **`inca` OK** (volume baixo) |
-| **HU Brasil / Ebserh** | https://www.gov.br/hubrasil/pt-br (ex-ebserh) | `publico` | Editais em bancas (FGV/AOCP); pastas gov.br 404 | event-driven | Má (sem board estável) | P1 | Via **PCI** quando publicado; skip scraper dedicado |
+| **HU Brasil / Ebserh** | https://www.gov.br/hubrasil/pt-br (ex-ebserh) | `publico` | Editais em bancas (FGV/AOCP); pastas gov.br 404 | event-driven | Má (sem board estável) | — | **Adiado** (stabilize/SEO hold); via **PCI** se publicado |
 | **HCs / secretarias UF** | sites próprios fragmentados | `publico` | HTML/e-mail | baixo por órgão | Má | P2 | Skip até agregador |
 | **IRSSL (OSS Sírio)** | https://irssl.gupy.io/ | `publico` | Gupy | ~180 | Fácil | P0 | já activo |
 | **Santa Casa BH** | https://santacasabh.gupy.io/ | `ipss` | Gupy | ~257 | Fácil | P0 | já activo |
 | **Santa Casa POA** | https://santacasa.gupy.io/ | `ipss` | Gupy | **~51** | Fácil | **P1** | **`santa_casa_poa` OK** |
 | **Santa Casa BA** | https://santacasaba.gupy.io/ | `ipss` | Gupy | **~66** | Fácil | **P1** | **`santa_casa_ba` OK** |
-| **Santa Casa SP** | santacasasp.org.br | `ipss` | e-mail / LinkedIn | — | — | Skip | sem board |
+| **Santa Casa SP** | santacasasp.org.br | `ipss` | e-mail / LinkedIn | — | — | — | **Adiado / Skip** (stabilize/SEO hold); sem board |
 | **AACD** | https://aacd.gupy.io/ | `ipss` | Gupy | **~51** | Fácil | **P1** | **`aacd` OK** |
 | **HCor** | Pandapé | `ipss` | Pandapé | ~15–20 | Média | P2 | já activo |
 | **Emprega Brasil / SINE** | servicos.mte.gov.br | — | Login GOV.BR | — | — | Skip | |
@@ -338,7 +353,7 @@ Objetivo: fechar o gap vs PT (BEP / ULS / IPO / IPSS). Probes HTTP + páginas p�
 
 1. Concursos/PSS são **editais**, não CLT diário — `contract_type` = Concurso / PSS / Residência.
 2. Einstein / Vagas.com: **CF 1005 no VPS Hetzner** — scrape off-VPS + ingest `:3011`.
-3. Ebserh/HU Brasil não tem pasta pública estável de “vagas abertas”; o sinal chega via PCI + bancas.
+3. **Ebserh/HU Brasil adiado** (stabilize/SEO hold): sem pasta pública estável de “vagas abertas”; o sinal continua a chegar via PCI + bancas quando houver edital.
 4. INCA: scraper colhe cards/notícias com hint de edital; esperar **0–poucas** vagas na maioria dos ciclos.
 
 ### Estado scrapers novos (esta ronda)
