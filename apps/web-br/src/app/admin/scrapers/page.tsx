@@ -72,6 +72,7 @@ export default async function AdminScrapersPage() {
               {scrapers.map((scraper) => {
                 const last = latest.get(scraper.slug);
                 const failed = last?.status === "error";
+                const skipped = last?.status === "skipped";
                 const publishedCount = stats.bySource[scraper.slug] || 0;
                 return (
                   <article
@@ -89,6 +90,9 @@ export default async function AdminScrapersPage() {
                       {failed && last?.error ? (
                         <p className="mt-1 text-xs text-danger">{last.error}</p>
                       ) : null}
+                      {skipped && last?.error ? (
+                        <p className="mt-1 text-xs text-muted">{last.error}</p>
+                      ) : null}
                     </div>
                     <span
                       className={`tag w-fit ${
@@ -96,10 +100,18 @@ export default async function AdminScrapersPage() {
                           ? "tag-primary"
                           : failed
                             ? "tag-danger"
-                            : "tag-primary"
+                            : skipped
+                              ? "tag-muted"
+                              : "tag-primary"
                       }`}
                     >
-                      {!last ? "Pendente" : failed ? "Erro" : "Ativo"}
+                      {!last
+                        ? "Pendente"
+                        : failed
+                          ? "Erro"
+                          : skipped
+                            ? "Skip"
+                            : "Ativo"}
                     </span>
                   </article>
                 );
@@ -140,7 +152,15 @@ export default async function AdminScrapersPage() {
                         {run.elapsed != null ? ` · ${run.elapsed}s` : ""}
                       </p>
                       {run.error ? (
-                        <p className="mt-1 text-xs text-danger">{run.error}</p>
+                        <p
+                          className={`mt-1 text-xs ${
+                            run.status === "skipped"
+                              ? "text-muted"
+                              : "text-danger"
+                          }`}
+                        >
+                          {run.error}
+                        </p>
                       ) : null}
                     </div>
                     <div className="text-right text-xs text-muted">
@@ -148,10 +168,16 @@ export default async function AdminScrapersPage() {
                         className={
                           run.status === "ok"
                             ? "font-semibold text-success"
-                            : "font-semibold text-danger"
+                            : run.status === "skipped"
+                              ? "font-semibold text-muted"
+                              : "font-semibold text-danger"
                         }
                       >
-                        {run.status === "ok" ? "OK" : "Erro"}
+                        {run.status === "ok"
+                          ? "OK"
+                          : run.status === "skipped"
+                            ? "Skip"
+                            : "Erro"}
                       </p>
                       <p className="mt-1">
                         {formatWhen(run.finishedAt) || "—"}

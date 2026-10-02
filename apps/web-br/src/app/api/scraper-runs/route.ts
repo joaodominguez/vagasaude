@@ -39,7 +39,12 @@ export async function POST(request: Request) {
   } | null;
 
   const source = typeof body?.source === "string" ? body.source.trim() : "";
-  const status = body?.status === "error" ? "error" : "ok";
+  const status =
+    body?.status === "error"
+      ? "error"
+      : body?.status === "skipped"
+        ? "skipped"
+        : "ok";
   if (!source) {
     return NextResponse.json({ error: "source ausente." }, { status: 400 });
   }

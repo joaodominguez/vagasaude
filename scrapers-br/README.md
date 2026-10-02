@@ -21,12 +21,31 @@ Fontes do mercado brasileiro. **Ingest só em** `http://127.0.0.1:3011` / `vagas
 | `redeamericas` | Rede Américas (Samaritano, Nove de Julho…) | Gupy | privado | Agregador Ímpar |
 | `moinhos` | Hospital Moinhos de Vento | Gupy | privado | Filtro hospitalar alargado |
 | `bp` | Beneficência Portuguesa SP | Gupy | privado | Filtro hospitalar alargado |
-| `einstein` | Albert Einstein | Vagas.com | privado | CF 1005 no VPS Hetzner |
+| `einstein` | Albert Einstein | Vagas.com | privado | **CF 1005 no VPS** — skip em `--source all`; correr off-VPS |
 | `haoc` | Hospital Alemão Oswaldo Cruz (+ ISHAOC) | Gupy multi-board | privado/publico | 5 subdomains |
 | `hcor` | HCor — Hospital do Coração | Pandapé | ipss → Filantrópico | |
 | `mater_dei` | Rede Mater Dei | JobConvo | privado | Volume volátil |
 
 Cliente partilhado Gupy: `sources/gupy.py`.
+
+## Einstein / vagas.com.br (off-VPS)
+
+O ASN Hetzner (`AS24940`) recebe Cloudflare **error 1005 / 403** em
+`trabalheconosco.vagas.com.br`. Headers de browser **não** contornam.
+
+- No cron VPS, `run.py --source all` **salta** `einstein` (`SKIP_SOURCES=einstein`)
+  sem registar Erro (preserva a última OK off-VPS). Opcional: `REPORT_SKIPS=1`
+  para status admin `skipped` (app BR com suporte).
+- Para actualizar vagas: num host não bloqueado:
+
+```bash
+cd scrapers-br
+export SCRAPER_API_TOKEN=…          # .env.production BR
+export INGEST_BASE_URL=https://vagasaude.com.br
+./run-einstein-off-vps.sh           # ou: python run.py --source einstein
+```
+
+Pedido explícito `--source einstein` **não** é saltado (caminho off-VPS).
 
 ## Uso
 
@@ -49,7 +68,8 @@ python run.py --source all
 45 */6 * * * /var/www/vagasaudebr/scrapers/run-scrapers.sh >> /var/www/vagasaudebr/data/scrapers.log 2>&1
 ```
 
-O wrapper corre os scrapers e, se `RESEND_API_KEY` + `SCRAPER_API_TOKEN` existirem em
+O wrapper define `SKIP_SOURCES=einstein` e corre os scrapers. Se
+`RESEND_API_KEY` + `SCRAPER_API_TOKEN` existirem em
 `/var/www/vagasaudebr/.env.production`, faz `POST http://127.0.0.1:3011/api/alerts/digest`
 (espelho do digest PT — nunca aponta para :3010).
 

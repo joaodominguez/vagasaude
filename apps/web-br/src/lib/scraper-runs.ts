@@ -1,10 +1,12 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
+export type ScraperRunStatus = "ok" | "error" | "skipped";
+
 export type ScraperRun = {
   id: string;
   source: string;
-  status: "ok" | "error";
+  status: ScraperRunStatus;
   found: number;
   created: number | null;
   updated: number | null;
@@ -64,7 +66,7 @@ export async function latestRunBySource() {
 
 export async function recordScraperRun(input: {
   source: string;
-  status: "ok" | "error";
+  status: ScraperRunStatus;
   found?: number;
   created?: number | null;
   updated?: number | null;

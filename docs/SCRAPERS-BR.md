@@ -18,7 +18,7 @@ Documento de pesquisa para `scrapers-br/` (espelho de `scrapers/` PT).
 |---|---|
 | **Ebserh / HU Brasil** (HUs federais) | **Adiado** — sem board estável; editais via **PCI** quando publicados. Sem scraper dedicado. |
 | **Santa Casa SP** | **Adiado / Skip** — só e-mail + LinkedIn; sem bolsa scrapeável. |
-| Scrapers activos | Manter cron `45 */6` em `:3011` / `vagasaudebr` (isolado do PT). |
+| Scrapers activos | Manter cron `45 */6` em `:3011` / `vagasaudebr` (isolado do PT). **`einstein` skip no VPS** (`SKIP_SOURCES`) — scrape off-VPS + ingest. |
 | Produto | Estabilizar SEO (robots, sitemap, GA `G-0Q3135XVVY`, títulos/canonicals). |
 
 Quando retomar volume: rever só estes gaps; não reabrir agregadores genéricos (Catho/Indeed/LinkedIn).
@@ -352,7 +352,7 @@ Objetivo: fechar o gap vs PT (BEP / ULS / IPO / IPSS). Probes HTTP + páginas p�
 ### Notas operacionais
 
 1. Concursos/PSS são **editais**, não CLT diário — `contract_type` = Concurso / PSS / Residência.
-2. Einstein / Vagas.com: **CF 1005 no VPS Hetzner** — scrape off-VPS + ingest `:3011`.
+2. Einstein / Vagas.com: **CF 1005 no VPS Hetzner** — `run.py --source all` salta `einstein` (status admin `skipped`); scrape com `scrapers-br/run-einstein-off-vps.sh` + ingest `https://vagasaude.com.br`.
 3. **Ebserh/HU Brasil adiado** (stabilize/SEO hold): sem pasta pública estável de “vagas abertas”; o sinal continua a chegar via PCI + bancas quando houver edital.
 4. INCA: scraper colhe cards/notícias com hint de edital; esperar **0–poucas** vagas na maioria dos ciclos.
 

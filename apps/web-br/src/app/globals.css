@@ -410,6 +410,12 @@ select {
   background: color-mix(in srgb, var(--danger) 12%, var(--surface));
 }
 
+.tag-muted {
+  border-color: var(--border);
+  color: var(--muted);
+  background: color-mix(in srgb, var(--muted) 8%, var(--surface));
+}
+
 .section-title {
   margin-top: 0.45rem;
   font-size: clamp(1.65rem, 3vw, 2.25rem);
