@@ -163,12 +163,101 @@ export function buildJobMetadata(
   };
 }
 
+/**
+ * Parse remuneração anunciada (ex.: "R$ 5.200 / mês", "R$ 3.000 – R$ 4.500").
+ * Não inventa valores — devolve null se não houver montante parseável.
+ */
+export function parseAnnouncedSalary(salary: string | null | undefined): {
+  currency: "BRL";
+  unitText: "HOUR" | "DAY" | "WEEK" | "MONTH" | "YEAR";
+  value?: number;
+  minValue?: number;
+  maxValue?: number;
+} | null {
+  if (!salary?.trim()) return null;
+  const text = salary.trim();
+  const amounts = [...text.matchAll(/R\$\s*([\d.]+(?:,\d+)?)/gi)]
+    .map((match) => {
+      const raw = match[1].replace(/\./g, "").replace(",", ".");
+      const n = Number(raw);
+      return Number.isFinite(n) && n > 0 ? n : null;
+    })
+    .filter((n): n is number => n != null);
+  if (amounts.length === 0) return null;
+
+  const lower = text
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+  let unitText: "HOUR" | "DAY" | "WEEK" | "MONTH" | "YEAR" = "MONTH";
+  if (/\b(hora|horas|\/\s*h\b|por hora)\b/.test(lower)) unitText = "HOUR";
+  else if (/\b(dia|diaria|\/\s*dia|por dia)\b/.test(lower)) unitText = "DAY";
+  else if (/\b(semana|semanal|\/\s*semana)\b/.test(lower)) unitText = "WEEK";
+  else if (/\b(ano|anual|\/\s*ano)\b/.test(lower)) unitText = "YEAR";
+
+  if (amounts.length >= 2) {
+    return {
+      currency: "BRL",
+      unitText,
+      minValue: Math.min(...amounts),
+      maxValue: Math.max(...amounts),
+    };
+  }
+  return { currency: "BRL", unitText, value: amounts[0] };
+}
+
+function buildJobPostalAddress(job: Job) {
+  // Só cidade/UF/país — sem postalCode/streetAddress inventados.
+  // GSC pode continuar a avisar estes campos recomendados sem dados reais.
+  const address: Record<string, string> = {
+    "@type": "PostalAddress",
+    addressCountry: "BR",
+  };
+  const locality = (job.city || job.district || "").trim();
+  const region = (job.district || "").trim();
+  if (locality) address.addressLocality = locality;
+  if (region) address.addressRegion = region;
+
+  const extra = job as Job & {
+    postalCode?: string | null;
+    streetAddress?: string | null;
+  };
+  const postalCode = extra.postalCode?.trim();
+  const streetAddress = extra.streetAddress?.trim();
+  if (postalCode) address.postalCode = postalCode;
+  if (streetAddress) address.streetAddress = streetAddress;
+  return address;
+}
+
+function buildBaseSalaryJsonLd(job: Job) {
+  const parsed = parseAnnouncedSalary(job.salary);
+  if (!parsed) return undefined;
+  const value: Record<string, string | number> = {
+    "@type": "QuantitativeValue",
+    unitText: parsed.unitText,
+  };
+  if (parsed.minValue != null && parsed.maxValue != null) {
+    value.minValue = parsed.minValue;
+    value.maxValue = parsed.maxValue;
+  } else if (parsed.value != null) {
+    value.value = parsed.value;
+  } else {
+    return undefined;
+  }
+  return {
+    "@type": "MonetaryAmount",
+    currency: parsed.currency,
+    value,
+  };
+}
+
 export function buildJobPostingJsonLd(job: Job) {
   const datePosted = safeDatePosted(job.publishedAt);
   const validThrough = jobValidThrough(job, datePosted);
   const description = [job.description, ...job.requirements, ...job.responsibilities]
     .filter(Boolean)
     .join("\n\n");
+  const baseSalary = buildBaseSalaryJsonLd(job);
 
   return {
     "@context": "https://schema.org",
@@ -186,13 +275,9 @@ export function buildJobPostingJsonLd(job: Job) {
     },
     jobLocation: {
       "@type": "Place",
-      address: {
-        "@type": "PostalAddress",
-        addressLocality: job.city || job.district,
-        addressRegion: job.district,
-        addressCountry: "PT",
-      },
+      address: buildJobPostalAddress(job),
     },
+    ...(baseSalary ? { baseSalary } : {}),
     identifier: {
       "@type": "PropertyValue",
       name: SITE_NAME,
