@@ -1,8 +1,11 @@
 # VagaSaúde
 
-Agregador de ofertas de emprego na área da saúde em Portugal (público + privado + IPSS).
+Agregador de ofertas de emprego na área da saúde.
 
-> "Todas as vagas de saúde em Portugal num só sítio. Simples, atualizado e fácil de usar."
+- **Portugal** — [`apps/web`](./apps/web) · https://vagasaude.pt · scrapers em [`scrapers/`](./scrapers)
+- **Brasil** — [`apps/web-br`](./apps/web-br) · https://vagasaude.com.br · scrapers em [`scrapers-br/`](./scrapers-br) (a preencher)
+
+> "Todas as vagas de saúde num só sítio. Simples, atualizado e fácil de usar."
 
 ## Documentação / Plano
 
