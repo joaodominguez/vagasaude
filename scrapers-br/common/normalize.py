@@ -280,6 +280,157 @@ def looks_like_health_job(title: str, department: str | None = None) -> bool:
     return any(k in blob for k in HEALTH_KEYWORDS)
 
 
+# Concursos PCI / editais: órgãos claramente fora da saúde (tribunais, Forças
+# Armadas, Correios…) só passam se houver cargo clínico explícito.
+_CONCURSO_CLINICAL_ROLES = (
+    "enfermeir",
+    "enfermagem",
+    "medico",
+    "medica ",
+    "odontolog",
+    "dentista",
+    "fisioterap",
+    "nutricion",
+    "psicolog",
+    "farmaceut",
+    "farmacia",
+    "fonoaudi",
+    "biomedic",
+    "radiolog",
+    "terapeuta ocupacional",
+    "terapia ocupacional",
+    "assistente social",
+    "auxiliar de enfermagem",
+    "tecnico de enfermagem",
+    "tecnica de enfermagem",
+    "agente comunitario",
+    "agente de saude",
+    "samu",
+    "ubs",
+    "hospital",
+    "vigilancia sanitaria",
+    "sanitarista",
+    "saude da familia",
+    "secretaria de saude",
+    "secretaria municipal de saude",
+    "secretaria estadual de saude",
+    "ministerio da saude",
+    "area da saude",
+    "area de saude",
+    "profissional de saude",
+    "tecnico de saude",
+    "tecnica de saude",
+    "tecnico em saude",
+    "tecnica em saude",
+    "residencia medica",
+    "multiprofissional",
+    "oficial medico",
+    "oficial odont",
+    "servico de saude",
+    "hemocentro",
+    "hemoterapia",
+    "banco de sangue",
+    "pronto socorro",
+    "pronto atendimento",
+)
+
+_CONCURSO_HEALTH_EMPLOYERS = (
+    "secretaria de saude",
+    "ministerio da saude",
+    "fiocruz",
+    "imip",
+    "hospital",
+    "santa casa",
+    "hemocentro",
+    "samu",
+    "fundacao de saude",
+    "fundacao saude",
+    "instituto de medicina",
+    "escola de saude",
+    "servico de saude",
+    "sesa",
+)
+
+# Tokens curtos com boundary (evita "tre " ⊂ "entre").
+_CONCURSO_NON_HEALTH_TOKENS = (
+    "trt",
+    "tre",
+    "trf",
+    "stj",
+    "stf",
+    "stm",
+    "tse",
+    "mpu",
+    "tcu",
+    "tce",
+)
+
+_CONCURSO_NON_HEALTH_PHRASES = (
+    "tribunal",
+    "judiciario",
+    "analista judiciario",
+    "tecnico judiciario",
+    "oficial de justica",
+    "cartorio",
+    "ministerio publico",
+    "defensoria",
+    "policia federal",
+    "policia civil",
+    "policia militar",
+    "policia rodoviaria",
+    "guarda municipal",
+    "corpo de bombeiros",
+    "bombeiro militar",
+    "bombeiros militar",
+    "exercito",
+    "marinha do brasil",
+    "aeronautica",
+    "comando da aeronautica",
+    "correios",
+    "banco do brasil",
+    "receita federal",
+    "detran",
+    "ibge",
+    "transpetro",
+    "relacoes exteriores",
+    "educacao fisica",
+    "concurso publico nacional unificado",
+    "concurso nacional unificado",
+    "agente penitenciario",
+    "escrivao",
+    "delegado",
+)
+
+_CONCURSO_TOKEN_RE = re.compile(
+    r"(?:^|\s)(?:" + "|".join(_CONCURSO_NON_HEALTH_TOKENS) + r")(?:\s|$|-)"
+)
+
+
+def looks_like_health_concurso(
+    title: str,
+    company: str | None = None,
+    summary: str | None = None,
+) -> bool:
+    """Relevância para editais/concursos (PCI).
+
+    A listagem PCI /vagas/saude/ mistura editais gerais; rejeita tribunais,
+    Forças Armadas, Correios, etc. salvo cargo/órgão claramente de saúde.
+    """
+    blob = norm(f"{title} {company or ''} {summary or ''}")
+    if not blob:
+        return False
+    if any(h in blob for h in _CONCURSO_HEALTH_EMPLOYERS):
+        return True
+    if any(c in blob for c in _CONCURSO_CLINICAL_ROLES):
+        return True
+    if _CONCURSO_TOKEN_RE.search(f" {blob} "):
+        return False
+    if any(p in blob for p in _CONCURSO_NON_HEALTH_PHRASES):
+        return False
+    # Board PCI saúde: editais municipais genéricos ("vários cargos") ficam.
+    return True
+
+
 def looks_like_hospital_employer_job(
     title: str, department: str | None = None
 ) -> bool:

@@ -13,6 +13,7 @@ from common.normalize import (
     guess_contract,
     guess_profession,
     html_to_text,
+    looks_like_health_concurso,
     state_from_uf,
 )
 
@@ -50,6 +51,7 @@ class PciConcursosScraper(BaseScraper):
                         print(f"[{self.slug}] detalhe {url}: {exc}")
 
             jobs: list[JobPayload] = []
+            skipped = 0
             for item in listings:
                 detail = details.get(item["url"]) or {}
                 title = (detail.get("title") or item["title"] or item["org"]).strip()
@@ -57,6 +59,12 @@ class PciConcursosScraper(BaseScraper):
                     continue
                 company = (item["org"] or "Órgão público").strip()
                 description = detail.get("description") or item["summary"] or title
+                summary = item.get("summary") or ""
+                if not looks_like_health_concurso(
+                    title, company, f"{summary} {description[:1200]}"
+                ):
+                    skipped += 1
+                    continue
                 requirements = detail.get("requirements")
                 salary = detail.get("salary") or self._salary_from_summary(item["summary"])
                 contract = guess_contract(f"{title} {description}") or "Concurso"
@@ -81,6 +89,11 @@ class PciConcursosScraper(BaseScraper):
                         published_at=detail.get("published_at"),
                         expires_at=self._deadline_iso(item.get("deadline")),
                     )
+                )
+            if skipped:
+                print(
+                    f"[{self.slug}] filtrados {skipped} editais fora da saúde "
+                    "(tribunais/Forças Armadas/etc.)"
                 )
             return jobs
         finally:

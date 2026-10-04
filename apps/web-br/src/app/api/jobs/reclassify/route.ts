@@ -2,6 +2,7 @@ import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import {
   collapseDuplicateHashes,
+  expireNonHealthConcursos,
   reclassifyOutrosProfessions,
   shortenPublishedJobTitles,
 } from "@/lib/job-store";
@@ -19,12 +20,14 @@ export async function POST(request: Request) {
   if (!expected || auth !== `Bearer ${expected}`) return unauthorized();
 
   const shortened = await shortenPublishedJobTitles();
+  const expiredOffTopic = await expireNonHealthConcursos();
   const reclassified = await reclassifyOutrosProfessions();
   const deduped = await collapseDuplicateHashes();
   revalidateTag(JOBS_CACHE_TAG, "max");
   return NextResponse.json({
     ok: true,
     shortenedTitles: shortened.changed,
+    expiredNonHealthConcursos: expiredOffTopic.changed,
     reclassified: reclassified.changed,
     collapsedDuplicates: deduped.collapsed,
     total: reclassified.total,

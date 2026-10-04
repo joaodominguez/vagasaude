@@ -683,6 +683,128 @@ function isClosedNoticeTitle(title: string) {
   );
 }
 
+/** Espelha scrapers-br/common/normalize.looks_like_health_concurso. */
+export function looksLikeHealthConcurso(
+  title: string,
+  company?: string | null,
+  summary?: string | null,
+) {
+  const blob = normalize(`${title} ${company || ""} ${summary || ""}`);
+  if (!blob) return false;
+
+  const healthEmployers = [
+    "secretaria de saude",
+    "ministerio da saude",
+    "fiocruz",
+    "imip",
+    "hospital",
+    "santa casa",
+    "hemocentro",
+    "samu",
+    "fundacao de saude",
+    "fundacao saude",
+    "instituto de medicina",
+    "escola de saude",
+    "servico de saude",
+    "sesa",
+  ];
+  if (healthEmployers.some((h) => blob.includes(h))) return true;
+
+  const clinical = [
+    "enfermeir",
+    "enfermagem",
+    "medico",
+    "medica ",
+    "odontolog",
+    "dentista",
+    "fisioterap",
+    "nutricion",
+    "psicolog",
+    "farmaceut",
+    "farmacia",
+    "fonoaudi",
+    "biomedic",
+    "radiolog",
+    "terapeuta ocupacional",
+    "terapia ocupacional",
+    "assistente social",
+    "auxiliar de enfermagem",
+    "tecnico de enfermagem",
+    "tecnica de enfermagem",
+    "agente comunitario",
+    "agente de saude",
+    "samu",
+    "ubs",
+    "hospital",
+    "vigilancia sanitaria",
+    "sanitarista",
+    "saude da familia",
+    "secretaria de saude",
+    "secretaria municipal de saude",
+    "secretaria estadual de saude",
+    "ministerio da saude",
+    "area da saude",
+    "area de saude",
+    "profissional de saude",
+    "tecnico de saude",
+    "tecnica de saude",
+    "tecnico em saude",
+    "tecnica em saude",
+    "residencia medica",
+    "multiprofissional",
+    "oficial medico",
+    "oficial odont",
+    "servico de saude",
+    "hemocentro",
+    "hemoterapia",
+    "banco de sangue",
+    "pronto socorro",
+    "pronto atendimento",
+  ];
+  if (clinical.some((c) => blob.includes(c))) return true;
+
+  const tokens = /\b(?:trt|tre|trf|stj|stf|stm|tse|mpu|tcu|tce)\b/;
+  if (tokens.test(blob)) return false;
+
+  const phrases = [
+    "tribunal",
+    "judiciario",
+    "analista judiciario",
+    "tecnico judiciario",
+    "oficial de justica",
+    "cartorio",
+    "ministerio publico",
+    "defensoria",
+    "policia federal",
+    "policia civil",
+    "policia militar",
+    "policia rodoviaria",
+    "guarda municipal",
+    "corpo de bombeiros",
+    "bombeiro militar",
+    "bombeiros militar",
+    "exercito",
+    "marinha do brasil",
+    "aeronautica",
+    "comando da aeronautica",
+    "correios",
+    "banco do brasil",
+    "receita federal",
+    "detran",
+    "ibge",
+    "transpetro",
+    "relacoes exteriores",
+    "educacao fisica",
+    "concurso publico nacional unificado",
+    "concurso nacional unificado",
+    "agente penitenciario",
+    "escrivao",
+    "delegado",
+  ];
+  if (phrases.some((p) => blob.includes(p))) return false;
+  return true;
+}
+
 export async function getJobCard(slug: string) {
   const found = await getStoredJobBySlugIncludingExpired(slug);
   if (!found) return null;
@@ -868,6 +990,27 @@ export async function reclassifyOutrosProfessions() {
     const next = guessProfession(job.title, "Outros");
     if (!next || next === job.profession) continue;
     job.profession = next;
+    job.updatedAt = now;
+    changed += 1;
+  }
+  if (changed > 0) {
+    file.updatedAt = now;
+    await writeJobsFile(file);
+  }
+  return { changed, total: file.jobs.length };
+}
+
+/** Soft-expire editais PCI fora da saúde (tribunais, Forças Armadas, etc.). */
+export async function expireNonHealthConcursos() {
+  const file = await readJobsFile();
+  let changed = 0;
+  const now = new Date().toISOString();
+  for (const job of file.jobs) {
+    if (job.source !== "pci_concursos") continue;
+    if (job.status !== "published" && job.status !== "pending_review") continue;
+    const summary = `${job.description || ""}`.slice(0, 1200);
+    if (looksLikeHealthConcurso(job.title, job.company, summary)) continue;
+    job.status = "expired";
     job.updatedAt = now;
     changed += 1;
   }
