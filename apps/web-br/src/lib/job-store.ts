@@ -751,6 +751,7 @@ export function looksLikeHealthConcurso(
     "tecnico em saude",
     "tecnica em saude",
     "residencia medica",
+    "residencia multiprofissional",
     "multiprofissional",
     "oficial medico",
     "oficial odont",
@@ -760,6 +761,10 @@ export function looksLikeHealthConcurso(
     "banco de sangue",
     "pronto socorro",
     "pronto atendimento",
+    "areas de saude",
+    "areas da saude",
+    "na area da saude",
+    "na area de saude",
   ];
   if (clinical.some((c) => blob.includes(c))) return true;
 
@@ -802,7 +807,8 @@ export function looksLikeHealthConcurso(
     "delegado",
   ];
   if (phrases.some((p) => blob.includes(p))) return false;
-  return true;
+  // Sem cargo/órgão clínico explícito: rejeita (ex.: "vários cargos" genérico).
+  return false;
 }
 
 export async function getJobCard(slug: string) {

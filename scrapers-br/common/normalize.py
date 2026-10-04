@@ -323,6 +323,7 @@ _CONCURSO_CLINICAL_ROLES = (
     "tecnico em saude",
     "tecnica em saude",
     "residencia medica",
+    "residencia multiprofissional",
     "multiprofissional",
     "oficial medico",
     "oficial odont",
@@ -332,6 +333,10 @@ _CONCURSO_CLINICAL_ROLES = (
     "banco de sangue",
     "pronto socorro",
     "pronto atendimento",
+    "areas de saude",
+    "areas da saude",
+    "na area da saude",
+    "na area de saude",
 )
 
 _CONCURSO_HEALTH_EMPLOYERS = (
@@ -406,6 +411,43 @@ _CONCURSO_TOKEN_RE = re.compile(
 )
 
 
+# Cargos clínicos para títulos ("Médico — CBMERJ (RJ)"). Ordem = prioridade.
+_CONCURSO_ROLE_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
+    (re.compile(r"\b(?:tecnic[oa]s?\s+de\s+enfermagem|tecnica?\s+de\s+enfermagem)\b", re.I), "Técnico de Enfermagem"),
+    (re.compile(r"\b(?:auxiliares?\s+de\s+enfermagem)\b", re.I), "Auxiliar de Enfermagem"),
+    (re.compile(r"\b(?:agentes?\s+comunit[aá]rios?\s+de\s+sa[uú]de|agente\s+comunitario\s+de\s+saude)\b", re.I), "Agente Comunitário de Saúde"),
+    (re.compile(r"\b(?:agentes?\s+de\s+combate\s+[aà]s?\s+endemias?)\b", re.I), "Agente de Combate às Endemias"),
+    (re.compile(r"\b(?:enfermeir[oa]s?|enfermagem)\b", re.I), "Enfermeiro"),
+    (re.compile(r"\b(?:m[eé]dic[oa]s?|medicina(?!\s+veterinar))\b", re.I), "Médico"),
+    (re.compile(r"\b(?:dentistas?|odont[oó]log[oa]s?|odontologia)\b", re.I), "Dentista"),
+    (re.compile(r"\b(?:fisioterapeutas?|fisioterapia)\b", re.I), "Fisioterapeuta"),
+    (re.compile(r"\b(?:psic[oó]log[oa]s?|psicologia)\b", re.I), "Psicólogo"),
+    (re.compile(r"\b(?:nutricionistas?|nutri[cç][aã]o)\b", re.I), "Nutricionista"),
+    (re.compile(r"\b(?:farmac[eê]utic[oa]s?|farm[aá]cia)\b", re.I), "Farmacêutico"),
+    (re.compile(r"\b(?:fonoaudi[oó]log[oa]s?|fonoaudiologia)\b", re.I), "Fonoaudiólogo"),
+    (re.compile(r"\b(?:biom[eé]dic[oa]s?|biomedicina)\b", re.I), "Biomédico"),
+    (re.compile(r"\b(?:terapeutas?\s+ocupacionais?|terapia\s+ocupacional)\b", re.I), "Terapeuta Ocupacional"),
+    (re.compile(r"\b(?:assistentes?\s+sociais?|servi[cç]o\s+social)\b", re.I), "Assistente Social"),
+    (re.compile(r"\b(?:radiologistas?|t[eé]cnic[oa]s?\s+em\s+radiologia)\b", re.I), "Radiologia"),
+    (re.compile(r"\b(?:veterin[aá]ri[oa]s?)\b", re.I), "Veterinário"),
+)
+
+
+def extract_concurso_health_roles(text: str | None, *, limit: int = 6) -> list[str]:
+    """Extrai cargos de saúde mencionados no edital (ordem de prioridade)."""
+    if not text:
+        return []
+    found: list[str] = []
+    seen: set[str] = set()
+    for pattern, label in _CONCURSO_ROLE_PATTERNS:
+        if pattern.search(text) and label not in seen:
+            found.append(label)
+            seen.add(label)
+            if len(found) >= limit:
+                break
+    return found
+
+
 def looks_like_health_concurso(
     title: str,
     company: str | None = None,
@@ -414,7 +456,7 @@ def looks_like_health_concurso(
     """Relevância para editais/concursos (PCI).
 
     A listagem PCI /vagas/saude/ mistura editais gerais; rejeita tribunais,
-    Forças Armadas, Correios, etc. salvo cargo/órgão claramente de saúde.
+    Forças Armadas, Correios, etc. e editais sem cargo/órgão de saúde.
     """
     blob = norm(f"{title} {company or ''} {summary or ''}")
     if not blob:
@@ -423,12 +465,14 @@ def looks_like_health_concurso(
         return True
     if any(c in blob for c in _CONCURSO_CLINICAL_ROLES):
         return True
+    if extract_concurso_health_roles(f"{title} {company or ''} {summary or ''}"):
+        return True
     if _CONCURSO_TOKEN_RE.search(f" {blob} "):
         return False
     if any(p in blob for p in _CONCURSO_NON_HEALTH_PHRASES):
         return False
-    # Board PCI saúde: editais municipais genéricos ("vários cargos") ficam.
-    return True
+    # Sem cargo/órgão clínico explícito: rejeita (ex.: "vários cargos" genérico).
+    return False
 
 
 def looks_like_hospital_employer_job(

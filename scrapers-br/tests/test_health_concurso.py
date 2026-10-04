@@ -2,7 +2,10 @@ from __future__ import annotations
 
 import unittest
 
-from common.normalize import looks_like_health_concurso
+from common.normalize import (
+    extract_concurso_health_roles,
+    looks_like_health_concurso,
+)
 
 
 class HealthConcursoFilterTests(unittest.TestCase):
@@ -92,9 +95,8 @@ class HealthConcursoFilterTests(unittest.TestCase):
             )
         )
 
-    def test_keeps_generic_prefeitura_on_saude_board(self) -> None:
-        # PCI lista sob /vagas/saude/; sem marcador anti-saúde, mantém.
-        self.assertTrue(
+    def test_rejects_generic_prefeitura_without_health_cargo(self) -> None:
+        self.assertFalse(
             looks_like_health_concurso(
                 "Prefeitura de Novo Progresso — PA Abre Processo Seletivo para Diversos Cargos",
                 "Prefeitura de Novo Progresso",
@@ -102,14 +104,50 @@ class HealthConcursoFilterTests(unittest.TestCase):
             )
         )
 
+    def test_keeps_prefeitura_when_detail_lists_medico(self) -> None:
+        self.assertTrue(
+            looks_like_health_concurso(
+                "Prefeitura de Novo Progresso — PA Abre Processo Seletivo para Diversos Cargos",
+                "Prefeitura de Novo Progresso",
+                "Oportunidades para Médico clínico geral e Enfermeiro. Vários cargos.",
+            )
+        )
+
+    def test_rejects_cbmerj_without_health_cargo(self) -> None:
+        self.assertFalse(
+            looks_like_health_concurso(
+                "CBMERJ - RJ abre processo seletivo para 1º tenente temporário",
+                "CBMERJ - Corpo de Bombeiros Militar do Estado do Rio de Janeiro",
+                "192 vagas até R$ 12.279,71 Vários Cargos Superior",
+            )
+        )
+
+    def test_keeps_cbmerj_with_medico_in_detail(self) -> None:
+        self.assertTrue(
+            looks_like_health_concurso(
+                "CBMERJ - RJ abre processo seletivo para 1º tenente temporário",
+                "CBMERJ - Corpo de Bombeiros Militar do Estado do Rio de Janeiro",
+                "áreas de saúde. 1º Ten BM Médico Cardiologista (3 vagas)",
+            )
+        )
+
     def test_entre_hours_not_tre_false_positive(self) -> None:
+        # "entre" não deve disparar o token TRE; com cargo clínico, mantém.
         self.assertTrue(
             looks_like_health_concurso(
                 "Prefeitura de Pedra Dourada — MG Divulga Retificações do Concurso Público",
                 "Prefeitura de Pedra Dourada",
-                "carga horaria entre 30 e 40 horas semanais",
+                "carga horaria entre 30 e 40 horas semanais para Enfermeiro",
             )
         )
+
+    def test_extract_roles_cbmerj(self) -> None:
+        roles = extract_concurso_health_roles(
+            "1º Ten BM Médico Cardiologista; Dentista Periodontista; Psicólogo"
+        )
+        self.assertIn("Médico", roles)
+        self.assertIn("Dentista", roles)
+        self.assertIn("Psicólogo", roles)
 
 
 if __name__ == "__main__":
