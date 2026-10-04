@@ -1,7 +1,5 @@
-import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import { ingestJobs, type IngestJobInput } from "@/lib/job-store";
-import { JOBS_CACHE_TAG } from "@/lib/jobs-data";
 
 export const dynamic = "force-dynamic";
 
@@ -71,7 +69,6 @@ export async function POST(request: Request) {
   }
 
   const result = await ingestJobs(source, jobs);
-  // In-memory job-store já invalida por mtime; limpar Data Cache do Next.
-  revalidateTag(JOBS_CACHE_TAG, "max");
+  // In-memory job-store invalida por mtime do jobs.json (sem Data Cache Next).
   return NextResponse.json(result);
 }
