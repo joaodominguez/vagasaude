@@ -15,8 +15,9 @@ export const JOBS_DATA_REVALIDATE_SECONDS = 120;
 
 function resolveJobs(stored: Job[]): Job[] {
   if (stored.length > 0) return stored;
-  // Em produção com DATA_DIR, nunca mascarar falha de leitura com seeds demo.
-  if (process.env.NODE_ENV === "production" && process.env.DATA_DIR) {
+  // Em produção (build ISR ou runtime), nunca mascarar ausência de dados
+  // com as 6 vagas demo — isso já chegou a publicar homepage/`/vagas` com seeds.
+  if (process.env.NODE_ENV === "production") {
     return [];
   }
   return seedJobs;
@@ -36,7 +37,7 @@ export const getJob = cache(
 
     const stored = await getJobCard(slug);
     if (stored) return stored;
-    if (process.env.NODE_ENV === "production" && process.env.DATA_DIR) {
+    if (process.env.NODE_ENV === "production") {
       return null;
     }
     const seed = seedJobs.find((job) => job.slug === slug);
