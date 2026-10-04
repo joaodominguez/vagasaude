@@ -48,3 +48,9 @@ class HttpClient:
         response = self.client.get(url, **kwargs)
         response.raise_for_status()
         return response.text
+
+    def get_bytes(self, url: str, **kwargs: Any) -> bytes:
+        self._throttle()
+        response = self.client.get(url, **kwargs)
+        response.raise_for_status()
+        return response.content
