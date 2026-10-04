@@ -235,6 +235,18 @@ export function shortenJobTitle(title: string, maxLen = 96): string {
 
   raw = repairCommonGlitches(raw);
 
+  // Já no formato do scraper PCI: "Médico — CBMERJ (RJ)".
+  if (
+    /\s[—–]\s.+\([A-Z]{2}\)\s*$/.test(raw) &&
+    !BUREAUCRATIC_HINT_RE.test(raw) &&
+    !/\babre\b|\bdivulga\b|\bretifica\b/i.test(raw)
+  ) {
+    if (raw.length > maxLen) {
+      return raw.slice(0, maxLen - 1).replace(/[ ,;—\-]+$/g, "") + "…";
+    }
+    return raw;
+  }
+
   if (raw.length <= 70 && !BUREAUCRATIC_HINT_RE.test(raw)) {
     return raw.slice(0, maxLen);
   }

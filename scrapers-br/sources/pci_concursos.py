@@ -281,7 +281,11 @@ class PciConcursosScraper(BaseScraper):
         if len(roles) == 1:
             return roles[0]
         if len(roles) == 2:
-            return f"{roles[0]} e {roles[1]}"
+            paired = f"{roles[0]} e {roles[1]}"
+            # ACS + ACE etc. estouram o limite do card — compacta.
+            if len(paired) > 42:
+                return f"{roles[0]} e outras especialidades"
+            return paired
         # Mantém título curto para SEO/cards (shortenJobTitle corta aos 96).
         return f"{roles[0]} e outras especialidades"
 
