@@ -27,7 +27,7 @@ class PciTitleComposeTests(unittest.TestCase):
             listing_title="CBMERJ - RJ abre processo seletivo para 1º tenente temporário",
             detail_title="CBMERJ - RJ abre processo seletivo para 1º tenente temporário",
         )
-        self.assertEqual(title, "Médico, Dentista e outras especialidades — CBMERJ (RJ)")
+        self.assertEqual(title, "Médico e outras especialidades — CBMERJ (RJ)")
 
     def test_single_role_title(self) -> None:
         title = PciConcursosScraper._compose_title(

@@ -124,6 +124,7 @@ def guess_profession(title: str, fallback: str | None = None) -> str:
         (("radiolog", "biomédic", "biomedic", "laboratorio", "laborator", "gasoterapia"), "Técnico de Saúde"),
         (("odontolog", "dentista", "auxiliar de saude bucal"), "Técnico de Saúde"),
         (("assistente social",), "Assistência Social"),
+        (("agente comunitario", "agente de combate as endemias", "agente de saude"), "Auxiliares"),
         (("auxiliar de saude", "tecnico de saude", "tecnica de saude", "instrumentador"), "Auxiliares"),
         (("comercial", "propagandista", "key account"), "Comercial / Farma"),
         (("coordenador", "supervisor", "gestor", "gerente", "administrador"), "Gestão & suporte"),

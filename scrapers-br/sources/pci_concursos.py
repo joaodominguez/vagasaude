@@ -282,7 +282,8 @@ class PciConcursosScraper(BaseScraper):
             return roles[0]
         if len(roles) == 2:
             return f"{roles[0]} e {roles[1]}"
-        return f"{roles[0]}, {roles[1]} e outras especialidades"
+        # Mantém título curto para SEO/cards (shortenJobTitle corta aos 96).
+        return f"{roles[0]} e outras especialidades"
 
     @staticmethod
     def _short_org(org: str) -> str:
@@ -292,17 +293,18 @@ class PciConcursosScraper(BaseScraper):
         m = ACRONYM_ORG_RE.match(org)
         if m:
             return m.group(1)
-        # "Prefeitura do Município de X" / "Prefeitura de X"
+        # "Prefeitura do Município de X" / "Prefeitura de X" → cidade
         m = re.match(
-            r"^(Prefeitura(?:\s+do\s+Munic[ií]pio)?\s+de\s+.+?)(?:\s*[-–—]|$)",
+            r"^Prefeitura(?:\s+do\s+Munic[ií]pio)?\s+de\s+(.+?)(?:\s*[-–—]|$)",
             org,
             re.I,
         )
         if m:
-            return m.group(1).strip()[:80]
-        if len(org) > 60 and " - " in org:
-            return org.split(" - ", 1)[0].strip()[:60]
-        return org[:80]
+            city = m.group(1).strip()
+            return f"Prefeitura de {city}"[:48]
+        if len(org) > 48 and " - " in org:
+            return org.split(" - ", 1)[0].strip()[:48]
+        return org[:48]
 
     @staticmethod
     def _salary_from_summary(summary: str | None) -> str | None:
