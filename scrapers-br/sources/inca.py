@@ -207,12 +207,10 @@ def title_from_cargos(base_title: str | None, cargos: list[dict]) -> str:
     elif len(names) == 2:
         role = f"{names[0]} e {names[1]}"
     else:
-        role = f"{names[0]}, {names[1]} e {names[2]}"
-        if len(names) > 3:
-            role = f"{names[0]} e outras especialidades"
-    suffix = "CPNU 2 (INCA)"
+        # Mantém ≤70 chars para não passar pelo titleCase do shortenJobTitle.
+        role = f"{names[0]} e outras especialidades"
     if base_title and CPNU_RE.search(base_title):
-        composed = f"{role} — {suffix}"
+        composed = f"{role} — INCA / CPNU 2"
     else:
         composed = f"{role} — INCA"
     return composed[:200]
