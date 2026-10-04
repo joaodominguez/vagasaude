@@ -49,6 +49,17 @@ class PciTitleComposeTests(unittest.TestCase):
         )
         self.assertIsNone(title)
 
+    def test_judicial_without_offered_roles_not_retitled(self) -> None:
+        title = PciConcursosScraper._compose_title(
+            roles=[],
+            org="TRT 8ª Região - Tribunal Regional do Trabalho da 8ª Região",
+            uf="PA",
+            listing_title="TRT 8 — PA/AP Publica Edital de Concurso para Técnicos e Analistas Judiciários",
+            detail_title="TRT 8 — PA/AP Publica Edital de Concurso para Técnicos e Analistas Judiciários",
+            judicial=True,
+        )
+        self.assertIsNone(title)
+
     def test_detail_headline_skips_logo_h1(self) -> None:
         from bs4 import BeautifulSoup
 

@@ -683,14 +683,127 @@ function isClosedNoticeTitle(title: string) {
   );
 }
 
+const CONCURSO_JUDICIAL_TOKEN_RE =
+  /(?:^|\s)(?:trt|tre|trf|stj|stf|stm|tse|mpu|tcu|tce)(?:\s|$|-)/;
+const CONCURSO_NON_HEALTH_TOKEN_RE =
+  /(?:^|\s)(?:trt|tre|trf|stj|stf|stm|tse|mpu|tcu|tce)(?:\s|$|-)/;
+const CONCURSO_JUDICIAL_PHRASES = [
+  "tribunal",
+  "judiciario",
+  "analista judiciario",
+  "tecnico judiciario",
+  "oficial de justica",
+  "ministerio publico",
+  "defensoria",
+  "cartorio",
+];
+const CONCURSO_NON_HEALTH_PHRASES = [
+  "tribunal",
+  "judiciario",
+  "analista judiciario",
+  "tecnico judiciario",
+  "oficial de justica",
+  "cartorio",
+  "ministerio publico",
+  "defensoria",
+  "policia federal",
+  "policia civil",
+  "policia militar",
+  "policia rodoviaria",
+  "guarda municipal",
+  "corpo de bombeiros",
+  "bombeiro militar",
+  "bombeiros militar",
+  "exercito",
+  "marinha do brasil",
+  "aeronautica",
+  "comando da aeronautica",
+  "correios",
+  "banco do brasil",
+  "receita federal",
+  "detran",
+  "ibge",
+  "transpetro",
+  "relacoes exteriores",
+  "educacao fisica",
+  "concurso publico nacional unificado",
+  "concurso nacional unificado",
+  "agente penitenciario",
+  "escrivao",
+  "delegado",
+];
+
+const STRONG_CARGO_RES = [
+  /\bpara\s+(?:o\s+)?(?:cargo\s+de\s+)?(?:tecnic[oa]s?\s+de\s+enfermagem|auxiliares?\s+de\s+enfermagem|enfermeir[oa]s?|m[eé]dic[oa]s?|medicina(?!\s+veterinar)|dentistas?|odont[oó]log[oa]s?|odontologia|fisioterapeutas?|fisioterapia|psic[oó]log[oa]s?|psicologia|nutricionistas?|nutri[cç][aã]o|farmac[eê]utic[oa]s?|farm[aá]cia|fonoaudi[oó]log[oa]s?|biom[eé]dic[oa]s?|terapeutas?\s+ocupacionais?|assistentes?\s+sociais?)\b/i,
+  /\bcargos?\s+(?:de\s+)?(?:tecnic[oa]s?\s+de\s+enfermagem|auxiliares?\s+de\s+enfermagem|enfermeir[oa]s?|m[eé]dic[oa]s?|medicina(?!\s+veterinar)|dentistas?|odont[oó]log[oa]s?|odontologia|fisioterapeutas?|fisioterapia|psic[oó]log[oa]s?|psicologia|nutricionistas?|nutri[cç][aã]o|farmac[eê]utic[oa]s?|farm[aá]cia|fonoaudi[oó]log[oa]s?|biom[eé]dic[oa]s?|terapeutas?\s+ocupacionais?|assistentes?\s+sociais?)\b/i,
+  /\bvagas?\s+(?:para|de)\s+(?:tecnic[oa]s?\s+de\s+enfermagem|auxiliares?\s+de\s+enfermagem|enfermeir[oa]s?|m[eé]dic[oa]s?|medicina(?!\s+veterinar)|dentistas?|odont[oó]log[oa]s?|odontologia|fisioterapeutas?|fisioterapia|psic[oó]log[oa]s?|psicologia|nutricionistas?|nutri[cç][aã]o|farmac[eê]utic[oa]s?|farm[aá]cia|fonoaudi[oó]log[oa]s?|biom[eé]dic[oa]s?|terapeutas?\s+ocupacionais?|assistentes?\s+sociais?)\b/i,
+  /\b(?:enfermeir[oa]s?|m[eé]dic[oa]s?|dentistas?|psic[oó]log[oa]s?)[^.\n]{0,48}\(\s*\d+\s*vagas?/i,
+  /\boficiais?\s+(?:m[eé]dic|odont)/i,
+  /\b(?:1[oº°]?|primeiro)\s*ten\b[^.\n]{0,40}\b(?:m[eé]dic|dentista|psic)/i,
+  /\b(?:areas?|na area)\s+d[ae]\s+sa[uú]de\b/i,
+  /\bservi[cç]o\s+de\s+sa[uú]de\b/i,
+  /\boportunidades?\s+para\s+(?:enfermeir[oa]s?|m[eé]dic[oa]s?|dentistas?|psic[oó]log[oa]s?)\b/i,
+];
+
+function isJudicialConcursoSignal(
+  title: string,
+  company?: string | null,
+  slug?: string | null,
+) {
+  const blob = normalize(`${title} ${company || ""} ${slug || ""}`);
+  if (!blob) return false;
+  if (CONCURSO_JUDICIAL_TOKEN_RE.test(` ${blob} `)) return true;
+  return CONCURSO_JUDICIAL_PHRASES.some((p) => blob.includes(p));
+}
+
+function hasStrongConcursoHealthCargo(text: string) {
+  return STRONG_CARGO_RES.some((rx) => rx.test(text));
+}
+
+function judicialAllowsHealthCargo(text: string) {
+  const n = normalize(text);
+  if (
+    /analista judiciario|tecnico judiciario|oficial de justica|analistas e tecnicos|analista e tecnico/.test(
+      n,
+    )
+  ) {
+    return false;
+  }
+  if (
+    /especialidade\s+(?:enfermagem|medicina|medico(?:\s+do\s+trabalho)?|odontologia|psicologia|servico social|farmacia|fisioterapia|nutricao)/.test(
+      n,
+    )
+  ) {
+    return false;
+  }
+  return hasStrongConcursoHealthCargo(text);
+}
+
+function headerNonHealthSignal(title: string, company?: string | null) {
+  const blob = normalize(`${title} ${company || ""}`);
+  if (!blob) return false;
+  if (CONCURSO_NON_HEALTH_TOKEN_RE.test(` ${blob} `)) return true;
+  return CONCURSO_NON_HEALTH_PHRASES.some((p) => blob.includes(p));
+}
+
 /** Espelha scrapers-br/common/normalize.looks_like_health_concurso. */
 export function looksLikeHealthConcurso(
   title: string,
   company?: string | null,
   summary?: string | null,
+  slug?: string | null,
 ) {
-  const blob = normalize(`${title} ${company || ""} ${summary || ""}`);
+  const raw = `${title} ${company || ""} ${summary || ""}`;
+  const blob = normalize(raw);
   if (!blob) return false;
+
+  // Tribunais/MP antes de keywords clínicas (evita retítulo falso Enfermeiro).
+  if (isJudicialConcursoSignal(title, company, slug)) {
+    return judicialAllowsHealthCargo(raw);
+  }
+  if (headerNonHealthSignal(title, company)) {
+    return hasStrongConcursoHealthCargo(raw);
+  }
 
   const healthEmployers = [
     "secretaria de saude",
@@ -768,45 +881,8 @@ export function looksLikeHealthConcurso(
   ];
   if (clinical.some((c) => blob.includes(c))) return true;
 
-  const tokens = /\b(?:trt|tre|trf|stj|stf|stm|tse|mpu|tcu|tce)\b/;
-  if (tokens.test(blob)) return false;
-
-  const phrases = [
-    "tribunal",
-    "judiciario",
-    "analista judiciario",
-    "tecnico judiciario",
-    "oficial de justica",
-    "cartorio",
-    "ministerio publico",
-    "defensoria",
-    "policia federal",
-    "policia civil",
-    "policia militar",
-    "policia rodoviaria",
-    "guarda municipal",
-    "corpo de bombeiros",
-    "bombeiro militar",
-    "bombeiros militar",
-    "exercito",
-    "marinha do brasil",
-    "aeronautica",
-    "comando da aeronautica",
-    "correios",
-    "banco do brasil",
-    "receita federal",
-    "detran",
-    "ibge",
-    "transpetro",
-    "relacoes exteriores",
-    "educacao fisica",
-    "concurso publico nacional unificado",
-    "concurso nacional unificado",
-    "agente penitenciario",
-    "escrivao",
-    "delegado",
-  ];
-  if (phrases.some((p) => blob.includes(p))) return false;
+  if (CONCURSO_NON_HEALTH_TOKEN_RE.test(` ${blob} `)) return false;
+  if (CONCURSO_NON_HEALTH_PHRASES.some((p) => blob.includes(p))) return false;
   // Sem cargo/órgão clínico explícito: rejeita (ex.: "vários cargos" genérico).
   return false;
 }
@@ -907,6 +983,32 @@ export async function ingestJobs(source: string, incoming: IngestJobInput[]) {
     const existingSlug = existingSameSource?.slug;
     const slug =
       existingSlug && !slugNeedsRepair(existingSlug) ? existingSlug : slugBase;
+
+    // PCI: não republicar off-topic soft-expired nem aceitar retítulos judiciais.
+    if (source === "pci_concursos") {
+      const evidence = description.slice(0, 2500);
+      const healthOk = looksLikeHealthConcurso(
+        title,
+        company,
+        evidence,
+        existingSlug || slugBase,
+      );
+      if (!healthOk) {
+        status = "expired";
+        reviewReason =
+          reviewReason || "Fora da saúde (tribunal/concurso off-topic)";
+      } else if (
+        existingSameSource?.status === "expired" &&
+        /fora da sa[uú]de|tribunal|off-topic|judici/i.test(
+          existingSameSource.reviewReason || "",
+        )
+      ) {
+        // Enrich/re-scrape não ressuscita off-topic já expirado.
+        status = "expired";
+        reviewReason = existingSameSource.reviewReason;
+      }
+    }
+
     const next: StoredJob = {
       id: existingSameSource?.id || crypto.randomUUID(),
       slug,
@@ -1014,9 +1116,13 @@ export async function expireNonHealthConcursos() {
   for (const job of file.jobs) {
     if (job.source !== "pci_concursos") continue;
     if (job.status !== "published" && job.status !== "pending_review") continue;
-    const summary = `${job.description || ""}`.slice(0, 1200);
-    if (looksLikeHealthConcurso(job.title, job.company, summary)) continue;
+    const summary = `${job.description || ""}`.slice(0, 2500);
+    if (looksLikeHealthConcurso(job.title, job.company, summary, job.slug)) {
+      continue;
+    }
     job.status = "expired";
+    job.reviewReason =
+      job.reviewReason || "Fora da saúde (tribunal/concurso off-topic)";
     job.updatedAt = now;
     changed += 1;
   }

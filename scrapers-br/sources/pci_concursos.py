@@ -11,9 +11,11 @@ from common.http import HttpClient
 from common.models import BaseScraper, JobPayload
 from common.normalize import (
     extract_concurso_health_roles,
+    extract_offered_concurso_health_roles,
     guess_contract,
     guess_profession,
     html_to_text,
+    is_judicial_concurso_signal,
     looks_like_health_concurso,
     state_from_uf,
 )
@@ -74,17 +76,30 @@ class PciConcursosScraper(BaseScraper):
                 description = (
                     detail.get("description") or summary or item.get("title") or company
                 )
-                evidence = f"{item.get('title') or ''} {summary} {description[:2500]}"
-                if not looks_like_health_concurso(item.get("title") or "", company, evidence):
+                listing_title = item.get("title") or ""
+                source_id = self._source_id(item["url"])
+                evidence = f"{listing_title} {summary} {description[:2500]}"
+                judicial = is_judicial_concurso_signal(
+                    listing_title, company, source_id
+                )
+                if not looks_like_health_concurso(
+                    listing_title, company, evidence, slug=source_id
+                ):
                     skipped += 1
                     continue
-                roles = extract_concurso_health_roles(evidence)
+                # Tribunais: nunca retitular a partir de "Especialidade Enfermagem"
+                # ou ruído de "veja também"; só cargos com evidência forte.
+                if judicial:
+                    roles = extract_offered_concurso_health_roles(evidence)
+                else:
+                    roles = extract_concurso_health_roles(evidence)
                 title = self._compose_title(
                     roles=roles,
                     org=company,
                     uf=item.get("uf"),
-                    listing_title=item.get("title") or "",
+                    listing_title=listing_title,
                     detail_title=detail.get("title") or "",
+                    judicial=judicial,
                 )
                 if not title:
                     skipped += 1
@@ -94,7 +109,6 @@ class PciConcursosScraper(BaseScraper):
                 salary = detail.get("salary") or self._salary_from_summary(summary)
                 contract = guess_contract(f"{title} {description}") or "Concurso"
                 state = state_from_uf(item.get("uf"))
-                source_id = self._source_id(item["url"])
                 profession_blob = f"{title} {' '.join(roles)} {summary}"
                 jobs.append(
                     JobPayload(
@@ -248,9 +262,14 @@ class PciConcursosScraper(BaseScraper):
         uf: str | None,
         listing_title: str,
         detail_title: str,
+        judicial: bool = False,
     ) -> str | None:
         short_org = cls._short_org(org)
         uf_bit = f" ({uf.strip().upper()})" if uf and uf.strip() else ""
+
+        # Editais judiciais: só retitular com cargos clínicos claramente oferecidos.
+        if judicial and not roles:
+            return None
 
         if roles:
             role_part = cls._format_roles(roles)
@@ -266,6 +285,9 @@ class PciConcursosScraper(BaseScraper):
             if not m:
                 continue
             candidate = m.group(1).strip(" .,-–—")
+            # "para Técnicos e Analistas Judiciários" não é cargo clínico.
+            if re.search(r"judici[aá]ri", candidate, re.I):
+                continue
             extracted = extract_concurso_health_roles(candidate)
             if extracted:
                 return f"{cls._format_roles(extracted)} — {short_org}{uf_bit}"

@@ -371,6 +371,31 @@ _CONCURSO_NON_HEALTH_TOKENS = (
     "tce",
 )
 
+# Tribunais / MP: carreira judiciária ≠ vaga clínica (mesmo com "Especialidade Enfermagem").
+_CONCURSO_JUDICIAL_TOKENS = (
+    "trt",
+    "tre",
+    "trf",
+    "stj",
+    "stf",
+    "stm",
+    "tse",
+    "mpu",
+    "tcu",
+    "tce",
+)
+
+_CONCURSO_JUDICIAL_PHRASES = (
+    "tribunal",
+    "judiciario",
+    "analista judiciario",
+    "tecnico judiciario",
+    "oficial de justica",
+    "ministerio publico",
+    "defensoria",
+    "cartorio",
+)
+
 _CONCURSO_NON_HEALTH_PHRASES = (
     "tribunal",
     "judiciario",
@@ -410,6 +435,46 @@ _CONCURSO_NON_HEALTH_PHRASES = (
 _CONCURSO_TOKEN_RE = re.compile(
     r"(?:^|\s)(?:" + "|".join(_CONCURSO_NON_HEALTH_TOKENS) + r")(?:\s|$|-)"
 )
+_CONCURSO_JUDICIAL_TOKEN_RE = re.compile(
+    r"(?:^|\s)(?:" + "|".join(_CONCURSO_JUDICIAL_TOKENS) + r")(?:\s|$|-)"
+)
+
+# Cargo clínico como posição oferecida (não menção lateral / especialidade judiciária).
+_CONCURSO_ROLE_ALT = (
+    r"(?:tecnic[oa]s?\s+de\s+enfermagem|auxiliares?\s+de\s+enfermagem|"
+    r"enfermeir[oa]s?|m[eé]dic[oa]s?|medicina(?!\s+veterinar)|"
+    r"dentistas?|odont[oó]log[oa]s?|odontologia|"
+    r"fisioterapeutas?|fisioterapia|psic[oó]log[oa]s?|psicologia|"
+    r"nutricionistas?|nutri[cç][aã]o|farmac[eê]utic[oa]s?|farm[aá]cia|"
+    r"fonoaudi[oó]log[oa]s?|biom[eé]dic[oa]s?|"
+    r"terapeutas?\s+ocupacionais?|assistentes?\s+sociais?)"
+)
+_STRONG_CARGO_RES: tuple[re.Pattern[str], ...] = (
+    re.compile(rf"\bpara\s+(?:o\s+)?(?:cargo\s+de\s+)?{_CONCURSO_ROLE_ALT}\b", re.I),
+    re.compile(rf"\bcargos?\s+(?:de\s+)?{_CONCURSO_ROLE_ALT}\b", re.I),
+    re.compile(rf"\bvagas?\s+(?:para|de)\s+{_CONCURSO_ROLE_ALT}\b", re.I),
+    re.compile(rf"\b{_CONCURSO_ROLE_ALT}\b[^.\n]{{0,48}}\(\s*\d+\s*vagas?", re.I),
+    re.compile(r"\boficiais?\s+(?:m[eé]dic|odont)", re.I),
+    re.compile(
+        r"\b(?:1[oº°]?|primeiro)\s*ten\b[^.\n]{0,40}\b(?:m[eé]dic|dentista|psic)",
+        re.I,
+    ),
+    re.compile(r"\b(?:areas?|na area)\s+d[ae]\s+sa[uú]de\b", re.I),
+    re.compile(r"\bservi[cç]o\s+de\s+sa[uú]de\b", re.I),
+    re.compile(rf"\boportunidades?\s+para\s+{_CONCURSO_ROLE_ALT}\b", re.I),
+)
+
+_JUDICIAL_CAREER_RE = re.compile(
+    r"analista judiciario|tecnico judiciario|oficial de justica|"
+    r"analistas e tecnicos|analista e tecnico",
+    re.I,
+)
+_JUDICIAL_HEALTH_SPECIALTY_RE = re.compile(
+    r"especialidade\s+"
+    r"(?:enfermagem|medicina|medico(?:\s+do\s+trabalho)?|odontologia|"
+    r"psicologia|servico social|farmacia|fisioterapia|nutricao)",
+    re.I,
+)
 
 
 # Cargos clínicos para títulos ("Médico — CBMERJ (RJ)"). Ordem = prioridade.
@@ -434,6 +499,46 @@ _CONCURSO_ROLE_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
 )
 
 
+def is_judicial_concurso_signal(
+    title: str,
+    company: str | None = None,
+    slug: str | None = None,
+) -> bool:
+    """TRT/TRE/tribunal/MP no título, órgão ou slug (não só no corpo)."""
+    blob = norm(f"{title} {company or ''} {slug or ''}")
+    if not blob:
+        return False
+    if _CONCURSO_JUDICIAL_TOKEN_RE.search(f" {blob} "):
+        return True
+    return any(p in blob for p in _CONCURSO_JUDICIAL_PHRASES)
+
+
+def has_strong_concurso_health_cargo(text: str | None) -> bool:
+    """Evidência de cargo clínico oferecido (não palavra solta / rodapé)."""
+    if not text:
+        return False
+    return any(rx.search(text) for rx in _STRONG_CARGO_RES)
+
+
+def _judicial_allows_health_cargo(text: str) -> bool:
+    """Tribunais só passam com cargo clínico autónomo — não 'Especialidade Enfermagem'."""
+    n = norm(text)
+    if _JUDICIAL_CAREER_RE.search(n):
+        return False
+    if _JUDICIAL_HEALTH_SPECIALTY_RE.search(n):
+        return False
+    return has_strong_concurso_health_cargo(text)
+
+
+def _header_non_health_signal(title: str, company: str | None = None) -> bool:
+    blob = norm(f"{title} {company or ''}")
+    if not blob:
+        return False
+    if _CONCURSO_TOKEN_RE.search(f" {blob} "):
+        return True
+    return any(p in blob for p in _CONCURSO_NON_HEALTH_PHRASES)
+
+
 def extract_concurso_health_roles(text: str | None, *, limit: int = 6) -> list[str]:
     """Extrai cargos de saúde mencionados no edital (ordem de prioridade)."""
     if not text:
@@ -449,24 +554,55 @@ def extract_concurso_health_roles(text: str | None, *, limit: int = 6) -> list[s
     return found
 
 
+def extract_offered_concurso_health_roles(
+    text: str | None, *, limit: int = 6
+) -> list[str]:
+    """Só cargos com evidência de vaga oferecida (janelas dos padrões fortes)."""
+    if not text or not has_strong_concurso_health_cargo(text):
+        return []
+    windows: list[str] = []
+    for rx in _STRONG_CARGO_RES:
+        for m in rx.finditer(text):
+            start = max(0, m.start() - 24)
+            end = min(len(text), m.end() + 96)
+            windows.append(text[start:end])
+    if not windows:
+        return []
+    return extract_concurso_health_roles(" ".join(windows), limit=limit)
+
+
 def looks_like_health_concurso(
     title: str,
     company: str | None = None,
     summary: str | None = None,
+    slug: str | None = None,
 ) -> bool:
     """Relevância para editais/concursos (PCI).
 
     A listagem PCI /vagas/saude/ mistura editais gerais; rejeita tribunais,
     Forças Armadas, Correios, etc. e editais sem cargo/órgão de saúde.
+
+    Tribunais/MP exigem cargo clínico autónomo — 'Analista Judiciário /
+    Especialidade Enfermagem' não conta (nem retítulo para Enfermeiro).
     """
-    blob = norm(f"{title} {company or ''} {summary or ''}")
+    raw = f"{title} {company or ''} {summary or ''}"
+    blob = norm(raw)
     if not blob:
         return False
+
+    # 1) Família judicial (título/órgão/slug): antes de qualquer keyword clínica.
+    if is_judicial_concurso_signal(title, company, slug):
+        return _judicial_allows_health_cargo(raw)
+
+    # 2) Outros órgãos fora da saúde (PM, Correios, Exército…): cargo forte.
+    if _header_non_health_signal(title, company):
+        return has_strong_concurso_health_cargo(raw)
+
     if any(h in blob for h in _CONCURSO_HEALTH_EMPLOYERS):
         return True
     if any(c in blob for c in _CONCURSO_CLINICAL_ROLES):
         return True
-    if extract_concurso_health_roles(f"{title} {company or ''} {summary or ''}"):
+    if extract_concurso_health_roles(raw):
         return True
     if _CONCURSO_TOKEN_RE.search(f" {blob} "):
         return False

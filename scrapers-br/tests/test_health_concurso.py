@@ -4,8 +4,19 @@ import unittest
 
 from common.normalize import (
     extract_concurso_health_roles,
+    extract_offered_concurso_health_roles,
+    is_judicial_concurso_signal,
     looks_like_health_concurso,
 )
+
+TRT8_BODY_WITH_HEALTH_SPECIALTY = """
+O Tribunal Regional do Trabalho da 8ª Região lançou concurso para formar
+cadastro de reserva. Cargos de Analista Judiciário e Técnico Judiciário.
+Área de Apoio Especializado Especialidade Enfermagem (Cadastro Reserva)
+Especialidade Medicina (Cadastro Reserva)
+Especialidade Psicologia (Cadastro Reserva)
+Veja também: Prefeitura abre vaga para Enfermeiro em Saltinho.
+"""
 
 
 class HealthConcursoFilterTests(unittest.TestCase):
@@ -18,6 +29,27 @@ class HealthConcursoFilterTests(unittest.TestCase):
             )
         )
 
+    def test_rejects_trt_even_with_especialidade_enfermagem(self) -> None:
+        # Retítulo falso "Enfermeiro — TRT" vinha de especialidade judiciária.
+        self.assertFalse(
+            looks_like_health_concurso(
+                "Enfermeiro e outras especialidades — TRT 8ª Região (PA)",
+                "TRT 8ª Região - Tribunal Regional do Trabalho da 8ª Região",
+                TRT8_BODY_WITH_HEALTH_SPECIALTY,
+                slug="trt-8-pa-ap-publica-edital-de-concurso-para-tecnicos-e-analistas-judiciarios",
+            )
+        )
+        self.assertTrue(
+            is_judicial_concurso_signal(
+                "Enfermeiro e outras especialidades — TRT 8ª Região (PA)",
+                "TRT 8ª Região - Tribunal Regional do Trabalho da 8ª Região",
+                "trt-8-pa-ap-publica-edital-de-concurso-para-tecnicos-e-analistas-judiciarios",
+            )
+        )
+        # Sem rodapé "veja também": especialidade judiciária não é cargo oferecido.
+        clean = TRT8_BODY_WITH_HEALTH_SPECIALTY.split("Veja também")[0]
+        self.assertEqual(extract_offered_concurso_health_roles(clean), [])
+
     def test_rejects_stj_and_mpu(self) -> None:
         self.assertFalse(
             looks_like_health_concurso(
@@ -28,9 +60,24 @@ class HealthConcursoFilterTests(unittest.TestCase):
         )
         self.assertFalse(
             looks_like_health_concurso(
+                "Médico e outras especialidades — STJ",
+                "STJ - Superior Tribunal de Justiça",
+                "Analista Judiciário Área de Apoio Especializado Especialidade Medicina",
+                slug="stj-retifica-novamente-concurso-publico-com-65-vagas-para-analistas-e-tecnicos",
+            )
+        )
+        self.assertFalse(
+            looks_like_health_concurso(
                 "MPU retifica Concurso com 172 vagas para Analistas e Técnicos",
                 "MPU - Ministério Público da União",
                 "172 vagas",
+            )
+        )
+        self.assertFalse(
+            looks_like_health_concurso(
+                "Enfermeiro e outras especialidades — MPU",
+                "MPU - Ministério Público da União",
+                "Analista e Técnico Judiciário Especialidade Enfermagem",
             )
         )
 
