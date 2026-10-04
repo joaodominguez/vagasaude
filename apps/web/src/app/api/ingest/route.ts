@@ -69,5 +69,6 @@ export async function POST(request: Request) {
   }
 
   const result = await ingestJobs(source, jobs);
+  // In-memory job-store invalida por mtime do jobs.json (sem Data Cache Next).
   return NextResponse.json(result);
 }

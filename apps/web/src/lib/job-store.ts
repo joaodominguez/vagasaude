@@ -462,6 +462,21 @@ export function toJobCard(job: StoredJob): JobCardData {
 // Invalida automaticamente quando o mtime do jobs.json muda (scrape/admin).
 let jobsCache: { mtimeMs: number; file: JobsFile } | null = null;
 
+// Cards + índice por slug derivados do ficheiro. Evita toJobCard×N e scans lineares
+// em cada SSR (detalhe/home/listagem). Soft-TTL refresca publishedLabel ("Hoje").
+const CARDS_TTL_MS = 60_000;
+type DerivedJobsCache = {
+  mtimeMs: number;
+  builtAt: number;
+  cards: JobCardData[];
+  bySlug: Map<string, StoredJob>;
+};
+let derivedJobsCache: DerivedJobsCache | null = null;
+
+function clearDerivedJobsCache() {
+  derivedJobsCache = null;
+}
+
 async function readJobsFile(): Promise<JobsFile> {
   const filePath = jobsFilePath();
   try {
@@ -483,10 +498,50 @@ async function readJobsFile(): Promise<JobsFile> {
       return file;
     }
     jobsCache = { mtimeMs: info.mtimeMs, file };
+    clearDerivedJobsCache();
     return file;
   } catch {
     return { updatedAt: new Date(0).toISOString(), jobs: [] };
   }
+}
+
+async function getDerivedJobsCache(): Promise<DerivedJobsCache> {
+  const file = await readJobsFile();
+  const mtimeMs = jobsCache?.mtimeMs ?? 0;
+  const now = Date.now();
+  if (
+    derivedJobsCache &&
+    derivedJobsCache.mtimeMs === mtimeMs &&
+    now - derivedJobsCache.builtAt < CARDS_TTL_MS
+  ) {
+    return derivedJobsCache;
+  }
+
+  const bySlug = new Map<string, StoredJob>();
+  for (const job of file.jobs) {
+    bySlug.set(job.slug, job);
+    const normalized = slugify(job.slug);
+    if (normalized && normalized !== job.slug && !bySlug.has(normalized)) {
+      bySlug.set(normalized, job);
+    }
+  }
+
+  const cards = file.jobs
+    .filter(
+      (job) =>
+        job.status === "published" &&
+        !isPastExpiry(job) &&
+        !isClosedNoticeTitle(job.title),
+    )
+    .map(toJobCard)
+    .sort((a, b) => {
+      const byPublished = b.publishedAt.localeCompare(a.publishedAt);
+      if (byPublished !== 0) return byPublished;
+      return a.title.localeCompare(b.title, "pt");
+    });
+
+  derivedJobsCache = { mtimeMs, builtAt: now, cards, bySlug };
+  return derivedJobsCache;
 }
 
 function repairJobSlugs(jobs: StoredJob[]) {
@@ -513,6 +568,7 @@ async function writeJobsFile(file: JobsFile) {
   } catch {
     jobsCache = null;
   }
+  clearDerivedJobsCache();
 }
 
 export async function listAllStoredJobs() {
@@ -531,40 +587,37 @@ export async function listStoredJobs(status: StoredJob["status"] = "published") 
   return jobs.filter((job) => job.status === status);
 }
 
-export async function getStoredJobBySlug(slug: string) {
-  const published = await listStoredJobs("published");
+function lookupStoredJob(
+  bySlug: Map<string, StoredJob>,
+  slug: string,
+): StoredJob | null {
+  const direct = bySlug.get(slug);
+  if (direct) return direct;
   const normalized = slugify(slug);
-  const matchPublished =
-    published.find((job) => job.slug === slug) ||
-    published.find(
-      (job) => job.slug === normalized || slugify(job.slug) === normalized,
-    );
-  if (matchPublished) return matchPublished;
-  return null;
+  if (!normalized) return null;
+  return bySlug.get(normalized) ?? null;
+}
+
+export async function getStoredJobBySlug(slug: string) {
+  const { bySlug } = await getDerivedJobsCache();
+  const match = lookupStoredJob(bySlug, slug);
+  if (!match || match.status !== "published") return null;
+  return match;
 }
 
 export async function getStoredJobBySlugIncludingExpired(slug: string) {
-  const published = await getStoredJobBySlug(slug);
-  if (published) {
-    if (isPastExpiry(published)) {
-      return { job: published, expired: true as const };
-    }
-    return { job: published, expired: false as const };
-  }
-
-  const all = await listAllStoredJobs();
-  const normalized = slugify(slug);
-  const match =
-    all.find((job) => job.slug === slug) ||
-    all.find(
-      (job) => job.slug === normalized || slugify(job.slug) === normalized,
-    );
+  const { bySlug } = await getDerivedJobsCache();
+  const match = lookupStoredJob(bySlug, slug);
   if (!match) return null;
+
+  if (match.status === "published") {
+    if (isPastExpiry(match)) {
+      return { job: match, expired: true as const };
+    }
+    return { job: match, expired: false as const };
+  }
   if (match.status === "expired" || isPastExpiry(match)) {
     return { job: match, expired: true as const };
-  }
-  if (match.status === "published") {
-    return { job: match, expired: false as const };
   }
   return null;
 }
@@ -576,16 +629,8 @@ function isPastExpiry(job: StoredJob) {
 }
 
 export async function listJobCards() {
-  const jobs = await listStoredJobs("published");
-  return jobs
-    .filter((job) => !isPastExpiry(job) && !isClosedNoticeTitle(job.title))
-    .map(toJobCard)
-    .sort((a, b) => {
-      // Anúncios mais recentes primeiro (não updatedAt de re-scrape).
-      const byPublished = b.publishedAt.localeCompare(a.publishedAt);
-      if (byPublished !== 0) return byPublished;
-      return a.title.localeCompare(b.title, "pt");
-    });
+  const { cards } = await getDerivedJobsCache();
+  return cards;
 }
 
 function isClosedNoticeTitle(title: string) {
