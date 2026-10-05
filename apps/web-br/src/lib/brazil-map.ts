@@ -5,35 +5,37 @@
 export const BRAZIL_MAP_VIEWBOX = "0 0 500 500";
 
 /**
- * Label anchors for count bubbles (approx. polygon centroids, lightly
- * nudged in the dense Northeast so circles don't stack).
+ * Label anchors for count bubbles.
+ * Base = polygon centroids; coastal / NE UFs nudged inland (west) and
+ * vertically fanned so teal bubbles sit on land instead of the Atlantic
+ * and don't stack on top of each other.
  */
 export const BRAZIL_STATE_CENTROIDS: Record<string, { x: number; y: number }> = {
-  AC: { x: 54.6, y: 194.1 },
-  AL: { x: 458.5, y: 197.5 },
+  AC: { x: 60.6, y: 194.1 },
+  AL: { x: 430.0, y: 194.0 },
   AM: { x: 122.6, y: 133.1 },
   AP: { x: 274.2, y: 66.2 },
-  BA: { x: 396.1, y: 232.0 },
-  CE: { x: 421.4, y: 143.9 },
-  DF: { x: 328.5, y: 270.5 },
-  ES: { x: 412.0, y: 316.0 },
-  GO: { x: 298.0, y: 272.0 },
-  MA: { x: 353.8, y: 143.7 },
-  MG: { x: 361.1, y: 303.1 },
+  BA: { x: 384.0, y: 240.0 },
+  CE: { x: 408.0, y: 142.0 },
+  DF: { x: 324.0, y: 271.0 },
+  ES: { x: 398.0, y: 318.0 },
+  GO: { x: 298.0, y: 278.0 },
+  MA: { x: 350.0, y: 140.0 },
+  MG: { x: 358.0, y: 300.0 },
   MS: { x: 240.2, y: 325.2 },
   MT: { x: 227.1, y: 237.4 },
   PA: { x: 261.0, y: 130.8 },
-  PB: { x: 456.0, y: 167.5 },
-  PE: { x: 438.0, y: 183.0 },
-  PI: { x: 381.2, y: 171.3 },
-  PR: { x: 278.4, y: 376.6 },
-  RJ: { x: 386.0, y: 348.5 },
-  RN: { x: 458.0, y: 151.0 },
+  PB: { x: 428.0, y: 164.0 },
+  PE: { x: 412.0, y: 178.0 },
+  PI: { x: 378.0, y: 168.0 },
+  PR: { x: 280.0, y: 374.0 },
+  RJ: { x: 372.0, y: 345.0 },
+  RN: { x: 438.0, y: 149.0 },
   RO: { x: 144.6, y: 213.3 },
   RR: { x: 162.0, y: 58.8 },
   RS: { x: 258.2, y: 436.8 },
-  SC: { x: 292.1, y: 407.8 },
-  SE: { x: 449.5, y: 211.5 },
+  SC: { x: 292.0, y: 405.0 },
+  SE: { x: 436.0, y: 208.0 },
   SP: { x: 312.7, y: 348.3 },
   TO: { x: 317.3, y: 204.3 },
 };

@@ -13,9 +13,15 @@ type BrazilJobsMapProps = {
   total: number;
 };
 
+/** Sqrt intensity so SP outliers don't flatten every other UF to "low". */
+function densityRatio(count: number, max: number) {
+  if (count <= 0 || max <= 0) return 0;
+  return Math.sqrt(count / max);
+}
+
 function intensityClass(count: number, max: number) {
   if (count <= 0) return "brazil-state-empty";
-  const ratio = count / max;
+  const ratio = densityRatio(count, max);
   if (ratio > 0.66) return "brazil-state-hot";
   if (ratio > 0.33) return "brazil-state-mid";
   return "brazil-state-low";
@@ -23,19 +29,23 @@ function intensityClass(count: number, max: number) {
 
 function markerClass(count: number, max: number) {
   if (count <= 0) return "map-marker-empty";
-  const ratio = count / max;
+  const ratio = densityRatio(count, max);
   if (ratio > 0.66) return "map-marker-hot";
   if (ratio > 0.33) return "map-marker-mid";
   return "map-marker-low";
 }
 
+/**
+ * Compact radii so coastal NE/SE bubbles stay on land (viewBox 500² is
+ * denser than Portugal's tall map).
+ */
 function markerRadius(count: number, max: number) {
-  if (count <= 0) return 4.5;
+  if (count <= 0) return 3.5;
   const digits = String(count).length;
-  const base = digits >= 3 ? 9.5 : digits === 2 ? 8 : 7;
-  const span = digits >= 3 ? 9 : 7.5;
-  const cap = digits >= 3 ? 19 : 15;
-  return Math.min(cap, base + (count / max) * span);
+  const base = digits >= 4 ? 11 : digits === 3 ? 7.5 : digits === 2 ? 6 : 5;
+  const span = digits >= 4 ? 3 : digits === 3 ? 2.5 : 2;
+  const cap = digits >= 4 ? 14 : digits === 3 ? 10 : 8;
+  return Math.min(cap, base + densityRatio(count, max) * span);
 }
 
 function stateHref(name: string, count: number) {
@@ -72,7 +82,7 @@ export function BrazilJobsMap({ counts, total }: BrazilJobsMapProps) {
             </p>
           </div>
         </div>
-        <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-4">
+        <ul className="brazil-map-uf-grid">
           {ranked.map((state) => {
             const active = state.count > 0;
             return (
@@ -81,8 +91,8 @@ export function BrazilJobsMap({ counts, total }: BrazilJobsMapProps) {
                   href={stateHref(state.name, state.count)}
                   className={
                     active
-                      ? "flex items-center justify-between rounded-xl border border-border bg-background px-3 py-2 text-sm font-medium hover:border-primary"
-                      : "flex items-center justify-between rounded-xl border border-transparent px-3 py-2 text-sm text-muted"
+                      ? "brazil-map-uf-card brazil-map-uf-card-active"
+                      : "brazil-map-uf-card"
                   }
                   aria-label={
                     active
@@ -90,13 +100,13 @@ export function BrazilJobsMap({ counts, total }: BrazilJobsMapProps) {
                       : `${state.name}: sem vagas no momento`
                   }
                 >
-                  <span>
+                  <span className="brazil-map-uf-name">
                     <span className="font-semibold text-foreground">
                       {state.uf}
                     </span>{" "}
                     <span className="text-muted">{state.name}</span>
                   </span>
-                  <span className="tabular-nums text-xs text-muted">
+                  <span className="brazil-map-uf-count tabular-nums">
                     {state.count}
                   </span>
                 </Link>
@@ -174,13 +184,15 @@ export function BrazilJobsMap({ counts, total }: BrazilJobsMapProps) {
                 {active && (
                   <text
                     x={x}
-                    y={y + 0.8}
+                    y={y + 0.6}
                     textAnchor="middle"
                     dominantBaseline="middle"
                     className={`map-marker-label brazil-map-marker-label${
-                      String(state.count).length >= 3
-                        ? " brazil-map-marker-label-lg"
-                        : ""
+                      String(state.count).length >= 4
+                        ? " brazil-map-marker-label-xl"
+                        : String(state.count).length >= 3
+                          ? " brazil-map-marker-label-lg"
+                          : ""
                     }`}
                   >
                     {state.count}
@@ -191,7 +203,7 @@ export function BrazilJobsMap({ counts, total }: BrazilJobsMapProps) {
 
             if (!active) {
               return (
-                <g key={`m-${state.uf}`} opacity={0.4} aria-hidden="true">
+                <g key={`m-${state.uf}`} opacity={0.35} aria-hidden="true">
                   {marker}
                 </g>
               );

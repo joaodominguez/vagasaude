@@ -686,13 +686,76 @@ select {
 /* Brazil homepage map: UF list left, choropleth map right */
 @media (min-width: 900px) {
   .brazil-map-panel {
-    grid-template-columns: minmax(18rem, 1.05fr) minmax(16rem, 0.95fr);
+    grid-template-columns: minmax(18rem, 1.05fr) minmax(18rem, 0.95fr);
+    gap: 1.75rem;
     align-items: start;
   }
 }
 
+.brazil-map-visual {
+  /* Keep coastal bubbles inside the rounded frame */
+  overflow: hidden;
+  isolation: isolate;
+}
+
 .brazil-map-svg {
-  max-height: 32rem;
+  max-height: min(32rem, 92vw);
+  width: 100%;
+}
+
+.brazil-map-uf-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.45rem;
+}
+
+@media (min-width: 640px) {
+  .brazil-map-uf-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1100px) {
+  .brazil-map-uf-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.brazil-map-uf-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-width: 0;
+  border-radius: 0.8rem;
+  border: 1px solid transparent;
+  padding: 0.55rem 0.7rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.brazil-map-uf-card-active {
+  border-color: var(--border);
+  background: var(--background);
+  color: var(--foreground);
+  font-weight: 500;
+}
+
+.brazil-map-uf-card-active:hover {
+  border-color: var(--primary);
+}
+
+.brazil-map-uf-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.brazil-map-uf-count {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  color: var(--muted);
 }
 
 .brazil-state {
@@ -738,20 +801,25 @@ select {
   pointer-events: none;
 }
 
-/* Count bubbles (PT-style) over UF centroids */
+/* Count bubbles (PT-style) over UF centroids — ring keeps teal fills
+   readable on similarly colored state fills */
 .brazil-map-marker {
-  stroke: color-mix(in srgb, var(--background) 88%, transparent);
-  stroke-width: 1.6;
+  stroke: color-mix(in srgb, var(--background) 92%, transparent);
+  stroke-width: 1.8;
 }
 
 .brazil-map-marker-label {
-  font-size: 11px;
+  font-size: 8.5px;
   font-weight: 800;
   pointer-events: none;
 }
 
 .brazil-map-marker-label-lg {
-  font-size: 10px;
+  font-size: 8px;
+}
+
+.brazil-map-marker-label-xl {
+  font-size: 7.5px;
 }
 
 .brazil-map-marker-group:hover .brazil-map-marker,
@@ -759,6 +827,22 @@ select {
   filter: brightness(1.08);
   stroke: var(--foreground);
   stroke-width: 1.6;
+}
+
+@media (max-width: 899px) {
+  .brazil-map-panel {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Map first on mobile — matches PT “see the map, then the list” scan */
+  .brazil-map-visual {
+    order: -1;
+  }
+
+  .brazil-map-svg {
+    max-height: none;
+  }
 }
 
 .district-row {
