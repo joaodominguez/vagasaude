@@ -368,3 +368,34 @@ Objetivo: fechar o gap vs PT (BEP / ULS / IPO / IPSS). Probes HTTP + páginas p�
 | `aacd` | `ipss` | Gupy `aacd` · filtro hospital · **50** ingest |
 
 **Total novos nesta ronda ≈ 670** (store BR ~3243 jobs após ingest).
+
+---
+
+## 11. Concorrente — Saúde Vagas (`saudevagas.com.br`) — audit Out 2026
+
+Pesquisa apenas (sem scrapers novos). Sitemap ≈ **19 558** URLs `/vaga/`; ~**703** empresas; candidatura quase sempre com `utm_source=saude-vagas` → ATS original.
+
+**ATS observados (amostra ~250 detalhes):** Gupy ≈88% · Solides ≈6% · Vagas.com ≈6%. Sem PCI/AgSUS/INCA/Ebserh detectáveis. Contagens nas páginas `/empresa/*` parecem **inflacionadas** vs boards Gupy vivos (ex.: Rede D’Or 3705 no site vs ~1,9k no Gupy).
+
+### Fontes em comum (já cobrimos)
+
+Rede D’Or, Hapvida, IRSSL/Sírio OSS, Santa Casa BH/POA/BA, AACD, Rede Américas, Moinhos, BP, Einstein (Vagas.com), HAOC/ISHAOC, HCor, Mater Dei.
+
+### Gaps prioritários (eles têm · nós não) — backlog pós-stabilize
+
+| Pri | Fonte | Tipo | URL pattern | Presença (Gupy vivo / site) |
+|---|---|---|---|---|
+| **A** | **SPDM/PAIS** (+ afiliadas RJ/Diadema/HGG/HED/HSP/AMEs) | OSS/SUS · Gupy | `spdmpais.gupy.io`, `spdmpaisrj`, `hgg`, `hed`… | ~350+ vivos · site lista 400–575/board |
+| **A** | **Davita / Serviços Assistenciais** | Diálise · Gupy | `servicosassistenciais.gupy.io` | ~200 vivos · site ~900 sob marca Davita |
+| **A** | **Seconci-SP** | Filantrópico/SST · Gupy | `seconci-sp.gupy.io` | ~435 vivos · site ~648 |
+| **A** | **Fleury** | Labs · Vagas.com | `trabalheconosco.vagas.com.br/grupo-fleury/…` | site ~368 (já era P0 no §3.3 — **não implementado**) |
+| **B** | **Dasa** (multi-board) | Labs/hosp · Gupy | `dasaassistencial` / `dasaatendimento` / `dasatecnologia` | ~70+ vivos · site ~466 |
+| **B** | **Sabin** | Labs · Gupy | `gruposabin.gupy.io` | ~200 vivos · site ~39 |
+| **B** | **FIDI** | Diagnóstico · Gupy | `fidi.gupy.io` | ~30 · site ~151 |
+| **B** | **Rede Unimed** (muitas coops) | Cooperativa · Gupy/Solides | `unimedcampinas.gupy.io`, `unimedjp.vagas.solides.com.br`… | long-tail nacional |
+| **B** | **Solides** (cauda) | ATS clínicas/home care | `{tenant}.vagas.solides.com.br/vaga/{id}` | ~6% amostra; cliente partilhado ainda inexistente |
+| **C** | Hospitais médios Gupy | Hospital | Vera Cruz, Baía Sul, FHSA, Pilar, São Lucas, MedMais, IMED, Imtep, Oncologia D’Or, São Camilo, CASSI, Irmã Dulce… | 10–300/site cada |
+
+**Diferencial nosso (eles fracos):** concursos/PSS — PCI, AgSUS, INCA.
+
+**Produto (secundário):** job board clássico + login “Seja Membro”; SEO city landings; volume aparente alto (provável stale); filtro `q` / localização / categoria. Não implementar scrapers destes gaps enquanto modo stabilize/SEO hold.
