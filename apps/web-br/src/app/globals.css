@@ -835,9 +835,9 @@ select {
     flex-direction: column;
   }
 
-  /* Map first on mobile — matches PT “see the map, then the list” scan */
   .brazil-map-visual {
-    order: -1;
+    /* Keep map clear of sticky header when scrolled into view */
+    scroll-margin-top: 5rem;
   }
 
   .brazil-map-svg {

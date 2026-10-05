@@ -34,5 +34,13 @@ if [[ "$CSS_COUNT" -lt 1 ]]; then
   exit 1
 fi
 
+# Homepage / listagens ISR dependem de DATA_DIR em produção. Builds locais
+# sem jobs.json bakeiam seed (3 vagas) no HTML — apagar para a 1ª request
+# no VPS regenerar a partir de /var/www/vagasaudebr/data.
+rm -f "$STAGE/.next/server/app/index.html" \
+  "$STAGE/.next/server/app/index.rsc" \
+  "$STAGE/.next/server/app/index.meta"
+rm -rf "$STAGE/.next/server/app/index.segments" 2>/dev/null || true
+
 tar -C "$STAGE" -czf "$OUT" .
-echo "OK $OUT (css=$CSS_COUNT)"
+echo "OK $OUT (css=$CSS_COUNT, homepage prerender stripped)"
