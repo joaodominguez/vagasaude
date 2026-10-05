@@ -399,6 +399,8 @@ Rede D’Or, Hapvida, IRSSL/Sírio OSS, Santa Casa BH/POA/BA, AACD, Rede Améric
 | **B** | **Solides** (cauda) | ATS clínicas/home care | `sources/solides.py` + Home Doctor / Solar | ~6% amostra | **`solides` OK** (cliente partilhado; expandir BOARDS) |
 | **C** | Hospitais médios Gupy | Hospital | Vera Cruz, Baía Sul, FHSA, Pilar, São Lucas, MedMais, IMED, Oncologia D’Or | 10–300/site | **OK** (`vera_cruz`…`oncologia_dor`) |
 
+**Ingest Out 2026 (ronda Unimed/Solides/médios):** `unimed` 91 · `solides` 55 · `vera_cruz` 56 · `baia_sul` 36 · `fhsa` 63 · `pilar` 31 · `sao_lucas` 33 · `medmais` 82 · `imed` 2 · `oncologia_dor` 24 · **Σ ≈ 473** (store BR ~4283).
+
 **Diferencial nosso (eles fracos):** concursos/PSS — PCI, AgSUS, INCA.
 
 **Produto (secundário):** job board clássico + login “Seja Membro”; SEO city landings; volume aparente alto (provável stale); filtro `q` / localização / categoria.
