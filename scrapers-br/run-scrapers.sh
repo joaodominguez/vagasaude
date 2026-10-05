@@ -21,9 +21,9 @@ if [[ -d "$ROOT/.venv" ]]; then
   source "$ROOT/.venv/bin/activate"
 fi
 
-# Einstein / vagas.com.br: CF 1005 no ASN Hetzner — skip em --source all
-# (run.py SKIP_SOURCES=einstein). Ingest off-VPS: run-einstein-off-vps.sh
-export SKIP_SOURCES="${SKIP_SOURCES:-einstein}"
+# Einstein + Fleury / vagas.com.br: CF 1005 no ASN Hetzner — skip em --source all
+# (run.py SKIP_SOURCES=einstein,fleury). Ingest off-VPS: run-vagas-com-off-vps.sh
+export SKIP_SOURCES="${SKIP_SOURCES:-einstein,fleury}"
 
 # Corre os scrapers. Falha parcial não deve abortar o digest.
 scrape_rc=0

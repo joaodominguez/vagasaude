@@ -18,8 +18,9 @@ Documento de pesquisa para `scrapers-br/` (espelho de `scrapers/` PT).
 |---|---|
 | **Ebserh / HU Brasil** (HUs federais) | **Adiado** — sem board estável; editais via **PCI** quando publicados. Sem scraper dedicado. |
 | **Santa Casa SP** | **Adiado / Skip** — só e-mail + LinkedIn; sem bolsa scrapeável. |
-| Scrapers activos | Manter cron `45 */6` em `:3011` / `vagasaudebr` (isolado do PT). **`einstein` skip no VPS** (`SKIP_SOURCES`) — scrape off-VPS + ingest. |
+| Scrapers activos | Manter cron `45 */6` em `:3011` / `vagasaudebr` (isolado do PT). **`einstein`+`fleury` skip no VPS** (`SKIP_SOURCES`) — scrape off-VPS + ingest. |
 | Produto | Estabilizar SEO (robots, sitemap, GA `G-0Q3135XVVY`, títulos/canonicals). |
+| Gaps P0/P1 (Out 2026) | **Implementados:** SPDM/PAIS, DaVita, Seconci-SP, Fleury, Dasa, Sabin, FIDI. **Adiados:** Unimeds / Solides cauda / hospitais médios. |
 
 Quando retomar volume: rever só estes gaps; não reabrir agregadores genéricos (Catho/Indeed/LinkedIn).
 
@@ -191,7 +192,8 @@ Estilo PT (`cuf.py`, `net_empregos.py`, `scm_faro.py`):
 scrapers-br/sources/
   __init__.py
   gupy.py                      # cliente partilhado + employers Gupy
-  einstein.py                  # Vagas.com employer
+  vagas_com.py                 # cliente Vagas.com (Einstein + Fleury)
+  einstein.py / fleury.py      # re-exports
   hcor.py                      # Pandapé / InfoJobs
   mater_dei.py                 # JobConvo
   hsl_sirio.py                 # SuccessFactors (hospital privado)
@@ -200,7 +202,8 @@ scrapers-br/sources/
   inca.py                      # IPO-analogue (oncologia pública)
   # employers Gupy registados em gupy.py:
   #   rededor, hapvida, irssl, santa_casa_bh, santa_casa_poa,
-  #   santa_casa_ba, aacd, redeamericas, moinhos, bp, haoc
+  #   santa_casa_ba, aacd, redeamericas, moinhos, bp, haoc,
+  #   spdm, davita, seconci_sp, dasa, sabin, fidi
 ```
 
 Registar slugs em `apps/web-br/src/lib/sources.ts` com `sector: "Público" | "Privado" | "Filantrópico"`.
@@ -383,19 +386,19 @@ Rede D’Or, Hapvida, IRSSL/Sírio OSS, Santa Casa BH/POA/BA, AACD, Rede Améric
 
 ### Gaps prioritários (eles têm · nós não) — backlog pós-stabilize
 
-| Pri | Fonte | Tipo | URL pattern | Presença (Gupy vivo / site) |
-|---|---|---|---|---|
-| **A** | **SPDM/PAIS** (+ afiliadas RJ/Diadema/HGG/HED/HSP/AMEs) | OSS/SUS · Gupy | `spdmpais.gupy.io`, `spdmpaisrj`, `hgg`, `hed`… | ~350+ vivos · site lista 400–575/board |
-| **A** | **Davita / Serviços Assistenciais** | Diálise · Gupy | `servicosassistenciais.gupy.io` | ~200 vivos · site ~900 sob marca Davita |
-| **A** | **Seconci-SP** | Filantrópico/SST · Gupy | `seconci-sp.gupy.io` | ~435 vivos · site ~648 |
-| **A** | **Fleury** | Labs · Vagas.com | `trabalheconosco.vagas.com.br/grupo-fleury/…` | site ~368 (já era P0 no §3.3 — **não implementado**) |
-| **B** | **Dasa** (multi-board) | Labs/hosp · Gupy | `dasaassistencial` / `dasaatendimento` / `dasatecnologia` | ~70+ vivos · site ~466 |
-| **B** | **Sabin** | Labs · Gupy | `gruposabin.gupy.io` | ~200 vivos · site ~39 |
-| **B** | **FIDI** | Diagnóstico · Gupy | `fidi.gupy.io` | ~30 · site ~151 |
-| **B** | **Rede Unimed** (muitas coops) | Cooperativa · Gupy/Solides | `unimedcampinas.gupy.io`, `unimedjp.vagas.solides.com.br`… | long-tail nacional |
-| **B** | **Solides** (cauda) | ATS clínicas/home care | `{tenant}.vagas.solides.com.br/vaga/{id}` | ~6% amostra; cliente partilhado ainda inexistente |
-| **C** | Hospitais médios Gupy | Hospital | Vera Cruz, Baía Sul, FHSA, Pilar, São Lucas, MedMais, IMED, Imtep, Oncologia D’Or, São Camilo, CASSI, Irmã Dulce… | 10–300/site cada |
+| Pri | Fonte | Tipo | URL pattern | Presença (Gupy vivo / site) | Estado |
+|---|---|---|---|---|---|
+| **A** | **SPDM/PAIS** (+ afiliadas RJ/Diadema/HGG/HED/HSP) | OSS/SUS · Gupy | `spdmpais`, `spdmpaisrj`, `hgg`, `hed`, `spdmhsp`… | ~350+ vivos | **`spdm` OK** (`publico`) |
+| **A** | **Davita / Serviços Assistenciais** | Diálise · Gupy | `servicosassistenciais.gupy.io` | ~200 vivos | **`davita` OK** |
+| **A** | **Seconci-SP** | Filantrópico/SST · Gupy | `seconci-sp.gupy.io` | ~435 vivos | **`seconci_sp` OK** (`ipss`) |
+| **A** | **Fleury** | Labs · Vagas.com | `trabalheconosco.vagas.com.br/grupo-fleury/…` | site ~368 | **`fleury` OK** (off-VPS; CF 1005) |
+| **B** | **Dasa** (multi-board) | Labs/hosp · Gupy | `dasaassistencial` / `dasaatendimento` | ~70+ vivos | **`dasa` OK** (skip tech) |
+| **B** | **Sabin** | Labs · Gupy | `gruposabin.gupy.io` | ~200 vivos | **`sabin` OK** |
+| **B** | **FIDI** | Diagnóstico · Gupy | `fidi.gupy.io` | ~30 | **`fidi` OK** |
+| **B** | **Rede Unimed** (muitas coops) | Cooperativa · Gupy/Solides | `unimedcampinas.gupy.io`, `unimedjp.vagas.solides.com.br`… | long-tail nacional | **Backlog** |
+| **B** | **Solides** (cauda) | ATS clínicas/home care | `{tenant}.vagas.solides.com.br/vaga/{id}` | ~6% amostra | **Backlog** (cliente partilhado) |
+| **C** | Hospitais médios Gupy | Hospital | Vera Cruz, Baía Sul, FHSA, Pilar, São Lucas, MedMais, IMED… | 10–300/site | **Backlog** |
 
 **Diferencial nosso (eles fracos):** concursos/PSS — PCI, AgSUS, INCA.
 
-**Produto (secundário):** job board clássico + login “Seja Membro”; SEO city landings; volume aparente alto (provável stale); filtro `q` / localização / categoria. Não implementar scrapers destes gaps enquanto modo stabilize/SEO hold.
+**Produto (secundário):** job board clássico + login “Seja Membro”; SEO city landings; volume aparente alto (provável stale); filtro `q` / localização / categoria.

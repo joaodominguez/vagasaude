@@ -19,12 +19,12 @@ from sources import SCRAPERS
 
 # Fontes bloqueadas no VPS Hetzner (Cloudflare ASN / error 1005).
 # Continuam executáveis com --source <slug> a partir de um host não bloqueado.
-DEFAULT_SKIP_ON_ALL = "einstein"
+DEFAULT_SKIP_ON_ALL = "einstein,fleury"
 
-EINSTEIN_SKIP_MSG = (
+VAGAS_COM_SKIP_MSG = (
     "Skip no VPS: Cloudflare 1005/403 em vagas.com.br (ASN Hetzner). "
-    "Correr off-VPS: python run.py --source einstein "
-    "(ver run-einstein-off-vps.sh)."
+    "Correr off-VPS: python run.py --source {slug} "
+    "(ver run-vagas-com-off-vps.sh)."
 )
 
 
@@ -40,8 +40,10 @@ def run_skipped(slug: str) -> dict:
     Com REPORT_SKIPS=1 regista status skipped (requer app BR com suporte).
     """
     started_at = datetime.now(timezone.utc).isoformat()
-    msg = EINSTEIN_SKIP_MSG if slug == "einstein" else (
-        f"Skip intencional ({slug}): listado em SKIP_SOURCES / --source all."
+    msg = (
+        VAGAS_COM_SKIP_MSG.format(slug=slug)
+        if slug in {"einstein", "fleury"}
+        else f"Skip intencional ({slug}): listado em SKIP_SOURCES / --source all."
     )
     print(f"[{slug}] SKIP — {msg}")
     if os.environ.get("REPORT_SKIPS", "").strip() in {"1", "true", "yes"}:

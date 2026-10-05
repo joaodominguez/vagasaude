@@ -364,3 +364,147 @@ class HaocScraper(GupyScraper):
             return jobs
         finally:
             client.close()
+
+
+class SpdmScraper(GupyScraper):
+    """SPDM/PAIS (+ afiliadas) — OSS/SUS via Gupy multi-board.
+
+    Sector `publico` (como IRSSL): gestão de equipamentos SUS / contratos OSS.
+    """
+
+    slug = "spdm"
+    name = "SPDM/PAIS"
+    subdomain = "spdmpais"
+    company = "SPDM/PAIS"
+    sector = "publico"
+    filter_mode = "health"
+    enrich_details = True
+
+    # (subdomain, company label, sector, source_id prefix)
+    BOARDS: list[tuple[str, str, str, str]] = [
+        ("spdmpais", "SPDM/PAIS", "publico", "pais"),
+        ("spdmpaisrj", "SPDM/PAIS Rio de Janeiro", "publico", "pais_rj"),
+        ("spdmpaisdiadema", "SPDM/PAIS Diadema", "publico", "pais_diadema"),
+        (
+            "hgg",
+            "Hospital Geral de Guarulhos — SPDM Afiliadas",
+            "publico",
+            "hgg",
+        ),
+        (
+            "hed",
+            "Hospital Estadual de Diadema — SPDM Afiliadas",
+            "publico",
+            "hed",
+        ),
+        ("spdmhsp", "SPDM Hospital São Paulo", "publico", "hsp"),
+        ("spdm", "SPDM Afiliadas", "publico", "afiliadas"),
+    ]
+
+    def fetch(self) -> list[JobPayload]:
+        client = HttpClient(min_interval=0.2)
+        try:
+            jobs: list[JobPayload] = []
+            seen_urls: set[str] = set()
+            for subdomain, company, sector, prefix in self.BOARDS:
+                try:
+                    batch = self._fetch_board(
+                        client, subdomain, company, sector, source_prefix=prefix
+                    )
+                except Exception as exc:  # noqa: BLE001
+                    print(f"[{self.slug}] board {subdomain}: {exc}")
+                    continue
+                for job in batch:
+                    if job.application_url in seen_urls:
+                        continue
+                    seen_urls.add(job.application_url)
+                    jobs.append(job)
+            return jobs
+        finally:
+            client.close()
+
+
+class DavitaScraper(GupyScraper):
+    """DaVita / Serviços Assistenciais — diálise (Gupy)."""
+
+    slug = "davita"
+    name = "DaVita Serviços Assistenciais"
+    subdomain = "servicosassistenciais"
+    company = "DaVita — Serviços Assistenciais aos Pacientes"
+    sector = "privado"
+    filter_mode = "health"
+
+
+class SeconciSpScraper(GupyScraper):
+    """Seconci-SP — filantrópico / SST (Gupy)."""
+
+    slug = "seconci_sp"
+    name = "Seconci-SP"
+    subdomain = "seconci-sp"
+    company = "Seconci-SP"
+    sector = "ipss"
+    filter_mode = "health"
+
+
+class DasaScraper(GupyScraper):
+    """Dasa — medicina diagnóstica (boards assistencial + atendimento).
+
+    Skip `dasatecnologia` (IT/dados — fora do filtro saúde).
+    """
+
+    slug = "dasa"
+    name = "Dasa"
+    subdomain = "dasaassistencial"
+    company = "Dasa"
+    sector = "privado"
+    filter_mode = "health"
+    enrich_details = True
+
+    BOARDS: list[tuple[str, str, str, str]] = [
+        ("dasaassistencial", "Dasa Assistencial", "privado", "assist"),
+        ("dasaatendimento", "Dasa Atendimento", "privado", "atend"),
+    ]
+
+    def fetch(self) -> list[JobPayload]:
+        client = HttpClient(min_interval=0.2)
+        try:
+            jobs: list[JobPayload] = []
+            seen_urls: set[str] = set()
+            for subdomain, company, sector, prefix in self.BOARDS:
+                try:
+                    batch = self._fetch_board(
+                        client, subdomain, company, sector, source_prefix=prefix
+                    )
+                except Exception as exc:  # noqa: BLE001
+                    print(f"[{self.slug}] board {subdomain}: {exc}")
+                    continue
+                for job in batch:
+                    if job.application_url in seen_urls:
+                        continue
+                    seen_urls.add(job.application_url)
+                    jobs.append(job)
+            return jobs
+        finally:
+            client.close()
+
+
+class SabinScraper(GupyScraper):
+    """Grupo Sabin — laboratórios (Gupy)."""
+
+    slug = "sabin"
+    name = "Grupo Sabin"
+    subdomain = "gruposabin"
+    company = "Grupo Sabin"
+    sector = "privado"
+    filter_mode = "health"
+
+
+class FidiScraper(GupyScraper):
+    """FIDI — diagnóstico por imagem (Gupy)."""
+
+    slug = "fidi"
+    name = "FIDI"
+    subdomain = "fidi"
+    company = "FIDI"
+    sector = "privado"
+    filter_mode = "health"

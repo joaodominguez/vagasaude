@@ -1,17 +1,24 @@
 from sources.agsus import AgsusScraper
 from sources.einstein import EinsteinScraper
+from sources.fleury import FleuryScraper
 from sources.gupy import (
     AacdScraper,
     BpScraper,
+    DasaScraper,
+    DavitaScraper,
+    FidiScraper,
     HaocScraper,
     HapvidaScraper,
     IrsslScraper,
     MoinhosScraper,
     RedeAmericasScraper,
     RedeDorScraper,
+    SabinScraper,
     SantaCasaBaScraper,
     SantaCasaBhScraper,
     SantaCasaPoaScraper,
+    SeconciSpScraper,
+    SpdmScraper,
 )
 from sources.hcor import HcorScraper
 from sources.hsl_sirio import HslSirioScraper
@@ -31,6 +38,7 @@ SCRAPERS = {
     MoinhosScraper.slug: MoinhosScraper,
     BpScraper.slug: BpScraper,
     EinsteinScraper.slug: EinsteinScraper,
+    FleuryScraper.slug: FleuryScraper,
     HaocScraper.slug: HaocScraper,
     HcorScraper.slug: HcorScraper,
     MaterDeiScraper.slug: MaterDeiScraper,
@@ -38,4 +46,10 @@ SCRAPERS = {
     PciConcursosScraper.slug: PciConcursosScraper,
     AgsusScraper.slug: AgsusScraper,
     IncaScraper.slug: IncaScraper,
+    SpdmScraper.slug: SpdmScraper,
+    DavitaScraper.slug: DavitaScraper,
+    SeconciSpScraper.slug: SeconciSpScraper,
+    DasaScraper.slug: DasaScraper,
+    SabinScraper.slug: SabinScraper,
+    FidiScraper.slug: FidiScraper,
 }
