@@ -12,6 +12,7 @@ Documento de pesquisa para `scrapers-br/` (espelho de `scrapers/` PT).
 
 ## Modo actual: estabilizar / SEO hold (Out 2026)
 
+**HOLD 2026-10-05 (PT + BR):** sem scrapers/UI/features novas até o user pedir — objetivo = indexação GSC.  
 **Parar expansão de scrapers.** Mercado BR fica em hold para Google organic — sem novos módulos, sem blast de emails, sem redesign.
 
 | Item | Estado |
