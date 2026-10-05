@@ -231,6 +231,7 @@ class SolidesSaudeScraper(SolidesScraper):
     filter_mode = "health"
 
     # (tenant, company label, sector, source_id prefix)
+    # Descoberta: saudevagas apply URLs + probe API (Out 2026).
     BOARDS: list[tuple[str, str, str, str]] = [
         (
             "unimedjp",
@@ -257,6 +258,18 @@ class SolidesSaudeScraper(SolidesScraper):
             "unimedpatos",
         ),
         (
+            "unimedcapivari",
+            "Unimed Capivari",
+            "privado",
+            "unimedcapivari",
+        ),
+        (
+            "unimedsetelagoas",
+            "Unimed Sete Lagoas",
+            "privado",
+            "unimedsetelagoas",
+        ),
+        (
             "homedoctor",
             "Home Doctor",
             "privado",
@@ -267,6 +280,42 @@ class SolidesSaudeScraper(SolidesScraper):
             "Solar Cuidados e Serviços em Saúde",
             "privado",
             "solar",
+        ),
+        (
+            "homecarerenascer",
+            "Renascer Home Care",
+            "privado",
+            "renascer",
+        ),
+        (
+            "hospitalhilda",
+            "Instituto São Lucas (Hospital Hilda)",
+            "privado",
+            "hilda",
+        ),
+        (
+            "franciscajulia",
+            "Hospital Francisca Júlia",
+            "privado",
+            "franciscajulia",
+        ),
+        (
+            "hjf",
+            "Hospital Jacob Facuri",
+            "privado",
+            "hjf",
+        ),
+        (
+            "clinicadoyon",
+            "Data Med / Clínica Doyon",
+            "privado",
+            "doyon",
+        ),
+        (
+            "santacasapc",
+            "Santa Casa de Poços de Caldas",
+            "ipss",
+            "santacasapc",
         ),
     ]
 

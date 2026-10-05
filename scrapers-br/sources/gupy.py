@@ -399,6 +399,12 @@ class SpdmScraper(GupyScraper):
         ),
         ("spdmhsp", "SPDM Hospital São Paulo", "publico", "hsp"),
         ("spdm", "SPDM Afiliadas", "publico", "afiliadas"),
+        (
+            "spdmpaissa",
+            "SPDM/PAIS Santo André",
+            "publico",
+            "pais_sa",
+        ),
     ]
 
     def fetch(self) -> list[JobPayload]:
@@ -524,7 +530,7 @@ class UnimedScraper(GupyScraper):
     filter_mode = "health"
     enrich_details = True
 
-    # Top ~10 por jobs vivos (probe Out 2026).
+    # Coops Gupy com vagas abertas (probe Out 2026 + cauda saudevagas).
     BOARDS: list[tuple[str, str, str, str]] = [
         ("unimedcampinas", "Unimed Campinas", "privado", "campinas"),
         ("unimednacional", "Unimed Nacional", "privado", "nacional"),
@@ -536,6 +542,23 @@ class UnimedScraper(GupyScraper):
         ("unimedguarulhos", "Unimed Guarulhos", "privado", "guarulhos"),
         ("unimedmaceio", "Unimed Maceió", "privado", "maceio"),
         ("vagasunimedpelotas", "Unimed Pelotas", "privado", "pelotas"),
+        # Cauda (saudevagas apply URLs + subdomain probe)
+        (
+            "unimedvaledosinos",
+            "Unimed Vale dos Sinos",
+            "privado",
+            "valedosinos",
+        ),
+        (
+            "unimedgrandeflorianopolis",
+            "Unimed Grande Florianópolis",
+            "privado",
+            "grandefloripa",
+        ),
+        ("unimedsjc", "Unimed São José dos Campos", "privado", "sjc"),
+        ("unimedpiracicaba", "Unimed Piracicaba", "privado", "piracicaba"),
+        ("unimedfortaleza", "Unimed Fortaleza", "privado", "fortaleza"),
+        ("unimedvaledocai", "Unimed Vale do Cai", "privado", "valedocai"),
     ]
 
     def fetch(self) -> list[JobPayload]:
@@ -573,7 +596,7 @@ class VeraCruzScraper(GupyScraper):
 
 
 class BaiaSulScraper(GupyScraper):
-    """Hospital Baía Sul (Florianópolis / Hospital Care) — Gupy."""
+    """Hospital Baía Sul (+ Baía Sul Mulher) — Gupy multi-board."""
 
     slug = "baia_sul"
     name = "Hospital Baía Sul"
@@ -581,6 +604,39 @@ class BaiaSulScraper(GupyScraper):
     company = "Hospital Baía Sul"
     sector = "privado"
     filter_mode = "hospital"
+    enrich_details = True
+
+    BOARDS: list[tuple[str, str, str, str]] = [
+        ("baiasulhospital", "Hospital Baía Sul", "privado", "hospital"),
+        (
+            "baiasulmulher",
+            "Hospital Baía Sul Mulher",
+            "privado",
+            "mulher",
+        ),
+    ]
+
+    def fetch(self) -> list[JobPayload]:
+        client = HttpClient(min_interval=0.2)
+        try:
+            jobs: list[JobPayload] = []
+            seen_urls: set[str] = set()
+            for subdomain, company, sector, prefix in self.BOARDS:
+                try:
+                    batch = self._fetch_board(
+                        client, subdomain, company, sector, source_prefix=prefix
+                    )
+                except Exception as exc:  # noqa: BLE001
+                    print(f"[{self.slug}] board {subdomain}: {exc}")
+                    continue
+                for job in batch:
+                    if job.application_url in seen_urls:
+                        continue
+                    seen_urls.add(job.application_url)
+                    jobs.append(job)
+            return jobs
+        finally:
+            client.close()
 
 
 class FhsaScraper(GupyScraper):
@@ -647,3 +703,181 @@ class OncologiaDorScraper(GupyScraper):
     company = "Oncologia D'Or"
     sector = "privado"
     filter_mode = "health"
+
+
+class AfipScraper(GupyScraper):
+    """AFIP — laboratórios / diagnóstico (Gupy)."""
+
+    slug = "afip"
+    name = "AFIP"
+    subdomain = "afip"
+    company = "AFIP"
+    sector = "privado"
+    filter_mode = "health"
+
+
+class MarcelinoChampagnatScraper(GupyScraper):
+    """Hospital São Marcelino Champagnat (Curitiba) — Gupy."""
+
+    slug = "marcelino_champagnat"
+    name = "Hospital São Marcelino Champagnat"
+    subdomain = "hospitalsaomarcelinochampagnat"
+    company = "Hospital São Marcelino Champagnat"
+    sector = "privado"
+    filter_mode = "hospital"
+
+
+class SaoLucasRibeiraoScraper(GupyScraper):
+    """Hospital São Lucas Ribeirão Preto — Gupy (≠ PUCRS `sao_lucas`)."""
+
+    slug = "sao_lucas_ribeirao"
+    name = "Hospital São Lucas Ribeirão Preto"
+    subdomain = "saolucashospital"
+    company = "Hospital São Lucas Ribeirão Preto"
+    sector = "privado"
+    filter_mode = "hospital"
+
+
+class CajuruScraper(GupyScraper):
+    """Hospital Universitário Cajuru (PUCPR) — Gupy."""
+
+    slug = "cajuru"
+    name = "Hospital Universitário Cajuru"
+    subdomain = "hospitaluniversitariocajuru"
+    company = "Hospital Universitário Cajuru"
+    sector = "privado"
+    filter_mode = "hospital"
+
+
+class IrmaDulceScraper(GupyScraper):
+    """Obras Sociais Irmã Dulce — Gupy."""
+
+    slug = "irma_dulce"
+    name = "Obras Sociais Irmã Dulce"
+    subdomain = "obrassociaisirmadulce"
+    company = "Obras Sociais Irmã Dulce"
+    sector = "ipss"
+    filter_mode = "hospital"
+
+
+class InovaSaudeScraper(GupyScraper):
+    """Inova Saúde — OSS / gestão hospitalar (Gupy)."""
+
+    slug = "inova_saude"
+    name = "Inova Saúde"
+    subdomain = "talentosinovasaude"
+    company = "Inova Saúde"
+    sector = "publico"
+    filter_mode = "health"
+
+
+class InstitutoMaisSaudeScraper(GupyScraper):
+    """Instituto Social Mais Saúde — OSS (Gupy)."""
+
+    slug = "instituto_mais_saude"
+    name = "Instituto Social Mais Saúde"
+    subdomain = "institutomaissaude"
+    company = "Instituto Social Mais Saúde"
+    sector = "publico"
+    filter_mode = "health"
+
+
+class RastButantaScraper(GupyScraper):
+    """RAST Butantã — rede de atenção / UPA SP (Gupy)."""
+
+    slug = "rast_butanta"
+    name = "RAST Butantã"
+    subdomain = "rastsbutanta"
+    company = "RAST Butantã"
+    sector = "publico"
+    filter_mode = "health"
+
+
+class EvangelicoScraper(GupyScraper):
+    """Hospital Evangélico (Sorocaba) — Gupy."""
+
+    slug = "evangelico"
+    name = "Hospital Evangélico"
+    subdomain = "evangelicohospital"
+    company = "Hospital Evangélico"
+    sector = "ipss"
+    filter_mode = "hospital"
+
+
+class HmbfmScraper(GupyScraper):
+    """Hospital Municipal de Barueri Dr. Francisco Moran — Gupy."""
+
+    slug = "hmbfm"
+    name = "Hospital Municipal de Barueri"
+    subdomain = "hmbfm"
+    company = "Hospital Municipal de Barueri Dr. Francisco Moran"
+    sector = "publico"
+    filter_mode = "hospital"
+
+
+class CaudaGupyScraper(GupyScraper):
+    """Cauda Gupy — clínicas, labs e hospitais médios (multi-board).
+
+    Boards descobertos via saudevagas apply URLs (Out 2026), excluindo
+    fontes já registadas como scraper dedicado.
+    """
+
+    slug = "cauda_gupy"
+    name = "Hospitais e clínicas (cauda Gupy)"
+    subdomain = "s3saude"
+    company = "Cauda Gupy — saúde"
+    sector = "privado"
+    filter_mode = "health"
+    enrich_details = True
+
+    # (subdomain, company, sector, prefix)
+    BOARDS: list[tuple[str, str, str, str]] = [
+        ("s3saude", "S3 Gestão em Saúde", "privado", "s3"),
+        ("dcgroup", "DC Group", "privado", "dcgroup"),
+        ("spx", "SPX Imagem", "privado", "spx"),
+        (
+            "leiriadeandrade",
+            "Hospital de Olhos Leiria de Andrade",
+            "privado",
+            "leiria",
+        ),
+        (
+            "hmdcc",
+            "Hospital Metropolitano Dr. Célio de Castro",
+            "publico",
+            "hmdcc",
+        ),
+        (
+            "htejz",
+            "Hospital de Transplantes Euryclides de Jesus Zerbini",
+            "publico",
+            "htejz",
+        ),
+        ("ninasaude", "Nina Saúde", "privado", "nina"),
+        ("ciadaconsulta", "Cia da Consulta", "privado", "cia"),
+        ("sbsc", "Hospital São Camilo SP", "privado", "saocamilo"),
+        ("fp", "FP Saúde", "privado", "fp"),
+        ("gruposhbrasil", "Grupo SH Brasil", "privado", "sh"),
+    ]
+
+    def fetch(self) -> list[JobPayload]:
+        client = HttpClient(min_interval=0.2)
+        try:
+            jobs: list[JobPayload] = []
+            seen_urls: set[str] = set()
+            for subdomain, company, sector, prefix in self.BOARDS:
+                try:
+                    batch = self._fetch_board(
+                        client, subdomain, company, sector, source_prefix=prefix
+                    )
+                except Exception as exc:  # noqa: BLE001
+                    print(f"[{self.slug}] board {subdomain}: {exc}")
+                    continue
+                for job in batch:
+                    if job.application_url in seen_urls:
+                        continue
+                    seen_urls.add(job.application_url)
+                    jobs.append(job)
+            return jobs
+        finally:
+            client.close()

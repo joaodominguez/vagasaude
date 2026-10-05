@@ -32,16 +32,27 @@ Fontes do mercado brasileiro. **Ingest só em** `http://127.0.0.1:3011` / `vagas
 | `dasa` | Dasa Assistencial + Atendimento | Gupy multi-board | privado | Skip board tecnologia |
 | `sabin` | Grupo Sabin | Gupy | privado | Labs |
 | `fidi` | FIDI | Gupy | privado | Diagnóstico por imagem |
-| `unimed` | Unimed (top 10 coops Gupy) | Gupy multi-board | privado | Campinas, Nacional, JF, Cuiabá… |
-| `solides` | Unimeds Solides + clínicas/home care | Solides multi-tenant | privado | JP, Santos, RB, Patos, Home Doctor, Solar |
+| `unimed` | Unimed (cooperativas Gupy) | Gupy multi-board | privado | 16 coops (Campinas… Vale do Cai) |
+| `solides` | Unimeds Solides + clínicas/home care | Solides multi-tenant | privado / ipss | JP, Santos, Capivari, Renascer, Hilda, HJF… |
 | `vera_cruz` | Hospital Vera Cruz | Gupy | privado | Campinas |
-| `baia_sul` | Hospital Baía Sul | Gupy | privado | Florianópolis |
+| `baia_sul` | Hospital Baía Sul (+ Mulher) | Gupy multi-board | privado | Florianópolis |
 | `fhsa` | Hospital São Francisco de Assis | Gupy | ipss → Filantrópico | BH · 100% SUS |
 | `pilar` | Pilar Hospital | Gupy | privado | |
-| `sao_lucas` | Hospital São Lucas | Gupy | privado | |
+| `sao_lucas` | Hospital São Lucas | Gupy | privado | PUCRS |
 | `medmais` | MedMais | Gupy | privado | Urgência / socorro |
 | `imed` | IMED (OSS) | Gupy | publico | Gestão HU Goiás/SP |
 | `oncologia_dor` | Oncologia D’Or | Gupy | privado | |
+| `afip` | AFIP | Gupy | privado | Labs / diagnóstico |
+| `marcelino_champagnat` | Hospital São Marcelino Champagnat | Gupy | privado | Curitiba |
+| `sao_lucas_ribeirao` | Hospital São Lucas Ribeirão Preto | Gupy | privado | ≠ `sao_lucas` PUCRS |
+| `cajuru` | Hospital Universitário Cajuru | Gupy | privado | PUCPR |
+| `irma_dulce` | Obras Sociais Irmã Dulce | Gupy | ipss → Filantrópico | BA |
+| `inova_saude` | Inova Saúde | Gupy | publico | OSS |
+| `instituto_mais_saude` | Instituto Social Mais Saúde | Gupy | publico | OSS |
+| `rast_butanta` | RAST Butantã | Gupy | publico | UPA / atenção SP |
+| `evangelico` | Hospital Evangélico | Gupy | ipss → Filantrópico | Sorocaba |
+| `hmbfm` | Hospital Municipal de Barueri | Gupy | publico | |
+| `cauda_gupy` | Clínicas/hospitais médios | Gupy multi-board | misto | S3, SPX, São Camilo, HMDCC… |
 
 Cliente partilhado Gupy: `sources/gupy.py`.  
 Cliente partilhado Vagas.com: `sources/vagas_com.py` (Einstein + Fleury).  
