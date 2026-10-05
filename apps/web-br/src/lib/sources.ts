@@ -17,7 +17,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "PCI Concursos",
     url: "https://www.pciconcursos.com.br/vagas/saude/",
     sector: "Público",
-    logo: "/partners/pci-concursos.svg",
+    logo: "/partners/pci-concursos-v2.png",
   },
   {
     id: "agsus",
@@ -25,7 +25,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "AgSUS",
     url: "https://agenciasus.org.br/trabalheconosco/",
     sector: "Público",
-    logo: "/partners/agsus.svg",
+    logo: "/partners/agsus-v2.png",
   },
   {
     id: "inca",
@@ -33,7 +33,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "INCA",
     url: "https://www.gov.br/inca/pt-br/acesso-a-informacao/institucional/concurso-publico",
     sector: "Público",
-    logo: "/partners/inca.svg",
+    logo: "/partners/inca-v2.png",
   },
   {
     id: "rededor",
@@ -65,7 +65,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "Sírio-Libanês",
     url: "https://vagas.hsl.org.br/",
     sector: "Privado",
-    logo: "/partners/hsl-sirio-v2.svg",
+    logo: "/partners/hsl-sirio-v3.png",
   },
   {
     id: "santa_casa_bh",
@@ -81,7 +81,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "Santa Casa POA",
     url: "https://santacasa.gupy.io/",
     sector: "Filantrópico",
-    logo: "/partners/santa-casa-poa.svg",
+    logo: "/partners/santa-casa-poa-v2.png",
   },
   {
     id: "santa_casa_ba",
@@ -89,7 +89,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "Santa Casa BA",
     url: "https://santacasaba.gupy.io/",
     sector: "Filantrópico",
-    logo: "/partners/santa-casa-ba.svg",
+    logo: "/partners/santa-casa-ba-v2.png",
   },
   {
     id: "aacd",
@@ -97,7 +97,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "AACD",
     url: "https://aacd.gupy.io/",
     sector: "Filantrópico",
-    logo: "/partners/aacd.svg",
+    logo: "/partners/aacd-v2.png",
   },
   {
     id: "redeamericas",
@@ -137,7 +137,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "Oswaldo Cruz",
     url: "https://www.hospitaloswaldocruz.org.br/trabalhe-conosco/",
     sector: "Privado",
-    logo: "/partners/haoc-v2.svg",
+    logo: "/partners/haoc-v3.png",
   },
   {
     id: "hcor",
@@ -145,7 +145,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "HCor",
     url: "https://hcoracao.pandape.infojobs.com.br/",
     sector: "Filantrópico",
-    logo: "/partners/hcor-v2.svg",
+    logo: "/partners/hcor-v3.png",
   },
   {
     id: "mater_dei",
@@ -153,7 +153,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "Mater Dei",
     url: "https://app.jobconvo.com/pt-br/careers/hospital-mater-dei/6fcf22e3-009f-40e9-94ea-25e36ed95d22/",
     sector: "Privado",
-    logo: "/partners/mater-dei.svg",
+    logo: "/partners/mater-dei-v2.png",
   },
   {
     id: "spdm",
@@ -161,7 +161,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "SPDM/PAIS",
     url: "https://spdmpais.gupy.io/",
     sector: "Público",
-    logo: "/partners/spdm.svg",
+    logo: "/partners/spdm-v2.png",
   },
   {
     id: "davita",
@@ -169,7 +169,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "DaVita",
     url: "https://servicosassistenciais.gupy.io/",
     sector: "Privado",
-    logo: "/partners/davita.svg",
+    logo: "/partners/davita-v2.png",
   },
   {
     id: "seconci_sp",
@@ -177,7 +177,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "Seconci-SP",
     url: "https://seconci-sp.gupy.io/",
     sector: "Filantrópico",
-    logo: "/partners/seconci-sp.svg",
+    logo: "/partners/seconci-sp-v2.png",
   },
   {
     id: "fleury",
@@ -185,7 +185,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "Fleury",
     url: "https://trabalheconosco.vagas.com.br/grupo-fleury/oportunidades",
     sector: "Privado",
-    logo: "/partners/fleury.svg",
+    logo: "/partners/fleury-v2.png",
   },
   {
     id: "dasa",
@@ -193,7 +193,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "Dasa",
     url: "https://dasaassistencial.gupy.io/",
     sector: "Privado",
-    logo: "/partners/dasa.svg",
+    logo: "/partners/dasa-v2.png",
   },
   {
     id: "sabin",
@@ -201,7 +201,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "Sabin",
     url: "https://gruposabin.gupy.io/",
     sector: "Privado",
-    logo: "/partners/sabin.svg",
+    logo: "/partners/sabin-v2.png",
   },
   {
     id: "fidi",
@@ -209,7 +209,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "FIDI",
     url: "https://fidi.gupy.io/",
     sector: "Privado",
-    logo: "/partners/fidi.svg",
+    logo: "/partners/fidi-v2.png",
   },
   {
     id: "unimed",
@@ -217,7 +217,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "Unimed",
     url: "https://unimedcampinas.gupy.io/",
     sector: "Privado",
-    logo: "/partners/unimed.svg",
+    logo: "/partners/unimed-v2.png",
   },
   {
     id: "solides",
@@ -225,7 +225,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "Solides",
     url: "https://unimedjp.vagas.solides.com.br/",
     sector: "Privado",
-    logo: "/partners/solides.svg",
+    logo: "/partners/solides-v2.png",
   },
   {
     id: "vera_cruz",
@@ -233,7 +233,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "Vera Cruz",
     url: "https://veracruzhospital.gupy.io/",
     sector: "Privado",
-    logo: "/partners/vera-cruz.svg",
+    logo: "/partners/vera-cruz-v2.png",
   },
   {
     id: "baia_sul",
@@ -241,7 +241,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "Baía Sul",
     url: "https://baiasulhospital.gupy.io/",
     sector: "Privado",
-    logo: "/partners/baia-sul.svg",
+    logo: "/partners/baia-sul-v2.png",
   },
   {
     id: "fhsa",
@@ -249,7 +249,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "FHSA",
     url: "https://fhsfa.gupy.io/",
     sector: "Filantrópico",
-    logo: "/partners/fhsa.svg",
+    logo: "/partners/fhsa-v2.png",
   },
   {
     id: "pilar",
@@ -257,7 +257,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "Pilar",
     url: "https://pilarhospital.gupy.io/",
     sector: "Privado",
-    logo: "/partners/pilar.svg",
+    logo: "/partners/pilar-v2.png",
   },
   {
     id: "sao_lucas",
@@ -265,7 +265,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "São Lucas",
     url: "https://hospitalsaolucas.gupy.io/",
     sector: "Privado",
-    logo: "/partners/sao-lucas.svg",
+    logo: "/partners/sao-lucas-v2.png",
   },
   {
     id: "medmais",
@@ -273,7 +273,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "MedMais",
     url: "https://medmais.gupy.io/",
     sector: "Privado",
-    logo: "/partners/medmais.svg",
+    logo: "/partners/medmais-v2.png",
   },
   {
     id: "imed",
@@ -281,7 +281,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "IMED",
     url: "https://vagasimed.gupy.io/",
     sector: "Público",
-    logo: "/partners/imed.svg",
+    logo: "/partners/imed-v2.png",
   },
   {
     id: "oncologia_dor",
@@ -289,7 +289,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "Oncologia D'Or",
     url: "https://oncologiador.gupy.io/",
     sector: "Privado",
-    logo: "/partners/oncologia-dor.svg",
+    logo: "/partners/oncologia-dor-v2.png",
   },
 ];
 
