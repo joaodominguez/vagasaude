@@ -401,7 +401,7 @@ Rede D’Or, Hapvida, IRSSL/Sírio OSS, Santa Casa BH/POA/BA, AACD, Rede Améric
 
 **Ingest Out 2026 (ronda Unimed/Solides/médios):** `unimed` 91 · `solides` 55 · `vera_cruz` 56 · `baia_sul` 36 · `fhsa` 63 · `pilar` 31 · `sao_lucas` 33 · `medmais` 82 · `imed` 2 · `oncologia_dor` 24 · **Σ ≈ 473** (store BR ~4283).
 
-**Ingest Out 2026 (ronda cauda hospitais/clínicas):** ver secção abaixo / memória — Unimed +6 boards · Solides +8 tenants · scrapers novos AFIP…`cauda_gupy`.
+**Ingest Out 2026 (ronda cauda hospitais/clínicas):** `unimed` **139** · `solides` **137** · `baia_sul` **40** · `spdm` **262** · `afip` **107** · `marcelino_champagnat` **36** · `sao_lucas_ribeirao` **22** · `cajuru` **25** · `irma_dulce` **24** · `inova_saude` **39** · `instituto_mais_saude` **18** · `rast_butanta` **19** · `evangelico` **12** · `hmbfm` **12** · `cauda_gupy` **53** · **Σ publicados nestas fontes ≈ 945** (store BR **4802** published).
 
 **Diferencial nosso (eles fracos):** concursos/PSS — PCI, AgSUS, INCA.
 
