@@ -20,7 +20,7 @@ Documento de pesquisa para `scrapers-br/` (espelho de `scrapers/` PT).
 | **Santa Casa SP** | **Adiado / Skip** — só e-mail + LinkedIn; sem bolsa scrapeável. |
 | Scrapers activos | Manter cron `45 */6` em `:3011` / `vagasaudebr` (isolado do PT). **`einstein`+`fleury` skip no VPS** (`SKIP_SOURCES`) — scrape off-VPS + ingest. |
 | Produto | Estabilizar SEO (robots, sitemap, GA `G-0Q3135XVVY`, títulos/canonicals). |
-| Gaps P0/P1 (Out 2026) | **Implementados:** SPDM/PAIS, DaVita, Seconci-SP, Fleury, Dasa, Sabin, FIDI. **Adiados:** Unimeds / Solides cauda / hospitais médios. |
+| Gaps P0/P1 (Out 2026) | **Implementados:** SPDM/PAIS, DaVita, Seconci-SP, Fleury, Dasa, Sabin, FIDI, **Unimed (top Gupy)**, **Solides**, **hospitais médios** (Vera Cruz, Baía Sul, FHSA, Pilar, São Lucas, MedMais, IMED, Oncologia D’Or). **Adiados:** Ebserh, Santa Casa SP; cauda Unimed restante. |
 
 Quando retomar volume: rever só estes gaps; não reabrir agregadores genéricos (Catho/Indeed/LinkedIn).
 
@@ -395,9 +395,9 @@ Rede D’Or, Hapvida, IRSSL/Sírio OSS, Santa Casa BH/POA/BA, AACD, Rede Améric
 | **B** | **Dasa** (multi-board) | Labs/hosp · Gupy | `dasaassistencial` / `dasaatendimento` | ~70+ vivos | **`dasa` OK** (skip tech) |
 | **B** | **Sabin** | Labs · Gupy | `gruposabin.gupy.io` | ~200 vivos | **`sabin` OK** |
 | **B** | **FIDI** | Diagnóstico · Gupy | `fidi.gupy.io` | ~30 | **`fidi` OK** |
-| **B** | **Rede Unimed** (muitas coops) | Cooperativa · Gupy/Solides | `unimedcampinas.gupy.io`, `unimedjp.vagas.solides.com.br`… | long-tail nacional | **Backlog** |
-| **B** | **Solides** (cauda) | ATS clínicas/home care | `{tenant}.vagas.solides.com.br/vaga/{id}` | ~6% amostra | **Backlog** (cliente partilhado) |
-| **C** | Hospitais médios Gupy | Hospital | Vera Cruz, Baía Sul, FHSA, Pilar, São Lucas, MedMais, IMED… | 10–300/site | **Backlog** |
+| **B** | **Rede Unimed** (muitas coops) | Cooperativa · Gupy/Solides | top 10 Gupy + Solides JP/Santos/RB/Patos | long-tail nacional | **`unimed` + `solides` OK** (cauda restante backlog) |
+| **B** | **Solides** (cauda) | ATS clínicas/home care | `sources/solides.py` + Home Doctor / Solar | ~6% amostra | **`solides` OK** (cliente partilhado; expandir BOARDS) |
+| **C** | Hospitais médios Gupy | Hospital | Vera Cruz, Baía Sul, FHSA, Pilar, São Lucas, MedMais, IMED, Oncologia D’Or | 10–300/site | **OK** (`vera_cruz`…`oncologia_dor`) |
 
 **Diferencial nosso (eles fracos):** concursos/PSS — PCI, AgSUS, INCA.
 

@@ -3,28 +3,38 @@ from sources.einstein import EinsteinScraper
 from sources.fleury import FleuryScraper
 from sources.gupy import (
     AacdScraper,
+    BaiaSulScraper,
     BpScraper,
     DasaScraper,
     DavitaScraper,
+    FhsaScraper,
     FidiScraper,
     HaocScraper,
     HapvidaScraper,
+    ImedScraper,
     IrsslScraper,
+    MedMaisScraper,
     MoinhosScraper,
+    OncologiaDorScraper,
+    PilarScraper,
     RedeAmericasScraper,
     RedeDorScraper,
     SabinScraper,
     SantaCasaBaScraper,
     SantaCasaBhScraper,
     SantaCasaPoaScraper,
+    SaoLucasScraper,
     SeconciSpScraper,
     SpdmScraper,
+    UnimedScraper,
+    VeraCruzScraper,
 )
 from sources.hcor import HcorScraper
 from sources.hsl_sirio import HslSirioScraper
 from sources.inca import IncaScraper
 from sources.mater_dei import MaterDeiScraper
 from sources.pci_concursos import PciConcursosScraper
+from sources.solides import SolidesSaudeScraper
 
 SCRAPERS = {
     RedeDorScraper.slug: RedeDorScraper,
@@ -52,4 +62,14 @@ SCRAPERS = {
     DasaScraper.slug: DasaScraper,
     SabinScraper.slug: SabinScraper,
     FidiScraper.slug: FidiScraper,
+    UnimedScraper.slug: UnimedScraper,
+    SolidesSaudeScraper.slug: SolidesSaudeScraper,
+    VeraCruzScraper.slug: VeraCruzScraper,
+    BaiaSulScraper.slug: BaiaSulScraper,
+    FhsaScraper.slug: FhsaScraper,
+    PilarScraper.slug: PilarScraper,
+    SaoLucasScraper.slug: SaoLucasScraper,
+    MedMaisScraper.slug: MedMaisScraper,
+    ImedScraper.slug: ImedScraper,
+    OncologiaDorScraper.slug: OncologiaDorScraper,
 }

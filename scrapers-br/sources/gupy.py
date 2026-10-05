@@ -508,3 +508,142 @@ class FidiScraper(GupyScraper):
     company = "FIDI"
     sector = "privado"
     filter_mode = "health"
+
+
+class UnimedScraper(GupyScraper):
+    """Top Unimeds por volume em Gupy (não cobre todas as coops).
+
+    Solides-only Unimeds (JP, Santos, Rio Branco, Patos…) ficam em `solides`.
+    """
+
+    slug = "unimed"
+    name = "Unimed (cooperativas)"
+    subdomain = "unimedcampinas"
+    company = "Unimed"
+    sector = "privado"
+    filter_mode = "health"
+    enrich_details = True
+
+    # Top ~10 por jobs vivos (probe Out 2026).
+    BOARDS: list[tuple[str, str, str, str]] = [
+        ("unimedcampinas", "Unimed Campinas", "privado", "campinas"),
+        ("unimednacional", "Unimed Nacional", "privado", "nacional"),
+        ("unimedjf", "Unimed Juiz de Fora", "privado", "jf"),
+        ("unimedcuiaba", "Unimed Cuiabá", "privado", "cuiaba"),
+        ("unimedgoiania", "Unimed Goiânia", "privado", "goiania"),
+        ("unimedbelem", "Unimed Belém", "privado", "belem"),
+        ("unimedpoa", "Unimed Porto Alegre", "privado", "poa"),
+        ("unimedguarulhos", "Unimed Guarulhos", "privado", "guarulhos"),
+        ("unimedmaceio", "Unimed Maceió", "privado", "maceio"),
+        ("vagasunimedpelotas", "Unimed Pelotas", "privado", "pelotas"),
+    ]
+
+    def fetch(self) -> list[JobPayload]:
+        client = HttpClient(min_interval=0.2)
+        try:
+            jobs: list[JobPayload] = []
+            seen_urls: set[str] = set()
+            for subdomain, company, sector, prefix in self.BOARDS:
+                try:
+                    batch = self._fetch_board(
+                        client, subdomain, company, sector, source_prefix=prefix
+                    )
+                except Exception as exc:  # noqa: BLE001
+                    print(f"[{self.slug}] board {subdomain}: {exc}")
+                    continue
+                for job in batch:
+                    if job.application_url in seen_urls:
+                        continue
+                    seen_urls.add(job.application_url)
+                    jobs.append(job)
+            return jobs
+        finally:
+            client.close()
+
+
+class VeraCruzScraper(GupyScraper):
+    """Hospital Vera Cruz (Campinas) — Gupy."""
+
+    slug = "vera_cruz"
+    name = "Hospital Vera Cruz"
+    subdomain = "veracruzhospital"
+    company = "Hospital Vera Cruz"
+    sector = "privado"
+    filter_mode = "hospital"
+
+
+class BaiaSulScraper(GupyScraper):
+    """Hospital Baía Sul (Florianópolis / Hospital Care) — Gupy."""
+
+    slug = "baia_sul"
+    name = "Hospital Baía Sul"
+    subdomain = "baiasulhospital"
+    company = "Hospital Baía Sul"
+    sector = "privado"
+    filter_mode = "hospital"
+
+
+class FhsaScraper(GupyScraper):
+    """FHSA — Fundação Hospitalar São Francisco de Assis (BH, 100% SUS)."""
+
+    slug = "fhsa"
+    name = "Hospital São Francisco de Assis (FHSA)"
+    subdomain = "fhsfa"
+    company = "Hospital São Francisco de Assis"
+    sector = "ipss"
+    filter_mode = "hospital"
+
+
+class PilarScraper(GupyScraper):
+    """Pilar Hospital — Gupy."""
+
+    slug = "pilar"
+    name = "Pilar Hospital"
+    subdomain = "pilarhospital"
+    company = "Pilar Hospital"
+    sector = "privado"
+    filter_mode = "hospital"
+
+
+class SaoLucasScraper(GupyScraper):
+    """Hospital São Lucas — Gupy."""
+
+    slug = "sao_lucas"
+    name = "Hospital São Lucas"
+    subdomain = "hospitalsaolucas"
+    company = "Hospital São Lucas"
+    sector = "privado"
+    filter_mode = "hospital"
+
+
+class MedMaisScraper(GupyScraper):
+    """MedMais — urgência / socorro — Gupy."""
+
+    slug = "medmais"
+    name = "MedMais"
+    subdomain = "medmais"
+    company = "MedMais"
+    sector = "privado"
+    filter_mode = "health"
+
+
+class ImedScraper(GupyScraper):
+    """IMED — OSS / gestão de hospitais públicos (Goiás, SP)."""
+
+    slug = "imed"
+    name = "IMED"
+    subdomain = "vagasimed"
+    company = "IMED — Instituto de Medicina, Estudos e Desenvolvimento"
+    sector = "publico"
+    filter_mode = "hospital"
+
+
+class OncologiaDorScraper(GupyScraper):
+    """Oncologia D’Or — Gupy."""
+
+    slug = "oncologia_dor"
+    name = "Oncologia D'Or"
+    subdomain = "oncologiador"
+    company = "Oncologia D'Or"
+    sector = "privado"
+    filter_mode = "health"

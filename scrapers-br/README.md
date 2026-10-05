@@ -32,9 +32,20 @@ Fontes do mercado brasileiro. **Ingest só em** `http://127.0.0.1:3011` / `vagas
 | `dasa` | Dasa Assistencial + Atendimento | Gupy multi-board | privado | Skip board tecnologia |
 | `sabin` | Grupo Sabin | Gupy | privado | Labs |
 | `fidi` | FIDI | Gupy | privado | Diagnóstico por imagem |
+| `unimed` | Unimed (top 10 coops Gupy) | Gupy multi-board | privado | Campinas, Nacional, JF, Cuiabá… |
+| `solides` | Unimeds Solides + clínicas/home care | Solides multi-tenant | privado | JP, Santos, RB, Patos, Home Doctor, Solar |
+| `vera_cruz` | Hospital Vera Cruz | Gupy | privado | Campinas |
+| `baia_sul` | Hospital Baía Sul | Gupy | privado | Florianópolis |
+| `fhsa` | Hospital São Francisco de Assis | Gupy | ipss → Filantrópico | BH · 100% SUS |
+| `pilar` | Pilar Hospital | Gupy | privado | |
+| `sao_lucas` | Hospital São Lucas | Gupy | privado | |
+| `medmais` | MedMais | Gupy | privado | Urgência / socorro |
+| `imed` | IMED (OSS) | Gupy | publico | Gestão HU Goiás/SP |
+| `oncologia_dor` | Oncologia D’Or | Gupy | privado | |
 
 Cliente partilhado Gupy: `sources/gupy.py`.  
-Cliente partilhado Vagas.com: `sources/vagas_com.py` (Einstein + Fleury).
+Cliente partilhado Vagas.com: `sources/vagas_com.py` (Einstein + Fleury).  
+Cliente partilhado Solides: `sources/solides.py` (`apigw.solides.com.br/jobs/v3`).
 
 ## Einstein / Fleury / vagas.com.br (off-VPS)
 

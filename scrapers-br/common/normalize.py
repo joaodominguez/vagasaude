@@ -169,6 +169,9 @@ HEALTH_KEYWORDS = (
     "uco",
     "pronto socorro",
     "pronto atendimento",
+    "socorrist",
+    "ambulancia",
+    "ambulância",
     "centro cirurgico",
     "centro cirúrgico",
     "cme",
@@ -275,7 +278,16 @@ def looks_like_health_job(title: str, department: str | None = None) -> bool:
         "banco de talentos",
     )
     if any(x in blob for x in exclude) and not any(
-        k in blob for k in ("enfermeir", "medico", "fisioterap", "saude", "hospital")
+        k in blob
+        for k in (
+            "enfermeir",
+            "medico",
+            "fisioterap",
+            "saude",
+            "hospital",
+            "socorrist",
+            "ambulancia",
+        )
     ):
         return False
     return any(k in blob for k in HEALTH_KEYWORDS)
@@ -640,6 +652,8 @@ def looks_like_hospital_employer_job(
                 "psicolog",
                 "uti",
                 "cme",
+                "socorrist",
+                "ambulancia",
             )
         ):
             return True
