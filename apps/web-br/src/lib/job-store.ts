@@ -447,6 +447,28 @@ function extractSectionBullets(
   return items.slice(0, 8);
 }
 
+/** Listagem/home: evita parse de descrições longas (PCI/Gupy) em milhares de vagas. */
+function toJobCardListItem(job: StoredJob): JobCardData {
+  return {
+    slug: job.slug,
+    title: job.title,
+    company: job.company,
+    district: job.locationDistrict,
+    city: job.locationConcelho || job.locationDistrict,
+    sector: SECTOR_LABEL[job.sector],
+    contract: job.contractType || "A definir",
+    profession: job.profession,
+    publishedLabel: publishedLabel(job.publishedAt),
+    publishedAt: job.publishedAt || job.createdAt.slice(0, 10),
+    expiresAt: job.expiresAt,
+    description: "",
+    requirements: [],
+    responsibilities: [],
+    applicationUrl: job.applicationUrl,
+    salary: job.salary,
+  };
+}
+
 export function toJobCard(job: StoredJob): JobCardData {
   const description = cleanDescription(job.description);
   const requirements = splitList(job.requirements);
@@ -570,7 +592,7 @@ async function getDerivedJobsCache(): Promise<DerivedJobsCache> {
         !isPastExpiry(job) &&
         !isClosedNoticeTitle(job.title),
     )
-    .map(toJobCard)
+    .map(toJobCardListItem)
     .sort((a, b) => {
       const byPublished = b.publishedAt.localeCompare(a.publishedAt);
       if (byPublished !== 0) return byPublished;

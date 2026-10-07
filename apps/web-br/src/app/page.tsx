@@ -20,7 +20,7 @@ import { getJobs } from "@/lib/jobs-data";
 import { professions } from "@/lib/jobs";
 import { buildHomeMetadata } from "@/lib/seo";
 
-// Soft-expire alinhado ao Data Cache de jobs (ingest ≤2 min).
+// ISR homepage; dados vêm do cache em memória do job-store (ingest ≤~2 min).
 export const revalidate = 120;
 
 export async function generateMetadata() {
@@ -30,13 +30,7 @@ export async function generateMetadata() {
 
 export default async function Home() {
   const jobs = await getJobs();
-  const recentJobs = [...jobs]
-    .sort((a, b) => {
-      const byPublished = b.publishedAt.localeCompare(a.publishedAt);
-      if (byPublished !== 0) return byPublished;
-      return a.title.localeCompare(b.title, "pt");
-    })
-    .slice(0, 6);
+  const recentJobs = jobs.slice(0, 6);
   const districtCounts = jobs.reduce<Record<string, number>>((acc, job) => {
     const key = job.district || "Brasil";
     acc[key] = (acc[key] || 0) + 1;
