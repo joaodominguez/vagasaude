@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
 import { GoogleAnalytics } from "@/components/google-analytics";
+import { MicrosoftClarity } from "@/components/microsoft-clarity";
 import {
   buildOrganizationJsonLd,
   buildWebsiteJsonLd,
@@ -103,6 +104,7 @@ export default function RootLayout({
       <body className="min-h-screen">
         {children}
         <GoogleAnalytics />
+        <MicrosoftClarity />
       </body>
     </html>
   );
