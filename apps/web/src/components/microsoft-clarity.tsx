@@ -1,16 +1,16 @@
-"use client";
-
 import Script from "next/script";
-import { usePathname } from "next/navigation";
 
 /** Project ID Clarity — vagasaude.pt */
 export const CLARITY_PROJECT_ID =
   process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID ?? "yug1hz17w3";
 
+/**
+ * Microsoft Clarity (heatmaps / sessões).
+ * Server component + Script afterInteractive — o snippet fica no HTML
+ * como o GA4, para o tag carregar sem depender de hidratação.
+ */
 export function MicrosoftClarity() {
-  const pathname = usePathname();
-
-  if (!CLARITY_PROJECT_ID || pathname?.startsWith("/admin")) return null;
+  if (!CLARITY_PROJECT_ID) return null;
 
   return (
     <Script id="microsoft-clarity" strategy="afterInteractive">
