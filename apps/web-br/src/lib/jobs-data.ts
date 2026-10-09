@@ -30,10 +30,9 @@ export const getJobs = cache(async (): Promise<Job[]> => {
 
 export const getJob = cache(
   async (slug: string): Promise<{ job: Job; expired: boolean } | null> => {
-    const jobs = await getJobs();
-    const active = jobs.find((job) => job.slug === slug);
-    if (active) return { job: active, expired: false };
-
+    // Sempre o card completo (descrição/requisitos). A lista em memória
+    // (`getJobs`) é leve e tem description="" — se a usarmos aqui, o
+    // JobPosting JSON-LD fica sem "description" (erro crítico GSC).
     const stored = await getJobCard(slug);
     if (stored) return stored;
     if (process.env.NODE_ENV === "production") {

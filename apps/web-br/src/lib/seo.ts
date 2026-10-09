@@ -254,9 +254,13 @@ function buildBaseSalaryJsonLd(job: Job) {
 export function buildJobPostingJsonLd(job: Job) {
   const datePosted = safeDatePosted(job.publishedAt);
   const validThrough = jobValidThrough(job, datePosted);
-  const description = [job.description, ...job.requirements, ...job.responsibilities]
-    .filter(Boolean)
-    .join("\n\n");
+  const description =
+    [job.description, ...job.requirements, ...job.responsibilities]
+      .filter(Boolean)
+      .join("\n\n")
+      .trim() ||
+    // Google exige description não vazio (JobPosting).
+    `${job.title} — ${job.company}${job.city ? ` em ${job.city}` : ""}. Candidatura no site da entidade.`;
   const baseSalary = buildBaseSalaryJsonLd(job);
 
   return {
