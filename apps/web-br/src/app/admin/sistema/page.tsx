@@ -14,6 +14,10 @@ export default async function AdminSystemPage() {
       "Clarity",
       process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID || "yug2zlcbmy",
     ],
+    [
+      "AdSense",
+      process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || "ca-pub-8818651961085776",
+    ],
     ["Resend", process.env.RESEND_API_KEY ? "Configurado" : "Por configurar"],
     [
       "Última ingestão",
