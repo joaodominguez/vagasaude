@@ -1,0 +1,35 @@
+import { revalidateTag } from "next/cache";
+import { NextResponse } from "next/server";
+import {
+  collapseDuplicateHashes,
+  expireNonHealthConcursos,
+  reclassifyOutrosProfessions,
+  shortenPublishedJobTitles,
+} from "@/lib/job-store";
+import { JOBS_CACHE_TAG } from "@/lib/jobs-data";
+
+export const dynamic = "force-dynamic";
+
+function unauthorized() {
+  return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
+}
+
+export async function POST(request: Request) {
+  const expected = process.env.SCRAPER_API_TOKEN;
+  const auth = request.headers.get("authorization") || "";
+  if (!expected || auth !== `Bearer ${expected}`) return unauthorized();
+
+  const shortened = await shortenPublishedJobTitles();
+  const expiredOffTopic = await expireNonHealthConcursos();
+  const reclassified = await reclassifyOutrosProfessions();
+  const deduped = await collapseDuplicateHashes();
+  revalidateTag(JOBS_CACHE_TAG, "max");
+  return NextResponse.json({
+    ok: true,
+    shortenedTitles: shortened.changed,
+    expiredNonHealthConcursos: expiredOffTopic.changed,
+    reclassified: reclassified.changed,
+    collapsedDuplicates: deduped.collapsed,
+    total: reclassified.total,
+  });
+}

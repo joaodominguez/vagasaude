@@ -1,0 +1,67 @@
+import Link from "next/link";
+import {
+  ArrowUpRight,
+  Building2,
+  MapPin,
+  ShieldPlus,
+  Stethoscope,
+} from "lucide-react";
+import type { Job } from "@/lib/jobs";
+import { FavoriteButton } from "@/components/favorite-button";
+import { SalaryInsight } from "@/components/salary-insight";
+
+function JobIcon({ profession }: { profession: string }) {
+  const Icon =
+    profession === "Medicina"
+      ? Stethoscope
+      : profession === "Enfermagem"
+        ? Building2
+        : ShieldPlus;
+
+  return (
+    <span className="job-card-icon flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary sm:h-12 sm:w-12">
+      <Icon size={22} strokeWidth={1.8} />
+    </span>
+  );
+}
+
+export function JobCard({ job }: { job: Job }) {
+  return (
+    <Link href={`/vagas/${job.slug}`} className="job-card group">
+      <span className="job-card-body flex min-w-0 items-start gap-3">
+        <JobIcon profession={job.profession} />
+        <span className="job-card-main min-w-0 flex-1">
+          <span className="job-card-header">
+            <span className="job-card-title-block min-w-0">
+              <span className="block break-words font-bold leading-snug tracking-[-0.02em] text-foreground group-hover:text-primary">
+                {job.title}
+              </span>
+              <span className="mt-0.5 block truncate text-sm text-muted">
+                {job.company}
+              </span>
+            </span>
+            <span className="job-card-aside flex shrink-0 items-center gap-2 text-xs text-muted">
+              <span className="whitespace-nowrap">{job.publishedLabel}</span>
+              <FavoriteButton slug={job.slug} size={15} />
+              <ArrowUpRight
+                size={17}
+                className="text-muted transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary"
+              />
+            </span>
+          </span>
+          <span className="job-card-meta mt-2.5 flex flex-wrap items-center gap-1.5 text-xs text-muted">
+            <span className="inline-flex min-w-0 max-w-full items-center gap-1">
+              <MapPin size={13} className="shrink-0" />
+              <span className="truncate">{job.city}</span>
+            </span>
+            <span className="tag tag-primary">{job.sector}</span>
+            <span className="tag">{job.contract}</span>
+            <span className="job-card-salary min-w-0 max-w-full">
+              <SalaryInsight job={job} variant="compact" />
+            </span>
+          </span>
+        </span>
+      </span>
+    </Link>
+  );
+}

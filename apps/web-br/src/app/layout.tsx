@@ -1,0 +1,113 @@
+import type { Metadata } from "next";
+import { Manrope } from "next/font/google";
+import { GoogleAdSense } from "@/components/google-adsense";
+import { GoogleAnalytics } from "@/components/google-analytics";
+import { MicrosoftClarity } from "@/components/microsoft-clarity";
+import {
+  buildOrganizationJsonLd,
+  buildWebsiteJsonLd,
+  DEFAULT_DESCRIPTION,
+  SITE_NAME,
+  SITE_URL,
+} from "@/lib/seo";
+import "./globals.css";
+
+const manrope = Manrope({
+  variable: "--font-manrope",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const themeScript = `
+  (() => {
+    try {
+      const saved = localStorage.getItem("vagasaude-theme");
+      const dark = saved === "dark" || (!saved && matchMedia("(prefers-color-scheme: dark)").matches);
+      document.documentElement.classList.toggle("dark", dark);
+    } catch {}
+  })();
+`;
+
+export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: `${SITE_NAME} — Emprego na saúde no Brasil`,
+    template: `%s | ${SITE_NAME}`,
+  },
+  description: DEFAULT_DESCRIPTION,
+  applicationName: SITE_NAME,
+  keywords: [
+    "vagas saúde",
+    "emprego enfermagem",
+    "emprego medicina",
+    "vagas hospital",
+    "emprego Brasil",
+  ],
+  authors: [{ name: SITE_NAME }],
+  creator: SITE_NAME,
+  publisher: SITE_NAME,
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  openGraph: {
+    title: `${SITE_NAME} — Vagas de saúde no Brasil`,
+    description: DEFAULT_DESCRIPTION,
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    locale: "pt_BR",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE_NAME} — Vagas de saúde no Brasil`,
+    description: DEFAULT_DESCRIPTION,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [buildWebsiteJsonLd(), buildOrganizationJsonLd()].map((item) => {
+      const { ["@context"]: _context, ...rest } = item;
+      void _context;
+      return rest;
+    }),
+  };
+
+  return (
+    <html lang="pt-BR" className={manrope.variable} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(structuredData),
+          }}
+        />
+        <GoogleAdSense />
+      </head>
+      <body className="min-h-screen">
+        {children}
+        <GoogleAnalytics />
+        <MicrosoftClarity />
+      </body>
+    </html>
+  );
+}
