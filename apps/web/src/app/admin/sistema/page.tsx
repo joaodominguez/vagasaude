@@ -10,6 +10,14 @@ export default async function AdminSystemPage() {
     ["Ambiente", process.env.NODE_ENV || "production"],
     ["DATA_DIR", process.env.DATA_DIR || "(default)"],
     ["GA4", process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "G-2FTGH5C1GQ"],
+    [
+      "Clarity",
+      process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID || "yug1hz17w3",
+    ],
+    [
+      "AdSense",
+      process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || "ca-pub-8818651961085776",
+    ],
     ["Resend", process.env.RESEND_API_KEY ? "Configurado" : "Por configurar"],
     [
       "Última ingestão",
