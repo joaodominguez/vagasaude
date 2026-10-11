@@ -21,7 +21,8 @@ const ROLE_PATTERNS = [
   /carreira\s+(?:especial\s+)?(?:de\s+)?(.+?)(?=,\s*categoria|,?\s*na\s+modalidade|,?\s*do\s+mapa|\s+[—\-–―]\s*|\s*$)/i,
   /(?:sele[cç][aã]o|contrata[cç][aã]o|recrutamento|reserva\s+de\s+recrutamento)\s*(?:e\s+sele[cç][aã]o\s+)?(?:de\s+|para\s+|[—\-–―]\s*)?(.+?)(?=,\s*da\s+carreira|,?\s*na\s+modalidade|,?\s*do\s+mapa|\s+[—\-–―]\s*|\s+para\s+a\s+|\s*$)/i,
   /bolsa\s+de\s+reservas?\s+(?:de\s+)?(.+?)(?=\s+[—\-–―]\s*|\s+para\s+o\s+|\s+para\s+a\s+|\s*$)/i,
-  /(?:postos?\s+de\s+trabalho|profissional(?:ais)?)\s+(?:vagos?\s+)?(?:na\s+)?(?:categoria\s+de\s+)?(.+?)(?=,|\s+[—\-–―]\s*|\s*$)/i,
+  // \b evita falso positivo em "Multiprofissional em Saúde" → "Em Saúde".
+  /(?:postos?\s+de\s+trabalho|\bprofissional(?:ais)?)\s+(?:vagos?\s+)?(?:na\s+)?(?:categoria\s+de\s+)?(.+?)(?=,|\s+[—\-–―]\s*|\s*$)/i,
 ];
 
 const SPECIALTY_RE =
