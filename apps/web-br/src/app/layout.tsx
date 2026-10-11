@@ -100,7 +100,6 @@ export default function RootLayout({
             __html: JSON.stringify(structuredData),
           }}
         />
-        <GoogleAdSense />
       </head>
       <body className="min-h-screen">
         {children}
