@@ -30,6 +30,7 @@ import {
 import type { Job } from "@/lib/jobs";
 import { getJob, getJobs } from "@/lib/jobs-data";
 import { buildJobMetadata, buildJobPostingJsonLd, jobUrl } from "@/lib/seo";
+import { emLocal } from "@/lib/pt-locative";
 
 export const revalidate = 600;
 
@@ -52,7 +53,7 @@ export async function generateMetadata({
       category.profession,
       category.district,
     );
-    return buildCategoryMetadata(category, jobs.length);
+    return buildCategoryMetadata(category, jobs.length, jobs);
   }
 
   const found = await getJob(slug);
@@ -338,7 +339,7 @@ function ExpiredJobView({ job, allJobs }: { job: Job; allJobs: Job[] }) {
             <p className="mt-4 text-sm leading-6 text-muted">
               Esta vaga já não está activa. Podes explorar oportunidades
               semelhantes abaixo ou criar um alerta para {job.profession}
-              {job.district ? ` em ${job.district}` : ""}.
+              {job.district ? ` ${emLocal(job.district)}` : ""}.
             </p>
             {categoryLinks.length > 0 && (
               <div className="mt-4 flex flex-wrap gap-2">
@@ -409,7 +410,7 @@ function buildJobCategoryLinks(job: Job, allJobs: Job[]) {
   if (isCategoryEligible(allJobs, job.profession, job.district)) {
     links.push({
       href: categoryPath(job.profession, job.district),
-      label: `${job.profession} em ${job.district}`,
+      label: `${job.profession} ${emLocal(job.district)}`,
     });
   }
   return links;

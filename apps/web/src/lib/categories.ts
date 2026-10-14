@@ -3,6 +3,7 @@ import {
   districts as categoryDistricts,
   professions as taxonomyProfessions,
 } from "@/lib/taxonomies";
+import { emLocal } from "@/lib/pt-locative";
 import { absoluteUrl, SITE_NAME, truncateMeta } from "@/lib/seo";
 import type { Metadata } from "next";
 
@@ -83,13 +84,13 @@ export function categoryHeading(
   district: string | null,
 ) {
   if (kind === "combo" && profession && district) {
-    return `Vagas de ${profession} em ${district}`;
+    return `Vagas de ${profession} ${emLocal(district)}`;
   }
   if (kind === "profession" && profession) {
     return `Vagas de ${profession} em Portugal`;
   }
   if (district) {
-    return `Emprego na saúde em ${district}`;
+    return `Emprego na saúde ${emLocal(district)}`;
   }
   return "Vagas de saúde";
 }
@@ -291,7 +292,7 @@ export function buildCategoryIntro(
   profession: string | null,
   district: string | null,
 ) {
-  const where = district ? `em ${district}` : "em Portugal";
+  const where = district ? emLocal(district) : "em Portugal";
   const what = profession
     ? `vagas de ${profession.toLowerCase()}`
     : "vagas de saúde";
@@ -337,19 +338,53 @@ export function buildCategoryIntro(
   return truncateMeta(text, 900);
 }
 
+/** Como a profissão aparece em pesquisas "emprego …" (GSC). */
+const PROFESSION_SEARCH_PHRASE: Record<string, string> = {
+  Enfermagem: "Emprego em Enfermagem",
+  Medicina: "Emprego em Medicina",
+  Fisioterapia: "Emprego em Fisioterapia",
+  Auxiliares: "Emprego para Auxiliar de Saúde",
+  "Técnico de Saúde": "Emprego para Técnico de Saúde",
+  Farmácia: "Emprego em Farmácia",
+  Psicologia: "Emprego em Psicologia",
+  Nutrição: "Emprego para Nutricionista",
+  "Assistência Social": "Emprego em Serviço Social",
+  Formação: "Emprego em Formação na Saúde",
+  "Comercial / Farma": "Emprego Comercial / Farma",
+  "Gestão & suporte": "Emprego em Gestão na Saúde",
+  Administrativo: "Emprego Administrativo na Saúde",
+  Outros: "Emprego na Saúde",
+};
+
+function professionSearchPhrase(profession: string) {
+  return PROFESSION_SEARCH_PHRASE[profession] ?? `Emprego em ${profession}`;
+}
+
+const FRESH_DAYS = 7;
+
+function countRecent(jobs: Job[] | undefined) {
+  if (!jobs) return 0;
+  const cutoff = Date.now() - FRESH_DAYS * 24 * 60 * 60 * 1000;
+  return jobs.filter((job) => {
+    const t = Date.parse(job.publishedAt);
+    return !Number.isNaN(t) && t >= cutoff;
+  }).length;
+}
+
 export function buildCategoryMetadata(
   ref: CategoryRef,
   count: number,
+  jobs?: Job[],
 ): Metadata {
-  const offerWord = count === 1 ? "oferta activa" : "ofertas activas";
+  const vagas = count === 1 ? "1 vaga" : `${count} vagas`;
   const title =
-    ref.kind === "combo"
-      ? `${ref.profession} em ${ref.district}: ${count} ${offerWord}`
-      : ref.kind === "profession"
-        ? `${ref.profession}: ${count} vagas de saúde em Portugal`
-        : `Saúde em ${ref.district}: ${count} ${offerWord}`;
+    ref.kind === "combo" && ref.profession && ref.district
+      ? `${professionSearchPhrase(ref.profession).replace(/^Emprego em /, "Emprego ")} ${emLocal(ref.district)}: ${vagas}`
+      : ref.kind === "profession" && ref.profession
+        ? `${professionSearchPhrase(ref.profession)}: ${vagas} em Portugal`
+        : `Emprego na Saúde ${emLocal(ref.district ?? "Portugal")}: ${vagas}`;
   const description = truncateMeta(
-    professionDistrictDescription(ref, count),
+    professionDistrictDescription(ref, count, countRecent(jobs)),
     160,
   );
 
@@ -373,15 +408,23 @@ export function buildCategoryMetadata(
   };
 }
 
-function professionDistrictDescription(ref: CategoryRef, count: number) {
+function professionDistrictDescription(
+  ref: CategoryRef,
+  count: number,
+  recent: number,
+) {
   const n = count === 1 ? "1 vaga" : `${count} vagas`;
-  if (ref.kind === "combo") {
-    return `${n} de ${ref.profession} em ${ref.district}. Ofertas actualizadas de hospitais, clínicas e IPSS — candidata-te no site da entidade.`;
+  const fresh =
+    recent > 0
+      ? ` ${recent} ${recent === 1 ? "nova" : "novas"} nos últimos 7 dias.`
+      : "";
+  if (ref.kind === "combo" && ref.district) {
+    return `${n} de ${ref.profession} ${emLocal(ref.district)}, actualizadas hoje.${fresh} Hospitais, clínicas e IPSS — candidata-te no site da entidade.`;
   }
   if (ref.kind === "profession") {
-    return `${n} de ${ref.profession} em Portugal. Público, privado e IPSS agregados no VagaSaúde — filtra por distrito e candidata-te.`;
+    return `${n} de ${ref.profession} em Portugal, actualizadas hoje.${fresh} Público, privado e IPSS num só sítio — filtra por distrito.`;
   }
-  return `${n} de saúde em ${ref.district}. Enfermagem, medicina, técnicos e outras profissões — pesquisa e cria alertas no VagaSaúde.`;
+  return `${n} de saúde ${emLocal(ref.district ?? "Portugal")}, actualizadas hoje.${fresh} Enfermagem, medicina, técnicos e mais — cria alertas grátis.`;
 }
 
 export function buildItemListJsonLd(ref: CategoryRef, jobs: Job[]) {
