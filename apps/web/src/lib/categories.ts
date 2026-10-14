@@ -379,7 +379,7 @@ export function buildCategoryMetadata(
   const vagas = count === 1 ? "1 vaga" : `${count} vagas`;
   const title =
     ref.kind === "combo" && ref.profession && ref.district
-      ? `${professionSearchPhrase(ref.profession)} ${emLocal(ref.district)}: ${vagas}`
+      ? `${professionSearchPhrase(ref.profession).replace(/^Emprego em /, "Emprego ")} ${emLocal(ref.district)}: ${vagas}`
       : ref.kind === "profession" && ref.profession
         ? `${professionSearchPhrase(ref.profession)}: ${vagas} em Portugal`
         : `Emprego na Saúde ${emLocal(ref.district ?? "Portugal")}: ${vagas}`;
