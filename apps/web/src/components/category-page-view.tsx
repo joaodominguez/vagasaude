@@ -14,6 +14,7 @@ import {
   siblingDistrictLinks,
   type CategoryRef,
 } from "@/lib/categories";
+import { emLocal } from "@/lib/pt-locative";
 
 export function CategoryPageView({
   category,
@@ -125,7 +126,7 @@ export function CategoryPageView({
                 {category.profession
                   ? `vagas de ${category.profession.toLowerCase()}`
                   : "vagas de saúde"}
-                {category.district ? ` em ${category.district}` : ""}.
+                {category.district ? ` ${emLocal(category.district)}` : ""}.
               </p>
               <div className="mt-4">
                 <AlertForm

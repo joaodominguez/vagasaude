@@ -20,6 +20,7 @@ import {
 } from "@/lib/contracts";
 import { getJobs } from "@/lib/jobs-data";
 import { districts, professions } from "@/lib/taxonomies";
+import { emLocal } from "@/lib/pt-locative";
 
 export const dynamic = "force-dynamic";
 
@@ -136,7 +137,7 @@ export default async function JobsPage({
 
   const alertSummary = [
     profession,
-    district ? `em ${district}` : "",
+    district ? emLocal(district) : "",
     sector,
     contract,
   ]
