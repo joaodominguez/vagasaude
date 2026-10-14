@@ -3,6 +3,8 @@ scrapers/node_modules/
 .DS_Store
 apps/web/.next/
 apps/web/node_modules/
+apps/web-br/.next/
+apps/web-br/node_modules/
 *.pyc
 __pycache__/
 .env
