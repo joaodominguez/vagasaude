@@ -8,7 +8,6 @@ from urllib.parse import urljoin
 import httpx
 from bs4 import BeautifulSoup
 
-from common.browser import BrowserSession
 from common.http import HttpClient
 from common.models import BaseScraper, JobPayload
 from common.normalize import (
@@ -21,12 +20,48 @@ from common.normalize import (
 )
 
 BASE = "https://www.net-empregos.com"
-LIST_URL = f"{BASE}/emprego-saude-medicina-enfermagem.asp"
+# Listagem HTML (categoria 14) — preferida quando o IP não é mandado para login.
+LIST_URL = (
+    f"{BASE}/pesquisa-empregos.asp"
+    "?chaves=&cidade=&categoria=14&zona=0&tipo=0"
+)
+LEGACY_LIST_URL = f"{BASE}/emprego-saude-medicina-enfermagem.asp"
 RSS_URL = f"{BASE}/rss.asp"
-# Só as primeiras páginas: o arquivo tem 170+ páginas de ruído antigo.
-MAX_PAGES = 3
+# HTML só como complemento: o arquivo tem dezenas de páginas.
+MAX_PAGES = 8
 MAX_AGE_DAYS = 14
 HEALTH_CATEGORY = "saude medicina enfermagem"
+
+# RSS geral só traz ~30 de saúde (últimos 1000 de todas as categorias).
+# Pesquisas `?q=` devolvem feeds focados e contornam o login da listagem HTML.
+RSS_QUERIES = [
+    "enfermeiro",
+    "enfermeira",
+    "enfermagem",
+    "fisioterapeuta",
+    "fisioterapia",
+    "farmaceutico",
+    "farmacia",
+    "medico",
+    "medicina",
+    "auxiliar de saude",
+    "tecnico de saude",
+    "radiologia",
+    "analises clinicas",
+    "terapeuta da fala",
+    "terapeuta ocupacional",
+    "psicologo",
+    "nutricionista",
+    "assistente dentario",
+    "dentista",
+    "cuidador",
+    "ajudante familiar",
+    "higienista",
+    "optometrista",
+    "audiologista",
+    "cardiopneumologia",
+    "ortoptista",
+]
 
 ALLOWED_PROFESSIONS = {
     "Enfermagem",
@@ -71,14 +106,20 @@ SALARY_RE = re.compile(
 )
 ANON_RE = re.compile(r"^an[oó]nim[oa]?s?$", re.I)
 
+# Se o scrape falhar parcialmente, não soft-expirar o inventário inteiro.
+MIN_JOBS_FOR_SOFT_EXPIRE = 40
+
 
 class NetEmpregosScraper(BaseScraper):
     slug = "net_empregos"
     name = "Net-Empregos — Saúde / Medicina / Enfermagem"
+    # Consumido por run.py / api_client para decidir soft-expire.
+    last_listings_complete: bool = False
 
     def fetch(self) -> list[JobPayload]:
-        rss_by_id = _fetch_rss_by_id()
-        listings = self._fetch_listings()
+        self.last_listings_complete = False
+        listings = self._fetch_html_listings()
+        rss_by_id = _fetch_rss_health_by_queries()
         merged = _merge_items(listings, rss_by_id)
         cutoff = datetime.now(timezone.utc) - timedelta(days=MAX_AGE_DAYS)
         jobs: list[JobPayload] = []
@@ -105,44 +146,40 @@ class NetEmpregosScraper(BaseScraper):
             job = _to_job(item, rss)
             if job:
                 jobs.append(job)
+
+        # HTML costuma estar atrás de login no VPS; o RSS multi-query é a fonte
+        # completa. Soft-expire só quando temos um lote suficientemente grande.
+        self.last_listings_complete = len(jobs) >= MIN_JOBS_FOR_SOFT_EXPIRE
         return jobs
 
-    def _fetch_listings(self) -> list[dict]:
+    def _fetch_html_listings(self) -> list[dict]:
+        """Tenta a listagem HTML; devolve [] se o IP for mandado para login."""
         client = HttpClient(min_interval=0.45)
         try:
-            html = _http_list_page(client, 1)
-            if _is_real_listing(html):
+            for base in (LIST_URL, LEGACY_LIST_URL):
+                html = _http_list_page(client, base, 1)
+                if not _is_real_listing(html):
+                    continue
                 items = _parse_listing(html)
                 for page in range(2, MAX_PAGES + 1):
-                    page_html = _http_list_page(client, page)
+                    page_html = _http_list_page(client, base, page)
                     if not _is_real_listing(page_html):
                         break
                     items.extend(_parse_listing(page_html))
-                return items
+                if items:
+                    return items
+            return []
         finally:
             client.close()
-        return self._fetch_listings_browser()
-
-    def _fetch_listings_browser(self) -> list[dict]:
-        items: list[dict] = []
-        with BrowserSession(min_interval=0.8) as browser:
-            for page in range(1, MAX_PAGES + 1):
-                url = LIST_URL if page == 1 else f"{LIST_URL}?page={page}"
-                browser.open(
-                    url,
-                    wait_selector="div.job-item, form#frmMain",
-                    settle_ms=1200,
-                    tries=4,
-                )
-                html = browser.html()
-                if not _is_real_listing(html):
-                    break
-                items.extend(_parse_listing(html))
-        return items
 
 
-def _http_list_page(client: HttpClient, page: int) -> str:
-    url = LIST_URL if page == 1 else f"{LIST_URL}?page={page}"
+def _http_list_page(client: HttpClient, base: str, page: int) -> str:
+    if page <= 1:
+        url = base
+    elif "?" in base:
+        url = f"{base}&page={page}"
+    else:
+        url = f"{base}?page={page}"
     try:
         return client.get_text(url)
     except httpx.HTTPError:
@@ -153,8 +190,7 @@ def _is_real_listing(html: str) -> bool:
     if not html:
         return False
     if "Login de Candidato" in html or "loginc.asp" in html.lower():
-        if html.lower().count("job-item") < 5:
-            return False
+        return False
     return html.lower().count("job-item") >= 5
 
 
@@ -210,45 +246,50 @@ def _card_meta(card) -> tuple[str, str, str]:
     return place, company, date_raw
 
 
-def _fetch_rss_by_id() -> dict[str, dict]:
-    try:
-        response = httpx.get(
-            RSS_URL,
-            headers={
-                "User-Agent": "VagaSaudeBot/1.0 (+https://vagasaude.pt/bot)",
-                "Accept": "application/rss+xml, application/xml, text/xml, */*",
-            },
-            timeout=40.0,
-            follow_redirects=True,
-        )
-        response.raise_for_status()
-        text = response.content.decode("iso-8859-1", "replace")
-    except httpx.HTTPError:
-        return {}
-
+def _fetch_rss_health_by_queries() -> dict[str, dict]:
+    """Junta vários RSS `?q=` e mantém só a categoria Saúde."""
     by_id: dict[str, dict] = {}
-    for chunk in re.findall(r"<item>(.*?)</item>", text, re.S | re.I):
-        link_match = re.search(r"<link>\s*(.*?)\s*</link>", chunk, re.I | re.S)
-        source_id = _id_from_url(link_match.group(1) if link_match else "")
-        if not source_id:
+    # Feed geral (sem q) ainda apanha cauda recente.
+    for query in [None, *RSS_QUERIES]:
+        try:
+            params = {"q": query} if query else None
+            response = httpx.get(
+                RSS_URL,
+                params=params,
+                headers={
+                    "User-Agent": "VagaSaudeBot/1.0 (+https://vagasaude.pt/bot)",
+                    "Accept": "application/rss+xml, application/xml, text/xml, */*",
+                },
+                timeout=60.0,
+                follow_redirects=True,
+            )
+            response.raise_for_status()
+            text = response.content.decode("iso-8859-1", "replace")
+        except httpx.HTTPError:
             continue
-        desc_match = re.search(
-            r"<description><!\[CDATA\[(.*?)\]\]></description>",
-            chunk,
-            re.S | re.I,
-        )
-        raw_desc = unescape(unescape(desc_match.group(1))) if desc_match else ""
-        category = _rss_field(raw_desc, "Categoria")
-        if HEALTH_CATEGORY not in norm(category):
-            continue
-        by_id[source_id] = {
-            "description": _clean_rss_description(raw_desc),
-            "company": _rss_field(raw_desc, "Empresa"),
-            "place": _rss_field(raw_desc, "Zona"),
-            "date_raw": _rss_field(raw_desc, "Data"),
-            "title": _cdata(chunk, "title"),
-            "url": (link_match.group(1).strip() if link_match else ""),
-        }
+
+        for chunk in re.findall(r"<item>(.*?)</item>", text, re.S | re.I):
+            link_match = re.search(r"<link>\s*(.*?)\s*</link>", chunk, re.I | re.S)
+            source_id = _id_from_url(link_match.group(1) if link_match else "")
+            if not source_id or source_id in by_id:
+                continue
+            desc_match = re.search(
+                r"<description><!\[CDATA\[(.*?)\]\]></description>",
+                chunk,
+                re.S | re.I,
+            )
+            raw_desc = unescape(unescape(desc_match.group(1))) if desc_match else ""
+            category = _rss_field(raw_desc, "Categoria")
+            if HEALTH_CATEGORY not in norm(category):
+                continue
+            by_id[source_id] = {
+                "description": _clean_rss_description(raw_desc),
+                "company": _rss_field(raw_desc, "Empresa"),
+                "place": _rss_field(raw_desc, "Zona"),
+                "date_raw": _rss_field(raw_desc, "Data"),
+                "title": _cdata(chunk, "title"),
+                "url": (link_match.group(1).strip() if link_match else ""),
+            }
     return by_id
 
 
@@ -256,6 +297,13 @@ def _merge_items(listings: list[dict], rss_by_id: dict[str, dict]) -> list[dict]
     by_id: dict[str, dict] = {item["source_id"]: item for item in listings}
     for source_id, rss in rss_by_id.items():
         if source_id in by_id:
+            existing = by_id[source_id]
+            if not existing.get("company") or ANON_RE.match(existing.get("company") or ""):
+                existing["company"] = rss.get("company") or existing.get("company")
+            if not existing.get("place"):
+                existing["place"] = rss.get("place") or ""
+            if not existing.get("published_at"):
+                existing["published_at"] = _parse_date(rss.get("date_raw") or "")
             continue
         by_id[source_id] = {
             "title": rss.get("title") or "",
@@ -329,12 +377,18 @@ def _to_job(item: dict, rss: dict | None) -> JobPayload | None:
     place = (item.get("place") or "").strip()
     if rss:
         title = title or AGENCY_CODE_RE.sub("", rss.get("title") or "").strip()
-        company = company if company and not ANON_RE.match(company) else (rss.get("company") or company)
+        company = (
+            company
+            if company and not ANON_RE.match(company)
+            else (rss.get("company") or company)
+        )
         place = place or rss.get("place") or ""
     if not title:
         return None
 
-    description = (rss or {}).get("description") or _fallback_description(title, company, place)
+    description = (rss or {}).get("description") or _fallback_description(
+        title, company, place
+    )
     district = guess_district(place, f"{title} {description[:280]}")
     profession = guess_profession(title)
     if profession not in ALLOWED_PROFESSIONS:
@@ -356,7 +410,8 @@ def _to_job(item: dict, rss: dict | None) -> JobPayload | None:
         application_url=item["url"],
         source="net_empregos",
         source_id=item["source_id"],
-        published_at=item.get("published_at") or _parse_date((rss or {}).get("date_raw") or ""),
+        published_at=item.get("published_at")
+        or _parse_date((rss or {}).get("date_raw") or ""),
         status="pending_review" if anonymous else "published",
         review_reason="Empresa anónima no Net-Empregos" if anonymous else None,
     )
@@ -380,7 +435,6 @@ def _concelho(place: str, district: str, title: str = "") -> str | None:
         if "estrangeiro" in key or "todas as zonas" in key:
             continue
         if key != norm(district):
-            # "Lordelo (Guimarães)" / "Maia"
             for city, mapped in CITY_TO_DISTRICT.items():
                 if mapped == district and city in key and city != norm(district):
                     return city.title() if len(city) > 3 else cleaned[:80]
@@ -405,7 +459,9 @@ def _parse_date(raw: str | None) -> str | None:
         return None
     day, month, year = (int(match.group(1)), int(match.group(2)), int(match.group(3)))
     try:
-        return datetime(year, month, day, tzinfo=timezone.utc).isoformat().replace("+00:00", "Z")
+        return datetime(year, month, day, tzinfo=timezone.utc).isoformat().replace(
+            "+00:00", "Z"
+        )
     except ValueError:
         return None
 

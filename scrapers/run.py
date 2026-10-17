@@ -20,7 +20,8 @@ from common.scraper_runs import report_scraper_run
 from sources import SCRAPERS
 
 
-CHROME_SERIALIZED_SOURCES = {"ipo_porto", "pharmabsc", "aefful", "net_empregos"}
+# net_empregos passou a RSS multi-query (sem Chrome); HTML é opcional via httpx.
+CHROME_SERIALIZED_SOURCES = {"ipo_porto", "pharmabsc", "aefful"}
 CHROME_LOCK_PATH = "/tmp/vagasaude-chrome-scraper.lock"
 
 
@@ -69,7 +70,15 @@ def run_source(slug: str, dry_run: bool = False) -> dict:
                 "status": "ok",
             }
         else:
-            ingest = ingest_jobs(slug, jobs)
+            expire_missing = True
+            if hasattr(scraper, "last_listings_complete"):
+                expire_missing = bool(getattr(scraper, "last_listings_complete"))
+                if not expire_missing:
+                    print(
+                        f"[{slug}] soft-expire desligado "
+                        f"(lote incompleto: {len(jobs)} vagas)"
+                    )
+            ingest = ingest_jobs(slug, jobs, expire_missing=expire_missing)
             print(f"[{slug}] ingestão: {ingest}")
             result = {
                 "source": slug,
