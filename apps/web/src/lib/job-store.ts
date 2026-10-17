@@ -528,8 +528,9 @@ export function toJobCard(job: StoredJob): JobCardData {
     requirements.length > 0 ? splitList(profileBlock) : descriptionLines;
   return {
     slug: job.slug,
-    title: job.title,
-    company: job.company,
+    // Também na leitura: vagas ingeridas antes da correção ainda têm "&#243;".
+    title: cleanTitleText(job.title),
+    company: decodeHtmlEntities(job.company),
     district: job.locationDistrict,
     city: job.locationConcelho || job.locationDistrict,
     sector: SECTOR_LABEL[job.sector],
