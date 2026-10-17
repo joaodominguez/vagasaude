@@ -118,6 +118,8 @@ DETAIL_MIN_INTERVAL = 2.5
 DETAIL_MIN_CHARS = 300
 DETAIL_CACHE_TTL_DAYS = 60
 DETAIL_MAX_CONSECUTIVE_FAILURES = 3
+# O site limita as páginas de detalhe por IP sem sessão (depois mostra o login).
+# Ao primeiro login pára — não insistir num limite de acesso.
 DETAIL_UA = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/141.0 Safari/537.36"
@@ -455,9 +457,15 @@ def _save_detail_cache(path: str, cache: dict[str, dict]) -> None:
     os.replace(tmp, path)
 
 
+def _is_login_wall(html: str) -> bool:
+    return "JobPosting" not in html and (
+        "loginc.asp" in html.lower() or "Login de Candidato" in html
+    )
+
+
 def _parse_detail_description(html: str) -> str | None:
     """Descrição da página de detalhe: JSON-LD JobPosting, senão div.job-description."""
-    if "loginc.asp" in html.lower() and "JobPosting" not in html:
+    if _is_login_wall(html):
         return None
     for raw in re.findall(
         r'<script[^>]+application/ld\+json[^>]*>(.*?)</script>', html, re.S | re.I
@@ -499,15 +507,22 @@ def _enrich_with_details(jobs: list[JobPayload], cache_path: str) -> None:
     cache = _load_detail_cache(cache_path)
     fetched = failures = enriched = 0
     last_request = 0.0
+    blocked = False
+    # Mais recentes primeiro: com o limite do site, os pedidos vão para as vagas novas.
+    ordered = sorted(jobs, key=lambda job: job.published_at or "", reverse=True)
     with httpx.Client(
         timeout=30.0,
         follow_redirects=True,
         headers={"User-Agent": DETAIL_UA, "Accept-Language": "pt-PT,pt;q=0.9"},
     ) as client:
-        for job in jobs:
+        for job in ordered:
             entry = cache.get(job.source_id)
             if not entry:
-                if fetched >= DETAIL_MAX_FETCHES or failures >= DETAIL_MAX_CONSECUTIVE_FAILURES:
+                if (
+                    blocked
+                    or fetched >= DETAIL_MAX_FETCHES
+                    or failures >= DETAIL_MAX_CONSECUTIVE_FAILURES
+                ):
                     continue
                 wait = DETAIL_MIN_INTERVAL - (time.monotonic() - last_request)
                 if wait > 0:
@@ -518,11 +533,13 @@ def _enrich_with_details(jobs: list[JobPayload], cache_path: str) -> None:
                     response = client.get(job.application_url)
                     response.raise_for_status()
                     # windows-1252 (superconjunto de ISO-8859-1: "–", "€" em 0x80–0x9F)
-                    text = _parse_detail_description(
-                        response.content.decode("cp1252", "replace")
-                    )
+                    html = response.content.decode("cp1252", "replace")
                 except httpx.HTTPError:
-                    text = None
+                    html = ""
+                if html and _is_login_wall(html):
+                    blocked = True
+                    continue
+                text = _parse_detail_description(html) if html else None
                 if not text or len(text) < DETAIL_MIN_CHARS:
                     # Login/bloqueio ou anúncio curto: fica o excerto, tenta-se noutra execução.
                     failures += 0 if text else 1
@@ -542,7 +559,8 @@ def _enrich_with_details(jobs: list[JobPayload], cache_path: str) -> None:
     _save_detail_cache(cache_path, cache)
     print(
         f"[net_empregos] detalhe: {enriched}/{len(jobs)} com descrição completa "
-        f"({fetched} pedidos novos, cache {len(cache)})"
+        f"({fetched} pedidos novos, cache {len(cache)}"
+        f"{', parou no login do site' if blocked else ''})"
     )
 
 
