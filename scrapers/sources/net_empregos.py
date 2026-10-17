@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import json
+import os
 import re
+import time
 from datetime import datetime, timedelta, timezone
 from html import unescape
 from urllib.parse import urljoin
@@ -20,11 +23,8 @@ from common.normalize import (
 )
 
 BASE = "https://www.net-empregos.com"
-# Listagem HTML (categoria 14) — preferida quando o IP não é mandado para login.
-LIST_URL = (
-    f"{BASE}/pesquisa-empregos.asp"
-    "?chaves=&cidade=&categoria=14&zona=0&tipo=0"
-)
+# A pesquisa `pesquisa-empregos.asp?chaves=` está em Disallow no robots.txt;
+# só a listagem da categoria é usada.
 LEGACY_LIST_URL = f"{BASE}/emprego-saude-medicina-enfermagem.asp"
 RSS_URL = f"{BASE}/rss.asp"
 # HTML só como complemento: o arquivo tem dezenas de páginas.
@@ -109,6 +109,20 @@ ANON_RE = re.compile(r"^an[oó]nim[oa]?s?$", re.I)
 # Se o scrape falhar parcialmente, não soft-expirar o inventário inteiro.
 MIN_JOBS_FOR_SOFT_EXPIRE = 40
 
+# Descrição completa da página de detalhe (o RSS corta a ~250 caracteres).
+# Só activo com NET_EMPREGOS_DETAIL_CACHE (corrido fora do VPS: o IP do VPS
+# recebe a página de login). Cache por sourceId: cada vaga é pedida uma vez.
+DETAIL_CACHE_ENV = "NET_EMPREGOS_DETAIL_CACHE"
+DETAIL_MAX_FETCHES = int(os.environ.get("NET_EMPREGOS_MAX_DETAILS", "200"))
+DETAIL_MIN_INTERVAL = 2.5
+DETAIL_MIN_CHARS = 300
+DETAIL_CACHE_TTL_DAYS = 60
+DETAIL_MAX_CONSECUTIVE_FAILURES = 3
+DETAIL_UA = (
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/141.0 Safari/537.36"
+)
+
 
 class NetEmpregosScraper(BaseScraper):
     slug = "net_empregos"
@@ -150,13 +164,16 @@ class NetEmpregosScraper(BaseScraper):
         # HTML costuma estar atrás de login no VPS; o RSS multi-query é a fonte
         # completa. Soft-expire só quando temos um lote suficientemente grande.
         self.last_listings_complete = len(jobs) >= MIN_JOBS_FOR_SOFT_EXPIRE
+        cache_path = os.environ.get(DETAIL_CACHE_ENV)
+        if cache_path:
+            _enrich_with_details(jobs, cache_path)
         return jobs
 
     def _fetch_html_listings(self) -> list[dict]:
         """Tenta a listagem HTML; devolve [] se o IP for mandado para login."""
         client = HttpClient(min_interval=0.45)
         try:
-            for base in (LIST_URL, LEGACY_LIST_URL):
+            for base in (LEGACY_LIST_URL,):
                 html = _http_list_page(client, base, 1)
                 if not _is_real_listing(html):
                     continue
@@ -414,6 +431,118 @@ def _to_job(item: dict, rss: dict | None) -> JobPayload | None:
         or _parse_date((rss or {}).get("date_raw") or ""),
         status="pending_review" if anonymous else "published",
         review_reason="Empresa anónima no Net-Empregos" if anonymous else None,
+    )
+
+
+def _load_detail_cache(path: str) -> dict[str, dict]:
+    try:
+        with open(path, encoding="utf-8") as fh:
+            data = json.load(fh)
+        return data if isinstance(data, dict) else {}
+    except (OSError, ValueError):
+        return {}
+
+
+def _save_detail_cache(path: str, cache: dict[str, dict]) -> None:
+    cutoff = (
+        datetime.now(timezone.utc) - timedelta(days=DETAIL_CACHE_TTL_DAYS)
+    ).isoformat()
+    kept = {k: v for k, v in cache.items() if (v.get("fetched_at") or "") >= cutoff}
+    os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
+    tmp = f"{path}.tmp"
+    with open(tmp, "w", encoding="utf-8") as fh:
+        json.dump(kept, fh, ensure_ascii=False)
+    os.replace(tmp, path)
+
+
+def _parse_detail_description(html: str) -> str | None:
+    """Descrição da página de detalhe: JSON-LD JobPosting, senão div.job-description."""
+    if "loginc.asp" in html.lower() and "JobPosting" not in html:
+        return None
+    for raw in re.findall(
+        r'<script[^>]+application/ld\+json[^>]*>(.*?)</script>', html, re.S | re.I
+    ):
+        try:
+            data = json.loads(raw, strict=False)
+        except ValueError:
+            continue
+        for node in data if isinstance(data, list) else [data]:
+            if isinstance(node, dict) and node.get("@type") == "JobPosting":
+                text = _strip_detail_footer(html_to_text(node.get("description") or ""))
+                if text:
+                    return text
+    soup = BeautifulSoup(html, "lxml")
+    box = soup.select_one("div.job-description")
+    if not box:
+        return None
+    for junk in box.select("script, style, ins, iframe, [id^=div-gpt], .adsbygoogle"):
+        junk.decompose()
+    text = re.sub(r"\n{3,}", "\n\n", box.get_text("\n", strip=True))
+    text = re.sub(r"^Detalhe da Oferta:\s*", "", text, flags=re.I)
+    return text.strip() or None
+
+
+def _strip_detail_footer(text: str) -> str:
+    """Remove o rodapé técnico do JSON-LD ("net_empregos_2" e o URL do anúncio)."""
+    lines = text.strip().splitlines()
+    while lines and (
+        not lines[-1].strip()
+        or re.fullmatch(r"net_empregos_\d+", lines[-1].strip())
+        or re.fullmatch(r"https?://(?:www\.)?net-empregos\.com/\S*", lines[-1].strip())
+    ):
+        lines.pop()
+    return "\n".join(lines).strip()
+
+
+def _enrich_with_details(jobs: list[JobPayload], cache_path: str) -> None:
+    """Troca o excerto do RSS pela descrição completa (cache + pedidos novos espaçados)."""
+    cache = _load_detail_cache(cache_path)
+    fetched = failures = enriched = 0
+    last_request = 0.0
+    with httpx.Client(
+        timeout=30.0,
+        follow_redirects=True,
+        headers={"User-Agent": DETAIL_UA, "Accept-Language": "pt-PT,pt;q=0.9"},
+    ) as client:
+        for job in jobs:
+            entry = cache.get(job.source_id)
+            if not entry:
+                if fetched >= DETAIL_MAX_FETCHES or failures >= DETAIL_MAX_CONSECUTIVE_FAILURES:
+                    continue
+                wait = DETAIL_MIN_INTERVAL - (time.monotonic() - last_request)
+                if wait > 0:
+                    time.sleep(wait)
+                last_request = time.monotonic()
+                fetched += 1
+                try:
+                    response = client.get(job.application_url)
+                    response.raise_for_status()
+                    # windows-1252 (superconjunto de ISO-8859-1: "–", "€" em 0x80–0x9F)
+                    text = _parse_detail_description(
+                        response.content.decode("cp1252", "replace")
+                    )
+                except httpx.HTTPError:
+                    text = None
+                if not text or len(text) < DETAIL_MIN_CHARS:
+                    # Login/bloqueio ou anúncio curto: fica o excerto, tenta-se noutra execução.
+                    failures += 0 if text else 1
+                    continue
+                failures = 0
+                entry = {
+                    "description": text[:8000],
+                    "fetched_at": datetime.now(timezone.utc).isoformat(),
+                }
+                cache[job.source_id] = entry
+            job.description = entry["description"]
+            job.salary = job.salary or _salary(job.title, job.description)
+            job.contract_type = job.contract_type or guess_contract(
+                f"{job.title} {job.description[:600]}"
+            )
+            enriched += 1
+    _save_detail_cache(cache_path, cache)
+    print(
+        f"[net_empregos] detalhe: {enriched}/{len(jobs)} com descrição completa "
+        f"({fetched} pedidos novos, cache {len(cache)})"
     )
 
 

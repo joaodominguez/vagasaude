@@ -824,6 +824,19 @@ export type IngestJobInput = {
   review_reason?: string | null;
 };
 
+/**
+ * O scraper do VPS só tem o excerto do RSS do Net-Empregos (~250 caracteres);
+ * a descrição completa vem da página de detalhe, corrida fora do VPS. Um
+ * excerto curto não substitui uma descrição mais completa da mesma vaga.
+ */
+function keepFullerDescription(existing: StoredJob | undefined, incoming: string) {
+  const current = existing?.description || "";
+  if (current.length <= incoming.length || incoming.length >= 400) return incoming;
+  const head = normalize(incoming.replace(/(?:\.\.\.|…)\s*$/, "")).slice(0, 60);
+  const sameText = Boolean(head) && normalize(current).includes(head);
+  return sameText || existing?.source === "net_empregos" ? current : incoming;
+}
+
 export async function ingestJobs(source: string, incoming: IngestJobInput[]) {
   const file = await readJobsFile();
   const now = new Date().toISOString();
@@ -854,8 +867,9 @@ export async function ingestJobs(source: string, incoming: IngestJobInput[]) {
     const dedupeHash = makeDedupeHash(title, company, district);
     const existingSameSource = bySourceId.get(`${source}:${sourceId}`);
     const existingHash = byHash.get(dedupeHash);
-    const description = cleanDescription(
-      decodeHtmlEntities(item.description || "").trim() || title,
+    const description = keepFullerDescription(
+      existingSameSource,
+      cleanDescription(decodeHtmlEntities(item.description || "").trim() || title),
     );
     const profession = isVeterinaryTitle(title)
       ? "Veterinária"
