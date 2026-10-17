@@ -226,7 +226,7 @@ function repairCommonGlitches(text: string): string {
 }
 
 /** Encurta títulos burocráticos para a função (ex.: Assistente Técnico). */
-export function shortenJobTitle(title: string, maxLen = 96): string {
+function shortenJobTitleRaw(title: string, maxLen = 96): string {
   let raw = (title || "").trim().replace(WHITESPACE_RE, " ");
   raw = raw.replace(ELLIPSIS_RE, "");
   if (!raw) {
@@ -335,4 +335,33 @@ export function shortenJobTitle(title: string, maxLen = 96): string {
     out = out.slice(0, maxLen - 1).replace(/[ ,;—\-]+$/g, "") + "…";
   }
   return out;
+}
+
+const TRAILING_CONNECTOR_RE =
+  /\s+(?:em\s+regime\s+de|de|da|do|das|dos|em|para|com|no|na|nos|nas|por|ao|aos|[eE]|a|o)$/i;
+
+/**
+ * Limpa o fim de títulos cortados: "Enfermeiro em Regime de",
+ * "… Hospitalar, E. P. e", "Coordenador de Núcleo de", "( )".
+ */
+export function tidyTitleEnd(text: string): string {
+  let out = text.replace(/\(\s*\)/g, "").replace(/\s+,/g, ",");
+  const ellipsis = /…$/.test(out);
+  out = out.replace(/…$/, "");
+  let prev: string;
+  do {
+    prev = out;
+    out = out
+      .replace(/[\s,;:—\-–―/]+$/g, "")
+      .replace(/,?\s*E\.\s*P\.\s*E?\.?$/i, "")
+      .replace(TRAILING_CONNECTOR_RE, "");
+  } while (out !== prev);
+  out = out.replace(/\s{2,}/g, " ").trim();
+  if (out.length < 3) return text;
+  return ellipsis ? `${out}…` : out;
+}
+
+/** Encurta títulos burocráticos para a função (ex.: Assistente Técnico). */
+export function shortenJobTitle(title: string, maxLen = 96): string {
+  return tidyTitleEnd(shortenJobTitleRaw(title, maxLen));
 }

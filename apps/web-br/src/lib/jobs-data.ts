@@ -29,7 +29,9 @@ export const getJobs = cache(async (): Promise<Job[]> => {
 });
 
 export const getJob = cache(
-  async (slug: string): Promise<{ job: Job; expired: boolean } | null> => {
+  async (
+    slug: string,
+  ): Promise<{ job: Job; expired: boolean; canonicalSlug?: string } | null> => {
     // Sempre o card completo (descrição/requisitos). A lista em memória
     // (`getJobs`) é leve e tem description="" — se a usarmos aqui, o
     // JobPosting JSON-LD fica sem "description" (erro crítico GSC).

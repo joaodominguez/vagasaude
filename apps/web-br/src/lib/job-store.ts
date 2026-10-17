@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { normalizeInlineLists } from "@/lib/format-job-text";
-import { shortenJobTitle } from "@/lib/shorten-job-title";
+import { shortenJobTitle, tidyTitleEnd } from "@/lib/shorten-job-title";
 
 export type StoredJob = {
   id: string;
@@ -46,6 +46,7 @@ export type JobCardData = {
   expiresAt?: string | null;
   lastSeenAt?: string | null;
   source?: string;
+  sourceId?: string;
   description: string;
   requirements: string[];
   responsibilities: string[];
@@ -495,7 +496,7 @@ function hasFutureExpiry(job: StoredJob) {
 
 /** Vaga publicada que já não deve ser servida como ativa (listagens, sitemap, JobPosting). */
 function isInactive(job: StoredJob) {
-  if (isPastExpiry(job)) return true;
+  if (isPastExpiry(job) || isClosedNoticeTitle(job.title)) return true;
   const now = Date.now();
   const lastSeen = Date.parse(job.lastSeenAt || job.updatedAt || "");
   if (!Number.isNaN(lastSeen) && now - lastSeen > MAX_UNSEEN_DAYS * DAY_MS) {
@@ -510,7 +511,7 @@ function isInactive(job: StoredJob) {
 function toJobCardListItem(job: StoredJob): JobCardData {
   return {
     slug: job.slug,
-    title: job.title,
+    title: tidyTitleEnd(job.title),
     company: job.company,
     district: job.locationDistrict,
     city: job.locationConcelho || job.locationDistrict,
@@ -522,6 +523,7 @@ function toJobCardListItem(job: StoredJob): JobCardData {
     expiresAt: job.expiresAt,
     lastSeenAt: job.lastSeenAt || job.updatedAt,
     source: job.source,
+    sourceId: job.sourceId,
     description: "",
     requirements: [],
     responsibilities: [],
@@ -552,7 +554,7 @@ export function toJobCard(job: StoredJob): JobCardData {
         : descriptionLines;
   return {
     slug: job.slug,
-    title: job.title,
+    title: tidyTitleEnd(job.title),
     company: job.company,
     district: job.locationDistrict,
     city: job.locationConcelho || job.locationDistrict,
@@ -564,6 +566,7 @@ export function toJobCard(job: StoredJob): JobCardData {
     expiresAt: job.expiresAt,
     lastSeenAt: job.lastSeenAt || job.updatedAt,
     source: job.source,
+    sourceId: job.sourceId,
     description,
     requirements:
       requirements.length > 0
@@ -592,6 +595,8 @@ type DerivedJobsCache = {
   builtAt: number;
   cards: JobCardData[];
   bySlug: Map<string, StoredJob>;
+  /** Republicações: slug da cópia → slug da vaga principal. */
+  canonicalOf: Map<string, string>;
 };
 let derivedJobsCache: DerivedJobsCache | null = null;
 
@@ -648,13 +653,15 @@ async function getDerivedJobsCache(): Promise<DerivedJobsCache> {
     }
   }
 
-  const cards = file.jobs
-    .filter(
-      (job) =>
-        job.status === "published" &&
-        !isInactive(job) &&
-        !isClosedNoticeTitle(job.title),
-    )
+  const active = file.jobs.filter(
+    (job) =>
+      job.status === "published" &&
+      !isInactive(job) &&
+      !isClosedNoticeTitle(job.title),
+  );
+  const canonicalOf = findRepostings(active);
+  const cards = active
+    .filter((job) => !canonicalOf.has(job.slug))
     .map(toJobCardListItem)
     .sort((a, b) => {
       const byPublished = b.publishedAt.localeCompare(a.publishedAt);
@@ -662,8 +669,38 @@ async function getDerivedJobsCache(): Promise<DerivedJobsCache> {
       return a.title.localeCompare(b.title, "pt");
     });
 
-  derivedJobsCache = { mtimeMs, builtAt: now, cards, bySlug };
+  derivedJobsCache = { mtimeMs, builtAt: now, cards, bySlug, canonicalOf };
   return derivedJobsCache;
+}
+
+/**
+ * Republicações da mesma vaga (mesmo título, entidade, local e descrição, IDs
+ * diferentes na fonte — ex.: Seconci ×33, DaVita ×22). Fica a mais antiga;
+ * as outras saem das listagens/sitemap e apontam canonical para ela.
+ * Devolve slug da cópia → slug da principal.
+ */
+function findRepostings(active: StoredJob[]) {
+  const groups = new Map<string, StoredJob[]>();
+  for (const job of active) {
+    const key = [
+      normalize(job.title),
+      normalize(job.company),
+      normalize(job.locationConcelho || job.locationDistrict),
+      normalize(job.description).slice(0, 400),
+    ].join("|");
+    const list = groups.get(key);
+    if (list) list.push(job);
+    else groups.set(key, [job]);
+  }
+  const canonicalOf = new Map<string, string>();
+  for (const list of groups.values()) {
+    if (list.length < 2) continue;
+    const sorted = list
+      .slice()
+      .sort((a, b) => a.createdAt.localeCompare(b.createdAt) || a.slug.localeCompare(b.slug));
+    for (const copy of sorted.slice(1)) canonicalOf.set(copy.slug, sorted[0].slug);
+  }
+  return canonicalOf;
 }
 
 function repairJobSlugs(jobs: StoredJob[]) {
@@ -758,7 +795,18 @@ function isClosedNoticeTitle(title: string) {
     t.includes("classificacao final") ||
     t.includes("anulacao do ato") ||
     t.includes("anulacao da referencia") ||
-    t.startsWith("anulacao ")
+    t.startsWith("anulacao ") ||
+    // Avisos de procedimentos (INEM/DRE), não vagas.
+    t.startsWith("nota informativa") ||
+    t.startsWith("convocatoria") ||
+    t.includes("lista de candidatos") ||
+    t.includes("lista unitaria") ||
+    t.includes("lista da avaliacao") ||
+    t.includes("retificacao da lista") ||
+    // Título partido pelo encurtador (ex.: "(306 (306 vagas)").
+    /^\(\d/.test(title.trim()) ||
+    // Fora do âmbito: apoio ao cliente noutras línguas.
+    /\bassistenza clienti\b|\bin (?:italiano|tedesco|francese)\b/.test(t)
   );
 }
 
@@ -969,9 +1017,11 @@ export function looksLikeHealthConcurso(
 export async function getJobCard(slug: string) {
   const found = await getStoredJobBySlugIncludingExpired(slug);
   if (!found) return null;
+  const { canonicalOf } = await getDerivedJobsCache();
   return {
     job: toJobCard(found.job),
     expired: found.expired,
+    canonicalSlug: found.expired ? undefined : canonicalOf.get(found.job.slug),
   };
 }
 

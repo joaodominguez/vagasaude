@@ -62,7 +62,10 @@ export async function generateMetadata({
 
   const found = await getJob(slug);
   if (!found) return { title: "Vaga não encontrada", robots: { index: false } };
-  const metadata = buildJobMetadata(found.job, { expired: found.expired });
+  const metadata = buildJobMetadata(found.job, {
+    expired: found.expired,
+    canonicalSlug: found.canonicalSlug,
+  });
   if (isConcursoJob(found.job)) {
     // Notícia/edital de concurso: noindex até haver secção própria de concursos.
     return { ...metadata, robots: { index: false, follow: true } };
@@ -108,7 +111,11 @@ export default async function VagasSlugPage({ params }: { params: Params }) {
     return <ExpiredJobView job={found.job} allJobs={allJobs} />;
   }
 
-  return <ActiveJobView job={found.job} allJobs={allJobs} />;
+  return <ActiveJobView
+      job={found.job}
+      allJobs={allJobs}
+      canonicalSlug={found.canonicalSlug}
+    />;
 }
 
 function scoreRelated(candidate: Job, target: Job): number {
@@ -132,7 +139,15 @@ function scoreRelated(candidate: Job, target: Job): number {
   return score;
 }
 
-function ActiveJobView({ job, allJobs }: { job: Job; allJobs: Job[] }) {
+function ActiveJobView({
+  job,
+  allJobs,
+  canonicalSlug,
+}: {
+  job: Job;
+  allJobs: Job[];
+  canonicalSlug?: string;
+}) {
   const related = allJobs
     .filter(
       (item) =>
@@ -145,7 +160,8 @@ function ActiveJobView({ job, allJobs }: { job: Job; allJobs: Job[] }) {
   const concurso = isConcursoJob(job);
   const concursoSummary = concurso ? buildConcursoSummary(job) : null;
   // Concursos não são vagas de um empregador: sem JobPosting (Google for Jobs).
-  const jsonLd = concurso ? null : buildJobPostingJsonLd(job);
+  // Republicações também sem JobPosting (só a vaga principal).
+  const jsonLd = concurso || canonicalSlug ? null : buildJobPostingJsonLd(job);
   const shareUrl = jobUrl(job.slug);
   const categoryLinks = buildJobCategoryLinks(job, allJobs);
 

@@ -14,6 +14,8 @@ export type Job = {
   lastSeenAt?: string | null;
   /** Fonte de origem (ex.: pci_concursos). */
   source?: string;
+  /** ID da vaga na fonte (identifier do JobPosting). */
+  sourceId?: string;
   description: string;
   requirements: string[];
   responsibilities: string[];

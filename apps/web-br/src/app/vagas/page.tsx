@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { ChevronLeft, ChevronRight, SlidersHorizontal, X } from "lucide-react";
 import { AlertForm } from "@/components/alert-form";
 import { CollapsibleList } from "@/components/collapsible-list";
@@ -25,7 +26,7 @@ export const dynamic = "force-dynamic";
 
 const PAGE_SIZE = 20;
 
-export const metadata: Metadata = {
+const LISTING_METADATA: Metadata = {
   title: "Vagas de saúde no Brasil — pesquisa e filtros",
   description:
     "Pesquise vagas de enfermagem, medicina, fisioterapia e outras profissões de saúde no Brasil. Filtre por estado, setor e contrato.",
@@ -55,6 +56,34 @@ type SearchParams = Promise<{
   ordenar?: string;
   page?: string;
 }>;
+
+const FILTER_KEYS = [
+  "q",
+  "distrito",
+  "profissao",
+  "setor",
+  "contrato",
+  "periodo",
+  "ordenar",
+] as const;
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}): Promise<Metadata> {
+  const params = await searchParams;
+  const filtered = FILTER_KEYS.some((key) => Boolean(params[key]?.trim()));
+  const page = Number.parseInt(params.page || "1", 10) || 1;
+  if (!filtered && page <= 1) return LISTING_METADATA;
+  // Pesquisa, filtros e páginas seguintes: navegáveis mas fora do índice —
+  // as landings de categoria paginadas cobrem as mesmas vagas.
+  return {
+    ...LISTING_METADATA,
+    alternates: { canonical: null },
+    robots: { index: false, follow: true },
+  };
+}
 
 function buildJobsHref(
   params: Record<string, string | undefined>,
@@ -117,7 +146,8 @@ export default async function JobsPage({
   }
 
   const totalPages = Math.max(1, Math.ceil(filteredJobs.length / PAGE_SIZE));
-  const currentPage = Math.min(page, totalPages);
+  if (page > totalPages) notFound();
+  const currentPage = page;
   const start = (currentPage - 1) * PAGE_SIZE;
   const pageJobs = filteredJobs.slice(start, start + PAGE_SIZE);
 
