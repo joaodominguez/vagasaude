@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { Job } from "@/lib/jobs";
+import { emLocal } from "@/lib/pt-locative";
 
 export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://vagasaude.pt";
@@ -81,7 +82,7 @@ export function jobUrl(slug: string) {
 export function jobMetaDescription(job: Job) {
   const snippet = truncateMeta(job.description, 110);
   return truncateMeta(
-    `${job.title} em ${job.city} · ${job.company}. ${snippet}`,
+    `${job.title} ${emLocal(job.city)} · ${job.company}. ${snippet}`,
     160,
   );
 }
@@ -128,7 +129,7 @@ export function buildJobMetadata(
     : `${job.title} — ${job.company}`;
   const description = expired
     ? truncateMeta(
-        `Esta vaga de ${job.profession} em ${job.city} já não está activa. Explora ofertas semelhantes de saúde no VagaSaúde.`,
+        `Esta vaga de ${job.profession} ${emLocal(job.city)} já não está activa. Explora ofertas semelhantes de saúde no VagaSaúde.`,
         160,
       )
     : jobMetaDescription(job);

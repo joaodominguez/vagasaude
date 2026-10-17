@@ -38,9 +38,14 @@ export function Footer() {
         </nav>
       </div>
       <div className="border-t border-border">
-        <div className="page-container py-4 text-xs text-muted">
-          © {new Date().getFullYear()} VagaSaúde. As candidaturas são feitas nos
-          sites das entidades.
+        <div className="page-container flex flex-wrap items-center justify-between gap-x-6 gap-y-2 py-4 text-xs text-muted">
+          <p>
+            © {new Date().getFullYear()} VagaSaúde. As candidaturas são feitas
+            nos sites das entidades.
+          </p>
+          <a className="hover:text-primary" href="https://vagasaude.com.br/">
+            Também no Brasil
+          </a>
         </div>
       </div>
     </footer>

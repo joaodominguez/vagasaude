@@ -32,7 +32,7 @@ export async function generateMetadata({
     category.district,
   );
   if (jobs.length < 3) return { title: category.title };
-  return buildCategoryMetadata(category, jobs.length);
+  return buildCategoryMetadata(category, jobs.length, jobs);
 }
 
 export default async function ProfessionDistrictPage({
