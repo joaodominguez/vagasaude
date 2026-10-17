@@ -1,0 +1,176 @@
+"use client";
+
+import { CheckCircle2, LoaderCircle, Mail } from "lucide-react";
+import { FormEvent, useState } from "react";
+import { districts, professions, sectors } from "@/lib/taxonomies";
+
+export function AlertForm({
+  compact = false,
+  defaultDistrict = "",
+  defaultProfession = "",
+  defaultSector = "",
+}: {
+  compact?: boolean;
+  defaultDistrict?: string;
+  defaultProfession?: string;
+  defaultSector?: string;
+}) {
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">(
+    "idle",
+  );
+  const [message, setMessage] = useState(
+    "Enviamos um email de confirmação. Confirme a inscrição para ativar o alerta.",
+  );
+
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setStatus("loading");
+    const form = new FormData(event.currentTarget);
+    const response = await fetch("/api/alerts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: form.get("email"),
+        district: form.get("district") || null,
+        profession: form.get("profession") || null,
+        sector: form.get("sector") || null,
+      }),
+    });
+
+    if (!response.ok) {
+      setStatus("error");
+      return;
+    }
+
+    const data = (await response.json().catch(() => null)) as {
+      emailSent?: boolean;
+      needsConfirmation?: boolean;
+      message?: string;
+    } | null;
+
+    if (data?.message) {
+      setMessage(data.message);
+    } else if (data?.needsConfirmation && data.emailSent) {
+      setMessage(
+        "Enviamos um email de confirmação. Confirme a inscrição para ativar o alerta.",
+      );
+    } else if (data?.needsConfirmation) {
+      setMessage(
+        "Seu email ficou registrado. Se não receber a confirmação, verifique mais tarde.",
+      );
+    } else {
+      setMessage("Preferências atualizadas. Seu alerta continua ativo.");
+    }
+
+    setStatus("success");
+  }
+
+  if (status === "success") {
+    return (
+      <div className="flex items-start gap-3 rounded-xl bg-success-soft p-4 text-sm text-success">
+        <CheckCircle2 className="mt-0.5 shrink-0" size={19} />
+        <p>
+          <strong className="block">Quase pronto.</strong>
+          {message}
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={submit} className={compact ? "space-y-3" : "space-y-4"}>
+      <label className="block">
+        <span className="mb-2 block text-sm font-semibold">Seu email</span>
+        <span className="input-shell">
+          <Mail aria-hidden="true" size={18} />
+          <input
+            required
+            type="email"
+            name="email"
+            placeholder="nome@exemplo.com.br"
+            autoComplete="email"
+          />
+        </span>
+      </label>
+
+      {!compact ? (
+        <>
+          <label className="block">
+            <span className="mb-2 block text-sm font-semibold">Estado</span>
+            <select
+              name="district"
+              defaultValue={defaultDistrict}
+              className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
+            >
+              <option value="">Todo o país</option>
+              {districts.map((district) => (
+                <option key={district} value={district}>
+                  {district}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="block">
+            <span className="mb-2 block text-sm font-semibold">Profissão</span>
+            <select
+              name="profession"
+              defaultValue={defaultProfession}
+              className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
+            >
+              <option value="">Todas</option>
+              {professions.map((profession) => (
+                <option key={profession} value={profession}>
+                  {profession}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="block">
+            <span className="mb-2 block text-sm font-semibold">Setor</span>
+            <select
+              name="sector"
+              defaultValue={defaultSector}
+              className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
+            >
+              <option value="">Todos</option>
+              {sectors.map((sector) => (
+                <option key={sector} value={sector}>
+                  {sector}
+                </option>
+              ))}
+            </select>
+          </label>
+        </>
+      ) : (
+        <>
+          <input type="hidden" name="district" value={defaultDistrict} />
+          <input type="hidden" name="profession" value={defaultProfession} />
+          <input type="hidden" name="sector" value={defaultSector} />
+        </>
+      )}
+
+      <button
+        className="button button-primary w-full"
+        type="submit"
+        disabled={status === "loading"}
+      >
+        {status === "loading" && (
+          <LoaderCircle className="animate-spin" size={17} />
+        )}
+        Criar alerta gratuito
+      </button>
+      {status === "error" && (
+        <p className="text-sm text-danger">
+          Não foi possível criar o alerta. Tente novamente.
+        </p>
+      )}
+      {!compact && (
+        <p className="text-xs leading-5 text-muted">
+          Sem spam. Você confirma por email e pode cancelar a qualquer momento.
+        </p>
+      )}
+    </form>
+  );
+}

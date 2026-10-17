@@ -1,0 +1,23 @@
+# Exemplo de VirtualHost Apache para VagaSaúde Brasil (requer sudo no servidor).
+# Colocar em /etc/apache2/sites-available/vagasaude.com.br.conf
+#
+# a2enmod proxy proxy_http headers rewrite ssl
+# a2ensite vagasaude.com.br
+# apache2ctl configtest && systemctl reload apache2
+#
+# Proxy real está em /var/www/vagasaudebr/public/.htaccess → 127.0.0.1:3011
+# (mesmo padrão de vagasaude.pt → 3010). Certbot --apache gera o *-le-ssl.conf.
+
+<VirtualHost *:80>
+    ServerAdmin webmaster@vagasaude.com.br
+    ServerName vagasaude.com.br
+    ServerAlias www.vagasaude.com.br
+    DocumentRoot /var/www/vagasaudebr/public
+    <Directory /var/www/vagasaudebr/public>
+        Options -Indexes +FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+    ErrorLog ${APACHE_LOG_DIR}/vagasaudebr-error.log
+    CustomLog ${APACHE_LOG_DIR}/vagasaudebr-access.log combined
+</VirtualHost>
