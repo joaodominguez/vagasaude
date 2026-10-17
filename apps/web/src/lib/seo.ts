@@ -42,23 +42,6 @@ export function buildHomeMetadata(jobCount?: number): Metadata {
   };
 }
 
-const EMPLOYMENT_TYPE_MAP: Record<string, string> = {
-  "tempo inteiro": "FULL_TIME",
-  "full time": "FULL_TIME",
-  "full-time": "FULL_TIME",
-  "tempo parcial": "PART_TIME",
-  "part time": "PART_TIME",
-  "part-time": "PART_TIME",
-  estágio: "INTERN",
-  estagio: "INTERN",
-  temporário: "TEMPORARY",
-  temporario: "TEMPORARY",
-  "prestação de serviços": "CONTRACTOR",
-  "prestacao de servicos": "CONTRACTOR",
-  contrato: "CONTRACTOR",
-  turnos: "OTHER",
-};
-
 export function absoluteUrl(path = "/") {
   if (/^https?:\/\//i.test(path)) return path;
   const normalized = path.startsWith("/") ? path : `/${path}`;
@@ -87,14 +70,34 @@ export function jobMetaDescription(job: Job) {
   );
 }
 
-export function mapEmploymentType(contract: string | null | undefined) {
+/**
+ * employmentType a partir do texto de contrato da fonte (pode ter vários:
+ * "Termo certo · A tempo completo" → TEMPORARY + FULL_TIME). "Contrato" sozinho
+ * é ambíguo (não é prestação de serviços) e fica OTHER.
+ */
+export function mapEmploymentType(
+  contract: string | null | undefined,
+): string | string[] {
   if (!contract) return "OTHER";
-  const key = contract
+  const text = contract
     .normalize("NFKD")
     .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .trim();
-  return EMPLOYMENT_TYPE_MAP[key] ?? "OTHER";
+    .toLowerCase();
+  const types = new Set<string>();
+  if (/prestacao de servicos|recibos? verdes?|\bpj\b|freelanc/.test(text)) types.add("CONTRACTOR");
+  if (/estagi[oa]|\binternship/.test(text)) types.add("INTERN");
+  if (/termo (?:certo|incerto)|a termo|temporari|\bpss\b|substitui/.test(text)) types.add("TEMPORARY");
+  if (/plantao|plantonista/.test(text)) types.add("PER_DIEM");
+  if (/tempo parcial|part[ -]?time|meio periodo/.test(text)) types.add("PART_TIME");
+  if (
+    /tempo (?:inteiro|completo|integral)|full[ -]?time|\bclt\b|sem termo|tempo indeterminado|definitiv|\bctfp\b|\b3[5-9] horas|\b40 horas/.test(text) &&
+    !types.has("PART_TIME")
+  ) {
+    types.add("FULL_TIME");
+  }
+  if (types.size === 0) return "OTHER";
+  const list = [...types];
+  return list.length === 1 ? list[0] : list;
 }
 
 /** Dias de validade a partir da última vez que a fonte devolveu a vaga. */
@@ -128,7 +131,7 @@ export function safeDatePosted(value: string) {
 
 export function buildJobMetadata(
   job: Job,
-  options?: { expired?: boolean },
+  options?: { expired?: boolean; canonicalSlug?: string },
 ): Metadata {
   const expired = Boolean(options?.expired);
   const title = expired
@@ -141,11 +144,13 @@ export function buildJobMetadata(
       )
     : jobMetaDescription(job);
   const url = jobPath(job.slug);
+  // Republicação: canonical para a vaga principal (a cópia sai do índice).
+  const canonical = jobPath(options?.canonicalSlug || job.slug);
 
   return {
     title,
     description,
-    alternates: { canonical: url },
+    alternates: { canonical },
     robots: expired
       ? { index: false, follow: true }
       : { index: true, follow: true },
@@ -165,12 +170,78 @@ export function buildJobMetadata(
   };
 }
 
+/** "1.499,15" / "1499.15" / "25.000" → número. */
+function parseEuroAmount(raw: string) {
+  let value = raw.trim();
+  if (/^\d{1,3}(?:\.\d{3})+(?:,\d+)?$/.test(value)) {
+    value = value.replace(/\./g, "").replace(",", ".");
+  } else {
+    value = value.replace(",", ".");
+  }
+  const n = Number(value);
+  return Number.isFinite(n) && n > 0 ? n : null;
+}
+
+/**
+ * Remuneração anunciada (ex.: "1230 €/mês", "De 25.000€ a 35.000€").
+ * Não inventa valores — devolve null se não houver montante em euros.
+ */
+export function parseAnnouncedSalary(salary: string | null | undefined): {
+  currency: "EUR";
+  unitText: "HOUR" | "DAY" | "MONTH" | "YEAR";
+  value?: number;
+  minValue?: number;
+  maxValue?: number;
+} | null {
+  if (!salary?.trim()) return null;
+  const text = salary.trim();
+  const amounts = [
+    ...text.matchAll(/(\d[\d.,]*)\s*(?:€|eur(?:os)?\b)|€\s*(\d[\d.,]*)/gi),
+  ]
+    .map((match) => parseEuroAmount(match[1] || match[2] || ""))
+    .filter((n): n is number => n != null);
+  if (amounts.length === 0) return null;
+  const lower = text.normalize("NFKD").replace(/[̀-ͯ]/g, "").toLowerCase();
+  let unitText: "HOUR" | "DAY" | "MONTH" | "YEAR" = "MONTH";
+  if (/\/\s*h\b|hora/.test(lower)) unitText = "HOUR";
+  else if (/\/\s*dia|diari/.test(lower)) unitText = "DAY";
+  else if (/\/\s*ano|anual/.test(lower) || Math.min(...amounts) >= 10000) unitText = "YEAR";
+  if (amounts.length >= 2) {
+    return {
+      currency: "EUR",
+      unitText,
+      minValue: Math.min(...amounts),
+      maxValue: Math.max(...amounts),
+    };
+  }
+  return { currency: "EUR", unitText, value: amounts[0] };
+}
+
+function buildBaseSalaryJsonLd(job: Job) {
+  const parsed = parseAnnouncedSalary(job.salary);
+  if (!parsed) return undefined;
+  const value: Record<string, string | number> = {
+    "@type": "QuantitativeValue",
+    unitText: parsed.unitText,
+  };
+  if (parsed.minValue != null && parsed.maxValue != null) {
+    value.minValue = parsed.minValue;
+    value.maxValue = parsed.maxValue;
+  } else if (parsed.value != null) {
+    value.value = parsed.value;
+  } else {
+    return undefined;
+  }
+  return { "@type": "MonetaryAmount", currency: parsed.currency, value };
+}
+
 export function buildJobPostingJsonLd(job: Job) {
   const datePosted = safeDatePosted(job.publishedAt);
   const validThrough = jobValidThrough(job);
   const description = [job.description, ...job.requirements, ...job.responsibilities]
     .filter(Boolean)
     .join("\n\n");
+  const baseSalary = buildBaseSalaryJsonLd(job);
 
   return {
     "@context": "https://schema.org",
@@ -195,10 +266,11 @@ export function buildJobPostingJsonLd(job: Job) {
         addressCountry: "PT",
       },
     },
+    ...(baseSalary ? { baseSalary } : {}),
     identifier: {
       "@type": "PropertyValue",
-      name: SITE_NAME,
-      value: job.slug,
+      name: job.company,
+      value: job.sourceId || job.slug,
     },
     url: jobUrl(job.slug),
     directApply: false,

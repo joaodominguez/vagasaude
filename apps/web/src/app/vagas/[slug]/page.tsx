@@ -61,7 +61,10 @@ export async function generateMetadata({
 
   const found = await getJob(slug);
   if (!found) return { title: "Vaga não encontrada", robots: { index: false } };
-  return buildJobMetadata(found.job, { expired: found.expired });
+  return buildJobMetadata(found.job, {
+    expired: found.expired,
+    canonicalSlug: found.canonicalSlug,
+  });
 }
 
 export default async function VagasSlugPage({ params }: { params: Params }) {
@@ -102,7 +105,11 @@ export default async function VagasSlugPage({ params }: { params: Params }) {
     return <ExpiredJobView job={found.job} allJobs={allJobs} />;
   }
 
-  return <ActiveJobView job={found.job} allJobs={allJobs} />;
+  return <ActiveJobView
+      job={found.job}
+      allJobs={allJobs}
+      canonicalSlug={found.canonicalSlug}
+    />;
 }
 
 function scoreRelated(candidate: Job, target: Job): number {
@@ -126,7 +133,15 @@ function scoreRelated(candidate: Job, target: Job): number {
   return score;
 }
 
-function ActiveJobView({ job, allJobs }: { job: Job; allJobs: Job[] }) {
+function ActiveJobView({
+  job,
+  allJobs,
+  canonicalSlug,
+}: {
+  job: Job;
+  allJobs: Job[];
+  canonicalSlug?: string;
+}) {
   const related = allJobs
     .filter(
       (item) =>
@@ -136,7 +151,8 @@ function ActiveJobView({ job, allJobs }: { job: Job; allJobs: Job[] }) {
     .sort((a, b) => scoreRelated(b, job) - scoreRelated(a, job))
     .slice(0, 6);
 
-  const jsonLd = buildJobPostingJsonLd(job);
+  // Republicação de outra vaga: sem JobPosting (só a vaga principal).
+  const jsonLd = canonicalSlug ? null : buildJobPostingJsonLd(job);
   const shareUrl = jobUrl(job.slug);
   const categoryLinks = buildJobCategoryLinks(job, allJobs);
 
@@ -298,10 +314,12 @@ function ActiveJobView({ job, allJobs }: { job: Job; allJobs: Job[] }) {
         </a>
       </div>
       <Footer />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
     </>
   );
 }

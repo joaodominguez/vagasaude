@@ -373,6 +373,7 @@ const PROFESSION_SEARCH_PHRASE: Record<string, string> = {
   Farmácia: "Emprego em Farmácia",
   Psicologia: "Emprego em Psicologia",
   Nutrição: "Emprego para Nutricionista",
+  Veterinária: "Emprego em Veterinária",
   "Assistência Social": "Emprego em Serviço Social",
   Formação: "Emprego em Formação na Saúde",
   "Comercial / Farma": "Emprego Comercial / Farma",

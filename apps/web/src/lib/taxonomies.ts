@@ -13,6 +13,7 @@ export const professions = [
   "Farmácia",
   "Psicologia",
   "Nutrição",
+  "Veterinária",
   "Assistência Social",
   "Formação",
   "Comercial / Farma",
