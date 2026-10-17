@@ -26,6 +26,8 @@ export type StoredJob = {
   reviewReason: string | null;
   publishedAt: string | null;
   expiresAt: string | null;
+  /** Última vez que o scraper da fonte devolveu esta vaga. */
+  lastSeenAt?: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -42,6 +44,8 @@ export type JobCardData = {
   publishedLabel: string;
   publishedAt: string;
   expiresAt?: string | null;
+  lastSeenAt?: string | null;
+  source?: string;
   description: string;
   requirements: string[];
   responsibilities: string[];
@@ -447,6 +451,61 @@ function extractSectionBullets(
   return items.slice(0, 8);
 }
 
+const DAY_MS = 86_400_000;
+/** Vaga publicada há mais de 1 ano sem data de fim futura: tratada como encerrada. */
+const MAX_JOB_AGE_DAYS = 365;
+/** Fonte sem devolver a vaga há 7 dias (~28 execuções falhadas): tratada como encerrada. */
+const MAX_UNSEEN_DAYS = 7;
+
+/** "Publicado em 16/02/2023 15h15" (INCA) e outros dd/mm/aaaa. */
+function parseLooseDate(value: string | null | undefined) {
+  if (!value) return null;
+  const direct = Date.parse(value);
+  if (!Number.isNaN(direct)) return direct;
+  const m = value.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  if (!m) return null;
+  const t = Date.UTC(Number(m[3]), Number(m[2]) - 1, Number(m[1]));
+  return Number.isNaN(t) ? null : t;
+}
+
+/**
+ * Data de publicação real: a da fonte se for válida e não futura; senão a
+ * primeira vez que vimos a vaga (createdAt). Nunca a hora do pedido.
+ */
+export function normalizePublishedAt(
+  value: string | null | undefined,
+  firstSeen: string,
+) {
+  const t = parseLooseDate(value);
+  if (t == null || t > Date.now()) return firstSeen;
+  return value && !Number.isNaN(Date.parse(value)) ? value : new Date(t).toISOString();
+}
+
+function isPastExpiry(job: StoredJob) {
+  if (!job.expiresAt) return false;
+  const expires = Date.parse(job.expiresAt);
+  return !Number.isNaN(expires) && expires < Date.now();
+}
+
+function hasFutureExpiry(job: StoredJob) {
+  if (!job.expiresAt) return false;
+  const expires = Date.parse(job.expiresAt);
+  return !Number.isNaN(expires) && expires >= Date.now();
+}
+
+/** Vaga publicada que já não deve ser servida como ativa (listagens, sitemap, JobPosting). */
+function isInactive(job: StoredJob) {
+  if (isPastExpiry(job)) return true;
+  const now = Date.now();
+  const lastSeen = Date.parse(job.lastSeenAt || job.updatedAt || "");
+  if (!Number.isNaN(lastSeen) && now - lastSeen > MAX_UNSEEN_DAYS * DAY_MS) {
+    return true;
+  }
+  if (hasFutureExpiry(job)) return false;
+  const published = parseLooseDate(normalizePublishedAt(job.publishedAt, job.createdAt));
+  return published != null && now - published > MAX_JOB_AGE_DAYS * DAY_MS;
+}
+
 /** Listagem/home: evita parse de descrições longas (PCI/Gupy) em milhares de vagas. */
 function toJobCardListItem(job: StoredJob): JobCardData {
   return {
@@ -458,9 +517,11 @@ function toJobCardListItem(job: StoredJob): JobCardData {
     sector: SECTOR_LABEL[job.sector],
     contract: job.contractType || "A definir",
     profession: job.profession,
-    publishedLabel: publishedLabel(job.publishedAt),
-    publishedAt: job.publishedAt || job.createdAt.slice(0, 10),
+    publishedLabel: publishedLabel(normalizePublishedAt(job.publishedAt, job.createdAt)),
+    publishedAt: normalizePublishedAt(job.publishedAt, job.createdAt),
     expiresAt: job.expiresAt,
+    lastSeenAt: job.lastSeenAt || job.updatedAt,
+    source: job.source,
     description: "",
     requirements: [],
     responsibilities: [],
@@ -498,9 +559,11 @@ export function toJobCard(job: StoredJob): JobCardData {
     sector: SECTOR_LABEL[job.sector],
     contract: job.contractType || "A definir",
     profession: job.profession,
-    publishedLabel: publishedLabel(job.publishedAt),
-    publishedAt: job.publishedAt || job.createdAt.slice(0, 10),
+    publishedLabel: publishedLabel(normalizePublishedAt(job.publishedAt, job.createdAt)),
+    publishedAt: normalizePublishedAt(job.publishedAt, job.createdAt),
     expiresAt: job.expiresAt,
+    lastSeenAt: job.lastSeenAt || job.updatedAt,
+    source: job.source,
     description,
     requirements:
       requirements.length > 0
@@ -589,7 +652,7 @@ async function getDerivedJobsCache(): Promise<DerivedJobsCache> {
     .filter(
       (job) =>
         job.status === "published" &&
-        !isPastExpiry(job) &&
+        !isInactive(job) &&
         !isClosedNoticeTitle(job.title),
     )
     .map(toJobCardListItem)
@@ -670,21 +733,15 @@ export async function getStoredJobBySlugIncludingExpired(slug: string) {
   if (!match) return null;
 
   if (match.status === "published") {
-    if (isPastExpiry(match)) {
+    if (isInactive(match)) {
       return { job: match, expired: true as const };
     }
     return { job: match, expired: false as const };
   }
-  if (match.status === "expired" || isPastExpiry(match)) {
+  if (match.status === "expired" || isInactive(match)) {
     return { job: match, expired: true as const };
   }
   return null;
-}
-
-function isPastExpiry(job: StoredJob) {
-  if (!job.expiresAt) return false;
-  const expires = Date.parse(job.expiresAt);
-  return !Number.isNaN(expires) && expires < Date.now();
 }
 
 export async function listJobCards() {
@@ -1051,8 +1108,12 @@ export async function ingestJobs(source: string, incoming: IngestJobInput[]) {
       dedupeHash,
       status,
       reviewReason,
-      publishedAt: item.published_at || existingSameSource?.publishedAt || now,
+      publishedAt: normalizePublishedAt(
+        item.published_at || existingSameSource?.publishedAt,
+        existingSameSource?.createdAt || now,
+      ),
       expiresAt: item.expires_at || null,
+      lastSeenAt: now,
       createdAt: existingSameSource?.createdAt || now,
       updatedAt: now,
     };

@@ -1,0 +1,79 @@
+import type { Metadata } from "next";
+import { notFound, redirect } from "next/navigation";
+import { CategoryPageView } from "@/components/category-page-view";
+import {
+  buildCategoryMetadata,
+  categoryTotalPages,
+  filterJobsForCategory,
+  isCategoryEligible,
+  listEligibleCategories,
+  parseCategoryPageSegment,
+  resolveCategoryFromSegments,
+} from "@/lib/categories";
+import { getJobs } from "@/lib/jobs-data";
+
+export const dynamic = "force-static";
+export const revalidate = 600;
+
+/** /vagas/[profissao]/[estado]/pagina-N */
+type Params = Promise<{ slug: string; district: string; page: string }>;
+
+function resolveSegments(slug: string, district: string, pageSegment: string) {
+  const page = parseCategoryPageSegment(pageSegment);
+  if (!page) return null;
+  const category = resolveCategoryFromSegments(slug, district);
+  return category ? { category, page } : null;
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Params;
+}): Promise<Metadata> {
+  const { slug, district, page: pageSegment } = await params;
+  const resolved = resolveSegments(slug, district, pageSegment);
+  if (!resolved) return { title: "Categoria não encontrada" };
+  const { category, page } = resolved;
+  const jobs = filterJobsForCategory(
+    await getJobs(),
+    category.profession,
+    category.district,
+  );
+  if (jobs.length < 3) return { title: category.title };
+  return buildCategoryMetadata(category, jobs.length, page);
+}
+
+export default async function ProfessionDistrictPagedPage({
+  params,
+}: {
+  params: Params;
+}) {
+  const { slug, district, page: pageSegment } = await params;
+  const resolved = resolveSegments(slug, district, pageSegment);
+  if (!resolved) notFound();
+  const { category, page } = resolved;
+
+  const allJobs = await getJobs();
+  if (!isCategoryEligible(allJobs, category.profession, category.district)) {
+    const qs = new URLSearchParams();
+    if (category.profession) qs.set("profissao", category.profession);
+    if (category.district) qs.set("distrito", category.district);
+    redirect(`/vagas?${qs.toString()}`);
+  }
+
+  const jobs = filterJobsForCategory(
+    allJobs,
+    category.profession,
+    category.district,
+  );
+  if (page > categoryTotalPages(jobs.length)) notFound();
+
+  return (
+    <CategoryPageView
+      category={category}
+      jobs={jobs}
+      page={page}
+      allCategoryRefs={listEligibleCategories(allJobs)}
+    />
+  );
+}

@@ -20,6 +20,7 @@ import { JobCard } from "@/components/job-card";
 import { JobDescription } from "@/components/job-description";
 import { SalaryInsight } from "@/components/salary-insight";
 import { ShareButtons } from "@/components/share-buttons";
+import { buildConcursoSummary, isConcursoJob } from "@/lib/concursos";
 import {
   buildCategoryMetadata,
   categoryPath,
@@ -61,7 +62,12 @@ export async function generateMetadata({
 
   const found = await getJob(slug);
   if (!found) return { title: "Vaga não encontrada", robots: { index: false } };
-  return buildJobMetadata(found.job, { expired: found.expired });
+  const metadata = buildJobMetadata(found.job, { expired: found.expired });
+  if (isConcursoJob(found.job)) {
+    // Notícia/edital de concurso: noindex até haver secção própria de concursos.
+    return { ...metadata, robots: { index: false, follow: true } };
+  }
+  return metadata;
 }
 
 export default async function VagasSlugPage({ params }: { params: Params }) {
@@ -136,7 +142,10 @@ function ActiveJobView({ job, allJobs }: { job: Job; allJobs: Job[] }) {
     .sort((a, b) => scoreRelated(b, job) - scoreRelated(a, job))
     .slice(0, 6);
 
-  const jsonLd = buildJobPostingJsonLd(job);
+  const concurso = isConcursoJob(job);
+  const concursoSummary = concurso ? buildConcursoSummary(job) : null;
+  // Concursos não são vagas de um empregador: sem JobPosting (Google for Jobs).
+  const jsonLd = concurso ? null : buildJobPostingJsonLd(job);
   const shareUrl = jobUrl(job.slug);
   const categoryLinks = buildJobCategoryLinks(job, allJobs);
 
@@ -197,17 +206,45 @@ function ActiveJobView({ job, allJobs }: { job: Job; allJobs: Job[] }) {
                 />
               </header>
 
-              <div className="job-content">
-                <section>
-                  <h2>Sobre a vaga</h2>
-                  <JobDescription text={job.description} />
-                </section>
-                <CheckList title="O que procuramos" items={job.requirements} />
-                <CheckList
-                  title="Responsabilidades"
-                  items={job.responsibilities}
-                />
-              </div>
+              {concursoSummary ? (
+                <div className="job-content">
+                  <section>
+                    <h2>Sobre o concurso</h2>
+                    <p>{concursoSummary.description}</p>
+                  </section>
+                  {concursoSummary.cargos.length > 0 && (
+                    <CheckList
+                      title="Cargos da área da saúde"
+                      items={concursoSummary.cargos}
+                    />
+                  )}
+                  <section>
+                    <h2>Edital e inscrições</h2>
+                    <p>
+                      <a
+                        href={job.applicationUrl}
+                        target="_blank"
+                        rel="noopener noreferrer nofollow"
+                      >
+                        Ler a notícia completa e o edital na fonte
+                      </a>
+                      .
+                    </p>
+                  </section>
+                </div>
+              ) : (
+                <div className="job-content">
+                  <section>
+                    <h2>Sobre a vaga</h2>
+                    <JobDescription text={job.description} />
+                  </section>
+                  <CheckList title="O que procuramos" items={job.requirements} />
+                  <CheckList
+                    title="Responsabilidades"
+                    items={job.responsibilities}
+                  />
+                </div>
+              )}
             </article>
 
             <aside className="space-y-4 lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:overscroll-contain">
@@ -303,10 +340,12 @@ function ActiveJobView({ job, allJobs }: { job: Job; allJobs: Job[] }) {
         </a>
       </div>
       <Footer />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
     </>
   );
 }

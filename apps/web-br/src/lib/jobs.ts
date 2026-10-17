@@ -10,6 +10,10 @@ export type Job = {
   publishedLabel: string;
   publishedAt: string;
   expiresAt?: string | null;
+  /** Última vez que o scraper devolveu a vaga (base do validThrough). */
+  lastSeenAt?: string | null;
+  /** Fonte de origem (ex.: pci_concursos). */
+  source?: string;
   description: string;
   requirements: string[];
   responsibilities: string[];

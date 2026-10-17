@@ -64,6 +64,31 @@ export type CategoryRef = {
   title: string;
 };
 
+/** Vagas por página nas landings (o HTML com milhares de cards passava os 15 MB do Googlebot). */
+export const CATEGORY_PAGE_SIZE = 50;
+
+export function categoryTotalPages(count: number) {
+  return Math.max(1, Math.ceil(count / CATEGORY_PAGE_SIZE));
+}
+
+/** Página 1 = URL base; seguintes em /pagina-N (self-canonical). */
+export function categoryPagePath(path: string, page: number) {
+  return page > 1 ? `${path}/pagina-${page}` : path;
+}
+
+/** "pagina-2" → 2. Página 1 não tem segmento próprio (devolve null). */
+export function parseCategoryPageSegment(segment: string | undefined) {
+  const match = segment?.match(/^pagina-(\d{1,4})$/);
+  if (!match) return null;
+  const page = Number(match[1]);
+  return page >= 2 ? page : null;
+}
+
+export function sliceCategoryPage<T>(jobs: T[], page: number) {
+  const start = (page - 1) * CATEGORY_PAGE_SIZE;
+  return jobs.slice(start, start + CATEGORY_PAGE_SIZE);
+}
+
 export function categoryPath(
   profession: string | null | undefined,
   district: string | null | undefined,
@@ -340,27 +365,32 @@ export function buildCategoryIntro(
 export function buildCategoryMetadata(
   ref: CategoryRef,
   count: number,
+  page = 1,
 ): Metadata {
   const offerWord = count === 1 ? "oferta ativa" : "ofertas ativas";
-  const title =
+  const baseTitle =
     ref.kind === "combo"
       ? `${ref.profession} em ${ref.district}: ${count} ${offerWord}`
       : ref.kind === "profession"
         ? `${ref.profession}: ${count} vagas de saúde no Brasil`
         : `Saúde em ${ref.district}: ${count} ${offerWord}`;
+  const title = page > 1 ? `${baseTitle} — página ${page}` : baseTitle;
   const description = truncateMeta(
-    professionDistrictDescription(ref, count),
+    page > 1
+      ? `Página ${page}. ${professionDistrictDescription(ref, count)}`
+      : professionDistrictDescription(ref, count),
     160,
   );
+  const url = categoryPagePath(ref.path, page);
 
   return {
     title,
     description,
-    alternates: { canonical: ref.path },
+    alternates: { canonical: url },
     openGraph: {
       title,
       description,
-      url: ref.path,
+      url,
       type: "website",
       siteName: SITE_NAME,
       locale: "pt_BR",
@@ -384,16 +414,18 @@ function professionDistrictDescription(ref: CategoryRef, count: number) {
   return `${n} de saúde em ${ref.district}. Enfermagem, medicina, técnicos e outras profissões — pesquise e crie alertas no VagaSaúde.`;
 }
 
-export function buildItemListJsonLd(ref: CategoryRef, jobs: Job[]) {
+/** `jobs` = vagas da página atual. */
+export function buildItemListJsonLd(ref: CategoryRef, jobs: Job[], page = 1) {
+  const offset = (page - 1) * CATEGORY_PAGE_SIZE;
   return {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    name: ref.title,
-    url: absoluteUrl(ref.path),
+    name: page > 1 ? `${ref.title} — página ${page}` : ref.title,
+    url: absoluteUrl(categoryPagePath(ref.path, page)),
     numberOfItems: jobs.length,
-    itemListElement: jobs.slice(0, 50).map((job, index) => ({
+    itemListElement: jobs.slice(0, CATEGORY_PAGE_SIZE).map((job, index) => ({
       "@type": "ListItem",
-      position: index + 1,
+      position: offset + index + 1,
       url: absoluteUrl(`/vagas/${job.slug}`),
       name: job.title,
     })),

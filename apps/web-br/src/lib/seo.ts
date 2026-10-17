@@ -102,25 +102,32 @@ export function mapEmploymentType(contract: string | null | undefined) {
   return EMPLOYMENT_TYPE_MAP[key] ?? "OTHER";
 }
 
-export function jobValidThrough(job: Job, datePostedIso?: string) {
+/** Dias de validade a partir da última vez que a fonte devolveu a vaga. */
+const VALID_THROUGH_DAYS_AFTER_SEEN = 30;
+
+/**
+ * validThrough: data de fim da fonte se for futura; senão última vez vista
+ * pelo scraper + 30 dias. Uma vaga que deixa de aparecer na fonte expira e
+ * sai do JobPosting, por isso nunca fica com datas no passado.
+ */
+export function jobValidThrough(job: Job) {
   if (job.expiresAt) {
     const expires = new Date(job.expiresAt);
     if (!Number.isNaN(expires.getTime()) && expires.getTime() > Date.now()) {
       return expires.toISOString();
     }
   }
-  const posted = new Date(datePostedIso || job.publishedAt);
-  if (Number.isNaN(posted.getTime())) return undefined;
-  const base = posted.getTime() > Date.now() ? new Date() : posted;
+  const seen = new Date(job.lastSeenAt || Date.now());
+  const base = Number.isNaN(seen.getTime()) || seen.getTime() > Date.now() ? new Date() : seen;
   const expires = new Date(base);
-  expires.setUTCDate(expires.getUTCDate() + 60);
+  expires.setUTCDate(expires.getUTCDate() + VALID_THROUGH_DAYS_AFTER_SEEN);
   return expires.toISOString();
 }
 
+/** publishedAt já vem normalizado do job-store (nunca a hora do pedido). */
 export function safeDatePosted(value: string) {
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return new Date().toISOString();
-  if (date.getTime() > Date.now()) return new Date().toISOString();
+  if (Number.isNaN(date.getTime()) || date.getTime() > Date.now()) return undefined;
   return date.toISOString();
 }
 
@@ -253,7 +260,7 @@ function buildBaseSalaryJsonLd(job: Job) {
 
 export function buildJobPostingJsonLd(job: Job) {
   const datePosted = safeDatePosted(job.publishedAt);
-  const validThrough = jobValidThrough(job, datePosted);
+  const validThrough = jobValidThrough(job);
   const description =
     [job.description, ...job.requirements, ...job.responsibilities]
       .filter(Boolean)
@@ -268,7 +275,7 @@ export function buildJobPostingJsonLd(job: Job) {
     "@type": "JobPosting",
     title: job.title,
     description,
-    datePosted,
+    ...(datePosted ? { datePosted } : {}),
     ...(validThrough ? { validThrough } : {}),
     employmentType: mapEmploymentType(job.contract),
     occupationalCategory: job.profession,

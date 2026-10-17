@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, Bell } from "lucide-react";
+import { ArrowLeft, Bell, ChevronLeft, ChevronRight } from "lucide-react";
 import { AlertForm } from "@/components/alert-form";
 import { ArticlesGuideCta } from "@/components/articles-guide-cta";
 import { Footer } from "@/components/footer";
@@ -10,26 +10,34 @@ import {
   buildCategoryIntro,
   buildCategoryStats,
   buildItemListJsonLd,
+  categoryPagePath,
   categoryPath,
+  categoryTotalPages,
   relatedCategoryLinks,
   siblingDistrictLinks,
+  sliceCategoryPage,
   type CategoryRef,
 } from "@/lib/categories";
 
+/** `jobs` = todas as vagas da categoria; só a `page` atual é renderizada. */
 export function CategoryPageView({
   category,
   jobs,
+  page = 1,
   allCategoryRefs,
 }: {
   category: CategoryRef;
   jobs: Job[];
+  page?: number;
   allCategoryRefs: CategoryRef[];
 }) {
   const stats = buildCategoryStats(jobs);
   const intro = buildCategoryIntro(stats, category.profession, category.district);
   const related = relatedCategoryLinks(allCategoryRefs, category);
   const siblings = siblingDistrictLinks(allCategoryRefs, category);
-  const jsonLd = buildItemListJsonLd(category, jobs);
+  const totalPages = categoryTotalPages(jobs.length);
+  const pageJobs = sliceCategoryPage(jobs, page);
+  const jsonLd = buildItemListJsonLd(category, pageJobs, page);
 
   const parentLinks: Array<{ href: string; label: string }> = [
     { href: "/vagas", label: "Todas as vagas" },
@@ -65,6 +73,12 @@ export function CategoryPageView({
             <p className="mt-2 text-sm font-semibold text-primary">
               {stats.count}{" "}
               {stats.count === 1 ? "oferta ativa" : "ofertas ativas"}
+              {totalPages > 1 && (
+                <span className="text-muted">
+                  {" "}
+                  · página {page} de {totalPages}
+                </span>
+              )}
             </p>
             <p className="mt-4 max-w-3xl text-sm leading-7 text-muted sm:text-base">
               {intro}
@@ -84,9 +98,14 @@ export function CategoryPageView({
 
         <div className="page-container grid min-w-0 gap-8 py-10 lg:grid-cols-[minmax(0,1fr)_20rem]">
           <section className="min-w-0 space-y-3">
-            {jobs.map((job) => (
+            {pageJobs.map((job) => (
               <JobCard key={job.slug} job={job} />
             ))}
+            <CategoryPagination
+              basePath={category.path}
+              page={page}
+              totalPages={totalPages}
+            />
           </section>
 
           <aside className="space-y-4">
@@ -165,5 +184,70 @@ export function CategoryPageView({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
     </>
+  );
+}
+
+/** Janela de números à volta da página atual, com 1 e última sempre visíveis. */
+function paginationWindow(page: number, totalPages: number) {
+  const pages = new Set([1, totalPages]);
+  for (let n = page - 2; n <= page + 2; n += 1) {
+    if (n >= 1 && n <= totalPages) pages.add(n);
+  }
+  return [...pages].sort((a, b) => a - b);
+}
+
+function CategoryPagination({
+  basePath,
+  page,
+  totalPages,
+}: {
+  basePath: string;
+  page: number;
+  totalPages: number;
+}) {
+  if (totalPages <= 1) return null;
+  const numbers = paginationWindow(page, totalPages);
+  return (
+    <nav
+      className="flex flex-wrap items-center justify-center gap-2 pt-6 text-sm"
+      aria-label="Paginação"
+    >
+      {page > 1 && (
+        <Link
+          href={categoryPagePath(basePath, page - 1)}
+          className="filter-chip inline-flex items-center gap-1"
+          rel="prev"
+        >
+          <ChevronLeft size={16} /> Anterior
+        </Link>
+      )}
+      {numbers.map((n, index) => (
+        <span key={n} className="inline-flex items-center gap-2">
+          {index > 0 && n - numbers[index - 1] > 1 && (
+            <span className="text-muted" aria-hidden="true">
+              …
+            </span>
+          )}
+          {n === page ? (
+            <span className="filter-chip font-extrabold" aria-current="page">
+              {n}
+            </span>
+          ) : (
+            <Link href={categoryPagePath(basePath, n)} className="filter-chip">
+              {n}
+            </Link>
+          )}
+        </span>
+      ))}
+      {page < totalPages && (
+        <Link
+          href={categoryPagePath(basePath, page + 1)}
+          className="filter-chip inline-flex items-center gap-1"
+          rel="next"
+        >
+          Próxima <ChevronRight size={16} />
+        </Link>
+      )}
+    </nav>
   );
 }

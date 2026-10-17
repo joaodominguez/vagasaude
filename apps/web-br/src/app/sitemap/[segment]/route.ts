@@ -2,6 +2,7 @@ import {
   filterJobsForCategory,
   listEligibleCategories,
 } from "@/lib/categories";
+import { isConcursoJob } from "@/lib/concursos";
 import type { Job } from "@/lib/jobs";
 import { getJobs } from "@/lib/jobs-data";
 import { SITE_URL } from "@/lib/seo";
@@ -96,7 +97,8 @@ async function buildJobsSitemap() {
   const today = new Date();
   today.setUTCHours(0, 0, 0, 0);
   // getJobs() devolve só vagas publicadas (ativas) — expiradas ficam fora do sitemap.
-  const jobs = await getJobs();
+  // Concursos (noindex) também ficam fora.
+  const jobs = (await getJobs()).filter((job) => !isConcursoJob(job));
   const entries = jobs.map((job) => {
     const published = Date.parse(job.publishedAt);
     const lastmod =
