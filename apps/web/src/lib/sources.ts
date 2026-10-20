@@ -4,7 +4,8 @@ export type JobSourceMeta = {
   shortName: string;
   url: string;
   sector: "Público" | "Privado" | "IPSS";
-  logo: string;
+  /** Sem logótipo, o cartão de parceiros mostra o nome. */
+  logo?: string;
 };
 
 export const JOB_SOURCES: JobSourceMeta[] = [
@@ -215,6 +216,97 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     url: "https://concursosrh-ulssjoao.min-saude.pt/processos-ativos",
     sector: "Público",
     logo: "/partners/uls-sao-joao.svg",
+  },
+  {
+    id: "ivc_evidensia",
+    name: "IVC Evidensia — Carreiras",
+    shortName: "IVC Evidensia",
+    url: "https://carreras.ivcevidensia.es/jobs?country=Portugal",
+    sector: "Privado",
+  },
+  {
+    id: "anicura",
+    name: "AniCura Portugal — Carreiras",
+    shortName: "AniCura",
+    url: "https://anicuraportugal.teamtailor.com/",
+    sector: "Privado",
+  },
+  {
+    id: "affidea",
+    name: "Affidea Portugal — Carreiras",
+    shortName: "Affidea",
+    url: "https://affideaportugal.recruitee.com/",
+    sector: "Privado",
+  },
+  {
+    id: "sword_health",
+    name: "Sword Health — Careers",
+    shortName: "Sword Health",
+    url: "https://swordhealth.com/careers",
+    sector: "Privado",
+  },
+  {
+    id: "unilabs",
+    name: "Unilabs — Carreiras",
+    shortName: "Unilabs",
+    url: "https://apply.workable.com/unilabs/",
+    sector: "Privado",
+  },
+  {
+    id: "fresenius",
+    name: "Fresenius Medical Care (NephroCare)",
+    shortName: "NephroCare",
+    url: "https://jobs.freseniusmedicalcare.com/pt/",
+    sector: "Privado",
+  },
+  {
+    id: "domusvi",
+    name: "DomusVi Portugal — Recrutamento",
+    shortName: "DomusVi",
+    url: "https://domusvi.zohorecruit.eu/jobs/Careers",
+    sector: "Privado",
+  },
+  {
+    id: "synlab",
+    name: "SYNLAB Portugal — Recrutamento",
+    shortName: "SYNLAB",
+    url: "https://www.synlab.pt/recrutamento",
+    sector: "Privado",
+  },
+  {
+    id: "unisana",
+    name: "Unisana Hospitais — Recrutamento",
+    shortName: "Unisana",
+    url: "https://unisanahospitais.pt/recrutamento/",
+    sector: "Privado",
+  },
+  {
+    id: "omv",
+    name: "Ordem dos Médicos Veterinários — Bolsa de Emprego",
+    shortName: "OMV",
+    url: "https://www.omv.pt/bolsa-de-emprego",
+    sector: "Privado",
+  },
+  {
+    id: "ess_porto",
+    name: "ESS P.Porto — Ofertas de emprego",
+    shortName: "ESS P.Porto",
+    url: "https://www.ess.ipp.pt/comunidade/empregabilidade/ofertas-de-emprego",
+    sector: "Público",
+  },
+  {
+    id: "sesaram",
+    name: "SESARAM — Oportunidades de emprego",
+    shortName: "SESARAM",
+    url: "https://www.sesaram.pt/portal/o-sesaram/outras-informacoes-sesaram/oportunidades-emprego",
+    sector: "Público",
+  },
+  {
+    id: "ordem_enfermeiros",
+    name: "Ordem dos Enfermeiros — Ofertas de emprego",
+    shortName: "Ordem dos Enfermeiros",
+    url: "https://www.ordemenfermeiros.pt/divulga%C3%A7%C3%A3o-de-ofertas-de-emprego/",
+    sector: "Privado",
   },
 ];
 

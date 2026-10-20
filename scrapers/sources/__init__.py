@@ -1,3 +1,16 @@
+from sources.affidea import AffideaScraper
+from sources.anicura import AnicuraScraper
+from sources.domusvi import DomusviScraper
+from sources.ess_porto import EssPortoScraper
+from sources.fresenius import FreseniusScraper
+from sources.ivc_evidensia import IvcEvidensiaScraper
+from sources.omv import OmvScraper
+from sources.ordem_enfermeiros import OrdemEnfermeirosScraper
+from sources.sesaram import SesaramScraper
+from sources.sword_health import SwordHealthScraper
+from sources.synlab import SynlabScraper
+from sources.unilabs import UnilabsScraper
+from sources.unisana import UnisanaScraper
 from sources.aefful import AeffulScraper
 from sources.bep import BepScraper
 from sources.champalimaud import ChampalimaudScraper
@@ -49,4 +62,18 @@ SCRAPERS = {
     UlsSaoJoseScraper.slug: UlsSaoJoseScraper,
     UlsCoimbraScraper.slug: UlsCoimbraScraper,
     UlsSaoJoaoScraper.slug: UlsSaoJoaoScraper,
+    # Fontes adicionadas em 2026-10 (empregadores, ordens e escolas).
+    IvcEvidensiaScraper.slug: IvcEvidensiaScraper,
+    AnicuraScraper.slug: AnicuraScraper,
+    AffideaScraper.slug: AffideaScraper,
+    SwordHealthScraper.slug: SwordHealthScraper,
+    UnilabsScraper.slug: UnilabsScraper,
+    FreseniusScraper.slug: FreseniusScraper,
+    DomusviScraper.slug: DomusviScraper,
+    SynlabScraper.slug: SynlabScraper,
+    UnisanaScraper.slug: UnisanaScraper,
+    OmvScraper.slug: OmvScraper,
+    EssPortoScraper.slug: EssPortoScraper,
+    SesaramScraper.slug: SesaramScraper,
+    OrdemEnfermeirosScraper.slug: OrdemEnfermeirosScraper,
 }

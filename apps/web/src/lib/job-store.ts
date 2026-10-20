@@ -837,6 +837,9 @@ function keepFullerDescription(existing: StoredJob | undefined, incoming: string
   return sameText || existing?.source === "net_empregos" ? current : incoming;
 }
 
+/** Agregadores: perdem para a mesma vaga publicada pelo próprio empregador. */
+const AGGREGATOR_SOURCES = new Set(["net_empregos", "sapo_emprego", "iefp"]);
+
 export async function ingestJobs(source: string, incoming: IngestJobInput[]) {
   const file = await readJobsFile();
   const now = new Date().toISOString();
@@ -846,6 +849,16 @@ export async function ingestJobs(source: string, incoming: IngestJobInput[]) {
       .map((job) => [`${job.source}:${job.sourceId}`, job] as const),
   );
   const byHash = new Map(file.jobs.map((job) => [job.dedupeHash, job] as const));
+  // Vagas vivas publicadas pelo próprio empregador (não agregador), por hash.
+  const employerHashes = new Set(
+    file.jobs
+      .filter(
+        (job) =>
+          !AGGREGATOR_SOURCES.has(job.source) &&
+          (job.status === "published" || job.status === "pending_review"),
+      )
+      .map((job) => job.dedupeHash),
+  );
 
   let created = 0;
   let updated = 0;
@@ -886,7 +899,18 @@ export async function ingestJobs(source: string, incoming: IngestJobInput[]) {
       const hashIsLive =
         existingHash.status === "published" ||
         existingHash.status === "pending_review";
-      if (existingHash.source !== source && hashIsLive) {
+      if (
+        existingHash.source !== source &&
+        hashIsLive &&
+        AGGREGATOR_SOURCES.has(existingHash.source) &&
+        !AGGREGATOR_SOURCES.has(source)
+      ) {
+        // A vaga existia via agregador; a do empregador (descrição completa,
+        // candidatura direta) passa a principal e a cópia fica duplicada.
+        existingHash.status = "duplicate";
+        existingHash.reviewReason = `Duplicado de ${source}:${sourceId}`;
+        existingHash.updatedAt = now;
+      } else if (existingHash.source !== source && hashIsLive) {
         status = "duplicate";
         reviewReason = `Duplicado de ${existingHash.source}:${existingHash.sourceId}`;
       } else if (
@@ -899,6 +923,16 @@ export async function ingestJobs(source: string, incoming: IngestJobInput[]) {
         status = "duplicate";
         reviewReason = `Duplicado interno de ${existingHash.source}:${existingHash.sourceId}`;
       }
+    }
+
+    if (
+      AGGREGATOR_SOURCES.has(source) &&
+      status !== "duplicate" &&
+      employerHashes.has(dedupeHash)
+    ) {
+      // Cópia de agregador de uma vaga que o empregador publica diretamente.
+      status = "duplicate";
+      reviewReason = "Duplicado de vaga publicada pelo empregador";
     }
 
     if (status === "pending_review") review += 1;
