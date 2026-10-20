@@ -29,7 +29,9 @@ set +a
 : "${SCRAPER_API_TOKEN:?SCRAPER_API_TOKEN em falta em $ENV_FILE}"
 
 SOCK="$(mktemp -u /tmp/vagasaude-tunnel.XXXXXX)"
+# Keepalive: o scrape de detalhe demora ~8 min sem tráfego no túnel e a ligação caía.
 ssh -M -S "$SOCK" -fNT -o ExitOnForwardFailure=yes -o BatchMode=yes \
+  -o ServerAliveInterval=30 -o ServerAliveCountMax=6 \
   -L "127.0.0.1:${PORT}:127.0.0.1:3010" "$VPS"
 trap 'ssh -S "$SOCK" -O exit "$VPS" >/dev/null 2>&1 || true' EXIT
 
