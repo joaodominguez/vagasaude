@@ -223,6 +223,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "IVC Evidensia",
     url: "https://carreras.ivcevidensia.es/jobs?country=Portugal",
     sector: "Privado",
+    logo: "/partners/ivc-evidensia.png",
   },
   {
     id: "anicura",
@@ -230,6 +231,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "AniCura",
     url: "https://anicuraportugal.teamtailor.com/",
     sector: "Privado",
+    logo: "/partners/anicura.svg",
   },
   {
     id: "affidea",
@@ -237,6 +239,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "Affidea",
     url: "https://affideaportugal.recruitee.com/",
     sector: "Privado",
+    logo: "/partners/affidea.svg",
   },
   {
     id: "sword_health",
@@ -244,6 +247,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "Sword Health",
     url: "https://swordhealth.com/careers",
     sector: "Privado",
+    logo: "/partners/sword-health.svg",
   },
   {
     id: "unilabs",
@@ -251,6 +255,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "Unilabs",
     url: "https://apply.workable.com/unilabs/",
     sector: "Privado",
+    logo: "/partners/unilabs.png",
   },
   {
     id: "fresenius",
@@ -258,6 +263,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "NephroCare",
     url: "https://jobs.freseniusmedicalcare.com/pt/",
     sector: "Privado",
+    logo: "/partners/nephrocare.svg",
   },
   {
     id: "domusvi",
@@ -265,6 +271,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "DomusVi",
     url: "https://domusvi.zohorecruit.eu/jobs/Careers",
     sector: "Privado",
+    logo: "/partners/domusvi.png",
   },
   {
     id: "synlab",
@@ -272,6 +279,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "SYNLAB",
     url: "https://www.synlab.pt/recrutamento",
     sector: "Privado",
+    logo: "/partners/synlab.svg",
   },
   {
     id: "unisana",
@@ -279,6 +287,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "Unisana",
     url: "https://unisanahospitais.pt/recrutamento/",
     sector: "Privado",
+    logo: "/partners/unisana-hospitais.svg",
   },
   {
     id: "omv",
@@ -286,6 +295,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "OMV",
     url: "https://www.omv.pt/bolsa-de-emprego",
     sector: "Privado",
+    logo: "/partners/omv.png",
   },
   {
     id: "ess_porto",
@@ -300,6 +310,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "SESARAM",
     url: "https://www.sesaram.pt/portal/o-sesaram/outras-informacoes-sesaram/oportunidades-emprego",
     sector: "Público",
+    logo: "/partners/sesaram.png",
   },
   {
     id: "ordem_enfermeiros",
@@ -307,6 +318,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "Ordem dos Enfermeiros",
     url: "https://www.ordemenfermeiros.pt/divulga%C3%A7%C3%A3o-de-ofertas-de-emprego/",
     sector: "Privado",
+    logo: "/partners/ordem-enfermeiros.png",
   },
   {
     id: "farmacias_cuido",
@@ -314,6 +326,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "Farmácias Cuido",
     url: "https://farmaciascuido.factorialhr.pt/",
     sector: "Privado",
+    logo: "/partners/farmacias-cuido.svg",
   },
   {
     id: "farmacias_4farma",
@@ -321,6 +334,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "4Farma",
     url: "https://4farma.factorialhr.pt/",
     sector: "Privado",
+    logo: "/partners/4farma.png",
   },
   {
     id: "elo_farma",
@@ -328,6 +342,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "Elo Farma",
     url: "https://www.elofarma.com/destaques-page/vagas-em-aberto",
     sector: "Privado",
+    logo: "/partners/elo-farma.svg",
   },
   {
     id: "reis_barata",
@@ -335,6 +350,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "Reis Barata",
     url: "https://farmaciasreisbarata.pt/recrutamento/",
     sector: "Privado",
+    logo: "/partners/reis-barata.png",
   },
   {
     id: "farmacias_silveira",
@@ -342,6 +358,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "Farmácias Silveira",
     url: "https://www.farmaciasilveira.com/",
     sector: "Privado",
+    logo: "/partners/farmacia-silveira.png",
   },
 ];
 
