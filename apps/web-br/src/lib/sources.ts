@@ -4,7 +4,8 @@ export type JobSourceMeta = {
   shortName: string;
   url: string;
   sector: "Público" | "Privado" | "Filantrópico";
-  logo: string;
+  /** Sem logo, o cartão de parceiros mostra o nome. */
+  logo?: string;
 };
 
 /**
@@ -378,6 +379,35 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     url: "https://s3saude.gupy.io/",
     sector: "Privado",
     logo: "/partners/cauda-gupy.svg",
+  },
+  {
+    id: "hapvida_pandape",
+    name: "Hapvida NotreDame Intermédica (Pandapé)",
+    shortName: "Hapvida",
+    url: "https://hapvidandi.pandape.infojobs.com.br/",
+    sector: "Privado",
+    logo: "/partners/hapvida.png",
+  },
+  {
+    id: "pandape_hospitais",
+    name: "Hospitais e OSs (Pandapé): Santa Casa SP, CEJAM, Santa Marcelina e outros",
+    shortName: "Hospitais (Pandapé)",
+    url: "https://santacasademisericordiadesaopaulo.pandape.infojobs.com.br/",
+    sector: "Filantrópico",
+  },
+  {
+    id: "gupy_hospitais_2",
+    name: "Hospitais (Gupy): Felício Rocho, Mário Penna, Fundação José Silveira e outros",
+    shortName: "Hospitais (Gupy)",
+    url: "https://hospitalfeliciorocho.gupy.io/",
+    sector: "Filantrópico",
+  },
+  {
+    id: "farmacias_gupy",
+    name: "Redes de farmácias: RD Saúde, Pague Menos, Panvel e outras",
+    shortName: "Farmácias",
+    url: "https://rdsaude-farmacia.gupy.io/",
+    sector: "Privado",
   },
 ];
 

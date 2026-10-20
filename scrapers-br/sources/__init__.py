@@ -11,8 +11,10 @@ from sources.gupy import (
     DasaScraper,
     DavitaScraper,
     EvangelicoScraper,
+    FarmaciasGupyScraper,
     FhsaScraper,
     FidiScraper,
+    GupyHospitais2Scraper,
     HaocScraper,
     HapvidaScraper,
     HmbfmScraper,
@@ -41,6 +43,7 @@ from sources.gupy import (
     VeraCruzScraper,
 )
 from sources.hcor import HcorScraper
+from sources.pandape import HapvidaPandapeScraper, PandapeHospitaisScraper
 from sources.hsl_sirio import HslSirioScraper
 from sources.inca import IncaScraper
 from sources.mater_dei import MaterDeiScraper
@@ -62,6 +65,8 @@ SCRAPERS = {
     FleuryScraper.slug: FleuryScraper,
     HaocScraper.slug: HaocScraper,
     HcorScraper.slug: HcorScraper,
+    HapvidaPandapeScraper.slug: HapvidaPandapeScraper,
+    PandapeHospitaisScraper.slug: PandapeHospitaisScraper,
     MaterDeiScraper.slug: MaterDeiScraper,
     HslSirioScraper.slug: HslSirioScraper,
     PciConcursosScraper.slug: PciConcursosScraper,
@@ -94,4 +99,6 @@ SCRAPERS = {
     EvangelicoScraper.slug: EvangelicoScraper,
     HmbfmScraper.slug: HmbfmScraper,
     CaudaGupyScraper.slug: CaudaGupyScraper,
+    GupyHospitais2Scraper.slug: GupyHospitais2Scraper,
+    FarmaciasGupyScraper.slug: FarmaciasGupyScraper,
 }

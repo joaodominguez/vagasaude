@@ -26,13 +26,19 @@ export function Partners() {
                 title={source.name}
               >
                 <span className="partner-logo-frame">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={source.logo}
-                    alt={source.shortName}
-                    loading="lazy"
-                    decoding="async"
-                  />
+                  {source.logo ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={source.logo}
+                      alt={source.shortName}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  ) : (
+                    <span className="text-sm font-extrabold text-muted">
+                      {source.shortName}
+                    </span>
+                  )}
                 </span>
               </a>
             </li>
