@@ -308,6 +308,41 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     url: "https://www.ordemenfermeiros.pt/divulga%C3%A7%C3%A3o-de-ofertas-de-emprego/",
     sector: "Privado",
   },
+  {
+    id: "farmacias_cuido",
+    name: "Farmácias Cuido — Recrutamento",
+    shortName: "Farmácias Cuido",
+    url: "https://farmaciascuido.factorialhr.pt/",
+    sector: "Privado",
+  },
+  {
+    id: "farmacias_4farma",
+    name: "4Farma — Recrutamento",
+    shortName: "4Farma",
+    url: "https://4farma.factorialhr.pt/",
+    sector: "Privado",
+  },
+  {
+    id: "elo_farma",
+    name: "Rede Elo Farma — Vagas",
+    shortName: "Elo Farma",
+    url: "https://www.elofarma.com/destaques-page/vagas-em-aberto",
+    sector: "Privado",
+  },
+  {
+    id: "reis_barata",
+    name: "Farmácias Grupo Reis Barata — Recrutamento",
+    shortName: "Reis Barata",
+    url: "https://farmaciasreisbarata.pt/recrutamento/",
+    sector: "Privado",
+  },
+  {
+    id: "farmacias_silveira",
+    name: "Farmácias Silveira — Recrutamento",
+    shortName: "Farmácias Silveira",
+    url: "https://www.farmaciasilveira.com/",
+    sector: "Privado",
+  },
 ];
 
 export const SOURCE_META = Object.fromEntries(

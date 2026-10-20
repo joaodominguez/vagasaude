@@ -1,3 +1,7 @@
+from sources.elo_farma import EloFarmaScraper
+from sources.factorial_farmacias import FarmaciasCuidoScraper, QuatroFarmaScraper
+from sources.farmacias_silveira import FarmaciasSilveiraScraper
+from sources.reis_barata import ReisBarataScraper
 from sources.affidea import AffideaScraper
 from sources.anicura import AnicuraScraper
 from sources.domusvi import DomusviScraper
@@ -76,4 +80,10 @@ SCRAPERS = {
     EssPortoScraper.slug: EssPortoScraper,
     SesaramScraper.slug: SesaramScraper,
     OrdemEnfermeirosScraper.slug: OrdemEnfermeirosScraper,
+    # Farmácias (só farmacêutico e técnico de farmácia).
+    FarmaciasCuidoScraper.slug: FarmaciasCuidoScraper,
+    QuatroFarmaScraper.slug: QuatroFarmaScraper,
+    EloFarmaScraper.slug: EloFarmaScraper,
+    ReisBarataScraper.slug: ReisBarataScraper,
+    FarmaciasSilveiraScraper.slug: FarmaciasSilveiraScraper,
 }
