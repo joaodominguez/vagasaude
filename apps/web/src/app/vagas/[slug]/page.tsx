@@ -11,6 +11,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { AlertForm } from "@/components/alert-form";
+import { applyTrackingProps } from "@/lib/analytics";
 import { CategoryPageView } from "@/components/category-page-view";
 import { FavoriteButton } from "@/components/favorite-button";
 import { Footer } from "@/components/footer";
@@ -254,6 +255,7 @@ function ActiveJobView({
                     target="_blank"
                     rel="noopener noreferrer nofollow"
                     className="button button-primary flex-1 text-center"
+                    {...applyTrackingProps(job, "sidebar")}
                   >
                     <span className="truncate">Candidatar</span>
                     <ExternalLink size={16} className="shrink-0" />
@@ -310,6 +312,7 @@ function ActiveJobView({
           target="_blank"
           rel="noopener noreferrer nofollow"
           className="button button-primary w-full"
+          {...applyTrackingProps(job, "mobile")}
         >
           Candidatar <ExternalLink size={16} />
         </a>
