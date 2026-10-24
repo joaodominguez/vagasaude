@@ -285,14 +285,6 @@ export function buildWebsiteJsonLd() {
     url: SITE_URL,
     description: DEFAULT_DESCRIPTION,
     inLanguage: "pt-PT",
-    potentialAction: {
-      "@type": "SearchAction",
-      target: {
-        "@type": "EntryPoint",
-        urlTemplate: `${SITE_URL}/vagas?q={search_term_string}`,
-      },
-      "query-input": "required name=search_term_string",
-    },
   };
 }
 

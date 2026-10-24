@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import { notFound, redirect } from "next/navigation";
+import { notFound, permanentRedirect, redirect } from "next/navigation";
 import { CategoryPageView } from "@/components/category-page-view";
 import {
   buildCategoryMetadata,
   categoryTotalPages,
   filterJobsForCategory,
   isCategoryEligible,
+  isFirstPageSegment,
   listEligibleCategories,
   parseCategoryPageSegment,
   resolveCategoryFromSegments,
@@ -49,6 +50,10 @@ export default async function ProfessionDistrictPagedPage({
   params: Params;
 }) {
   const { slug, district, page: pageSegment } = await params;
+  if (isFirstPageSegment(pageSegment)) {
+    const first = resolveCategoryFromSegments(slug, district);
+    if (first) permanentRedirect(first.path);
+  }
   const resolved = resolveSegments(slug, district, pageSegment);
   if (!resolved) notFound();
   const { category, page } = resolved;

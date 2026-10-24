@@ -3,6 +3,10 @@
 # a página de login nas páginas de detalhe). Ingestão via túnel SSH para a API
 # PT local do VPS (127.0.0.1:3010), sem passar pelo Cloudflare.
 #
+# Duas fases: (1) scrape + detalhe para a cache, sem túnel (a parte longa);
+# (2) túnel aberto só para a ingestão, que reutiliza a cache (~1 min), com
+# nova tentativa. Tudo sob caffeinate: o Mac a dormir matava o túnel.
+#
 # Requisitos (uma vez):
 #   python3 -m venv ~/Localhost/vagasaude/.venv-scrapers
 #   ~/Localhost/vagasaude/.venv-scrapers/bin/pip install httpx beautifulsoup4 lxml
@@ -10,7 +14,7 @@
 #
 # Uso:
 #   ./run-net-empregos-off-vps.sh            # scrape + detalhe + ingestão
-#   ./run-net-empregos-off-vps.sh --dry-run  # sem enviar para a API
+#   ./run-net-empregos-off-vps.sh --dry-run  # só actualiza a cache
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 cd "$ROOT"
@@ -28,13 +32,31 @@ source "$ENV_FILE"
 set +a
 : "${SCRAPER_API_TOKEN:?SCRAPER_API_TOKEN em falta em $ENV_FILE}"
 
-SOCK="$(mktemp -u /tmp/vagasaude-tunnel.XXXXXX)"
-# Keepalive: o scrape de detalhe demora ~8 min sem tráfego no túnel e a ligação caía.
-ssh -M -S "$SOCK" -fNT -o ExitOnForwardFailure=yes -o BatchMode=yes \
-  -o ServerAliveInterval=30 -o ServerAliveCountMax=6 \
-  -L "127.0.0.1:${PORT}:127.0.0.1:3010" "$VPS"
-trap 'ssh -S "$SOCK" -O exit "$VPS" >/dev/null 2>&1 || true' EXIT
-
-export INGEST_BASE_URL="http://127.0.0.1:${PORT}"
 echo "[$(date '+%F %T')] net_empregos off-VPS (detalhe: $NET_EMPREGOS_DETAIL_CACHE)"
-"$PY" run.py --source net_empregos "$@"
+
+# Fase 1: detalhe para a cache (sem ingestão).
+caffeinate -i "$PY" run.py --source net_empregos --dry-run | grep -E "^\[net_empregos\]" || true
+if [[ "${1:-}" == "--dry-run" ]]; then
+  exit 0
+fi
+
+# Fase 2: túnel só durante a ingestão (até 3 tentativas).
+for attempt in 1 2 3; do
+  SOCK="$(mktemp -u /tmp/vagasaude-tunnel.XXXXXX)"
+  if ssh -M -S "$SOCK" -fNT -o ExitOnForwardFailure=yes -o BatchMode=yes \
+    -o ServerAliveInterval=30 -o ServerAliveCountMax=6 -o ConnectTimeout=20 \
+    -L "127.0.0.1:${PORT}:127.0.0.1:3010" "$VPS"; then
+    export INGEST_BASE_URL="http://127.0.0.1:${PORT}"
+    rc=0
+    # Sem pedidos de detalhe novos aqui: a fase 1 já encheu a cache.
+    NET_EMPREGOS_MAX_DETAILS=0 caffeinate -i "$PY" run.py --source net_empregos >"$SOCK.out" 2>&1 || rc=$?
+    ssh -S "$SOCK" -O exit "$VPS" >/dev/null 2>&1 || true
+    grep -E "^\[net_empregos\]" "$SOCK.out" || true
+    rm -f "$SOCK.out"
+    [[ "$rc" -eq 0 ]] && exit 0
+  fi
+  echo "[$(date '+%F %T')] tentativa $attempt falhou; nova tentativa em 60 s"
+  sleep 60
+done
+echo "[$(date '+%F %T')] ERRO: ingestão falhou após 3 tentativas"
+exit 1

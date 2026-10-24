@@ -540,16 +540,19 @@ def _enrich_with_details(jobs: list[JobPayload], cache_path: str) -> None:
                     blocked = True
                     continue
                 text = _parse_detail_description(html) if html else None
-                if not text or len(text) < DETAIL_MIN_CHARS:
-                    # Login/bloqueio ou anúncio curto: fica o excerto, tenta-se noutra execução.
-                    failures += 0 if text else 1
+                if not text:
+                    # Página sem descrição: tenta-se noutra execução.
+                    failures += 1
                     continue
                 failures = 0
+                # Anúncios curtos também ficam em cache (não voltar a pedir).
                 entry = {
                     "description": text[:8000],
                     "fetched_at": datetime.now(timezone.utc).isoformat(),
                 }
                 cache[job.source_id] = entry
+            if len(entry["description"]) <= len(job.description or ""):
+                continue
             job.description = entry["description"]
             job.salary = job.salary or _salary(job.title, job.description)
             job.contract_type = job.contract_type or guess_contract(

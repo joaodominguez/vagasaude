@@ -1,4 +1,9 @@
-import { listEligibleCategories } from "@/lib/categories";
+import {
+  categoryPagePath,
+  categoryTotalPages,
+  filterJobsForCategory,
+  listEligibleCategories,
+} from "@/lib/categories";
 import { getJobs } from "@/lib/jobs-data";
 import { SITE_URL } from "@/lib/seo";
 
@@ -84,14 +89,24 @@ async function buildCategoriesSitemap() {
         Math.min(Date.parse(jobs[0].publishedAt) || Date.now(), Date.now()),
       )
     : now;
-  const entries = categories.map((category) =>
-    urlEntry(
-      `${SITE_URL}${category.path}`,
-      latestJob,
-      "daily",
-      category.kind === "combo" ? "0.7" : "0.75",
-    ),
-  );
+  const entries = categories.flatMap((category) => {
+    const categoryJobs = filterJobsForCategory(
+      jobs,
+      category.profession,
+      category.district,
+    );
+    // Página 1 + /pagina-N (paginação self-canonical das landings).
+    return Array.from(
+      { length: categoryTotalPages(categoryJobs.length) },
+      (_, index) =>
+        urlEntry(
+      `${SITE_URL}${categoryPagePath(category.path, index + 1)}`,
+          latestJob,
+          "daily",
+          category.kind === "combo" ? "0.7" : "0.75",
+        ),
+    );
+  });
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${entries.join("\n")}
