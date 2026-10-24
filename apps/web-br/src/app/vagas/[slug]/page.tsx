@@ -11,6 +11,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { AlertForm } from "@/components/alert-form";
+import { applyTrackingProps } from "@/lib/analytics";
 import { ArticlesGuideCta } from "@/components/articles-guide-cta";
 import { CategoryPageView } from "@/components/category-page-view";
 import { FavoriteButton } from "@/components/favorite-button";
@@ -241,6 +242,7 @@ function ActiveJobView({
                         href={job.applicationUrl}
                         target="_blank"
                         rel="noopener noreferrer nofollow"
+                        {...applyTrackingProps(job, "edital")}
                       >
                         Ler a notícia completa e o edital na fonte
                       </a>
@@ -291,6 +293,7 @@ function ActiveJobView({
                     target="_blank"
                     rel="noopener noreferrer nofollow"
                     className="button button-primary flex-1 text-center"
+                    {...applyTrackingProps(job, "sidebar")}
                   >
                     <span className="truncate">Candidate-se</span>
                     <ExternalLink size={16} className="shrink-0" />
@@ -352,6 +355,7 @@ function ActiveJobView({
           target="_blank"
           rel="noopener noreferrer nofollow"
           className="button button-primary w-full"
+          {...applyTrackingProps(job, "mobile")}
         >
           Candidate-se <ExternalLink size={16} />
         </a>

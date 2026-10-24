@@ -39,6 +39,28 @@ function GoogleAnalyticsTracker() {
     });
   }, [pathname, searchParams]);
 
+  // Cliques em links de candidatura (data-apply): evento GA4 "apply_click".
+  useEffect(() => {
+    function onClick(event: MouseEvent) {
+      const link = (event.target as Element | null)?.closest?.("a[data-apply]");
+      if (!(link instanceof HTMLAnchorElement) || typeof window.gtag !== "function") {
+        return;
+      }
+      const data = link.dataset;
+      window.gtag("event", "apply_click", {
+        placement: data.apply,
+        job_slug: data.jobSlug,
+        company: data.jobCompany,
+        profession: data.jobProfession,
+        district: data.jobDistrict,
+        source: data.jobSource,
+        link_domain: link.hostname,
+      });
+    }
+    document.addEventListener("click", onClick, { capture: true });
+    return () => document.removeEventListener("click", onClick, { capture: true });
+  }, []);
+
   return null;
 }
 
