@@ -84,6 +84,11 @@ export function parseCategoryPageSegment(segment: string | undefined) {
   return page >= 2 ? page : null;
 }
 
+/** "pagina-1" → redireciona para a URL base da landing. */
+export function isFirstPageSegment(segment: string | undefined) {
+  return Boolean(segment && /^pagina-0*1$/.test(segment));
+}
+
 export function sliceCategoryPage<T>(jobs: T[], page: number) {
   const start = (page - 1) * CATEGORY_PAGE_SIZE;
   return jobs.slice(start, start + CATEGORY_PAGE_SIZE);

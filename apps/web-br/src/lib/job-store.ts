@@ -496,9 +496,13 @@ function hasFutureExpiry(job: StoredJob) {
 
 /** Vaga publicada que já não deve ser servida como ativa (listagens, sitemap, JobPosting). */
 function isInactive(job: StoredJob) {
-  if (isPastExpiry(job) || isClosedNoticeTitle(job.title)) return true;
+  if (isClosedNoticeTitle(job.title)) return true;
   const now = Date.now();
   const lastSeen = Date.parse(job.lastSeenAt || job.updatedAt || "");
+  // Prazo da fonte passado, mas a fonte ainda publica a vaga (visto há <2 dias):
+  // continua ativa — o validThrough passa a ser última vez vista + 30 dias.
+  const seenRecently = !Number.isNaN(lastSeen) && now - lastSeen < 2 * DAY_MS;
+  if (isPastExpiry(job) && !seenRecently) return true;
   if (!Number.isNaN(lastSeen) && now - lastSeen > MAX_UNSEEN_DAYS * DAY_MS) {
     return true;
   }

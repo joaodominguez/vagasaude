@@ -7,7 +7,8 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/admin/", "/api/"],
+        // /vagas?… = pesquisa/filtros (noindex): não gastar rastreio do Google.
+        disallow: ["/admin/", "/api/", "/vagas?"],
       },
     ],
     sitemap: `${SITE_URL}/sitemap.xml`,

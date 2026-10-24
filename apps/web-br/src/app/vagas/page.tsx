@@ -267,6 +267,7 @@ export default async function JobsPage({
               </div>
               <div className="flex flex-wrap gap-2 text-sm">
                 <Link
+                  rel="nofollow"
                   href={buildJobsHref({
                     ...filterParams,
                     ordenar: undefined,
@@ -281,6 +282,7 @@ export default async function JobsPage({
                 </Link>
                 <span className="text-border">·</span>
                 <Link
+                  rel="nofollow"
                   href={buildJobsHref({
                     ...filterParams,
                     ordenar: queryRaw ? "relevancia" : undefined,
@@ -333,6 +335,7 @@ export default async function JobsPage({
                   >
                     {currentPage > 1 ? (
                       <Link
+                        rel="nofollow"
                         href={buildJobsHref(filterParams, currentPage - 1)}
                         className="button button-secondary"
                       >
@@ -348,6 +351,7 @@ export default async function JobsPage({
                     </p>
                     {currentPage < totalPages ? (
                       <Link
+                        rel="nofollow"
                         href={buildJobsHref(filterParams, currentPage + 1)}
                         className="button button-secondary"
                       >
@@ -595,6 +599,8 @@ function FilterLink({
   return (
     <Link
       href={href}
+      // Combinações de filtros: navegáveis mas não seguidas pelo Google (noindex).
+      rel={href.startsWith("/vagas?") ? "nofollow" : undefined}
       className={`flex min-h-9 items-center justify-between rounded-lg px-2.5 text-sm transition ${
         active
           ? "bg-primary-soft font-bold text-primary"

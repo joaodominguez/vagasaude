@@ -329,7 +329,8 @@ function ActiveJobView({
               <div className="flex items-center justify-between gap-3">
                 <h2 className="section-title">Vagas relacionadas</h2>
                 <Link
-                  href={`/vagas?profissao=${encodeURIComponent(job.profession)}${job.district ? `&distrito=${encodeURIComponent(job.district)}` : ""}`}
+                  href={relatedJobsHref(job, allJobs)}
+                  rel={relatedJobsHref(job, allJobs).startsWith("/vagas?") ? "nofollow" : undefined}
                   className="text-sm font-bold text-primary hover:underline"
                 >
                   Ver mais
@@ -493,4 +494,17 @@ function CheckList({ title, items }: { title: string; items: string[] }) {
       </ul>
     </section>
   );
+}
+
+/** "Ver mais": landing de categoria quando existe (ligação interna indexável). */
+function relatedJobsHref(job: Job, allJobs: Job[]) {
+  if (isCategoryEligible(allJobs, job.profession, job.district)) {
+    return categoryPath(job.profession, job.district);
+  }
+  if (isCategoryEligible(allJobs, job.profession, null)) {
+    return categoryPath(job.profession, null);
+  }
+  const qs = new URLSearchParams({ profissao: job.profession });
+  if (job.district) qs.set("distrito", job.district);
+  return `/vagas?${qs.toString()}`;
 }

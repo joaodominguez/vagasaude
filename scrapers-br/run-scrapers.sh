@@ -36,6 +36,9 @@ if [[ "$scrape_rc" -ne 0 ]]; then
   echo "[run-scrapers-br] run.py terminou com rc=$scrape_rc (falha parcial); a continuar para o digest."
 fi
 
+# Fontes avariadas (últimas 4 execuções com 0 vagas ou erro): log + email se ALERTS_TO.
+HEALTH_IGNORE="${HEALTH_IGNORE:-einstein,fleury}" python3 "$ROOT/tools/scraper_health.py" /var/www/vagasaudebr/data/scraper-runs.json || true
+
 # Envia digest de novas vagas aos subscritores BR (se Resend estiver configurado).
 if [[ -n "${RESEND_API_KEY:-}" && -n "${SCRAPER_API_TOKEN:-}" ]]; then
   curl -sS -X POST "http://127.0.0.1:3011/api/alerts/digest" \
