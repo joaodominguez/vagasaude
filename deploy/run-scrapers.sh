@@ -29,6 +29,14 @@ fi
 # Fontes avariadas (últimas 4 execuções com 0 vagas ou erro): log + email se ALERTS_TO.
 python3 "/var/www/vagasaude/scrapers/tools/scraper_health.py" /var/www/vagasaude/data/scraper-runs.json || true
 
+# Google Indexing API: vagas novas/removidas (só se a chave da conta de serviço existir).
+INDEXING_KEY="${GOOGLE_INDEXING_KEY:-/home/portal/.config/vagasaude/indexing-key.json}"
+if [[ -f "$INDEXING_KEY" && -x /home/portal/.venvs/indexing/bin/python ]]; then
+  GOOGLE_INDEXING_KEY="$INDEXING_KEY" /home/portal/.venvs/indexing/bin/python "/var/www/vagasaude/scrapers/tools/indexing_notify.py" \
+    --sitemap http://127.0.0.1:3010/sitemap/jobs.xml \
+    --state /var/www/vagasaude/data/indexing-state.json || true
+fi
+
 # Envia digest de novas vagas aos subscritores (se Resend estiver configurado).
 if [[ -n "${RESEND_API_KEY:-}" && -n "${SCRAPER_API_TOKEN:-}" ]]; then
   curl -sS -X POST "http://127.0.0.1:3010/api/alerts/digest" \
