@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import json
+import os
 import re
+import signal
 import subprocess
 import unicodedata
 from datetime import datetime, timedelta, timezone
@@ -54,17 +56,40 @@ class DreScraper(BaseScraper):
         return jobs
 
 
+PROFILE_DIR = os.environ.get("DRE_USER_DATA_DIR", "/tmp/vagasaude-dre-chrome")
+
+
+def _clear_stale_chrome() -> None:
+    """Mata um Chrome órfão preso ao perfil (execução anterior cortada) e apaga os locks."""
+    subprocess.run(["pkill", "-f", "--", f"--user-data-dir={PROFILE_DIR}"], check=False)
+    for name in ("SingletonLock", "SingletonCookie", "SingletonSocket"):
+        try:
+            os.unlink(os.path.join(PROFILE_DIR, name))
+        except OSError:
+            pass
+
+
 def _run_search() -> list[dict]:
     if not SEARCH_SCRIPT.exists():
         raise FileNotFoundError(f"Script DR em falta: {SEARCH_SCRIPT}")
-    proc = subprocess.run(
+    _clear_stale_chrome()
+    # Grupo de processos próprio: no timeout matamos node + Chrome, não só o node.
+    child = subprocess.Popen(
         ["node", str(SEARCH_SCRIPT)],
         cwd=str(ROOT),
-        capture_output=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
         text=True,
-        timeout=420,
-        check=False,
+        start_new_session=True,
     )
+    try:
+        stdout, stderr = child.communicate(timeout=420)
+    except subprocess.TimeoutExpired:
+        os.killpg(child.pid, signal.SIGKILL)
+        child.communicate()
+        _clear_stale_chrome()
+        raise RuntimeError("dre_search excedeu 420 s (processos terminados)")
+    proc = subprocess.CompletedProcess(child.args, child.returncode, stdout, stderr)
     if proc.returncode != 0:
         raise RuntimeError(
             f"dre_search falhou ({proc.returncode}): {proc.stderr[-800:]}"
