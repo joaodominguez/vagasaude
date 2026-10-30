@@ -42,7 +42,10 @@ export default async function Home() {
     acc[key] = (acc[key] || 0) + 1;
     return acc;
   }, {});
-  const topCategories = listCategoryChips(jobs, 8);
+  // Todas as landings de profissão e de estado (ligações internas para o Google).
+  const categoryChips = listCategoryChips(jobs, Number.POSITIVE_INFINITY);
+  const professionCategories = categoryChips.filter((c) => c.kind === "profession");
+  const districtCategories = categoryChips.filter((c) => c.kind === "district");
 
   return (
     <>
@@ -113,21 +116,38 @@ export default async function Home() {
           </Link>
         </section>
 
-        {topCategories.length > 0 && (
+        {categoryChips.length > 0 && (
           <section className="page-container pb-4">
             <span className="section-kicker">Categorias</span>
-            <h2 className="section-title">Explorar por área e distrito</h2>
-            <div className="mt-5 flex flex-wrap gap-2">
-              {topCategories.map((category) => (
-                <Link
-                  key={category.path}
-                  href={category.path}
-                  className="filter-chip"
-                >
-                  {category.title.replace(/^Vagas (de )?/i, "")}
-                </Link>
-              ))}
-            </div>
+            <h2 className="section-title">Explorar por profissão e distrito</h2>
+            {professionCategories.length > 0 && (
+              <>
+                <h3 className="mt-6 text-sm font-extrabold uppercase tracking-wider text-muted">
+                  Por profissão
+                </h3>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {professionCategories.map((category) => (
+                    <Link key={category.path} href={category.path} className="filter-chip">
+                      {category.profession}
+                    </Link>
+                  ))}
+                </div>
+              </>
+            )}
+            {districtCategories.length > 0 && (
+              <>
+                <h3 className="mt-6 text-sm font-extrabold uppercase tracking-wider text-muted">
+                  Por distrito
+                </h3>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {districtCategories.map((category) => (
+                    <Link key={category.path} href={category.path} className="filter-chip">
+                      {category.district}
+                    </Link>
+                  ))}
+                </div>
+              </>
+            )}
           </section>
         )}
 
