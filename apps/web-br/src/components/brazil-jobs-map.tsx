@@ -123,13 +123,6 @@ export function BrazilJobsMap({ counts, total }: BrazilJobsMapProps) {
           role="img"
           aria-label="Mapa do Brasil com vagas por estado"
         >
-          <defs>
-            <linearGradient id="brazilMapSea" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="var(--map-sea-from)" />
-              <stop offset="100%" stopColor="var(--map-sea-to)" />
-            </linearGradient>
-          </defs>
-          <rect width="500" height="500" rx="28" fill="url(#brazilMapSea)" />
 
           {ranked.map((state) => {
             if (!state.path) return null;
