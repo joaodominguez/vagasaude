@@ -1,7 +1,9 @@
 import Link from "next/link";
-import { ArrowLeft, Bell, ChevronLeft, ChevronRight } from "lucide-react";
+import { Bell, ChevronLeft, ChevronRight } from "lucide-react";
 import { AlertForm } from "@/components/alert-form";
 import { ArticlesGuideCta } from "@/components/articles-guide-cta";
+import { Breadcrumbs, type BreadcrumbItem } from "@/components/breadcrumbs";
+import { CategoryInsights } from "@/components/category-insights";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { JobCard } from "@/components/job-card";
@@ -55,18 +57,26 @@ export function CategoryPageView({
     });
   }
 
+  const crumbs: BreadcrumbItem[] = [
+    { label: "Início", href: "/" },
+    { label: "Vagas", href: "/vagas" },
+  ];
+  if (category.kind === "combo" && category.profession) {
+    crumbs.push({
+      label: category.profession,
+      href: categoryPath(category.profession, null),
+    });
+  }
+  crumbs.push({ label: category.title, href: category.path });
+  if (page > 1) crumbs.push({ label: `Página ${page}` });
+
   return (
     <>
       <Header />
       <main className="min-h-[70vh]">
         <section className="border-b border-border bg-surface py-8">
           <div className="page-container">
-            <Link
-              href="/vagas"
-              className="mb-5 inline-flex items-center gap-1.5 text-sm font-bold text-muted hover:text-primary"
-            >
-              <ArrowLeft size={16} /> Voltar às vagas
-            </Link>
+            <Breadcrumbs items={crumbs} />
             <h1 className="mt-2 text-3xl font-extrabold tracking-[-0.045em] sm:text-4xl">
               {category.title}
             </h1>
@@ -177,6 +187,13 @@ export function CategoryPageView({
             )}
           </aside>
         </div>
+        {page === 1 && (
+          <CategoryInsights
+            category={category}
+            jobs={jobs}
+            allCategoryRefs={allCategoryRefs}
+          />
+        )}
       </main>
       <Footer />
       <script

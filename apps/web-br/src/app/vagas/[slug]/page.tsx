@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import {
-  ArrowLeft,
   BriefcaseBusiness,
   CalendarDays,
   Check,
@@ -13,6 +12,7 @@ import {
 import { AlertForm } from "@/components/alert-form";
 import { applyTrackingProps } from "@/lib/analytics";
 import { ArticlesGuideCta } from "@/components/articles-guide-cta";
+import { Breadcrumbs, type BreadcrumbItem } from "@/components/breadcrumbs";
 import { CategoryPageView } from "@/components/category-page-view";
 import { FavoriteButton } from "@/components/favorite-button";
 import { Footer } from "@/components/footer";
@@ -171,12 +171,7 @@ function ActiveJobView({
       <Header />
       <main className="pb-24 md:pb-0">
         <div className="page-container py-7 sm:py-10">
-          <Link
-            href="/vagas"
-            className="mb-7 inline-flex items-center gap-1.5 text-sm font-bold text-muted hover:text-primary"
-          >
-            <ArrowLeft size={16} /> Voltar às vagas
-          </Link>
+          <Breadcrumbs items={buildJobBreadcrumbs(job, allJobs)} />
 
           <div className="grid min-w-0 gap-8 lg:grid-cols-[minmax(0,1fr)_21rem]">
             <article className="min-w-0">
@@ -387,12 +382,7 @@ function ExpiredJobView({ job, allJobs }: { job: Job; allJobs: Job[] }) {
       <Header />
       <main>
         <div className="page-container py-7 sm:py-10">
-          <Link
-            href="/vagas"
-            className="mb-7 inline-flex items-center gap-1.5 text-sm font-bold text-muted hover:text-primary"
-          >
-            <ArrowLeft size={16} /> Voltar às vagas
-          </Link>
+          <Breadcrumbs items={buildJobBreadcrumbs(job, allJobs)} />
 
           <div className="content-card border-amber-500/30 bg-amber-500/5 p-5 sm:p-6">
             <p className="text-sm font-extrabold uppercase tracking-wider text-amber-800 dark:text-amber-200">
@@ -482,6 +472,27 @@ function buildJobCategoryLinks(job: Job, allJobs: Job[]) {
     });
   }
   return links;
+}
+
+/** Início › Vagas › profissão › profissão × estado › vaga (só landings que existem). */
+function buildJobBreadcrumbs(job: Job, allJobs: Job[]): BreadcrumbItem[] {
+  const items: BreadcrumbItem[] = [
+    { label: "Início", href: "/" },
+    { label: "Vagas", href: "/vagas" },
+  ];
+  if (isCategoryEligible(allJobs, job.profession, null)) {
+    items.push({ label: job.profession, href: categoryPath(job.profession, null) });
+    if (job.district && isCategoryEligible(allJobs, job.profession, job.district)) {
+      items.push({
+        label: job.district,
+        href: categoryPath(job.profession, job.district),
+      });
+    }
+  } else if (job.district && isCategoryEligible(allJobs, null, job.district)) {
+    items.push({ label: job.district, href: categoryPath(null, job.district) });
+  }
+  items.push({ label: job.title });
+  return items;
 }
 
 function CheckList({ title, items }: { title: string; items: string[] }) {
