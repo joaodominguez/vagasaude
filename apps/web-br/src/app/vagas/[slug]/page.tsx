@@ -27,6 +27,7 @@ import {
   categoryPath,
   filterJobsForCategory,
   isCategoryEligible,
+  jobSubProfession,
   listEligibleCategories,
   resolveCategoryFromSegments,
 } from "@/lib/categories";
@@ -471,10 +472,20 @@ function buildJobCategoryLinks(job: Job, allJobs: Job[]) {
       label: `${job.profession} em ${job.district}`,
     });
   }
+  const sub = jobSubProfession(job);
+  if (sub && isCategoryEligible(allJobs, sub, null)) {
+    links.push({ href: categoryPath(sub, null), label: sub });
+  }
+  if (sub && job.district && isCategoryEligible(allJobs, sub, job.district)) {
+    links.push({
+      href: categoryPath(sub, job.district),
+      label: `${sub} em ${job.district}`,
+    });
+  }
   return links;
 }
 
-/** Início › Vagas › profissão › profissão × estado › vaga (só landings que existem). */
+/** Início › Vagas › profissão › [sub-profissão] › profissão × estado › vaga (só landings que existem). */
 function buildJobBreadcrumbs(job: Job, allJobs: Job[]): BreadcrumbItem[] {
   const items: BreadcrumbItem[] = [
     { label: "Início", href: "/" },
@@ -482,11 +493,14 @@ function buildJobBreadcrumbs(job: Job, allJobs: Job[]): BreadcrumbItem[] {
   ];
   if (isCategoryEligible(allJobs, job.profession, null)) {
     items.push({ label: job.profession, href: categoryPath(job.profession, null) });
-    if (job.district && isCategoryEligible(allJobs, job.profession, job.district)) {
-      items.push({
-        label: job.district,
-        href: categoryPath(job.profession, job.district),
-      });
+    const sub = jobSubProfession(job);
+    const leaf =
+      sub && isCategoryEligible(allJobs, sub, null) ? sub : job.profession;
+    if (leaf !== job.profession) {
+      items.push({ label: leaf, href: categoryPath(leaf, null) });
+    }
+    if (job.district && isCategoryEligible(allJobs, leaf, job.district)) {
+      items.push({ label: job.district, href: categoryPath(leaf, job.district) });
     }
   } else if (job.district && isCategoryEligible(allJobs, null, job.district)) {
     items.push({ label: job.district, href: categoryPath(null, job.district) });
@@ -513,6 +527,10 @@ function CheckList({ title, items }: { title: string; items: string[] }) {
 
 /** "Ver mais": landing de categoria quando existe (ligação interna indexável). */
 function relatedJobsHref(job: Job, allJobs: Job[]) {
+  const sub = jobSubProfession(job);
+  if (sub && isCategoryEligible(allJobs, sub, job.district)) {
+    return categoryPath(sub, job.district);
+  }
   if (isCategoryEligible(allJobs, job.profession, job.district)) {
     return categoryPath(job.profession, job.district);
   }

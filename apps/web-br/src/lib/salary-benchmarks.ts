@@ -62,6 +62,36 @@ const BY_PROFESSION: Record<
  * Valores: bruto mensal típico no Brasil (saúde), em R$.
  */
 const TITLE_RULES: BenchmarkRule[] = [
+  // Técnico/auxiliar antes das regras genéricas de enfermagem e UTI.
+  {
+    needles: [
+      "tecnico de enfermagem",
+      "tecnica de enfermagem",
+      "tecnico(a) de enfermagem",
+      "tecnico em enfermagem",
+      "tecnico enfermagem",
+      "tecnico(a) enfermagem",
+      "tec enfermagem",
+      "tec. enfermagem",
+    ],
+    label: "Técnico de enfermagem",
+    average: 2800,
+    low: 2000,
+    high: 3800,
+  },
+  {
+    needles: [
+      "auxiliar de enfermagem",
+      "auxiliar(a) de enfermagem",
+      "auxiliar enfermagem",
+      "aux. enfermagem",
+      "aux enfermagem",
+    ],
+    label: "Auxiliar de enfermagem",
+    average: 2200,
+    low: 1600,
+    high: 3000,
+  },
   {
     needles: [
       "cuidados intensivos",
@@ -82,20 +112,6 @@ const TITLE_RULES: BenchmarkRule[] = [
     average: 4500,
     low: 3500,
     high: 7000,
-  },
-  {
-    needles: ["tecnico de enfermagem", "técnica de enfermagem", "tec enfermagem"],
-    label: "Técnico de enfermagem",
-    average: 2800,
-    low: 2000,
-    high: 3800,
-  },
-  {
-    needles: ["auxiliar de enfermagem", "auxiliar enfermagem"],
-    label: "Auxiliar de enfermagem",
-    average: 2200,
-    low: 1600,
-    high: 3000,
   },
   {
     needles: ["assistente de odontologia", "auxiliar de dentista", "assistente dent"],

@@ -15,9 +15,11 @@ import {
   categoryPagePath,
   categoryPath,
   categoryTotalPages,
+  parentProfession,
   relatedCategoryLinks,
   siblingDistrictLinks,
   sliceCategoryPage,
+  subProfessionsOf,
   type CategoryRef,
 } from "@/lib/categories";
 
@@ -41,9 +43,29 @@ export function CategoryPageView({
   const pageJobs = sliceCategoryPage(jobs, page);
   const jsonLd = buildItemListJsonLd(category, pageJobs, page);
 
+  const parent = parentProfession(category.profession);
+  // Profissão para o alerta/guias: sub-landings usam a profissão-mãe da taxonomia.
+  const baseProfession = parent ?? category.profession;
+  const eligiblePaths = new Set(allCategoryRefs.map((ref) => ref.path));
+
   const parentLinks: Array<{ href: string; label: string }> = [
     { href: "/vagas", label: "Todas as vagas" },
   ];
+  if (parent) {
+    parentLinks.push({
+      href: categoryPath(parent, category.district),
+      label: category.district ? `${parent} em ${category.district}` : parent,
+    });
+  }
+  for (const sub of subProfessionsOf(category.profession)) {
+    const href = categoryPath(sub, category.district);
+    if (eligiblePaths.has(href)) {
+      parentLinks.push({
+        href,
+        label: category.district ? `${sub} em ${category.district}` : sub,
+      });
+    }
+  }
   if (category.kind === "combo" && category.profession) {
     parentLinks.push({
       href: categoryPath(category.profession, null),
@@ -61,6 +83,7 @@ export function CategoryPageView({
     { label: "Início", href: "/" },
     { label: "Vagas", href: "/vagas" },
   ];
+  if (parent) crumbs.push({ label: parent, href: categoryPath(parent, null) });
   if (category.kind === "combo" && category.profession) {
     crumbs.push({
       label: category.profession,
@@ -161,12 +184,12 @@ export function CategoryPageView({
                 <AlertForm
                   compact
                   defaultDistrict={category.district ?? ""}
-                  defaultProfession={category.profession ?? ""}
+                  defaultProfession={baseProfession ?? ""}
                 />
               </div>
             </div>
 
-            <ArticlesGuideCta profession={category.profession ?? undefined} />
+            <ArticlesGuideCta profession={baseProfession ?? undefined} />
 
             {(siblings.length > 0 || related.length > 0) && (
               <div className="content-card p-5">

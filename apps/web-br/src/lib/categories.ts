@@ -8,7 +8,29 @@ import type { Metadata } from "next";
 
 export const CATEGORY_MIN_JOBS = 3;
 
-const PROFESSION_LABELS = [...taxonomyProfessions, "Outros"] as const;
+/**
+ * Sub-landings de uma profissão, identificadas pelo título da vaga (pesquisas com
+ * volume próprio, ex.: "vagas técnico de enfermagem"). As vagas continuam também
+ * na landing da profissão-mãe. `pattern` corre sobre o título sem acentos, em minúsculas.
+ */
+const SUB_PROFESSIONS = [
+  {
+    label: "Técnico de Enfermagem",
+    parent: "Enfermagem",
+    pattern: /\btec(nico|nica|\.)?(\s*\(a\))?\s*(de |em )?\s*enf/,
+  },
+  {
+    label: "Auxiliar de Enfermagem",
+    parent: "Enfermagem",
+    pattern: /\baux(iliar|\.)?(\s*\(a\))?\s*(de |em )?\s*enf/,
+  },
+] as const;
+
+const PROFESSION_LABELS: string[] = [
+  ...taxonomyProfessions,
+  "Outros",
+  ...SUB_PROFESSIONS.map((sub) => sub.label),
+];
 
 /** Estados brasileiros válidos para landings. */
 export const CATEGORY_DISTRICTS = categoryDistricts;
@@ -48,6 +70,46 @@ export function isKnownProfession(label: string) {
 
 export function isKnownDistrict(label: string) {
   return DISTRICT_BY_SLUG.has(toCategorySlug(label));
+}
+
+function subProfession(label: string | null) {
+  return SUB_PROFESSIONS.find((sub) => sub.label === label) ?? null;
+}
+
+const normalizedTitles = new WeakMap<Job, string>();
+
+function normalizedTitle(job: Job) {
+  let title = normalizedTitles.get(job);
+  if (title === undefined) {
+    title = job.title
+      .normalize("NFKD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase();
+    normalizedTitles.set(job, title);
+  }
+  return title;
+}
+
+/** "Técnico de Enfermagem" → "Enfermagem"; profissões normais → null. */
+export function parentProfession(label: string | null) {
+  return subProfession(label)?.parent ?? null;
+}
+
+/** Sub-landings de uma profissão-mãe (ex.: Enfermagem → técnico, auxiliar). */
+export function subProfessionsOf(label: string | null) {
+  return SUB_PROFESSIONS.filter((sub) => sub.parent === label).map(
+    (sub) => sub.label,
+  );
+}
+
+/** Sub-landing a que a vaga pertence (pelo título), se houver. */
+export function jobSubProfession(job: Job) {
+  return (
+    SUB_PROFESSIONS.find(
+      (sub) =>
+        job.profession === sub.parent && sub.pattern.test(normalizedTitle(job)),
+    )?.label ?? null
+  );
 }
 
 export function isReservedCategorySlug(slug: string) {
@@ -171,8 +233,12 @@ export function filterJobsForCategory(
   profession: string | null,
   district: string | null,
 ) {
+  const sub = subProfession(profession);
   return jobs.filter((job) => {
-    if (profession && job.profession !== profession) return false;
+    if (sub) {
+      if (job.profession !== sub.parent) return false;
+      if (!sub.pattern.test(normalizedTitle(job))) return false;
+    } else if (profession && job.profession !== profession) return false;
     if (district && job.district !== district) return false;
     return true;
   });
@@ -239,6 +305,9 @@ export function listEligibleCategories(jobs: Job[]): CategoryRef[] {
   const professions = new Set(
     jobs.map((job) => job.profession).filter(isKnownProfession),
   );
+  for (const sub of SUB_PROFESSIONS) {
+    if (professions.has(sub.parent)) professions.add(sub.label);
+  }
   for (const profession of professions) {
     const subset = filterJobsForCategory(jobs, profession, null);
     if (subset.length < CATEGORY_MIN_JOBS) continue;
