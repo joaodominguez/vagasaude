@@ -583,6 +583,8 @@ type DerivedJobsCache = {
   bySlug: Map<string, StoredJob>;
   /** Republicações: slug da cópia → slug da vaga principal. */
   canonicalOf: Map<string, string>;
+  /** Variantes do nome do empregador → nome a mostrar. */
+  companyNames: Map<string, string>;
 };
 let derivedJobsCache: DerivedJobsCache | null = null;
 
@@ -646,17 +648,63 @@ async function getDerivedJobsCache(): Promise<DerivedJobsCache> {
       !isClosedNoticeTitle(job.title),
   );
   const canonicalOf = findRepostings(active);
-  const cards = active
+  const listed = active
     .filter((job) => !canonicalOf.has(job.slug))
-    .map(toJobCard)
+    .map(toJobCard);
+  const companyNames = buildCompanyDisplayNames(listed.map((card) => card.company));
+  const cards = listed
+    .map((card) => {
+      const company = companyNames.get(card.company);
+      return company ? { ...card, company } : card;
+    })
     .sort((a, b) => {
       const byPublished = b.publishedAt.localeCompare(a.publishedAt);
       if (byPublished !== 0) return byPublished;
       return a.title.localeCompare(b.title, "pt");
     });
 
-  derivedJobsCache = { mtimeMs, builtAt: now, cards, bySlug, canonicalOf };
+  derivedJobsCache = {
+    mtimeMs,
+    builtAt: now,
+    cards,
+    bySlug,
+    canonicalOf,
+    companyNames,
+  };
   return derivedJobsCache;
+}
+
+/** Sufixos legais e palavras genéricas ignorados ao juntar variantes do nome do empregador. */
+const COMPANY_NAME_NOISE =
+  /\b(s a|sa|s s|lda|ltda|unipessoal|eireli|epp|epe|e p e|ip|i p|portugal|brasil|grupo|group)\b/g;
+
+function companyNameKey(name: string) {
+  return normalize(name).replace(COMPANY_NAME_NOISE, " ").replace(/\s+/g, " ").trim();
+}
+
+/**
+ * Variantes do mesmo empregador ("IVC EVIDENSIA PORTUGAL S A" / "IVC Evidensia",
+ * "ULS …, EPE" / "ULS …, E.P.E.") → um só nome de apresentação: o mais usado,
+ * preferindo o que não está todo em maiúsculas. Devolve nome original → nome a mostrar.
+ */
+function buildCompanyDisplayNames(companies: string[]) {
+  const counts = new Map<string, number>();
+  for (const name of companies) counts.set(name, (counts.get(name) ?? 0) + 1);
+  const rank = (name: string) =>
+    (name !== name.toUpperCase() ? 1_000_000 : 0) + (counts.get(name) ?? 0);
+  const best = new Map<string, string>();
+  for (const name of counts.keys()) {
+    const key = companyNameKey(name);
+    if (!key) continue;
+    const current = best.get(key);
+    if (!current || rank(name) > rank(current)) best.set(key, name);
+  }
+  const display = new Map<string, string>();
+  for (const name of counts.keys()) {
+    const preferred = best.get(companyNameKey(name));
+    if (preferred && preferred !== name) display.set(name, preferred);
+  }
+  return display;
 }
 
 /**
@@ -799,9 +847,11 @@ function isClosedNoticeTitle(title: string) {
 export async function getJobCard(slug: string) {
   const found = await getStoredJobBySlugIncludingExpired(slug);
   if (!found) return null;
-  const { canonicalOf } = await getDerivedJobsCache();
+  const { canonicalOf, companyNames } = await getDerivedJobsCache();
+  const card = toJobCard(found.job);
+  const company = companyNames.get(card.company);
   return {
-    job: toJobCard(found.job),
+    job: company ? { ...card, company } : card,
     expired: found.expired,
     canonicalSlug: found.expired ? undefined : canonicalOf.get(found.job.slug),
   };
