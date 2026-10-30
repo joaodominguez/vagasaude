@@ -559,7 +559,8 @@ select {
   border-radius: 1.4rem;
   overflow: hidden;
   border: 1px solid var(--border);
-  background: var(--background);
+  /* Mesmo fundo da secção (bg-surface): sem caixa escura nem "mar". */
+  background: var(--surface);
 }
 
 .portugal-map-svg {

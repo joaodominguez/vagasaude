@@ -39,13 +39,6 @@ export function PortugalJobsMap({ counts, total }: PortugalJobsMapProps) {
           role="img"
           aria-label="Mapa de Portugal com vagas por distrito"
         >
-          <defs>
-            <linearGradient id="mapSea" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="var(--map-sea-from)" />
-              <stop offset="100%" stopColor="var(--map-sea-to)" />
-            </linearGradient>
-          </defs>
-          <rect width="240" height="390" rx="28" fill="url(#mapSea)" />
           <path d={PORTUGAL_OUTLINE} className="portugal-land" />
 
           {ranked.map((district) => {
