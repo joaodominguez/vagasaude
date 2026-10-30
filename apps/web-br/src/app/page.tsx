@@ -111,7 +111,7 @@ export default async function Home() {
         </section>
 
         {categoryChips.length > 0 && (
-          <section className="page-container pb-4">
+          <section className="page-container pb-14 sm:pb-18">
             <span className="section-kicker">Categorias</span>
             <h2 className="section-title">Explorar por profissão e estado</h2>
             {professionCategories.length > 0 && (
