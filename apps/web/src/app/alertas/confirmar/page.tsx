@@ -3,11 +3,8 @@ import Link from "next/link";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { confirmAlert, getAlertByToken } from "@/lib/alerts";
-import {
-  alertConfirmedEmailHtml,
-  isEmailConfigured,
-  sendEmail,
-} from "@/lib/email";
+import { buildAlertConfirmedEmail } from "@/lib/alert-digest";
+import { isEmailConfigured, sendEmail } from "@/lib/email";
 
 export const metadata: Metadata = {
   title: "Confirmar alerta",
@@ -129,8 +126,7 @@ async function ConfirmBody({ token }: { token?: string }) {
   if (isEmailConfigured()) {
     await sendEmail({
       to: alert.email,
-      subject: "O teu alerta VagaSaúde está confirmado",
-      html: alertConfirmedEmailHtml(alert),
+      ...(await buildAlertConfirmedEmail(alert)),
     }).catch(() => null);
   }
 

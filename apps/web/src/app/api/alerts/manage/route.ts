@@ -5,11 +5,8 @@ import {
   updateAlertPreferences,
   type AlertFilters,
 } from "@/lib/alerts";
-import {
-  alertConfirmedEmailHtml,
-  isEmailConfigured,
-  sendEmail,
-} from "@/lib/email";
+import { buildAlertConfirmedEmail } from "@/lib/alert-digest";
+import { isEmailConfigured, sendEmail } from "@/lib/email";
 
 const SECTORS = new Set(["Público", "Privado", "IPSS"]);
 
@@ -51,8 +48,7 @@ export async function PATCH(request: Request) {
     if (isEmailConfigured() && alert.status === "active") {
       await sendEmail({
         to: alert.email,
-        subject: "O teu alerta VagaSaúde está confirmado",
-        html: alertConfirmedEmailHtml(alert),
+        ...(await buildAlertConfirmedEmail(alert)),
       }).catch(() => null);
     }
     return NextResponse.json({ ok: true, status: alert.status });

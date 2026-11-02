@@ -3,11 +3,8 @@ import {
   upsertAlertSubscription,
   type AlertFilters,
 } from "@/lib/alerts";
-import {
-  alertConfirmEmailHtml,
-  isEmailConfigured,
-  sendEmail,
-} from "@/lib/email";
+import { buildAlertConfirmEmail } from "@/lib/alert-digest";
+import { isEmailConfigured, sendEmail } from "@/lib/email";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const SECTORS = new Set(["Público", "Privado", "IPSS"]);
@@ -54,8 +51,7 @@ export async function POST(request: Request) {
   if (isEmailConfigured() && needsConfirmation) {
     const result = await sendEmail({
       to: email,
-      subject: "Confirma o teu alerta VagaSaúde",
-      html: alertConfirmEmailHtml(alert),
+      ...(await buildAlertConfirmEmail(alert)),
     });
     emailSent = result.ok;
     emailError = result.ok ? null : result.error;

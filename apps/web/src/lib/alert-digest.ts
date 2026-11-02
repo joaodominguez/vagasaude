@@ -1,13 +1,46 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { alertMatchesJob, listActiveAlerts } from "@/lib/alerts";
-import { newJobsDigestHtml, sendEmail } from "@/lib/email";
+import {
+  alertMatchesJob,
+  listActiveAlerts,
+  type StoredAlert,
+} from "@/lib/alerts";
+import {
+  alertConfirmEmail,
+  alertConfirmedEmail,
+  newJobsDigestEmail,
+  sendEmail,
+} from "@/lib/email";
 import { listJobCards, type JobCardData } from "@/lib/job-store";
+
+/** Email de confirmação, com o nº de vagas activas hoje para o filtro. */
+export async function buildAlertConfirmEmail(alert: StoredAlert) {
+  const jobs = await listJobCards();
+  const matching = jobs.filter((job) => alertMatchesJob(alert, job)).length;
+  return alertConfirmEmail(alert, matching);
+}
+
+/** Email de alerta activo, já com as vagas mais recentes do filtro. */
+export async function buildAlertConfirmedEmail(alert: StoredAlert) {
+  const jobs = await listJobCards();
+  const matching = jobs.filter((job) => alertMatchesJob(alert, job));
+  return alertConfirmedEmail(alert, matching, jobs);
+}
 
 type AlertState = {
   lastDigestAt: string | null;
+  /** Dia local (AAAA-MM-DD) do último resumo — garante 1 email por dia. */
+  lastDigestDay?: string | null;
   deliveries: Record<string, string[]>;
 };
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+/** Vagas mais antigas do que isto na fonte não entram (ex.: fonte nova com histórico). */
+const MAX_SOURCE_AGE_DAYS = 14;
+/** Depois de uma pausa longa, não recuar mais do que isto. */
+const MAX_LOOKBACK_DAYS = 3;
+/** Resend aceita 2 pedidos/s por defeito. */
+const SEND_INTERVAL_MS = 600;
 
 function dataDir() {
   return process.env.DATA_DIR ?? path.join(process.cwd(), "data");
@@ -34,76 +67,109 @@ function jobKey(job: JobCardData) {
   return job.slug;
 }
 
-export async function sendNewJobsDigest(limit = 12) {
+/**
+ * O digest é chamado no fim de cada execução dos scrapers (de 6 em 6 h), mas só
+ * envia na primeira execução do dia a partir de DIGEST_START_HOUR (hora local).
+ */
+function digestClock(now: Date) {
+  const timeZone = process.env.DIGEST_TIMEZONE?.trim() || "Europe/Lisbon";
+  const startHour = Number(process.env.DIGEST_START_HOUR ?? 6);
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(now);
+  const part = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
+  return {
+    day: `${part("year")}-${part("month")}-${part("day")}`,
+    hour: Number(part("hour")),
+    startHour: Number.isFinite(startHour) ? startHour : 6,
+  };
+}
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export async function sendNewJobsDigest(limit = 10) {
+  const now = new Date();
+  const clock = digestClock(now);
   const [alerts, jobs, state] = await Promise.all([
     listActiveAlerts(),
     listJobCards(),
     readState(),
   ]);
+  const base = { subscribers: alerts.length, jobs: 0, sent: 0, failed: 0 };
 
-  if (alerts.length === 0) {
-    return { ok: true, subscribers: 0, jobs: 0, sent: 0, failed: 0 };
+  if (clock.hour < clock.startHour) {
+    return { ok: true, ...base, skipped: "antes da hora do resumo diário" };
+  }
+  if (state.lastDigestDay === clock.day) {
+    return { ok: true, ...base, skipped: "resumo de hoje já enviado" };
   }
 
-  const since = state.lastDigestAt
-    ? Date.parse(state.lastDigestAt)
-    : Date.now() - 24 * 60 * 60 * 1000;
+  const nowMs = now.getTime();
+  const lastDigest = state.lastDigestAt ? Date.parse(state.lastDigestAt) : NaN;
+  const since = Math.max(
+    Number.isNaN(lastDigest) ? nowMs - DAY_MS : lastDigest,
+    nowMs - MAX_LOOKBACK_DAYS * DAY_MS,
+  );
+  const oldestPublished = nowMs - MAX_SOURCE_AGE_DAYS * DAY_MS;
 
+  // "Nova" = entrou no site desde o último resumo. A data da fonte não serve:
+  // muitas só trazem o dia (00:00), e essas vagas ficavam sempre de fora.
   const freshJobs = jobs.filter((job) => {
+    const seen = Date.parse(job.firstSeenAt ?? job.publishedAt);
     const published = Date.parse(job.publishedAt);
-    return !Number.isNaN(published) && published >= since;
+    return (
+      !Number.isNaN(seen) &&
+      seen >= since &&
+      (Number.isNaN(published) || published >= oldestPublished)
+    );
   });
-
-  if (freshJobs.length === 0) {
-    state.lastDigestAt = new Date().toISOString();
-    await writeState(state);
-    return { ok: true, subscribers: alerts.length, jobs: 0, sent: 0, failed: 0 };
-  }
 
   let sent = 0;
   let failed = 0;
 
   for (const alert of alerts) {
     const already = new Set(state.deliveries[alert.email] || []);
-    const pending = freshJobs
-      .filter((job) => alertMatchesJob(alert, job) && !already.has(jobKey(job)))
-      .slice(0, limit);
-    if (pending.length === 0) continue;
+    const matching = freshJobs.filter(
+      (job) => alertMatchesJob(alert, job) && !already.has(jobKey(job)),
+    );
+    if (matching.length === 0) continue;
 
-    const result = await sendEmail({
-      to: alert.email,
-      subject:
-        pending.length === 1
-          ? `Nova vaga: ${pending[0].title}`
-          : `${pending.length} novas vagas de saúde no VagaSaúde`,
-      html: newJobsDigestHtml(
-        pending.map((job) => ({
-          title: job.title,
-          company: job.company,
-          city: job.city,
-          slug: job.slug,
-        })),
-        alert.token,
-      ),
-    });
+    const email = newJobsDigestEmail(
+      alert,
+      matching.slice(0, limit),
+      matching.length,
+      jobs,
+    );
+    let result = await sendEmail({ to: alert.email, ...email });
+    if (!result.ok && result.status === 429) {
+      await sleep(2000);
+      result = await sendEmail({ to: alert.email, ...email });
+    }
+    await sleep(SEND_INTERVAL_MS);
 
     if (result.ok) {
       sent += 1;
-      const next = [...already, ...pending.map(jobKey)];
-      state.deliveries[alert.email] = next.slice(-200);
+      const next = [...already, ...matching.map(jobKey)];
+      state.deliveries[alert.email] = next.slice(-300);
     } else {
       failed += 1;
+      console.error(`[alert-digest] falhou para ${alert.id}: ${result.error}`);
     }
   }
 
-  state.lastDigestAt = new Date().toISOString();
-  await writeState(state);
+  // Se falhou tudo (ex.: Resend em baixo), não avançar: a próxima execução tenta de novo.
+  if (failed === 0 || sent > 0) {
+    state.lastDigestAt = now.toISOString();
+    state.lastDigestDay = clock.day;
+    await writeState(state);
+  }
 
-  return {
-    ok: failed === 0,
-    subscribers: alerts.length,
-    jobs: freshJobs.length,
-    sent,
-    failed,
-  };
+  return { ok: failed === 0, ...base, jobs: freshJobs.length, sent, failed };
 }
