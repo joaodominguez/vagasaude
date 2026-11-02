@@ -69,11 +69,13 @@ function jobKey(job: JobCardData) {
 
 /**
  * O digest é chamado no fim de cada execução dos scrapers (de 6 em 6 h), mas só
- * envia na primeira execução do dia a partir de DIGEST_START_HOUR (hora local).
+ * envia uma vez por dia, de manhã: na primeira execução entre DIGEST_START_HOUR e
+ * DIGEST_END_HOUR (hora local). Se a manhã falhar, fica para o dia seguinte.
  */
 function digestClock(now: Date) {
   const timeZone = process.env.DIGEST_TIMEZONE?.trim() || "Europe/Lisbon";
   const startHour = Number(process.env.DIGEST_START_HOUR ?? 6);
+  const endHour = Number(process.env.DIGEST_END_HOUR ?? 14);
   const parts = new Intl.DateTimeFormat("en-CA", {
     timeZone,
     year: "numeric",
@@ -87,6 +89,7 @@ function digestClock(now: Date) {
     day: `${part("year")}-${part("month")}-${part("day")}`,
     hour: Number(part("hour")),
     startHour: Number.isFinite(startHour) ? startHour : 6,
+    endHour: Number.isFinite(endHour) ? endHour : 14,
   };
 }
 
@@ -104,8 +107,8 @@ export async function sendNewJobsDigest(limit = 10) {
   ]);
   const base = { subscribers: alerts.length, jobs: 0, sent: 0, failed: 0 };
 
-  if (clock.hour < clock.startHour) {
-    return { ok: true, ...base, skipped: "antes da hora do resumo diário" };
+  if (clock.hour < clock.startHour || clock.hour >= clock.endHour) {
+    return { ok: true, ...base, skipped: "fora da janela do resumo diário" };
   }
   if (state.lastDigestDay === clock.day) {
     return { ok: true, ...base, skipped: "resumo de hoje já enviado" };
