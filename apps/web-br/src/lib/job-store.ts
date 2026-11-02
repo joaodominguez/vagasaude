@@ -45,6 +45,8 @@ export type JobCardData = {
   publishedAt: string;
   expiresAt?: string | null;
   lastSeenAt?: string | null;
+  /** Quando a vaga entrou no VagaSaúde (createdAt). Base dos alertas: muitas fontes só dão o dia. */
+  firstSeenAt?: string;
   source?: string;
   sourceId?: string;
   description: string;
@@ -524,6 +526,7 @@ function toJobCardListItem(job: StoredJob): JobCardData {
     profession: job.profession,
     publishedLabel: publishedLabel(normalizePublishedAt(job.publishedAt, job.createdAt)),
     publishedAt: normalizePublishedAt(job.publishedAt, job.createdAt),
+    firstSeenAt: job.createdAt,
     expiresAt: job.expiresAt,
     lastSeenAt: job.lastSeenAt || job.updatedAt,
     source: job.source,
@@ -567,6 +570,7 @@ export function toJobCard(job: StoredJob): JobCardData {
     profession: job.profession,
     publishedLabel: publishedLabel(normalizePublishedAt(job.publishedAt, job.createdAt)),
     publishedAt: normalizePublishedAt(job.publishedAt, job.createdAt),
+    firstSeenAt: job.createdAt,
     expiresAt: job.expiresAt,
     lastSeenAt: job.lastSeenAt || job.updatedAt,
     source: job.source,
