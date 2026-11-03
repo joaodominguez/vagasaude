@@ -1,5 +1,16 @@
 import { createHash } from "node:crypto";
-import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
+import {
+  chmod,
+  chown,
+  copyFile,
+  mkdir,
+  readdir,
+  readFile,
+  rename,
+  stat,
+  unlink,
+  writeFile,
+} from "node:fs/promises";
 import path from "node:path";
 import { normalizeInlineLists } from "@/lib/format-job-text";
 import { shortenJobTitle, tidyTitleEnd } from "@/lib/shorten-job-title";
@@ -614,6 +625,21 @@ function clearDerivedJobsCache() {
   derivedJobsCache = null;
 }
 
+/**
+ * Fila para ler-alterar-gravar o jobs.json: dois ingests em simultâneo liam a
+ * mesma versão e o segundo a gravar apagava as alterações do primeiro.
+ */
+let jobsFileQueue: Promise<unknown> = Promise.resolve();
+
+function withJobsFileLock<T>(task: () => Promise<T>): Promise<T> {
+  const run = jobsFileQueue.then(task, task);
+  jobsFileQueue = run.catch(() => undefined);
+  return run;
+}
+
+/** Nº de vagas da última versão lida/gravada (para a guarda do writeJobsFile). */
+let knownJobsCount = 0;
+
 async function readJobsFile(): Promise<JobsFile> {
   const filePath = jobsFilePath();
   try {
@@ -624,6 +650,7 @@ async function readJobsFile(): Promise<JobsFile> {
     const raw = await readFile(filePath, "utf8");
     const parsed = JSON.parse(raw) as JobsFile;
     const jobs = Array.isArray(parsed.jobs) ? parsed.jobs : [];
+    knownJobsCount = jobs.length;
     const repaired = repairJobSlugs(jobs);
     const file: JobsFile = {
       updatedAt: parsed.updatedAt,
@@ -637,8 +664,15 @@ async function readJobsFile(): Promise<JobsFile> {
     jobsCache = { mtimeMs: info.mtimeMs, file };
     clearDerivedJobsCache();
     return file;
-  } catch {
-    return { updatedAt: new Date(0).toISOString(), jobs: [] };
+  } catch (error) {
+    // Ainda não há ficheiro (1.ª execução): base vazia.
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") {
+      return { updatedAt: new Date(0).toISOString(), jobs: [] };
+    }
+    // Ilegível (ex.: lido a meio de uma escrita): nunca devolver vazio — o ingest
+    // seguinte gravava por cima e apagava o histórico (BR, 2026-10-27).
+    if (jobsCache) return jobsCache.file;
+    throw new Error(`jobs.json ilegível: ${(error as Error).message}`);
   }
 }
 
@@ -773,9 +807,50 @@ function repairJobSlugs(jobs: StoredJob[]) {
   return { jobs: next, changed };
 }
 
+/** Cópias diárias do jobs.json (as mais recentes) — rede de segurança contra perdas. */
+const DAILY_BACKUPS_KEPT = 7;
+
+async function backupJobsFileDaily(filePath: string) {
+  const backup = `${filePath}.bak-daily-${new Date().toISOString().slice(0, 10)}`;
+  if (await stat(backup).then(() => true, () => false)) return;
+  try {
+    await copyFile(filePath, backup);
+  } catch {
+    return; // ainda não existe jobs.json (1.ª escrita)
+  }
+  const dir = path.dirname(filePath);
+  const prefix = `${path.basename(filePath)}.bak-daily-`;
+  const old = (await readdir(dir))
+    .filter((name) => name.startsWith(prefix))
+    .sort()
+    .slice(0, -DAILY_BACKUPS_KEPT);
+  await Promise.all(
+    old.map((name) => unlink(path.join(dir, name)).catch(() => undefined)),
+  );
+}
+
 async function writeJobsFile(file: JobsFile) {
+  const filePath = jobsFilePath();
+  // Uma escrita que deixa menos de metade das vagas é quase de certeza um bug
+  // (ex.: base lida como vazia): recusar em vez de apagar o histórico.
+  if (knownJobsCount >= 1000 && file.jobs.length < knownJobsCount / 2) {
+    throw new Error(
+      `Escrita do jobs.json recusada: passaria de ${knownJobsCount} para ${file.jobs.length} vagas.`,
+    );
+  }
   await mkdir(dataDir(), { recursive: true });
-  await writeFile(jobsFilePath(), JSON.stringify(file, null, 2), { mode: 0o600 });
+  await backupJobsFileDaily(filePath);
+  // Escrita atómica (temporário + rename): nenhuma leitura apanha o ficheiro a meio.
+  // Mantém dono e permissões do ficheiro anterior (a app corre como root).
+  const before = await stat(filePath).catch(() => null);
+  const tmpPath = `${filePath}.tmp-${process.pid}-${Date.now()}`;
+  await writeFile(tmpPath, JSON.stringify(file, null, 2), { mode: 0o600 });
+  if (before) {
+    await chmod(tmpPath, before.mode & 0o777);
+    await chown(tmpPath, before.uid, before.gid).catch(() => undefined);
+  }
+  await rename(tmpPath, filePath);
+  knownJobsCount = file.jobs.length;
   // Manter o cache coerente após escrita (ingest/reclassify/repair).
   try {
     const info = await stat(jobsFilePath());
@@ -1104,7 +1179,11 @@ export type IngestJobInput = {
   review_reason?: string | null;
 };
 
-export async function ingestJobs(source: string, incoming: IngestJobInput[]) {
+export function ingestJobs(...args: Parameters<typeof ingestJobsUnlocked>) {
+  return withJobsFileLock(() => ingestJobsUnlocked(...args));
+}
+
+async function ingestJobsUnlocked(source: string, incoming: IngestJobInput[]) {
   const file = await readJobsFile();
   const now = new Date().toISOString();
   const bySourceId = new Map(
@@ -1273,7 +1352,11 @@ export async function ingestJobs(source: string, incoming: IngestJobInput[]) {
   };
 }
 
-export async function reclassifyOutrosProfessions() {
+export function reclassifyOutrosProfessions(...args: Parameters<typeof reclassifyOutrosProfessionsUnlocked>) {
+  return withJobsFileLock(() => reclassifyOutrosProfessionsUnlocked(...args));
+}
+
+async function reclassifyOutrosProfessionsUnlocked() {
   const file = await readJobsFile();
   let changed = 0;
   const now = new Date().toISOString();
@@ -1300,7 +1383,11 @@ export async function reclassifyOutrosProfessions() {
 }
 
 /** Soft-expire editais PCI fora da saúde (tribunais, Forças Armadas, etc.). */
-export async function expireNonHealthConcursos() {
+export function expireNonHealthConcursos(...args: Parameters<typeof expireNonHealthConcursosUnlocked>) {
+  return withJobsFileLock(() => expireNonHealthConcursosUnlocked(...args));
+}
+
+async function expireNonHealthConcursosUnlocked() {
   const file = await readJobsFile();
   let changed = 0;
   const now = new Date().toISOString();
@@ -1325,7 +1412,11 @@ export async function expireNonHealthConcursos() {
 }
 
 /** Encurta títulos burocráticos (concursos públicos) para a função. */
-export async function shortenPublishedJobTitles() {
+export function shortenPublishedJobTitles(...args: Parameters<typeof shortenPublishedJobTitlesUnlocked>) {
+  return withJobsFileLock(() => shortenPublishedJobTitlesUnlocked(...args));
+}
+
+async function shortenPublishedJobTitlesUnlocked() {
   const file = await readJobsFile();
   let changed = 0;
   const now = new Date().toISOString();
@@ -1352,7 +1443,11 @@ export async function shortenPublishedJobTitles() {
 }
 
 /** Marca como duplicate vagas published/pending com o mesmo dedupeHash (mantém a mais antiga). */
-export async function collapseDuplicateHashes() {
+export function collapseDuplicateHashes(...args: Parameters<typeof collapseDuplicateHashesUnlocked>) {
+  return withJobsFileLock(() => collapseDuplicateHashesUnlocked(...args));
+}
+
+async function collapseDuplicateHashesUnlocked() {
   const file = await readJobsFile();
   const now = new Date().toISOString();
   const groups = new Map<string, StoredJob[]>();
