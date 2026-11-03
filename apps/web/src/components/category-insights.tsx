@@ -7,6 +7,7 @@ import {
   type CategoryRef,
 } from "@/lib/categories";
 import { emLocal } from "@/lib/pt-locative";
+import { careerForProfession } from "@/lib/salary-tables";
 import {
   formatEuro,
   formatEuroRange,
@@ -49,6 +50,7 @@ export function CategoryInsights({
   allCategoryRefs: CategoryRef[];
 }) {
   const eligible = new Set(allCategoryRefs.map((ref) => ref.path));
+  const salaryCareer = careerForProfession(category.profession);
   const linkIfEligible = (
     profession: string | null,
     district: string | null,
@@ -182,6 +184,14 @@ export function CategoryInsights({
               </div>
             ))}
           </div>
+          {salaryCareer && (
+            <Link
+              href={`/salarios/${salaryCareer.slug}`}
+              className="mt-5 inline-flex text-sm font-bold text-primary hover:underline"
+            >
+              Ver a tabela salarial de {salaryCareer.label} →
+            </Link>
+          )}
         </div>
       </div>
     </section>
