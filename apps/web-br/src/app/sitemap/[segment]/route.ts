@@ -7,6 +7,7 @@ import {
 import { isConcursoJob } from "@/lib/concursos";
 import type { Job } from "@/lib/jobs";
 import { getJobs } from "@/lib/jobs-data";
+import { getSalaryObservations, listSalaryPages } from "@/lib/salary-observatory";
 import { SITE_URL } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -153,6 +154,24 @@ ${entries.join("\n")}
 `;
 }
 
+async function buildSalariesSitemap() {
+  const observations = await getSalaryObservations();
+  const newest = observations.reduce((latest, o) => (o.seenAt > latest ? o.seenAt : latest), "");
+  const lastmod = newest ? new Date(newest) : STATIC_PAGES_UPDATED;
+  const pages = await listSalaryPages();
+  const entries = [
+    urlEntry(`${SITE_URL}/salarios`, lastmod, "weekly", "0.7"),
+    ...pages.map((page) =>
+      urlEntry(`${SITE_URL}${page.path}`, lastmod, "weekly", page.district ? "0.6" : "0.7"),
+    ),
+  ];
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${entries.join("\n")}
+</urlset>
+`;
+}
+
 export async function GET(
   _request: Request,
   context: { params: Promise<{ segment: string }> },
@@ -166,6 +185,9 @@ export async function GET(
   }
   if (segment === "categories.xml") {
     return xmlResponse(await buildCategoriesSitemap());
+  }
+  if (segment === "salarios.xml") {
+    return xmlResponse(await buildSalariesSitemap());
   }
   return new Response("Not Found", { status: 404 });
 }

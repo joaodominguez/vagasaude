@@ -7,6 +7,7 @@ const CHILD_SITEMAPS = [
   "pages",
   "jobs",
   "categories",
+  "salarios",
 ] as const;
 
 export async function GET() {

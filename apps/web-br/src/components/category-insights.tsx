@@ -11,6 +11,7 @@ import {
   formatBRLRange,
   getSalaryBenchmark,
 } from "@/lib/salary-benchmarks";
+import { salaryPathForProfession } from "@/lib/salary-observatory";
 
 const DAY_MS = 86_400_000;
 
@@ -38,7 +39,7 @@ function countRecentJobs(jobs: Job[], days: number) {
  * Conteúdo próprio da landing (página 1): onde estão as vagas (com links para
  * as landings profissão × estado), quem contrata, salário de referência e FAQ.
  */
-export function CategoryInsights({
+export async function CategoryInsights({
   category,
   jobs,
   allCategoryRefs,
@@ -48,6 +49,7 @@ export function CategoryInsights({
   allCategoryRefs: CategoryRef[];
 }) {
   const eligible = new Set(allCategoryRefs.map((ref) => ref.path));
+  const salaryHref = await salaryPathForProfession(category.profession);
   const linkIfEligible = (
     profession: string | null,
     district: string | null,
@@ -181,6 +183,14 @@ export function CategoryInsights({
               </div>
             ))}
           </div>
+          {salaryHref && (
+            <Link
+              href={salaryHref}
+              className="mt-5 inline-flex text-sm font-bold text-primary hover:underline"
+            >
+              Ver salários reais anunciados nas vagas →
+            </Link>
+          )}
         </div>
       </div>
     </section>
