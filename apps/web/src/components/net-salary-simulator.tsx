@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { ChevronDown } from "lucide-react";
 import { formatEur, netMonthly, type HouseholdType } from "@/lib/salary-tables";
 
 const HOUSEHOLDS: Array<{ value: HouseholdType; label: string }> = [
@@ -35,10 +36,11 @@ export function NetSalarySimulator({ initialGross = 1657.04 }: { initialGross?: 
         </label>
         <label className="text-sm font-semibold">
           Situação familiar
-          <select
+          <div className="relative mt-1.5">
+<select
             value={household}
             onChange={(event) => setHousehold(event.target.value as HouseholdType)}
-            className="mt-1.5 w-full rounded-xl border border-border bg-background px-3 py-2.5 text-base"
+            className="w-full cursor-pointer appearance-none rounded-xl border border-border bg-background py-2.5 pl-3 pr-10 text-base"
           >
             {HOUSEHOLDS.map((item) => (
               <option key={item.value} value={item.value}>
@@ -46,14 +48,21 @@ export function NetSalarySimulator({ initialGross = 1657.04 }: { initialGross?: 
               </option>
             ))}
           </select>
+            <ChevronDown
+              size={18}
+              aria-hidden="true"
+              className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted"
+            />
+          </div>
         </label>
         <label className="text-sm font-semibold">
           Dependentes
-          <select
+          <div className="relative mt-1.5">
+<select
             value={dependents}
             disabled={household === "single"}
             onChange={(event) => setDependents(Number(event.target.value))}
-            className="mt-1.5 w-full rounded-xl border border-border bg-background px-3 py-2.5 text-base disabled:opacity-50"
+            className="w-full cursor-pointer appearance-none rounded-xl border border-border bg-background py-2.5 pl-3 pr-10 text-base disabled:opacity-50"
           >
             {[0, 1, 2, 3, 4, 5].map((n) => (
               <option key={n} value={n}>
@@ -61,6 +70,12 @@ export function NetSalarySimulator({ initialGross = 1657.04 }: { initialGross?: 
               </option>
             ))}
           </select>
+            <ChevronDown
+              size={18}
+              aria-hidden="true"
+              className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted"
+            />
+          </div>
         </label>
       </div>
 
