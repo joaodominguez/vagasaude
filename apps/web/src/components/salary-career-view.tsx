@@ -125,6 +125,30 @@ export function SalaryCareerView({
             </p>
           )}
 
+          {privateData && privateData.recent.length > 0 && (
+            <section className="content-card p-5">
+              <h2 className="text-lg font-extrabold">Vagas abertas com salário</h2>
+              <ul className="mt-3 divide-y divide-border">
+                {privateData.recent.map((ad) => (
+                  <li key={ad.slug} className="flex flex-wrap items-baseline justify-between gap-2 py-3">
+                    <span className="min-w-0">
+                      <Link href={`/vagas/${ad.slug}`} className="font-semibold hover:text-primary">
+                        {ad.title}
+                      </Link>
+                      <span className="block text-sm text-muted">
+                        {ad.company} · {ad.district}
+                      </span>
+                    </span>
+                    <span className="text-sm font-bold text-primary">{ad.salaryText}</span>
+                  </li>
+                ))}
+              </ul>
+              <Link href={jobsHref} className="button button-secondary mt-4 inline-flex">
+                Ver todas as vagas de {career.label}
+              </Link>
+            </section>
+          )}
+
           {career.categories.map((category) => (
             <section key={category.name} className="content-card overflow-x-auto p-5">
               <h2 className="text-lg font-extrabold">{category.name}</h2>
@@ -153,25 +177,11 @@ export function SalaryCareerView({
             </section>
           ))}
 
-          {privateData && privateData.recent.length > 0 && (
-            <section className="content-card p-5">
-              <h2 className="text-lg font-extrabold">Vagas no privado com salário anunciado</h2>
-              <ul className="mt-3 divide-y divide-border">
-                {privateData.recent.map((ad) => (
-                  <li key={ad.slug} className="flex flex-wrap items-baseline justify-between gap-2 py-3">
-                    <span className="min-w-0">
-                      <Link href={`/vagas/${ad.slug}`} className="font-semibold hover:text-primary">
-                        {ad.title}
-                      </Link>
-                      <span className="block text-sm text-muted">
-                        {ad.company} · {ad.district}
-                      </span>
-                    </span>
-                    <span className="text-sm font-bold text-primary">{ad.salaryText}</span>
-                  </li>
-                ))}
-              </ul>
-            </section>
+
+          {!(privateData && privateData.recent.length > 0) && (
+            <Link href={jobsHref} className="button button-secondary inline-flex">
+              Ver vagas de {career.label}
+            </Link>
           )}
 
           <section>
@@ -179,9 +189,6 @@ export function SalaryCareerView({
             <NetSalarySimulator initialGross={entry.gross} />
           </section>
 
-          <Link href={jobsHref} className="button button-secondary inline-flex">
-            Ver vagas de {career.label}
-          </Link>
 
           <section className="content-card p-5">
             <h2 className="text-lg font-extrabold">Perguntas frequentes</h2>
