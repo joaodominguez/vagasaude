@@ -1,0 +1,537 @@
+import type { Job } from "@/lib/jobs";
+import {
+  districts as categoryDistricts,
+  professions as taxonomyProfessions,
+} from "@/lib/taxonomies";
+import { enLugar } from "@/lib/es-locative";
+import { absoluteUrl, SITE_NAME, truncateMeta } from "@/lib/seo";
+import type { Metadata } from "next";
+
+export const CATEGORY_MIN_JOBS = 3;
+
+const PROFESSION_LABELS = [...taxonomyProfessions, "Otros"] as const;
+
+/** Comunidades autónomas válidas para landings (incluye Ceuta y Melilla). */
+export const CATEGORY_DISTRICTS = categoryDistricts;
+
+function normalizeKey(text: string) {
+  return text
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+export function toCategorySlug(label: string) {
+  return normalizeKey(label);
+}
+
+const PROFESSION_BY_SLUG = new Map(
+  PROFESSION_LABELS.map((label) => [toCategorySlug(label), label] as const),
+);
+const DISTRICT_BY_SLUG = new Map(
+  CATEGORY_DISTRICTS.map((label) => [toCategorySlug(label), label] as const),
+);
+
+export function professionFromSlug(slug: string) {
+  return PROFESSION_BY_SLUG.get(slug) ?? null;
+}
+
+export function districtFromSlug(slug: string) {
+  return DISTRICT_BY_SLUG.get(slug) ?? null;
+}
+
+export function isKnownProfession(label: string) {
+  return PROFESSION_BY_SLUG.has(toCategorySlug(label));
+}
+
+export function isKnownDistrict(label: string) {
+  return DISTRICT_BY_SLUG.has(toCategorySlug(label));
+}
+
+export function isReservedCategorySlug(slug: string) {
+  return PROFESSION_BY_SLUG.has(slug) || DISTRICT_BY_SLUG.has(slug);
+}
+
+export type CategoryKind = "profession" | "district" | "combo";
+
+export type CategoryRef = {
+  kind: CategoryKind;
+  profession: string | null;
+  district: string | null;
+  path: string;
+  title: string;
+};
+
+/** Ofertas por página en las landings (el HTML con miles de cards superaba los 15 MB de Googlebot). */
+export const CATEGORY_PAGE_SIZE = 50;
+
+export function categoryTotalPages(count: number) {
+  return Math.max(1, Math.ceil(count / CATEGORY_PAGE_SIZE));
+}
+
+/** Página 1 = URL base; seguintes em /pagina-N (self-canonical). */
+export function categoryPagePath(path: string, page: number) {
+  return page > 1 ? `${path}/pagina-${page}` : path;
+}
+
+/** "pagina-2" → 2. Página 1 não tem segmento próprio (devolve null). */
+export function parseCategoryPageSegment(segment: string | undefined) {
+  const match = segment?.match(/^pagina-(\d{1,4})$/);
+  if (!match) return null;
+  const page = Number(match[1]);
+  return page >= 2 ? page : null;
+}
+
+/** "pagina-1" → redireciona para a URL base da landing. */
+export function isFirstPageSegment(segment: string | undefined) {
+  return Boolean(segment && /^pagina-0*1$/.test(segment));
+}
+
+export function sliceCategoryPage<T>(jobs: T[], page: number) {
+  const start = (page - 1) * CATEGORY_PAGE_SIZE;
+  return jobs.slice(start, start + CATEGORY_PAGE_SIZE);
+}
+
+export function categoryPath(
+  profession: string | null | undefined,
+  district: string | null | undefined,
+) {
+  const p = profession ? toCategorySlug(profession) : null;
+  const d = district ? toCategorySlug(district) : null;
+  if (p && d) return `/empleo/${p}/${d}`;
+  if (p) return `/empleo/${p}`;
+  if (d) return `/empleo/${d}`;
+  return "/empleo";
+}
+
+/** Título H1 / SEO da landing (profissão, comunidad ou combo). */
+export function categoryHeading(
+  kind: CategoryKind,
+  profession: string | null,
+  district: string | null,
+) {
+  if (kind === "combo" && profession && district) {
+    return `Ofertas de ${profession} ${enLugar(district)}`;
+  }
+  if (kind === "profession" && profession) {
+    return `Ofertas de ${profession} en España`;
+  }
+  if (district) {
+    return `Empleo sanitario ${enLugar(district)}`;
+  }
+  return "Ofertas de empleo sanitario";
+}
+
+export function resolveCategoryFromSegments(
+  a: string,
+  b?: string,
+): CategoryRef | null {
+  if (b) {
+    const profession = professionFromSlug(a);
+    const district = districtFromSlug(b);
+    if (!profession || !district) return null;
+    return {
+      kind: "combo",
+      profession,
+      district,
+      path: categoryPath(profession, district),
+      title: categoryHeading("combo", profession, district),
+    };
+  }
+
+  const profession = professionFromSlug(a);
+  if (profession) {
+    return {
+      kind: "profession",
+      profession,
+      district: null,
+      path: categoryPath(profession, null),
+      title: categoryHeading("profession", profession, null),
+    };
+  }
+
+  const district = districtFromSlug(a);
+  if (district) {
+    return {
+      kind: "district",
+      profession: null,
+      district,
+      path: categoryPath(null, district),
+      title: categoryHeading("district", null, district),
+    };
+  }
+
+  return null;
+}
+
+export function filterJobsForCategory(
+  jobs: Job[],
+  profession: string | null,
+  district: string | null,
+) {
+  return jobs.filter((job) => {
+    if (profession && job.profession !== profession) return false;
+    if (district && job.district !== district) return false;
+    return true;
+  });
+}
+
+export type CategoryStats = {
+  jobs: Job[];
+  count: number;
+  topCompanies: Array<{ name: string; count: number }>;
+  sectorCounts: Array<{ name: string; count: number }>;
+  contractCounts: Array<{ name: string; count: number }>;
+  districtCounts: Array<{ name: string; count: number }>;
+  professionCounts: Array<{ name: string; count: number }>;
+};
+
+function topCounts(
+  values: string[],
+  limit = 5,
+): Array<{ name: string; count: number }> {
+  const map = new Map<string, number>();
+  for (const value of values) {
+    const key = value.trim() || "Otros";
+    map.set(key, (map.get(key) || 0) + 1);
+  }
+  return [...map.entries()]
+    .map(([name, count]) => ({ name, count }))
+    .sort(
+      (a, b) =>
+        b.count - a.count || a.name.localeCompare(b.name, "es"),
+    )
+    .slice(0, limit);
+}
+
+export function buildCategoryStats(jobs: Job[]): CategoryStats {
+  return {
+    jobs,
+    count: jobs.length,
+    topCompanies: topCounts(
+      jobs.map((job) => job.company),
+      5,
+    ),
+    sectorCounts: topCounts(
+      jobs.map((job) => job.sector),
+      3,
+    ),
+    contractCounts: topCounts(
+      jobs.map((job) => job.contract),
+      4,
+    ),
+    districtCounts: topCounts(
+      jobs.map((job) => job.district),
+      8,
+    ),
+    professionCounts: topCounts(
+      jobs.map((job) => job.profession),
+      8,
+    ),
+  };
+}
+
+export function listEligibleCategories(jobs: Job[]): CategoryRef[] {
+  const refs: CategoryRef[] = [];
+
+  const professions = new Set(
+    jobs.map((job) => job.profession).filter(isKnownProfession),
+  );
+  for (const profession of professions) {
+    const subset = filterJobsForCategory(jobs, profession, null);
+    if (subset.length < CATEGORY_MIN_JOBS) continue;
+    refs.push({
+      kind: "profession",
+      profession,
+      district: null,
+      path: categoryPath(profession, null),
+      title: categoryHeading("profession", profession, null),
+    });
+  }
+
+  const districts = new Set(
+    jobs.map((job) => job.district).filter(isKnownDistrict),
+  );
+  for (const district of districts) {
+    const subset = filterJobsForCategory(jobs, null, district);
+    if (subset.length < CATEGORY_MIN_JOBS) continue;
+    refs.push({
+      kind: "district",
+      profession: null,
+      district,
+      path: categoryPath(null, district),
+      title: categoryHeading("district", null, district),
+    });
+  }
+
+  for (const profession of professions) {
+    for (const district of districts) {
+      const subset = filterJobsForCategory(jobs, profession, district);
+      if (subset.length < CATEGORY_MIN_JOBS) continue;
+      refs.push({
+        kind: "combo",
+        profession,
+        district,
+        path: categoryPath(profession, district),
+        title: categoryHeading("combo", profession, district),
+      });
+    }
+  }
+
+  return refs
+    .filter((ref) => {
+      // Garantir que o path resolve na rota (evita chips 404).
+      const segments = ref.path.replace(/^\/empleo\//, "").split("/");
+      return Boolean(resolveCategoryFromSegments(segments[0], segments[1]));
+    })
+    .sort((a, b) => a.path.localeCompare(b.path, "es"));
+}
+
+/** Chips para homepage/listagem: só categorias com página real, por volume. */
+export function listCategoryChips(jobs: Job[], limit = 10): CategoryRef[] {
+  return listEligibleCategories(jobs)
+    .filter((item) => item.kind === "profession" || item.kind === "district")
+    .map((item) => ({
+      item,
+      count: filterJobsForCategory(jobs, item.profession, item.district).length,
+    }))
+    .sort(
+      (a, b) =>
+        b.count - a.count || a.item.path.localeCompare(b.item.path, "es"),
+    )
+    .slice(0, limit)
+    .map(({ item }) => item);
+}
+
+export function isCategoryEligible(
+  jobs: Job[],
+  profession: string | null,
+  district: string | null,
+) {
+  return (
+    filterJobsForCategory(jobs, profession, district).length >=
+    CATEGORY_MIN_JOBS
+  );
+}
+
+export function buildCategoryIntro(
+  stats: CategoryStats,
+  profession: string | null,
+  district: string | null,
+) {
+  const where = district ? enLugar(district) : "en España";
+  const what = profession
+    ? `ofertas de ${profession.toLowerCase()}`
+    : "ofertas de empleo sanitario";
+  const companies = stats.topCompanies
+    .slice(0, 3)
+    .map((item) => item.name)
+    .join(", ");
+  const sectors = stats.sectorCounts
+    .map((item) => `${item.count} en el sector ${item.name.toLowerCase()}`)
+    .join(", ");
+  const contracts = stats.contractCounts
+    .slice(0, 3)
+    .map((item) => item.name.toLowerCase())
+    .join(", ");
+
+  const focus =
+    profession && district
+      ? `Esta página reúne oportunidades de ${profession.toLowerCase()} ${where}, actualizadas a partir de fuentes públicas y privadas.`
+      : profession
+        ? `Aquí encuentras ${what} en varias comunidades autónomas, con filtros por ubicación y sector.`
+        : `Aquí encuentras ${what} ${where}, agregadas de hospitales, laboratorios y otras entidades.`;
+
+  const employerLine = companies
+    ? `Entre las entidades que están contratando ahora destacan ${companies}.`
+    : `Las ofertas proceden de entidades sanitarias de todo el país.`;
+
+  const mixLine = sectors
+    ? `Ahora mismo hay ${stats.count} ${stats.count === 1 ? "oferta activa" : "ofertas activas"}: ${sectors}.`
+    : `Ahora mismo hay ${stats.count} ${stats.count === 1 ? "oferta activa" : "ofertas activas"}.`;
+
+  const contractLine = contracts
+    ? `Los tipos de contrato más habituales son ${contracts}.`
+    : "";
+
+  const cta =
+    "Puedes inscribirte directamente en la web de la entidad o crear una alerta para recibir nuevas oportunidades por email.";
+
+  const text = [focus, mixLine, employerLine, contractLine, cta]
+    .filter(Boolean)
+    .join(" ");
+
+  if (text.length <= 150 * 6) return text;
+  return truncateMeta(text, 900);
+}
+
+/** Cómo aparece la profesión en búsquedas "empleo …" (GSC). */
+const PROFESSION_SEARCH_PHRASE: Record<string, string> = {
+  Enfermería: "Empleo de Enfermería",
+  Medicina: "Empleo de Medicina",
+  TCAE: "Empleo de TCAE",
+  Fisioterapia: "Empleo de Fisioterapia",
+  "Técnico sanitario": "Empleo de Técnico sanitario",
+  Farmacia: "Empleo de Farmacia",
+  "Técnico de farmacia": "Empleo de Técnico de farmacia",
+  Celador: "Empleo de Celador",
+  Psicología: "Empleo de Psicología",
+  Nutrición: "Empleo de Nutricionista",
+  Odontología: "Empleo de Odontología",
+  Veterinaria: "Empleo de Veterinaria",
+  "Trabajo social": "Empleo de Trabajo social",
+  Formación: "Empleo de Formación sanitaria",
+  "Comercial / Farma": "Empleo Comercial / Farma",
+  "Gestión y apoyo": "Empleo de Gestión sanitaria",
+  Administrativo: "Empleo Administrativo en sanidad",
+  Otros: "Empleo sanitario",
+};
+
+function professionSearchPhrase(profession: string) {
+  return PROFESSION_SEARCH_PHRASE[profession] ?? `Empleo de ${profession}`;
+}
+
+const FRESH_DAYS = 7;
+
+function countRecent(jobs: Job[] | undefined) {
+  if (!jobs) return 0;
+  const cutoff = Date.now() - FRESH_DAYS * 24 * 60 * 60 * 1000;
+  return jobs.filter((job) => {
+    const t = Date.parse(job.publishedAt);
+    return !Number.isNaN(t) && t >= cutoff;
+  }).length;
+}
+
+export function buildCategoryMetadata(
+  ref: CategoryRef,
+  count: number,
+  jobs?: Job[],
+  page = 1,
+): Metadata {
+  const ofertas = count === 1 ? "1 oferta" : `${count} ofertas`;
+  const baseTitle =
+    ref.kind === "combo" && ref.profession && ref.district
+      ? `${professionSearchPhrase(ref.profession)} ${enLugar(ref.district)}: ${ofertas}`
+      : ref.kind === "profession" && ref.profession
+        ? `${professionSearchPhrase(ref.profession)}: ${ofertas} en España`
+        : `Empleo sanitario ${enLugar(ref.district ?? "España")}: ${ofertas}`;
+  const title = page > 1 ? `${baseTitle} — página ${page}` : baseTitle;
+  const baseDescription = professionDistrictDescription(
+    ref,
+    count,
+    countRecent(jobs),
+  );
+  const description = truncateMeta(
+    page > 1 ? `Página ${page}. ${baseDescription}` : baseDescription,
+    160,
+  );
+  const url = categoryPagePath(ref.path, page);
+
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      title,
+      description,
+      url,
+      type: "website",
+      siteName: SITE_NAME,
+      locale: "es_ES",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
+  };
+}
+
+function professionDistrictDescription(
+  ref: CategoryRef,
+  count: number,
+  recent: number,
+) {
+  const n = count === 1 ? "1 oferta" : `${count} ofertas`;
+  const fresh =
+    recent > 0
+      ? ` ${recent} ${recent === 1 ? "nueva" : "nuevas"} en los últimos 7 días.`
+      : "";
+  if (ref.kind === "combo" && ref.district) {
+    return `${n} de ${ref.profession} ${enLugar(ref.district)}, actualizadas hoy.${fresh} Hospitales, clínicas y centros concertados: inscríbete en la web de la entidad.`;
+  }
+  if (ref.kind === "profession") {
+    return `${n} de ${ref.profession} en España, actualizadas hoy.${fresh} Público, privado y concertado en un solo sitio: filtra por comunidad.`;
+  }
+  return `${n} de empleo sanitario ${enLugar(ref.district ?? "España")}, actualizadas hoy.${fresh} Enfermería, medicina, TCAE, técnicos y más: crea alertas gratis.`;
+}
+
+/** `jobs` = ofertas de la página actual. */
+export function buildItemListJsonLd(ref: CategoryRef, jobs: Job[], page = 1) {
+  const offset = (page - 1) * CATEGORY_PAGE_SIZE;
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: page > 1 ? `${ref.title} — página ${page}` : ref.title,
+    url: absoluteUrl(categoryPagePath(ref.path, page)),
+    numberOfItems: jobs.length,
+    itemListElement: jobs.slice(0, CATEGORY_PAGE_SIZE).map((job, index) => ({
+      "@type": "ListItem",
+      position: offset + index + 1,
+      url: absoluteUrl(`/empleo/${job.slug}`),
+      name: job.title,
+    })),
+  };
+}
+
+export function relatedCategoryLinks(
+  all: CategoryRef[],
+  current: CategoryRef,
+  limit = 6,
+): CategoryRef[] {
+  if (current.kind === "combo" && current.profession) {
+    return all
+      .filter(
+        (item) =>
+          item.kind === "combo" &&
+          item.profession === current.profession &&
+          item.path !== current.path,
+      )
+      .slice(0, limit);
+  }
+  if (current.kind === "profession") {
+    return all
+      .filter(
+        (item) =>
+          item.kind === "combo" && item.profession === current.profession,
+      )
+      .slice(0, limit);
+  }
+  if (current.kind === "district") {
+    return all
+      .filter(
+        (item) => item.kind === "combo" && item.district === current.district,
+      )
+      .slice(0, limit);
+  }
+  return [];
+}
+
+export function siblingDistrictLinks(
+  all: CategoryRef[],
+  current: CategoryRef,
+  limit = 6,
+): CategoryRef[] {
+  if (current.kind !== "combo" || !current.profession) return [];
+  return all
+    .filter(
+      (item) =>
+        item.kind === "combo" &&
+        item.profession === current.profession &&
+        item.path !== current.path,
+    )
+    .slice(0, limit);
+}
