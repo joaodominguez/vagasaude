@@ -1,4 +1,7 @@
+"use client";
+
 import Script from "next/script";
+import { useConsent } from "@/lib/consent";
 
 /**
  * Project ID de Clarity. SIN valor por defecto a propósito: el de vagasaude.pt
@@ -10,11 +13,11 @@ export const CLARITY_PROJECT_ID =
 
 /**
  * Microsoft Clarity (heatmaps / sesiones).
- * Server component + Script afterInteractive — el snippet queda en el HTML
- * como GA4, para que la etiqueta cargue sin depender de la hidratación.
+ * NO se carga en absoluto hasta que el usuario acepta la analítica.
  */
 export function MicrosoftClarity() {
-  if (!CLARITY_PROJECT_ID) return null;
+  const { ready, stored } = useConsent();
+  if (!CLARITY_PROJECT_ID || !ready || !stored?.analytics) return null;
 
   return (
     <Script id="microsoft-clarity" strategy="afterInteractive">

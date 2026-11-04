@@ -3,14 +3,15 @@
 import { Suspense, useEffect, useRef } from "react";
 import Script from "next/script";
 import { usePathname, useSearchParams } from "next/navigation";
+import { useConsent } from "@/lib/consent";
 
 /**
- * ID de medición GA4. SIN valor por defecto a propósito (el de vagasaude.pt no
- * debe reutilizarse): crear una propiedad GA4 para vacantessalud.es y definir
- * NEXT_PUBLIC_GA_MEASUREMENT_ID. Sin ID, GA queda desactivado.
+ * ID de medición GA4 de vacantessalud.es (propiedad propia, distinta de PT).
+ * Valor por defecto en código porque NEXT_PUBLIC_* se incrusta en el build; la
+ * variable de entorno NEXT_PUBLIC_GA_MEASUREMENT_ID lo sobrescribe.
  */
 export const GA_MEASUREMENT_ID =
-  process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ?? "";
+  process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "G-FDWQFVL4J1";
 
 declare global {
   interface Window {
@@ -69,8 +70,25 @@ function GoogleAnalyticsTracker() {
   return null;
 }
 
-export function GoogleAnalytics() {
+/**
+ * Consent Mode v2: valor por defecto "denied" (script inline en <head>, ver
+ * ConsentModeDefaults). gtag.js NO se descarga hasta que el usuario acepta la
+ * analítica; al cargarse se envía consent "update" -> granted antes del config.
+ */
+export function ConsentModeDefaults() {
   if (!GA_MEASUREMENT_ID) return null;
+  return (
+    <script
+      dangerouslySetInnerHTML={{
+        __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}window.gtag=gtag;gtag('consent','default',{analytics_storage:'denied',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',wait_for_update:500});`,
+      }}
+    />
+  );
+}
+
+export function GoogleAnalytics() {
+  const { ready, stored } = useConsent();
+  if (!GA_MEASUREMENT_ID || !ready || !stored?.analytics) return null;
 
   return (
     <>
@@ -82,7 +100,8 @@ export function GoogleAnalytics() {
         {`
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
-          window.gtag = gtag;
+          window.gtag = window.gtag || gtag;
+          gtag('consent', 'update', { analytics_storage: 'granted' });
           gtag('js', new Date());
           gtag('config', '${GA_MEASUREMENT_ID}', { anonymize_ip: true });
         `}

@@ -9,7 +9,7 @@ export default async function AdminSystemPage() {
     ["Site", SITE_URL],
     ["Entorno", process.env.NODE_ENV || "production"],
     ["DATA_DIR", process.env.DATA_DIR || "(default)"],
-    ["GA4", process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "(sin configurar)"],
+    ["GA4", process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "G-FDWQFVL4J1"],
     [
       "Clarity",
       process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID || "(sin configurar)",

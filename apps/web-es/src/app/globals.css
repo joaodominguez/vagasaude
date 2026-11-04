@@ -1033,3 +1033,43 @@ select {
     animation-iteration-count: 1 !important;
   }
 }
+
+.prose-page ul {
+  margin-top: 0.75rem;
+  list-style: disc;
+  padding-left: 1.25rem;
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+.prose-page .table-wrap {
+  margin-top: 0.9rem;
+  overflow-x: auto;
+}
+
+.prose-page table {
+  width: 100%;
+  min-width: 36rem;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.prose-page th,
+.prose-page td {
+  border: 1px solid var(--border);
+  padding: 0.55rem 0.7rem;
+  text-align: left;
+  vertical-align: top;
+  color: var(--muted);
+}
+
+.prose-page th {
+  color: var(--foreground);
+  background: var(--surface);
+}
+
+.prose-page .link-button {
+  color: var(--primary);
+  font-weight: 700;
+  text-decoration: underline;
+}

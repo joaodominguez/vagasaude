@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
-import { GoogleAnalytics } from "@/components/google-analytics";
+import { CookieConsent } from "@/components/cookie-consent";
+import {
+  ConsentModeDefaults,
+  GoogleAnalytics,
+} from "@/components/google-analytics";
 import { MicrosoftClarity } from "@/components/microsoft-clarity";
 import {
   buildOrganizationJsonLd,
@@ -95,6 +99,7 @@ export default function RootLayout({
     <html lang="es" className={manrope.variable} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <ConsentModeDefaults />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -106,6 +111,7 @@ export default function RootLayout({
         {children}
         <GoogleAnalytics />
         <MicrosoftClarity />
+        <CookieConsent />
       </body>
     </html>
   );

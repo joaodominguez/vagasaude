@@ -49,6 +49,8 @@ async function buildPagesSitemap() {
     urlEntry(`${SITE_URL}/alertas`, now, "weekly", "0.6"),
     urlEntry(`${SITE_URL}/como-funciona`, now, "monthly", "0.5"),
     urlEntry(`${SITE_URL}/privacidad`, now, "weekly", "0.6"),
+    urlEntry(`${SITE_URL}/aviso-legal`, now, "monthly", "0.3"),
+    urlEntry(`${SITE_URL}/cookies`, now, "monthly", "0.3"),
   ];
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
