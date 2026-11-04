@@ -100,10 +100,13 @@ export default function CookiesPage() {
 
           <h2>4. Cookies analíticas (solo con tu consentimiento)</h2>
           <p>
-            Nos permiten medir el uso del Sitio y mejorarlo. No se cargan ni se
-            instalan hasta que pulsas «Aceptar» o activas «Analíticas» en la
-            configuración. Si las rechazas, no se carga ningún script de Google
-            ni de Microsoft.
+            Nos permiten medir el uso del Sitio y mejorarlo. No se instalan
+            salvo que actives «Analíticas» en «Configurar cookies» (enlace al
+            pie de cada página). Sin ese consentimiento, Google Analytics
+            funciona en modo sin cookies (Consent Mode con almacenamiento
+            denegado): no escribe ni lee cookies en tu dispositivo y solo recibe
+            señales agregadas de visita sin identificadores. Microsoft Clarity
+            no se carga sin tu consentimiento.
           </p>
           <div className="table-wrap">
             <table>

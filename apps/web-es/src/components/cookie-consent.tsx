@@ -11,7 +11,7 @@ import {
 } from "@/lib/consent";
 
 export function CookieConsent() {
-  const { ready, stored } = useConsent();
+  const { stored } = useConsent();
   const [reopened, setReopened] = useState(false);
   const [configuring, setConfiguring] = useState(false);
   const [choice, setChoice] = useState<boolean | null>(null);
@@ -19,8 +19,9 @@ export function CookieConsent() {
   const dialogRef = useRef<HTMLDivElement>(null);
   const previousFocus = useRef<HTMLElement | null>(null);
 
-  const mustAsk = ready && ANALYTICS_CONFIGURED && !stored;
-  const visible = mustAsk || reopened;
+  // Sin barra automática: el panel solo se abre desde "Configurar cookies" (footer).
+  // Sin elección guardada, la analítica funciona sin cookies (Consent Mode "denied").
+  const visible = reopened;
 
   useEffect(() => {
     function onOpen() {
@@ -67,7 +68,7 @@ export function CookieConsent() {
       aria-describedby="cookie-desc"
       tabIndex={-1}
       onKeyDown={(event) => {
-        if (event.key === "Escape" && stored) close();
+        if (event.key === "Escape") close();
       }}
       className="fixed inset-x-0 bottom-0 z-50 p-3 sm:p-4"
     >
@@ -163,7 +164,7 @@ export function CookieConsent() {
               Configurar
             </button>
           )}
-          {reopened && stored ? (
+          {reopened ? (
             <button
               type="button"
               className="button button-secondary"

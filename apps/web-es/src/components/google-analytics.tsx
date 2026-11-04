@@ -72,8 +72,9 @@ function GoogleAnalyticsTracker() {
 
 /**
  * Consent Mode v2: valor por defecto "denied" (script inline en <head>, ver
- * ConsentModeDefaults). gtag.js NO se descarga hasta que el usuario acepta la
- * analítica; al cargarse se envía consent "update" -> granted antes del config.
+ * ConsentModeDefaults). gtag.js se carga siempre, pero sin consentimiento no
+ * escribe ni lee cookies (pings sin cookies). Si el usuario acepta la analítica
+ * en "Configurar cookies", ConsentSync envía consent "update" -> granted.
  */
 export function ConsentModeDefaults() {
   if (!GA_MEASUREMENT_ID) return null;
@@ -86,9 +87,19 @@ export function ConsentModeDefaults() {
   );
 }
 
+/** Aplica la elección guardada (o hecha ahora en el panel) al Consent Mode. */
+function ConsentSync({ granted }: { granted: boolean }) {
+  useEffect(() => {
+    if (granted && typeof window.gtag === "function") {
+      window.gtag("consent", "update", { analytics_storage: "granted" });
+    }
+  }, [granted]);
+  return null;
+}
+
 export function GoogleAnalytics() {
   const { ready, stored } = useConsent();
-  if (!GA_MEASUREMENT_ID || !ready || !stored?.analytics) return null;
+  if (!GA_MEASUREMENT_ID || !ready) return null;
 
   return (
     <>
@@ -101,11 +112,11 @@ export function GoogleAnalytics() {
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
           window.gtag = window.gtag || gtag;
-          gtag('consent', 'update', { analytics_storage: 'granted' });
           gtag('js', new Date());
           gtag('config', '${GA_MEASUREMENT_ID}', { anonymize_ip: true });
         `}
       </Script>
+      <ConsentSync granted={stored?.analytics === true} />
       <Suspense fallback={null}>
         <GoogleAnalyticsTracker />
       </Suspense>
