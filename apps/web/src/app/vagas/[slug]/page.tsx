@@ -13,6 +13,7 @@ import { AlertForm } from "@/components/alert-form";
 import { Breadcrumbs, type BreadcrumbItem } from "@/components/breadcrumbs";
 import { applyTrackingProps } from "@/lib/analytics";
 import { CategoryPageView } from "@/components/category-page-view";
+import { GuidesCta } from "@/components/guides-cta";
 import { FavoriteButton } from "@/components/favorite-button";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
@@ -276,6 +277,8 @@ function ActiveJobView({
                   />
                 </div>
               </div>
+
+              <GuidesCta profession={job.profession} sector={job.sector} />
             </aside>
           </div>
 
