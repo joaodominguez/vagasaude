@@ -35,10 +35,9 @@ export default function CookiesPage() {
           <p>
             Las cookies son pequeños archivos que un sitio web guarda en tu
             dispositivo. Esta política también cubre tecnologías equivalentes,
-            como el almacenamiento local del navegador (localStorage). Conforme
-            al artículo 22.2 de la LSSI-CE, solo instalamos las que no son
-            estrictamente necesarias si nos das tu consentimiento previo, y
-            seguimos la Guía sobre el uso de las cookies de la AEPD.
+            como el almacenamiento local del navegador (localStorage). Además de
+            las técnicas necesarias, usamos cookies analíticas, que puedes
+            rechazar en cualquier momento desde «Configurar cookies».
           </p>
 
           <h2>2. Responsable</h2>
@@ -105,15 +104,12 @@ export default function CookiesPage() {
             mejorar el servicio, por lo que no requieren consentimiento.
           </p>
 
-          <h2>4. Cookies analíticas (solo con tu consentimiento)</h2>
+          <h2>4. Cookies analíticas</h2>
           <p>
-            Nos permiten medir el uso del Sitio y mejorarlo. No se instalan
-            salvo que actives «Analíticas» en «Configurar cookies» (enlace al
-            pie de cada página). Sin ese consentimiento, Google Analytics
-            funciona en modo sin cookies (Consent Mode con almacenamiento
-            denegado): no escribe ni lee cookies en tu dispositivo y solo recibe
-            señales agregadas de visita sin identificadores. Microsoft Clarity
-            no se carga sin tu consentimiento.
+            Nos permiten medir el uso del Sitio y mejorarlo. Google Analytics
+            está activo por defecto; si lo rechazas en «Configurar cookies»
+            (sección 6), dejamos de cargarlo y eliminamos sus cookies. No usamos
+            cookies publicitarias. Microsoft Clarity no está activo.
           </p>
           <div className="table-wrap">
             <table>
@@ -197,15 +193,12 @@ export default function CookiesPage() {
             .
           </p>
 
-          <h2>6. Cómo cambiar o retirar tu consentimiento</h2>
+          <h2>6. Cómo rechazar las cookies analíticas</h2>
           <p>
-            Puedes cambiar tu elección en cualquier momento, con la misma
-            facilidad con la que la diste:{" "}
-            <CookieSettingsButton className="link-button" />. También puedes
-            enlazarla desde el pie de cualquier página. Si retiras el
-            consentimiento, eliminamos las cookies analíticas y dejamos de
-            cargar los scripts. Se te volverá a preguntar pasados 13 meses o
-            si cambiamos de forma relevante esta política.
+            Puedes rechazar o volver a activar la analítica en cualquier
+            momento: <CookieSettingsButton className="link-button" />. Si la
+            rechazas, eliminamos las cookies analíticas y dejamos de cargar
+            Google Analytics; tu elección se guarda durante 13 meses.
           </p>
           <p>
             Además, puedes bloquear o eliminar cookies desde la configuración de

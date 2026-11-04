@@ -15,7 +15,8 @@ export function CookieConsent() {
   const [reopened, setReopened] = useState(false);
   const [configuring, setConfiguring] = useState(false);
   const [choice, setChoice] = useState<boolean | null>(null);
-  const analyticsChoice = choice ?? stored?.analytics ?? false;
+  // Analítica activa por defecto: solo está desactivada si se rechazó expresamente.
+  const analyticsChoice = choice ?? stored?.analytics ?? true;
   const dialogRef = useRef<HTMLDivElement>(null);
   const previousFocus = useRef<HTMLElement | null>(null);
 
@@ -78,7 +79,7 @@ export function CookieConsent() {
         </h2>
         <p id="cookie-desc" className="mt-2 text-sm leading-6 text-muted">
           {ANALYTICS_CONFIGURED
-            ? "Usamos cookies técnicas necesarias y, solo si lo aceptas, cookies analíticas (Google Analytics y Microsoft Clarity) para mejorar el servicio. Puedes aceptar, rechazar o configurar. "
+            ? "Usamos cookies técnicas necesarias y cookies analíticas (Google Analytics) para mejorar el servicio. Puedes rechazar la analítica en cualquier momento. "
             : "Ahora mismo solo usamos almacenamiento técnico necesario; no hay cookies opcionales activas. "}
           Más información en la{" "}
           <Link className="font-bold text-primary underline" href="/cookies">

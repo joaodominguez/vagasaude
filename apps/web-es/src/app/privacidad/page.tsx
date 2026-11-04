@@ -81,8 +81,9 @@ export default function PrivacyPage() {
                     dispositivo y navegador, ubicación aproximada.
                   </td>
                   <td>
-                    Consentimiento (art. 6.1.a RGPD y art. 22.2 LSSI-CE). Solo
-                    se activa si aceptas.
+                    Interés legítimo en medir y mejorar el servicio (art. 6.1.f
+                    RGPD). Puedes oponerte en cualquier momento desde
+                    «Configurar cookies» en la política de cookies.
                   </td>
                 </tr>
                 <tr>
@@ -143,8 +144,8 @@ export default function PrivacyPage() {
               cláusulas contractuales tipo de la Comisión Europea.
             </li>
             <li>
-              <strong>Google (Google Analytics):</strong> analítica web, solo
-              con tu consentimiento. Puede implicar transferencias a Estados
+              <strong>Google (Google Analytics):</strong> analítica web (puedes
+              rechazarla en la política de cookies). Puede implicar transferencias a Estados
               Unidos bajo el Marco de Privacidad de Datos UE-EE. UU. y/o
               cláusulas contractuales tipo.
             </li>
@@ -170,7 +171,7 @@ export default function PrivacyPage() {
               razonable.
             </li>
             <li>
-              <strong>Analítica:</strong> hasta que retires el consentimiento o
+              <strong>Analítica:</strong> hasta que la rechaces o
               expiren las cookies (ver política de cookies); los datos de Google
               Analytics y Clarity se conservan según la configuración de
               retención de cada herramienta.

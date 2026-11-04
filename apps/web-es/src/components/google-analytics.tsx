@@ -71,35 +71,25 @@ function GoogleAnalyticsTracker() {
 }
 
 /**
- * Consent Mode v2: valor por defecto "denied" (script inline en <head>, ver
- * ConsentModeDefaults). gtag.js se carga siempre, pero sin consentimiento no
- * escribe ni lee cookies (pings sin cookies). Si el usuario acepta la analítica
- * en "Configurar cookies", ConsentSync envía consent "update" -> granted.
+ * Analítica activa por defecto (como en PT y BR): analytics_storage "granted"
+ * salvo que el visitante la haya rechazado en "Configurar cookies" (cookie
+ * vs_consent con analytics=false). La publicidad queda siempre denegada.
  */
 export function ConsentModeDefaults() {
   if (!GA_MEASUREMENT_ID) return null;
   return (
     <script
       dangerouslySetInnerHTML={{
-        __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}window.gtag=gtag;gtag('consent','default',{analytics_storage:'denied',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',wait_for_update:500});`,
+        __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}window.gtag=gtag;var r=/(?:^|; )vs_consent=([^;]*)/.exec(document.cookie),off=false;try{off=!!r&&JSON.parse(decodeURIComponent(r[1])).analytics===false}catch(e){}gtag('consent','default',{analytics_storage:off?'denied':'granted',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied'});`,
       }}
     />
   );
 }
 
-/** Aplica la elección guardada (o hecha ahora en el panel) al Consent Mode. */
-function ConsentSync({ granted }: { granted: boolean }) {
-  useEffect(() => {
-    if (granted && typeof window.gtag === "function") {
-      window.gtag("consent", "update", { analytics_storage: "granted" });
-    }
-  }, [granted]);
-  return null;
-}
-
 export function GoogleAnalytics() {
   const { ready, stored } = useConsent();
-  if (!GA_MEASUREMENT_ID || !ready) return null;
+  // Solo se deja de medir si el visitante lo ha rechazado expresamente.
+  if (!GA_MEASUREMENT_ID || !ready || stored?.analytics === false) return null;
 
   return (
     <>
@@ -116,7 +106,6 @@ export function GoogleAnalytics() {
           gtag('config', '${GA_MEASUREMENT_ID}', { anonymize_ip: true });
         `}
       </Script>
-      <ConsentSync granted={stored?.analytics === true} />
       <Suspense fallback={null}>
         <GoogleAnalyticsTracker />
       </Suspense>
