@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { CookieSettingsButton } from "./cookie-settings-button";
 import { Logo } from "./logo";
 
 export function Footer() {
@@ -32,10 +31,6 @@ export function Footer() {
           <Link className="hover:text-primary" href="/aviso-legal">
             Aviso legal
           </Link>
-          <Link className="hover:text-primary" href="/cookies">
-            Cookies
-          </Link>
-          <CookieSettingsButton className="hover:text-primary" />
           <Link
             className="hover:text-primary"
             href="/admin"

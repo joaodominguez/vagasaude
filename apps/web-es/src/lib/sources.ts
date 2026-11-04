@@ -15,6 +15,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "BOE",
     url: "https://www.boe.es/diario_boe/",
     sector: "Público",
+    logo: "/partners/boe.png",
   },
   {
     id: "osakidetza",
@@ -22,6 +23,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "Osakidetza",
     url: "https://www.osakidetza.euskadi.eus/contratacion-temporal/webosk00-procon/es/",
     sector: "Público",
+    logo: "/partners/osakidetza.svg",
   },
   {
     id: "amavir",
@@ -29,6 +31,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "Amavir",
     url: "https://empleo.amavir.es/jobs",
     sector: "Privado",
+    logo: "/partners/amavir.png",
   },
   {
     id: "sanitas",
@@ -36,6 +39,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "Sanitas",
     url: "https://empleo.sanitas.es/jobs",
     sector: "Privado",
+    logo: "/partners/sanitas.svg",
   },
   {
     id: "hospiten",
@@ -43,6 +47,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "Hospiten",
     url: "https://jobs.hospiten.com/",
     sector: "Privado",
+    logo: "/partners/hospiten.svg",
   },
 ];
 
