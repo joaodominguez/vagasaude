@@ -15,9 +15,10 @@ type Props = {
 export function SalaryInsight({ job, variant = "full" }: Props) {
   const benchmark = getSalaryBenchmark(job.profession, job.title, job.sector);
   const announced = job.salary?.trim() || null;
+  const isFloor = benchmark?.kind === "floor";
 
-  // Sin datos de referencia para España (ver TODO en salary-benchmarks.ts):
-  // solo se muestra la retribución anunciada en la oferta, si existe.
+  // Sin referencia verificada para esta función (ver cabecera de
+  // salary-benchmarks.ts): solo se muestra la retribución anunciada, si existe.
   if (!benchmark) {
     if (variant === "compact" || !announced) return null;
     return (
@@ -35,10 +36,12 @@ export function SalaryInsight({ job, variant = "full" }: Props) {
       <span className="inline-flex items-center gap-1 text-xs text-muted">
         <Wallet size={12} className="shrink-0 opacity-70" aria-hidden="true" />
         <span>
-          Media ES · {formatEuro(benchmark.average)}
+          {isFloor ? "Mín. convenio" : "Media ES"} ·{" "}
+          {formatEuro(benchmark.average)}
           <span className="sr-only">
             {" "}
-            brutos/mes para {benchmark.label} ({formatEuroRange(benchmark.low, benchmark.high)})
+            brutos/mes (total anual entre 12) para {benchmark.label}
+            {isFloor ? "" : ` (${formatEuroRange(benchmark.low, benchmark.high)})`}
           </span>
         </span>
       </span>
@@ -53,7 +56,7 @@ export function SalaryInsight({ job, variant = "full" }: Props) {
         </span>
         <div className="min-w-0 flex-1">
           <p className="text-xs font-bold uppercase tracking-wide text-muted">
-            Sueldo medio en España
+            {isFloor ? "Sueldo mínimo de convenio" : "Sueldo de referencia en España"}
           </p>
           <p className="mt-1 text-lg font-extrabold tracking-[-0.03em] text-foreground">
             {formatEuro(benchmark.average)}
@@ -62,8 +65,16 @@ export function SalaryInsight({ job, variant = "full" }: Props) {
             </span>
           </p>
           <p className="mt-0.5 text-xs text-muted">
-            {benchmark.label} · normalmente{" "}
-            {formatEuroRange(benchmark.low, benchmark.high)}
+            {benchmark.label}
+            {isFloor ? (
+              <> · el sueldo real suele ser mayor</>
+            ) : (
+              <>
+                {" "}
+                · normalmente {formatEuroRange(benchmark.low, benchmark.high)}
+              </>
+            )}
+            {" "}· anual ÷ 12 (pagas extra prorrateadas)
           </p>
           {announced ? (
             <p className="mt-2 text-xs leading-5 text-foreground">

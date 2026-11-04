@@ -12,6 +12,7 @@ import {
   formatEuroRange,
   getSalaryBenchmark,
 } from "@/lib/salary-benchmarks";
+import { careerForProfession } from "@/lib/salary-tables";
 
 const DAY_MS = 86_400_000;
 
@@ -108,6 +109,7 @@ export function CategoryInsights({
     category.profession && category.profession !== "Otros"
       ? getSalaryBenchmark(category.profession)
       : null;
+  const salaryCareer = careerForProfession(category.profession ?? null);
   const topEmployers = employers
     .slice(0, 3)
     .map(([name]) => name)
@@ -124,7 +126,11 @@ export function CategoryInsights({
     },
     salary && {
       q: `¿Cuál es el sueldo de referencia en ${what}?`,
-      a: `El rango de referencia es ${formatEuroRange(salary.low, salary.high)} brutos al mes, con una media de ${formatEuro(salary.average)} (estimación basada en tablas públicas y referencias de mercado; no es el sueldo de cada oferta). ${withSalary ? `${withSalary} ${withSalary === 1 ? "oferta indica" : "ofertas indican"} la retribución en el anuncio.` : "La mayoría de los anuncios no indica la retribución."}`,
+      a: `${
+        salary.kind === "floor"
+          ? `El sueldo base mínimo de convenio es de ${formatEuro(salary.average)} brutos al mes`
+          : `El rango de referencia es ${formatEuroRange(salary.low, salary.high)} brutos al mes, con un punto medio de ${formatEuro(salary.average)}`
+      } (${salary.label}; importes en bruto, total anual entre 12 con las pagas extra prorrateadas, sin guardias ni antigüedad). Se basa en ${salary.kind === "floor" ? "tablas de convenio publicadas en el BOE" : "tablas retributivas oficiales de servicios de salud"} y no es el sueldo de cada oferta. ${withSalary ? `${withSalary} ${withSalary === 1 ? "oferta indica" : "ofertas indican"} la retribución en el anuncio.` : "La mayoría de los anuncios no indica la retribución."}`,
     },
     {
       q: "¿Cómo me inscribo?",
@@ -182,6 +188,14 @@ export function CategoryInsights({
               </div>
             ))}
           </div>
+          {salaryCareer && (
+            <Link
+              href={`/salarios/${salaryCareer.slug}`}
+              className="mt-5 inline-flex text-sm font-bold text-primary hover:underline"
+            >
+              Ver las tablas salariales de {salaryCareer.label} →
+            </Link>
+          )}
         </div>
       </div>
     </section>

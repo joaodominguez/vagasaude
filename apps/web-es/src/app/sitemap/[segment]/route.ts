@@ -5,6 +5,7 @@ import {
   listEligibleCategories,
 } from "@/lib/categories";
 import { getJobs } from "@/lib/jobs-data";
+import { CAREERS } from "@/lib/salary-tables";
 import { SITE_URL } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -116,6 +117,22 @@ ${entries.join("\n")}
 `;
 }
 
+/** Tablas salariales: cambian con las subidas retributivas (inicio de año). */
+const SALARY_TABLES_UPDATED = new Date("2026-11-04T00:00:00Z");
+
+function buildSalariesSitemap() {
+  const paths = [
+    "/salarios",
+    "/salarios/simulador-sueldo-neto",
+    ...CAREERS.map((career) => `/salarios/${career.slug}`),
+  ];
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${paths.map((path) => urlEntry(`${SITE_URL}${path}`, SALARY_TABLES_UPDATED, "monthly", "0.7")).join("\n")}
+</urlset>
+`;
+}
+
 export async function GET(
   _request: Request,
   context: { params: Promise<{ segment: string }> },
@@ -129,6 +146,9 @@ export async function GET(
   }
   if (segment === "categories.xml") {
     return xmlResponse(await buildCategoriesSitemap());
+  }
+  if (segment === "salarios.xml") {
+    return xmlResponse(buildSalariesSitemap());
   }
   return new Response("Not Found", { status: 404 });
 }
