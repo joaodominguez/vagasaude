@@ -4,7 +4,7 @@ slug: alertas-emprego-saude
 date: 2026-11-05
 author: "Redação VagaSaúde"
 category: guias
-draft: true
+draft: false
 summary:
   - "Um alerta bem filtrado poupa-te de visitar vários sites; um alerta demasiado amplo enche-te a caixa de entrada."
   - "Recebes um resumo por email uma vez por dia, com as vagas novas que correspondem à profissão e ao distrito escolhidos."

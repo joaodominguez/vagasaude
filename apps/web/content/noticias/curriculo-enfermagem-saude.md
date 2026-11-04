@@ -4,7 +4,7 @@ slug: curriculo-enfermagem-saude
 date: 2026-11-05
 author: "Redação VagaSaúde"
 category: guias
-draft: true
+draft: false
 summary:
   - "Um currículo de saúde lê-se em segundos: título claro, cédula ou inscrição profissional, experiência recente e o que o anúncio pede."
   - "Nas profissões reguladas (enfermagem, medicina, farmácia, fisioterapia, psicologia, nutrição) indica o número de cédula ou de inscrição na respetiva Ordem."

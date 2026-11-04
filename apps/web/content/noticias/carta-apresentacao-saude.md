@@ -4,7 +4,7 @@ slug: carta-apresentacao-saude
 date: 2026-11-05
 author: "Redação VagaSaúde"
 category: guias
-draft: true
+draft: false
 summary:
   - "Meia página chega: quem és, porque te candidatas àquele serviço e o que podes dar nas primeiras semanas."
   - "Usa quatro parágrafos curtos e adapta o segundo à vaga, não à carreira inteira."
