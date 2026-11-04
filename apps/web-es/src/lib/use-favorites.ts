@@ -42,8 +42,11 @@ function getSnapshot() {
   return snapshot;
 }
 
+// Referência estável: um array novo em cada chamada faz o React avisar de loop infinito.
+const SERVER_SNAPSHOT: string[] = [];
+
 function getServerSnapshot() {
-  return [] as string[];
+  return SERVER_SNAPSHOT;
 }
 
 if (typeof window !== "undefined") {

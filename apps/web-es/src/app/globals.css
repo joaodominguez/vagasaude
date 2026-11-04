@@ -594,21 +594,19 @@ select {
 
 .spain-land {
   fill: var(--map-land);
-  stroke: color-mix(in srgb, var(--primary) 40%, transparent);
-  stroke-width: 1.5;
+  /* Fronteiras entre comunidades na cor do fundo da secção. */
+  stroke: var(--surface);
+  stroke-width: 0.8;
   stroke-linejoin: round;
 }
 
-.spain-island {
-  opacity: 0.85;
+.spain-inset-frame {
+  fill: none;
+  stroke: var(--border);
+  stroke-width: 1;
+  stroke-dasharray: 3 2;
 }
 
-.map-inset-label {
-  fill: var(--muted);
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-}
 
 .map-marker-empty {
   fill: var(--map-marker-empty);

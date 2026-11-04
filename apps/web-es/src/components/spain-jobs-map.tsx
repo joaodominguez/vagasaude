@@ -2,9 +2,10 @@ import Link from "next/link";
 import { ArrowUpRight, MapPinned } from "lucide-react";
 import { categoryPath } from "@/lib/categories";
 import {
+  CANARIAS_INSET,
   SPAIN_MAP_VIEWBOX,
+  SPAIN_REGION_PATHS,
   SPAIN_REGIONS,
-  regionCenter,
 } from "@/lib/spain-map";
 
 type SpainJobsMapProps = {
@@ -28,7 +29,6 @@ function regionHref(name: string, count: number) {
 export function SpainJobsMap({ counts, total }: SpainJobsMapProps) {
   const ranked = SPAIN_REGIONS.map((region) => ({
     ...region,
-    ...regionCenter(region),
     count: counts[region.name] || 0,
   })).sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, "es"));
 
@@ -44,6 +44,18 @@ export function SpainJobsMap({ counts, total }: SpainJobsMapProps) {
           role="img"
           aria-label="Mapa de España con ofertas por comunidad autónoma"
         >
+          <rect
+            x={CANARIAS_INSET.x}
+            y={CANARIAS_INSET.y}
+            width={CANARIAS_INSET.width}
+            height={CANARIAS_INSET.height}
+            rx={4}
+            className="spain-inset-frame"
+          />
+          {Object.entries(SPAIN_REGION_PATHS).map(([name, d]) => (
+            <path key={name} d={d} className="spain-land" />
+          ))}
+
           {ranked.map((region) => {
             const active = region.count > 0;
             const radius = active
@@ -68,14 +80,6 @@ export function SpainJobsMap({ counts, total }: SpainJobsMapProps) {
                     {region.count}
                   </text>
                 )}
-                <text
-                  x={region.x}
-                  y={region.y + 21}
-                  textAnchor="middle"
-                  className="map-inset-label"
-                >
-                  {region.code}
-                </text>
               </>
             );
 

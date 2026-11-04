@@ -360,6 +360,41 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     sector: "Privado",
     logo: "/partners/farmacia-silveira.png",
   },
+  {
+    id: "boe",
+    name: "BOE — Oposiciones y concursos sanitarios",
+    shortName: "BOE",
+    url: "https://www.boe.es/diario_boe/",
+    sector: "Público",
+  },
+  {
+    id: "osakidetza",
+    name: "Osakidetza — Listas de contratación temporal",
+    shortName: "Osakidetza",
+    url: "https://www.osakidetza.euskadi.eus/contratacion-temporal/webosk00-procon/es/",
+    sector: "Público",
+  },
+  {
+    id: "amavir",
+    name: "Amavir — Empleo",
+    shortName: "Amavir",
+    url: "https://empleo.amavir.es/jobs",
+    sector: "Privado",
+  },
+  {
+    id: "sanitas",
+    name: "Sanitas — Empleo",
+    shortName: "Sanitas",
+    url: "https://empleo.sanitas.es/jobs",
+    sector: "Privado",
+  },
+  {
+    id: "hospiten",
+    name: "Hospiten — Empleo",
+    shortName: "Hospiten",
+    url: "https://jobs.hospiten.com/",
+    sector: "Privado",
+  },
 ];
 
 export const SOURCE_META = Object.fromEntries(

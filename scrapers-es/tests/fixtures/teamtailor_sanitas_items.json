@@ -1,0 +1,162 @@
+{
+ "items": [
+  {
+   "id": "3de9d643-f902-4042-87cf-936e8cd8f59b",
+   "title": "Enfermero/a -  Hospital CIMA Barcelona",
+   "url": "https://empleo.sanitas.es/jobs/8659043-enfermero-a-hospital-cima-barcelona",
+   "date_published": "2026-11-03T00:00:00+01:00",
+   "content_html": "<p><strong>¿Qué harás en el equipo?</strong></p><p>Tu misión será&nbsp;realizar una buena administración de cuidados de enfermería<strong> </strong>de acuerdo con los protocolos establecidos, en el servicio asignado, para garantizar la mejor calidad asistencial.</p><p>💙Prepararás todo lo relacionado con el área asignada para garantizar el buen funcionamiento del servicio.</p><p>💙Valorarás situacio",
+   "_jobposting": {
+    "@context": "http://schema.org/",
+    "@type": "JobPosting",
+    "title": "Enfermero/a -  Hospital CIMA Barcelona",
+    "description": "<p><strong>¿Qué harás en el equipo?</strong></p><p>Tu misión será&nbsp;realizar una buena administración de cuidados de enfermería<strong> </strong>de acuerdo con los protocolos establecidos, en el servicio asignado, para garantizar la mejor calidad asistencial.</p><p>💙Prepararás todo lo relacionado con el área asignada para garantizar el buen funcionamiento del servicio.</p><p>💙Valorarás situacio",
+    "identifier": {
+     "@type": "PropertyValue",
+     "name": "Sanitas",
+     "value": "8659043"
+    },
+    "datePosted": "2026-11-03T00:00:00+01:00",
+    "employmentType": "FULL_TIME",
+    "directApply": true,
+    "hiringOrganization": {
+     "@type": "Organization",
+     "name": "Sanitas",
+     "sameAs": "https://empleo.sanitas.es"
+    },
+    "validThrough": "2026-11-14T23:59:59+01:00",
+    "jobLocation": [
+     {
+      "@type": "Place",
+      "address": {
+       "streetAddress": "Pº Manuel Girona 33",
+       "addressLocality": " BARCELONA",
+       "postalCode": "8034",
+       "addressCountry": "ES",
+       "addressRegion": null,
+       "@type": "PostalAddress"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "0a46676a-da9c-4402-b7b6-b445ad63c68f",
+   "title": "Assistente Dentária Vila Nova de Gaia",
+   "url": "https://empleo.sanitas.es/jobs/8643088-assistente-dentaria-vila-nova-de-gaia",
+   "date_published": "2026-10-30T13:19:09+01:00",
+   "content_html": "<h5><strong>Quer fazer parte de uma equipa que cuida do sorriso e do bem-estar de cada paciente? Estamos à sua procura!</strong></h5><p>Procuramos um/a<strong>assistente dentário</strong> <strong>🦷 </strong>para a nossa clínica Bupa, situada no <strong>El Corte Inglés, em Vila Nova de Gaia</strong>.</p><h3><strong>🩵A sua missão</strong></h3><p>Proporcionar aos pacientes um atendimento próximo e de",
+   "_jobposting": {
+    "@context": "http://schema.org/",
+    "@type": "JobPosting",
+    "title": "Assistente Dentária Vila Nova de Gaia",
+    "description": "<h5><strong>Quer fazer parte de uma equipa que cuida do sorriso e do bem-estar de cada paciente? Estamos à sua procura!</strong></h5><p>Procuramos um/a<strong>assistente dentário</strong> <strong>🦷 </strong>para a nossa clínica Bupa, situada no <strong>El Corte Inglés, em Vila Nova de Gaia</strong>.</p><h3><strong>🩵A sua missão</strong></h3><p>Proporcionar aos pacientes um atendimento próximo e de",
+    "identifier": {
+     "@type": "PropertyValue",
+     "name": "Sanitas",
+     "value": "8643088"
+    },
+    "datePosted": "2026-10-30T13:19:09+01:00",
+    "employmentType": "FULL_TIME",
+    "directApply": true,
+    "hiringOrganization": {
+     "@type": "Organization",
+     "name": "Sanitas",
+     "sameAs": "https://empleo.sanitas.es"
+    },
+    "jobLocation": [
+     {
+      "@type": "Place",
+      "address": {
+       "streetAddress": null,
+       "addressLocality": "Vila Nova de Gaia",
+       "postalCode": null,
+       "addressCountry": "PT",
+       "addressRegion": null,
+       "@type": "PostalAddress"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "b56184fc-c4e9-40b4-958a-856a66ce32d8",
+   "title": "Higienista Ibiza 15h semanales (2 tardes)",
+   "url": "https://empleo.sanitas.es/jobs/8377120-higienista-ibiza-15h-semanales-2-tardes",
+   "date_published": "2026-09-14T17:49:10+02:00",
+   "content_html": "<p>Si eres titulado/a en Higiene bucodental y buscas una jornada parcial... Únete a nuestro equipo como <strong>Higienista Bucodental</strong> en nuestra clínica situada en Ibiza (islas Baleares).</p><h4><strong>¿Qué encontrarás en Sanitas?:</strong></h4><p>👉 <strong>Contrato indefinido.<br>👉 Jornada parcial de 15 horas a la semana en horario de J y V de 13.30h a 21h. </strong></p><p>👉 Retribución",
+   "_jobposting": {
+    "@context": "http://schema.org/",
+    "@type": "JobPosting",
+    "title": "Higienista Ibiza 15h semanales (2 tardes)",
+    "description": "<p>Si eres titulado/a en Higiene bucodental y buscas una jornada parcial... Únete a nuestro equipo como <strong>Higienista Bucodental</strong> en nuestra clínica situada en Ibiza (islas Baleares).</p><h4><strong>¿Qué encontrarás en Sanitas?:</strong></h4><p>👉 <strong>Contrato indefinido.<br>👉 Jornada parcial de 15 horas a la semana en horario de J y V de 13.30h a 21h. </strong></p><p>👉 Retribución",
+    "identifier": {
+     "@type": "PropertyValue",
+     "name": "Sanitas",
+     "value": "8377120"
+    },
+    "datePosted": "2026-09-14T17:49:10+02:00",
+    "employmentType": "PART_TIME",
+    "directApply": true,
+    "hiringOrganization": {
+     "@type": "Organization",
+     "name": "Sanitas",
+     "sameAs": "https://empleo.sanitas.es"
+    },
+    "jobLocation": [
+     {
+      "@type": "Place",
+      "address": {
+       "streetAddress": "Avda. Ignaci Wallis, 41-43",
+       "addressLocality": "IBIZA",
+       "postalCode": "7800",
+       "addressCountry": "ES",
+       "addressRegion": "BALEARES",
+       "@type": "PostalAddress"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "8c9b6be7-ce03-4196-beb6-d95ba9e70faa",
+   "title": "Gerocultor/a. Turno Noche (Colmenar Viejo, Madrid)",
+   "url": "https://empleo.sanitas.es/jobs/8660263-gerocultor-a-turno-noche-colmenar-viejo-madrid",
+   "date_published": "2026-11-03T00:00:00+01:00",
+   "content_html": "<h2>Gerocultor/a. Turno Noche (Colmenar Viejo, Madrid)</h2><hr><h4><strong>¿Qué ofrecemos?</strong></h4><p>📑<strong>Tipo de contrato:&nbsp;</strong>Temporal hasta el 17 de febrero de 2027</p><p><strong>🙋‍♂️Duración contrato:&nbsp;</strong>Sustitución por permiso de paternidad</p><p>🧍‍♂️ <strong>Turno de trabajo: </strong>Noche</p><p>⌛<strong>Jornada laboral:&nbsp;</strong>Completa</p><p>🕕 <strong>",
+   "_jobposting": {
+    "@context": "http://schema.org/",
+    "@type": "JobPosting",
+    "title": "Gerocultor/a. Turno Noche (Colmenar Viejo, Madrid)",
+    "description": "<h2>Gerocultor/a. Turno Noche (Colmenar Viejo, Madrid)</h2><hr><h4><strong>¿Qué ofrecemos?</strong></h4><p>📑<strong>Tipo de contrato:&nbsp;</strong>Temporal hasta el 17 de febrero de 2027</p><p><strong>🙋‍♂️Duración contrato:&nbsp;</strong>Sustitución por permiso de paternidad</p><p>🧍‍♂️ <strong>Turno de trabajo: </strong>Noche</p><p>⌛<strong>Jornada laboral:&nbsp;</strong>Completa</p><p>🕕 <strong>",
+    "identifier": {
+     "@type": "PropertyValue",
+     "name": "Sanitas",
+     "value": "8660263"
+    },
+    "datePosted": "2026-11-03T00:00:00+01:00",
+    "employmentType": "FULL_TIME",
+    "directApply": true,
+    "hiringOrganization": {
+     "@type": "Organization",
+     "name": "Sanitas",
+     "sameAs": "https://empleo.sanitas.es"
+    },
+    "validThrough": "2026-11-17T23:59:59+01:00",
+    "jobLocation": [
+     {
+      "@type": "Place",
+      "address": {
+       "streetAddress": "Paseo de la Magdalena, 2",
+       "addressLocality": "Colmenar Viejo",
+       "postalCode": "28770",
+       "addressCountry": "ES",
+       "addressRegion": "Madrid",
+       "@type": "PostalAddress"
+      }
+     }
+    ]
+   }
+  }
+ ]
+}
