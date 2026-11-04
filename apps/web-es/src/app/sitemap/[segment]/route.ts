@@ -5,6 +5,7 @@ import {
   listEligibleCategories,
 } from "@/lib/categories";
 import { getJobs } from "@/lib/jobs-data";
+import { listEligibleOposiciones, listOposiciones } from "@/lib/oposiciones";
 import { CAREERS } from "@/lib/salary-tables";
 import { SITE_URL } from "@/lib/seo";
 
@@ -97,6 +98,7 @@ async function buildCategoriesSitemap() {
       jobs,
       category.profession,
       category.district,
+      category.province ?? null,
     );
     // Página 1 + /pagina-N (paginação self-canonical das landings).
     return Array.from(
@@ -113,6 +115,27 @@ async function buildCategoriesSitemap() {
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${entries.join("\n")}
+</urlset>
+`;
+}
+
+async function buildOposicionesSitemap() {
+  const now = new Date();
+  const items = listOposiciones(await getJobs());
+  // Hub solo con convocatorias; sub-landings solo con ≥1 (profesión) / ≥3 (comunidad).
+  const paths = items.length
+    ? ["/oposiciones", ...listEligibleOposiciones(items).map((ref) => ref.path)]
+    : [];
+  const latest = items[0]?.job.publishedAt
+    ? new Date(Math.min(Date.parse(items[0].job.publishedAt) || Date.now(), Date.now()))
+    : now;
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${paths
+  .map((path) =>
+    urlEntry(`${SITE_URL}${path}`, latest, "daily", path === "/oposiciones" ? "0.85" : "0.75"),
+  )
+  .join("\n")}
 </urlset>
 `;
 }
@@ -146,6 +169,9 @@ export async function GET(
   }
   if (segment === "categories.xml") {
     return xmlResponse(await buildCategoriesSitemap());
+  }
+  if (segment === "oposiciones.xml") {
+    return xmlResponse(await buildOposicionesSitemap());
   }
   if (segment === "salarios.xml") {
     return xmlResponse(buildSalariesSitemap());

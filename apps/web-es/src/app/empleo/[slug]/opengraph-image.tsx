@@ -116,7 +116,7 @@ export default async function JobOpenGraphImage({
             color: "#cbd5e1",
           }}
         >
-          <span>Candidatura no site da entidade</span>
+          <span>Inscripción en la web de la entidad</span>
           <span>vacantessalud.es</span>
         </div>
       </div>

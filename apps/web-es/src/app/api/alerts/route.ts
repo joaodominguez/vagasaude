@@ -61,7 +61,7 @@ export async function POST(request: Request) {
     ? emailSent
       ? "Te hemos enviado un email de confirmación. Confirma la suscripción para activar la alerta."
       : "Tu email ha quedado registrado. Si no recibes la confirmación, revísalo más tarde."
-    : "Preferências actualizadas. O teu alerta continua activo.";
+    : "Preferencias actualizadas. Tu alerta sigue activa.";
 
   return NextResponse.json(
     {

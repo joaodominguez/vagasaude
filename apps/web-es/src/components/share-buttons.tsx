@@ -68,7 +68,7 @@ export function ShareButtons({ url, title, summary }: ShareButtonsProps) {
           ) : (
             <Link2 size={15} aria-hidden="true" />
           )}
-          {copied ? "Copiado" : "Copiar link"}
+          {copied ? "Copiado" : "Copiar enlace"}
         </button>
       </div>
     </div>

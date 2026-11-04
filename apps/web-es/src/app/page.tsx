@@ -19,6 +19,12 @@ import {
 import { getJobs } from "@/lib/jobs-data";
 import { professions } from "@/lib/jobs";
 import { buildHomeMetadata } from "@/lib/seo";
+import {
+  listEligibleOposiciones,
+  listOposiciones,
+  oposicionesPath,
+  professionLower,
+} from "@/lib/oposiciones";
 
 // Soft-expire alineado con el Data Cache de jobs (ingesta ≤2 min).
 export const revalidate = 120;
@@ -44,6 +50,10 @@ export default async function Home() {
   }, {});
   // Todas las landings de profesión y de comunidad (enlaces internos para Google).
   const categoryChips = listCategoryChips(jobs, Number.POSITIVE_INFINITY);
+  const oposiciones = listOposiciones(jobs);
+  const oposicionRefs = listEligibleOposiciones(oposiciones).filter(
+    (ref) => !ref.district,
+  );
   const professionCategories = categoryChips.filter((c) => c.kind === "profession");
   const districtCategories = categoryChips.filter((c) => c.kind === "district");
 
@@ -115,6 +125,54 @@ export default async function Home() {
             Ver todas las ofertas
           </Link>
         </section>
+
+        {oposiciones.length > 0 && (
+          <section className="page-container pb-14 sm:pb-18">
+            <div className="mb-7 flex items-end justify-between gap-4">
+              <div>
+                <span className="section-kicker">Empleo público</span>
+                <h2 className="section-title">Oposiciones abiertas</h2>
+                <p className="mt-2 text-sm text-muted">
+                  {oposiciones.length}{" "}
+                  {oposiciones.length === 1
+                    ? "convocatoria de oposición, OPE o bolsa de empleo"
+                    : "convocatorias de oposiciones, OPE y bolsas de empleo"}
+                  , con enlace a las bases oficiales.
+                </p>
+              </div>
+              <Link
+                href="/oposiciones"
+                className="hidden items-center gap-1.5 text-sm font-bold text-primary hover:underline sm:flex"
+              >
+                Ver todas <ArrowRight size={16} />
+              </Link>
+            </div>
+            <div className="grid min-w-0 gap-3 sm:grid-cols-2">
+              {oposiciones.slice(0, 4).map(({ job }) => (
+                <JobCard key={job.slug} job={job} />
+              ))}
+            </div>
+            {oposicionRefs.length > 0 && (
+              <div className="mt-5 flex flex-wrap gap-2">
+                {oposicionRefs.map((ref) => (
+                  <Link
+                    key={ref.path}
+                    href={oposicionesPath(ref.profession)}
+                    className="filter-chip"
+                  >
+                    Oposiciones de {professionLower(ref.profession ?? "")} ({ref.count})
+                  </Link>
+                ))}
+              </div>
+            )}
+            <Link
+              href="/oposiciones"
+              className="button button-secondary mt-6 w-full sm:hidden"
+            >
+              Ver todas las oposiciones
+            </Link>
+          </section>
+        )}
 
         {categoryChips.length > 0 && (
           <section className="page-container pb-14 sm:pb-18">

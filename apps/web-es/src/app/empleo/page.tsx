@@ -100,6 +100,11 @@ function buildJobsHref(
   return query ? `/empleo?${query}` : "/empleo";
 }
 
+/** Fuera del componente: Date.now() es impuro y no debe llamarse durante el render. */
+function periodCutoffIso(days: number) {
+  return new Date(Date.now() - days * 86_400_000).toISOString();
+}
+
 export default async function JobsPage({
   searchParams,
 }: {
@@ -120,9 +125,7 @@ export default async function JobsPage({
   const topCategories = listCategoryChips(jobs, 10);
 
   const periodDays = period === "24h" ? 1 : period === "7d" ? 7 : period === "30d" ? 30 : 0;
-  const periodCutoff = periodDays
-    ? new Date(Date.now() - periodDays * 86_400_000).toISOString()
-    : "";
+  const periodCutoff = periodDays ? periodCutoffIso(periodDays) : "";
 
   let filteredJobs = jobs.filter((job) => {
     const haystack =

@@ -4,6 +4,12 @@ import {
   professions as taxonomyProfessions,
 } from "@/lib/taxonomies";
 import { enLugar } from "@/lib/es-locative";
+import {
+  PROVINCES_BY_REGION,
+  jobProvince,
+  provinceFromSlug,
+  provinceSlug,
+} from "@/lib/provinces";
 import { absoluteUrl, SITE_NAME, truncateMeta } from "@/lib/seo";
 import type { Metadata } from "next";
 
@@ -55,12 +61,14 @@ export function isReservedCategorySlug(slug: string) {
   return PROFESSION_BY_SLUG.has(slug) || DISTRICT_BY_SLUG.has(slug);
 }
 
-export type CategoryKind = "profession" | "district" | "combo";
+export type CategoryKind = "profession" | "district" | "combo" | "province";
 
 export type CategoryRef = {
   kind: CategoryKind;
   profession: string | null;
   district: string | null;
+  /** Solo en landings de provincia (/empleo/<comunidad>/<provincia>). */
+  province?: string | null;
   path: string;
   title: string;
 };
@@ -95,6 +103,11 @@ export function sliceCategoryPage<T>(jobs: T[], page: number) {
   return jobs.slice(start, start + CATEGORY_PAGE_SIZE);
 }
 
+/** /empleo/<comunidad>/<provincia> */
+export function provincePath(district: string, province: string) {
+  return `/empleo/${toCategorySlug(district)}/${provinceSlug(province)}`;
+}
+
 export function categoryPath(
   profession: string | null | undefined,
   district: string | null | undefined,
@@ -112,12 +125,16 @@ export function categoryHeading(
   kind: CategoryKind,
   profession: string | null,
   district: string | null,
+  province: string | null = null,
 ) {
   if (kind === "combo" && profession && district) {
     return `Ofertas de ${profession} ${enLugar(district)}`;
   }
   if (kind === "profession" && profession) {
     return `Ofertas de ${profession} en España`;
+  }
+  if (kind === "province" && province) {
+    return `Empleo sanitario ${enLugar(province)}`;
   }
   if (district) {
     return `Empleo sanitario ${enLugar(district)}`;
@@ -130,6 +147,19 @@ export function resolveCategoryFromSegments(
   b?: string,
 ): CategoryRef | null {
   if (b) {
+    const regionOfA = districtFromSlug(a);
+    if (regionOfA) {
+      const province = provinceFromSlug(regionOfA, b);
+      if (!province) return null;
+      return {
+        kind: "province",
+        profession: null,
+        district: regionOfA,
+        province,
+        path: provincePath(regionOfA, province),
+        title: categoryHeading("province", null, regionOfA, province),
+      };
+    }
     const profession = professionFromSlug(a);
     const district = districtFromSlug(b);
     if (!profession || !district) return null;
@@ -171,10 +201,12 @@ export function filterJobsForCategory(
   jobs: Job[],
   profession: string | null,
   district: string | null,
+  province: string | null = null,
 ) {
   return jobs.filter((job) => {
     if (profession && job.profession !== profession) return false;
     if (district && job.district !== district) return false;
+    if (province && jobProvince(job) !== province) return false;
     return true;
   });
 }
@@ -281,6 +313,24 @@ export function listEligibleCategories(jobs: Job[]): CategoryRef[] {
     }
   }
 
+  // Segundo nivel: provincias de las comunidades grandes.
+  for (const [district, provinces] of Object.entries(PROVINCES_BY_REGION)) {
+    const inRegion = jobs.filter((job) => job.district === district);
+    if (inRegion.length < CATEGORY_MIN_JOBS) continue;
+    for (const province of provinces) {
+      const subset = filterJobsForCategory(inRegion, null, district, province);
+      if (subset.length < CATEGORY_MIN_JOBS) continue;
+      refs.push({
+        kind: "province",
+        profession: null,
+        district,
+        province,
+        path: provincePath(district, province),
+        title: categoryHeading("province", null, district, province),
+      });
+    }
+  }
+
   return refs
     .filter((ref) => {
       // Garantir que o path resolve na rota (evita chips 404).
@@ -310,9 +360,10 @@ export function isCategoryEligible(
   jobs: Job[],
   profession: string | null,
   district: string | null,
+  province: string | null = null,
 ) {
   return (
-    filterJobsForCategory(jobs, profession, district).length >=
+    filterJobsForCategory(jobs, profession, district, province).length >=
     CATEGORY_MIN_JOBS
   );
 }
@@ -413,7 +464,9 @@ export function buildCategoryMetadata(
 ): Metadata {
   const ofertas = count === 1 ? "1 oferta" : `${count} ofertas`;
   const baseTitle =
-    ref.kind === "combo" && ref.profession && ref.district
+    ref.kind === "province" && ref.province
+      ? `Empleo sanitario ${enLugar(ref.province)}: ${ofertas}`
+      : ref.kind === "combo" && ref.profession && ref.district
       ? `${professionSearchPhrase(ref.profession)} ${enLugar(ref.district)}: ${ofertas}`
       : ref.kind === "profession" && ref.profession
         ? `${professionSearchPhrase(ref.profession)}: ${ofertas} en España`
@@ -460,6 +513,9 @@ function professionDistrictDescription(
     recent > 0
       ? ` ${recent} ${recent === 1 ? "nueva" : "nuevas"} en los últimos 7 días.`
       : "";
+  if (ref.kind === "province" && ref.province) {
+    return `${n} de empleo sanitario ${enLugar(ref.province)} (${ref.district}), actualizadas hoy.${fresh} Hospitales, centros de salud y clínicas: crea alertas gratis.`;
+  }
   if (ref.kind === "combo" && ref.district) {
     return `${n} de ${ref.profession} ${enLugar(ref.district)}, actualizadas hoy.${fresh} Hospitales, clínicas y centros concertados: inscríbete en la web de la entidad.`;
   }
@@ -531,6 +587,23 @@ export function siblingDistrictLinks(
       (item) =>
         item.kind === "combo" &&
         item.profession === current.profession &&
+        item.path !== current.path,
+    )
+    .slice(0, limit);
+}
+
+/** "Por provincia": provincias de la comunidad (landing de comunidad) o hermanas (landing de provincia). */
+export function provinceLinks(
+  all: CategoryRef[],
+  current: CategoryRef,
+  limit = 12,
+): CategoryRef[] {
+  if (current.kind !== "district" && current.kind !== "province") return [];
+  return all
+    .filter(
+      (item) =>
+        item.kind === "province" &&
+        item.district === current.district &&
         item.path !== current.path,
     )
     .slice(0, limit);

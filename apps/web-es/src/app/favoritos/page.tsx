@@ -16,7 +16,7 @@ export default function FavoritosPage() {
       <main className="min-h-[70vh]">
         <section className="border-b border-border bg-surface py-8">
           <div className="page-container">
-            <p className="section-kicker">Os teus favoritos</p>
+            <p className="section-kicker">Tus favoritos</p>
             <h1 className="mt-2 text-3xl font-extrabold tracking-[-0.045em]">
               Ofertas guardadas
             </h1>

@@ -9,7 +9,7 @@ export const SITE_URL =
 export const SITE_NAME = "VacantesSalud";
 
 export const DEFAULT_DESCRIPTION =
-  "Ofertas de empleo sanitario en España: enfermería, medicina, TCAE, fisioterapia y más. Público, privado y concertado en un solo sitio: busca y apúntate.";
+  "Ofertas de empleo sanitario en España: enfermería, medicina, TCAE, fisioterapia y más. Público, privado y concertado en un solo sitio: busca e inscríbete.";
 
 export const HOME_TITLE = `${SITE_NAME} — Empleo sanitario en España`;
 

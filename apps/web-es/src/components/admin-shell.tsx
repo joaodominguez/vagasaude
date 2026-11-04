@@ -59,7 +59,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           href="/"
           className="mt-8 hidden items-center gap-2 text-sm font-bold text-muted hover:text-primary lg:flex"
         >
-          <LogOut size={16} /> Voltar ao site
+          <LogOut size={16} /> Volver al sitio
         </Link>
       </aside>
       <div className="min-w-0">{children}</div>

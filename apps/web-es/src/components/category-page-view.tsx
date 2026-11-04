@@ -14,6 +14,7 @@ import {
   categoryPagePath,
   categoryPath,
   categoryTotalPages,
+  provinceLinks,
   relatedCategoryLinks,
   siblingDistrictLinks,
   sliceCategoryPage,
@@ -34,9 +35,14 @@ export function CategoryPageView({
   allCategoryRefs: CategoryRef[];
 }) {
   const stats = buildCategoryStats(jobs);
-  const intro = buildCategoryIntro(stats, category.profession, category.district);
+  const intro = buildCategoryIntro(
+    stats,
+    category.profession,
+    category.province ?? category.district,
+  );
   const related = relatedCategoryLinks(allCategoryRefs, category);
   const siblings = siblingDistrictLinks(allCategoryRefs, category);
+  const provinces = provinceLinks(allCategoryRefs, category);
   const totalPages = categoryTotalPages(jobs.length);
   const pageJobs = sliceCategoryPage(jobs, page);
   const jsonLd = buildItemListJsonLd(category, pageJobs, page);
@@ -57,10 +63,23 @@ export function CategoryPageView({
     });
   }
 
+  if (category.kind === "province" && category.district) {
+    parentLinks.push({
+      href: categoryPath(null, category.district),
+      label: category.district,
+    });
+  }
+
   const crumbs: BreadcrumbItem[] = [
     { label: "Inicio", href: "/" },
     { label: "Empleo", href: "/empleo" },
   ];
+  if (category.kind === "province" && category.district) {
+    crumbs.push({
+      label: category.district,
+      href: categoryPath(null, category.district),
+    });
+  }
   if (category.kind === "combo" && category.profession) {
     crumbs.push({
       label: category.profession,
@@ -101,6 +120,23 @@ export function CategoryPageView({
                     {link.label}
                   </Link>
                 ))}
+              </nav>
+            )}
+
+            {provinces.length > 0 && (
+              <nav className="mt-5" aria-label="Por provincia">
+                <h2 className="text-xs font-extrabold uppercase tracking-wider text-muted">
+                  {category.kind === "district"
+                    ? "Por provincia"
+                    : `Otras provincias de ${category.district}`}
+                </h2>
+                <div className="mt-2 flex flex-wrap gap-2 text-sm">
+                  {provinces.map((item) => (
+                    <Link key={item.path} href={item.path} className="filter-chip">
+                      {item.province}
+                    </Link>
+                  ))}
+                </div>
               </nav>
             )}
           </div>
@@ -155,7 +191,11 @@ export function CategoryPageView({
                 {category.profession
                   ? `ofertas de ${category.profession.toLowerCase()}`
                   : "ofertas de empleo sanitario"}
-                {category.district ? ` ${enLugar(category.district)}` : ""}.
+                {category.province
+                  ? ` ${enLugar(category.province)}`
+                  : category.district
+                    ? ` ${enLugar(category.district)}`
+                    : ""}.
               </p>
               <div className="mt-4">
                 <AlertForm

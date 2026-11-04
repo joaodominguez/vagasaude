@@ -23,7 +23,7 @@ const FAQ = [
   },
   {
     q: "¿Cómo me inscribo en una oferta?",
-    a: `Abre la oferta en ${SITE_NAME}, revisa los detalles y usa el botón de inscripción. Te llevamos a la página de la entidad empleadora: no enviamos currículos ni tramitamos solicitudes.`,
+    a: `Abre la oferta en ${SITE_NAME}, revisa los detalles y usa el botón de inscripción. Te llevamos a la página de la entidad empleadora: no enviamos currículums ni tramitamos solicitudes.`,
   },
   {
     q: "¿De dónde vienen las ofertas?",

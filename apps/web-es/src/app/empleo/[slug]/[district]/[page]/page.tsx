@@ -39,6 +39,7 @@ export async function generateMetadata({
     await getJobs(),
     category.profession,
     category.district,
+    category.province ?? null,
   );
   if (jobs.length < 3) return { title: category.title };
   return buildCategoryMetadata(category, jobs.length, jobs, page);
@@ -59,7 +60,14 @@ export default async function ProfessionDistrictPagedPage({
   const { category, page } = resolved;
 
   const allJobs = await getJobs();
-  if (!isCategoryEligible(allJobs, category.profession, category.district)) {
+  if (
+    !isCategoryEligible(
+      allJobs,
+      category.profession,
+      category.district,
+      category.province ?? null,
+    )
+  ) {
     const qs = new URLSearchParams();
     if (category.profession) qs.set("profesion", category.profession);
     if (category.district) qs.set("comunidad", category.district);
@@ -70,6 +78,7 @@ export default async function ProfessionDistrictPagedPage({
     allJobs,
     category.profession,
     category.district,
+    category.province ?? null,
   );
   if (page > categoryTotalPages(jobs.length)) notFound();
 

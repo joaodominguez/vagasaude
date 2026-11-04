@@ -9,35 +9,29 @@ import { JobCard } from "@/components/job-card";
 
 export function FavoritesClient() {
   const { slugs, toggle } = useFavorites();
-  const [jobs, setJobs] = useState<Job[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [fetched, setFetched] = useState<{ key: string; jobs: Job[] }>({
+    key: "",
+    jobs: [],
+  });
 
   const slugsKey = slugs.join(",");
+  const loading = slugsKey !== "" && fetched.key !== slugsKey;
+  const jobs = slugsKey ? fetched.jobs : [];
 
   useEffect(() => {
-    if (!slugsKey) {
-      setJobs([]);
-      setLoading(false);
-      return;
-    }
+    if (!slugsKey) return;
     let cancelled = false;
-    setLoading(true);
     fetch(`/api/favorites?slugs=${encodeURIComponent(slugsKey)}`)
       .then((res) => (res.ok ? res.json() : { jobs: [] }))
       .then((data: { jobs: Job[] }) => {
-        if (!cancelled) {
-          const currentSlugs = slugsKey.split(",");
-          const ordered = currentSlugs
-            .map((s) => data.jobs.find((j) => j.slug === s))
-            .filter(Boolean) as Job[];
-          setJobs(ordered);
-        }
+        const ordered = slugsKey
+          .split(",")
+          .map((s) => data.jobs.find((j) => j.slug === s))
+          .filter(Boolean) as Job[];
+        if (!cancelled) setFetched({ key: slugsKey, jobs: ordered });
       })
       .catch(() => {
-        if (!cancelled) setJobs([]);
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) setFetched({ key: slugsKey, jobs: [] });
       });
     return () => {
       cancelled = true;

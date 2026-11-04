@@ -65,13 +65,18 @@ export function SearchForm({
     });
   }
 
-  useEffect(() => {
+  // Sincroniza el estado con las props durante el render (patrón recomendado
+  // por React en lugar de un efecto con setState).
+  const [prevDefaultQuery, setPrevDefaultQuery] = useState(defaultQuery);
+  if (prevDefaultQuery !== defaultQuery) {
+    setPrevDefaultQuery(defaultQuery);
     setQuery(defaultQuery);
-  }, [defaultQuery]);
-
-  useEffect(() => {
+  }
+  const [prevDefaultDistrict, setPrevDefaultDistrict] = useState(defaultDistrict);
+  if (prevDefaultDistrict !== defaultDistrict) {
+    setPrevDefaultDistrict(defaultDistrict);
     setDistrict(defaultDistrict);
-  }, [defaultDistrict]);
+  }
 
   useEffect(() => {
     const controller = new AbortController();
@@ -112,17 +117,16 @@ export function SearchForm({
   }, []);
 
   useEffect(() => {
-    if (!open) {
-      setMenuBox(null);
-      return;
-    }
-    updateMenuBox();
+    if (!open) return;
+    // Medición asíncrona: evita setState síncrono dentro del efecto.
+    const frame = requestAnimationFrame(updateMenuBox);
     function onReposition() {
       updateMenuBox();
     }
     window.addEventListener("resize", onReposition);
     window.addEventListener("scroll", onReposition, true);
     return () => {
+      cancelAnimationFrame(frame);
       window.removeEventListener("resize", onReposition);
       window.removeEventListener("scroll", onReposition, true);
     };

@@ -7,6 +7,8 @@ import {
   type CategoryRef,
 } from "@/lib/categories";
 import { enLugar } from "@/lib/es-locative";
+import { isOposicionJob } from "@/lib/job-type";
+import { oposicionesPath } from "@/lib/oposiciones";
 import {
   formatEuro,
   formatEuroRange,
@@ -15,6 +17,9 @@ import {
 import { careerForProfession } from "@/lib/salary-tables";
 
 const DAY_MS = 86_400_000;
+
+const professionLabel = (profession: string) =>
+  profession === "TCAE" ? "TCAE" : profession.toLowerCase();
 
 function countBy(values: string[], limit: number) {
   const counts = new Map<string, number>();
@@ -66,7 +71,11 @@ export function CategoryInsights({
   const what = category.profession
     ? category.profession.toLowerCase()
     : "sanitario";
-  const where = category.district ? enLugar(category.district) : "en España";
+  const where = category.province
+    ? enLugar(category.province)
+    : category.district
+      ? enLugar(category.district)
+      : "en España";
 
   // Dónde están: profesión → comunidades; comunidad → profesiones; combo → localidades.
   const places =
@@ -103,6 +112,8 @@ export function CategoryInsights({
       ? `Ofertas de ${what} por comunidad`
       : category.kind === "district"
         ? `Profesiones con ofertas ${where}`
+        : category.kind === "province"
+        ? `Localidades con ofertas ${where}`
         : `Localidades con ofertas de ${what} ${where}`;
 
   const salary =
@@ -110,6 +121,10 @@ export function CategoryInsights({
       ? getSalaryBenchmark(category.profession)
       : null;
   const salaryCareer = careerForProfession(category.profession ?? null);
+  const oposicionesCount =
+    category.kind === "profession" && category.profession
+      ? jobs.filter(isOposicionJob).length
+      : 0;
   const topEmployers = employers
     .slice(0, 3)
     .map(([name]) => name)
@@ -188,6 +203,17 @@ export function CategoryInsights({
               </div>
             ))}
           </div>
+          {oposicionesCount > 0 && category.profession && (
+            <Link
+              href={oposicionesPath(category.profession)}
+              className="mt-5 block text-sm font-bold text-primary hover:underline"
+            >
+              {oposicionesCount === 1
+                ? "Ver la oposición o bolsa abierta"
+                : `Ver las ${oposicionesCount} oposiciones y bolsas abiertas`}{" "}
+              de {professionLabel(category.profession)} →
+            </Link>
+          )}
           {salaryCareer && (
             <Link
               href={`/salarios/${salaryCareer.slug}`}

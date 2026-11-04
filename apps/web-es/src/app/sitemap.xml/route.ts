@@ -6,6 +6,7 @@ const CHILD_SITEMAPS = [
   "pages",
   "jobs",
   "categories",
+  "oposiciones",
   "salarios",
 ] as const;
 

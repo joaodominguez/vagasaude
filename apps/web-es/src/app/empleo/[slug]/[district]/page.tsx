@@ -9,6 +9,7 @@ import {
   isFirstPageSegment,
   listEligibleCategories,
   parseCategoryPageSegment,
+  districtFromSlug,
   professionFromSlug,
   resolveCategoryFromSegments,
 } from "@/lib/categories";
@@ -29,8 +30,8 @@ function resolveSegments(slug: string, district: string) {
     const category = resolveCategoryFromSegments(slug);
     return category ? { category, page } : null;
   }
-  // Só combinações profissão/comunidad — evita capturar lixo sob /empleo/job/foo
-  if (!professionFromSlug(slug)) return null;
+  // Solo profesión/comunidad o comunidad/provincia: evita capturar basura bajo /empleo/job/foo.
+  if (!professionFromSlug(slug) && !districtFromSlug(slug)) return null;
   const category = resolveCategoryFromSegments(slug, district);
   return category ? { category, page: 1 } : null;
 }
@@ -48,6 +49,7 @@ export async function generateMetadata({
     await getJobs(),
     category.profession,
     category.district,
+    category.province ?? null,
   );
   if (jobs.length < 3) return { title: category.title };
   return buildCategoryMetadata(category, jobs.length, jobs, page);
@@ -68,7 +70,14 @@ export default async function ProfessionDistrictPage({
   const { category, page } = resolved;
 
   const allJobs = await getJobs();
-  if (!isCategoryEligible(allJobs, category.profession, category.district)) {
+  if (
+    !isCategoryEligible(
+      allJobs,
+      category.profession,
+      category.district,
+      category.province ?? null,
+    )
+  ) {
     const qs = new URLSearchParams();
     if (category.profession) qs.set("profesion", category.profession);
     if (category.district) qs.set("comunidad", category.district);
@@ -79,6 +88,7 @@ export default async function ProfessionDistrictPage({
     allJobs,
     category.profession,
     category.district,
+    category.province ?? null,
   );
   if (page > categoryTotalPages(jobs.length)) notFound();
 

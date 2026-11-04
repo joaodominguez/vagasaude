@@ -17,6 +17,7 @@ import { FavoriteButton } from "@/components/favorite-button";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { JobCard } from "@/components/job-card";
+import { JobTypeBadge } from "@/components/job-type-badge";
 import { JobDescription } from "@/components/job-description";
 import { SalaryInsight } from "@/components/salary-insight";
 import { ShareButtons } from "@/components/share-buttons";
@@ -26,12 +27,16 @@ import {
   filterJobsForCategory,
   isCategoryEligible,
   listEligibleCategories,
+  provincePath,
   resolveCategoryFromSegments,
 } from "@/lib/categories";
 import type { Job } from "@/lib/jobs";
 import { getJob, getJobs } from "@/lib/jobs-data";
 import { buildJobMetadata, buildJobPostingJsonLd, jobUrl } from "@/lib/seo";
 import { enLugar } from "@/lib/es-locative";
+import { classifyJob, isOposicionJob, JOB_TYPE_LABEL } from "@/lib/job-type";
+import { jobProvince } from "@/lib/provinces";
+import { hasOposicionLanding, listOposiciones, oposicionesPath } from "@/lib/oposiciones";
 
 // force-static + revalidate: HTML ISR on-demand (revalidate sozinho não
 // chega se a árvore for tratada como dinâmica por I/O).
@@ -189,6 +194,7 @@ function ActiveJobView({
                     <CalendarDays size={15} /> Publicado{" "}
                     {job.publishedLabel.toLowerCase()}
                   </span>
+                  <JobTypeBadge job={job} />
                   <span className="tag tag-primary">{job.sector}</span>
                   <span className="tag">{job.contract}</span>
                   <span className="tag">{job.profession}</span>
@@ -228,6 +234,9 @@ function ActiveJobView({
                 <dl className="mt-4 divide-y divide-border rounded-xl border border-border text-sm">
                   {[
                     ["Ubicación", job.city],
+                    ...(classifyJob(job) !== "oferta"
+                      ? [["Tipo", JOB_TYPE_LABEL[classifyJob(job)]]]
+                      : []),
                     ["Sector", job.sector],
                     ["Contrato", job.contract],
                     ["Publicada", job.publishedLabel],
@@ -428,11 +437,44 @@ function buildJobCategoryLinks(job: Job, allJobs: Job[]) {
       label: `${job.profession} ${enLugar(job.district)}`,
     });
   }
+  const province = jobProvince(job);
+  if (province && isCategoryEligible(allJobs, null, job.district, province)) {
+    links.push({
+      href: provincePath(job.district, province),
+      label: `Empleo ${enLugar(province)}`,
+    });
+  }
+  const type = classifyJob(job);
+  if (
+    type !== "oferta" &&
+    hasOposicionLanding(listOposiciones(allJobs), job.profession)
+  ) {
+    links.push({
+      href: oposicionesPath(job.profession),
+      label: `Oposiciones de ${job.profession === "TCAE" ? "TCAE" : job.profession.toLowerCase()}`,
+    });
+  }
   return links;
 }
 
 /** Inicio › Empleo › profesión › profesión × comunidad › oferta (solo landings que existen). */
 function buildJobBreadcrumbs(job: Job, allJobs: Job[]): BreadcrumbItem[] {
+  // Oposiciones/bolsas/traslados públicos: Inicio › Oposiciones › Profesión › oferta.
+  if (isOposicionJob(job)) {
+    if (!hasOposicionLanding(listOposiciones(allJobs), job.profession)) {
+      return [
+        { label: "Inicio", href: "/" },
+        { label: "Oposiciones", href: "/oposiciones" },
+        { label: job.title },
+      ];
+    }
+    return [
+      { label: "Inicio", href: "/" },
+      { label: "Oposiciones", href: "/oposiciones" },
+      { label: job.profession, href: oposicionesPath(job.profession) },
+      { label: job.title },
+    ];
+  }
   const items: BreadcrumbItem[] = [
     { label: "Inicio", href: "/" },
     { label: "Empleo", href: "/empleo" },
