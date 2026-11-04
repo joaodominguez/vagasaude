@@ -6,6 +6,7 @@ import {
   isKnownProfession,
   type CategoryRef,
 } from "@/lib/categories";
+import { articlesForCategory, newsPath } from "@/lib/news";
 import { emLocal } from "@/lib/pt-locative";
 import { careerForProfession } from "@/lib/salary-tables";
 import {
@@ -58,6 +59,7 @@ export function CategoryInsights({
     const path = categoryPath(profession, district);
     return eligible.has(path) ? path : undefined;
   };
+  const news = articlesForCategory(category.profession, category.district);
   const recent = countRecentJobs(jobs, 7);
   const withSalary = jobs.filter((job) => job.salary).length;
   const employers = countBy(
@@ -184,6 +186,20 @@ export function CategoryInsights({
               </div>
             ))}
           </div>
+          {news.length > 0 && (
+            <div className="mt-6">
+              <h2 className="text-xl font-extrabold">Notícias relacionadas</h2>
+              <ul className="mt-3 space-y-2 text-sm">
+                {news.map((article) => (
+                  <li key={article.slug}>
+                    <Link href={newsPath(article.slug)} className="font-semibold text-primary hover:underline">
+                      {article.title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
           {salaryCareer && (
             <Link
               href={`/salarios/${salaryCareer.slug}`}

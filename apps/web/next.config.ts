@@ -14,6 +14,10 @@ const PUBLIC_HTML_CACHE =
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  // Artigos de notícias são lidos do disco em runtime (ISR): incluir no bundle standalone.
+  outputFileTracingIncludes: {
+    "/*": ["./content/noticias/**/*"],
+  },
   poweredByHeader: false,
   async headers() {
     return [
