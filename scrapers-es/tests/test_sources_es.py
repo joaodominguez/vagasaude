@@ -55,7 +55,7 @@ class Boe(unittest.TestCase):
         now = datetime(2026, 10, 10, tzinfo=timezone.utc)
         jobs = parse_sumario(self.data, date(2026, 10, 5), now=now)
         titles = [j.title for j in jobs]
-        self.assertIn("Oposición: Enfermero/a", titles)
+        self.assertIn("Oposición Enfermero/a — INGESA", titles)
         # relación de aprobados y libre designación fuera
         self.assertFalse(any("Cardiología" in t for t in titles))
         self.assertEqual(len([j for j in jobs if j.source_id == "BOE-A-2026-20625"]), 1)
@@ -76,6 +76,47 @@ class Boe(unittest.TestCase):
             company_from("Resolución 1/2026, de 19 de mayo, de la Dirección Gerencia de la Organización Sanitaria Integrada Barrualde-Galdakao, por la que se convoca concurso.", ""),
             "Osakidetza — OSI Barrualde-Galdakao",
         )
+
+
+class BoeIngesa(unittest.TestCase):
+    @staticmethod
+    def _sumario(title, ident="BOE-A-2026-30001"):
+        return {"data": {"sumario": {"diario": {"seccion": {"codigo": "2B", "departamento": {
+            "nombre": "MINISTERIO DE SANIDAD",
+            "epigrafe": {"item": {"identificador": ident, "titulo": title, "url_html": f"https://www.boe.es/diario_boe/txt.php?id={ident}"}},
+        }}}}}}
+
+    BASE = "Resolución de 25 de septiembre de 2026, del Instituto Nacional de Gestión Sanitaria, por la que se convoca proceso selectivo, por concurso-oposición, para acceso a la condición de personal estatutario fijo en plazas de la categoría de Fisioterapeuta{extra}."
+
+    def _job(self, extra=""):
+        data = self._sumario(self.BASE.format(extra=extra))
+        jobs = parse_sumario(data, date(2026, 10, 5), now=datetime(2026, 10, 10, tzinfo=timezone.utc))
+        self.assertEqual(len(jobs), 1)
+        return jobs[0]
+
+    def test_neither_mentions_uses_ceuta_y_melilla(self):
+        job = self._job()
+        self.assertEqual((job.location_district, job.location_concelho), ("Ceuta", "Ceuta y Melilla"))
+        self.assertEqual(job.title, "Oposición Fisioterapeuta — INGESA")
+
+    def test_explicit_melilla_or_ceuta(self):
+        self.assertEqual(self._job(" en el Hospital Universitario de Melilla").location_district, "Melilla")
+        self.assertEqual(self._job(" en el Hospital Universitario de Ceuta").location_concelho, "Ceuta")
+        both = self._job(" en Ceuta y Melilla")
+        self.assertEqual((both.location_district, both.location_concelho), ("Ceuta", "Ceuta y Melilla"))
+
+    def test_description_starts_with_official_title_and_kind_first(self):
+        job = self._job()
+        self.assertTrue(job.description.startswith("Resolución de 25 de septiembre de 2026, del Instituto Nacional"))
+        self.assertEqual(job.title.split()[0], "Oposición")
+
+    def test_dedupe_distinguishes_same_title_other_ident(self):
+        a = self._job()
+        b = self._job()
+        b.source_id, b.published_at = "BOE-A-2026-30002", "2026-10-06T00:00:00+00:00"
+        from sources._pub_common import dedupe_titles
+        dedupe_titles([a, b])
+        self.assertNotEqual(a.title, b.title)
 
 
 class Hospiten(unittest.TestCase):
@@ -107,6 +148,8 @@ class Osakidetza(unittest.TestCase):
         jobs = parse_announcements(self.TEXT, now=datetime(2026, 7, 10, tzinfo=timezone.utc))
         self.assertEqual([j.source_id for j in jobs], ["res-1059-2026"])
         self.assertEqual(jobs[0].profession, "Enfermería")
+        self.assertEqual(jobs[0].title, "Bolsa de empleo Enfermería pediatrica — Osakidetza")
+        self.assertTrue(jobs[0].description.startswith("APERTURA PLAZO INSCRIPCIÓN ENFERMERÍA PEDIATRICA"))
         self.assertEqual(parse_announcements(self.TEXT, now=datetime(2026, 8, 1, tzinfo=timezone.utc)), [])
 
 

@@ -16,6 +16,7 @@ from common.models import BaseScraper, JobPayload
 from common.normalize import html_to_text, norm
 
 from ._es_common import es_profession, is_clinical
+from ._pub_common import KIND_BOLSA, build_title
 
 URL = "https://www.osakidetza.euskadi.eus/contratacion-temporal/webosk00-procon/es/"
 MONTHS = {
@@ -51,7 +52,7 @@ def parse_announcements(text: str, now: datetime | None = None) -> list[JobPaylo
             continue
         published = re.search(r"d[ií]a\s+" + _DATE, body, re.I)
         published_dt = _to_date(*published.groups()) if published else None
-        title = f"Bolsa de contratación temporal Osakidetza: {category}"
+        title = build_title(KIND_BOLSA, category, "Osakidetza")
         jobs.append(
             JobPayload(
                 title=title,
@@ -62,7 +63,7 @@ def parse_announcements(text: str, now: datetime | None = None) -> list[JobPaylo
                 specialty=None,
                 sector="publico",
                 contract_type="Temporal",
-                description=re.sub(r"\s+", " ", body).strip(),
+                description=f"{heading}\n\n" + re.sub(r"\s+", " ", body).strip(),
                 requirements=None,
                 salary=None,
                 application_url=URL,
