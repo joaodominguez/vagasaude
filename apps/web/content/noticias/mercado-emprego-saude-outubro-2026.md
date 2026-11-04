@@ -16,7 +16,7 @@ sources:
     url: "https://vagasaude.pt/vagas"
   - label: "Tabelas remuneratórias do SNS 2026 (DGAEP) — usadas para comparação"
     url: "https://vagasaude.pt/salarios"
-draft: true
+draft: false
 ---
 
 Todos os meses, o VagaSaúde junta num único sítio as vagas de saúde publicadas pelos hospitais, grupos privados, lares e IPSS, farmácias, laboratórios e pelos concursos públicos. Este relatório resume o que foi publicado em **outubro de 2026**: que profissões tiveram mais procura, onde estão as vagas, quem contrata e quanto se paga, quando o anúncio o diz.

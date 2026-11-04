@@ -15,7 +15,7 @@ sources:
     url: "https://www.bep.gov.pt"
   - label: "Diário da República — 2.ª série, procedimentos concursais"
     url: "https://diariodarepublica.pt"
-draft: true
+draft: false
 ---
 
 Todas as semanas reunimos os **concursos públicos na área da saúde** publicados na Bolsa de Emprego Público (BEP), no Diário da República e nos sites das próprias entidades (Unidades Locais de Saúde, IPO, IPST, SESARAM e Misericórdias). Entre **29 de outubro e 4 de novembro de 2026** abriram **47 procedimentos**.
