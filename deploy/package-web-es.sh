@@ -37,10 +37,14 @@ fi
 # Homepage / listagens ISR dependem de DATA_DIR em produção. Builds locais
 # sem jobs.json bakeiam seed (3 vagas) no HTML — apagar para a 1ª request
 # no VPS regenerar a partir de /var/www/vacantessalud/data.
-rm -f "$STAGE/.next/server/app/index.html" \
-  "$STAGE/.next/server/app/index.rsc" \
-  "$STAGE/.next/server/app/index.meta"
-rm -rf "$STAGE/.next/server/app/index.segments" 2>/dev/null || true
+# O mesmo para outras páginas estáticas que dependem dos dados (hub de
+# oposiciones e índice de salários): senão saem vazias/noindex até ao 1º revalidate.
+for page in index oposiciones salarios; do
+  rm -f "$STAGE/.next/server/app/$page.html" \
+    "$STAGE/.next/server/app/$page.rsc" \
+    "$STAGE/.next/server/app/$page.meta"
+  rm -rf "$STAGE/.next/server/app/$page.segments" 2>/dev/null || true
+done
 
 tar -C "$STAGE" -czf "$OUT" .
-echo "OK $OUT (css=$CSS_COUNT, homepage prerender stripped)"
+echo "OK $OUT (css=$CSS_COUNT, data prerenders stripped: index oposiciones salarios)"
