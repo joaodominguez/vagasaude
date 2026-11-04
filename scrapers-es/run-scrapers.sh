@@ -29,6 +29,20 @@ if [[ "$scrape_rc" -ne 0 ]]; then
   echo "[run-scrapers-es] run.py terminó con rc=$scrape_rc (fallo parcial); se continúa con el digest."
 fi
 
+# Fuentes averiadas (últimas 4 ejecuciones con 0 ofertas o error): log + email interno.
+# Mientras el ES no tenga Resend propio, el aviso interno sale por la cuenta del PT.
+(
+  if [[ -z "${RESEND_API_KEY:-}" && -f /var/www/vagasaude/.env.production ]]; then
+    set -a
+    # shellcheck source=/dev/null
+    source /var/www/vagasaude/.env.production
+    set +a
+  fi
+  export NEXT_PUBLIC_SITE_URL="https://vacantessalud.es"
+  # Osakidetza devuelve 0 legítimamente cuando no hay convocatorias abiertas.
+  HEALTH_IGNORE="${HEALTH_IGNORE:-osakidetza}" python3 "$ROOT/tools/scraper_health.py" /var/www/vacantessalud/data/scraper-runs.json
+) || true
+
 # Digest de nuevas ofertas a los suscriptores ES (solo si Resend está configurado).
 if [[ -n "${RESEND_API_KEY:-}" && -n "${SCRAPER_API_TOKEN:-}" ]]; then
   curl -sS -X POST "http://127.0.0.1:3012/api/alerts/digest" \
