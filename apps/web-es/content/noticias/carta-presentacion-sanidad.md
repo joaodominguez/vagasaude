@@ -3,7 +3,7 @@ title: "Carta de presentación breve para hospitales, residencias y clínicas"
 slug: carta-presentacion-sanidad
 date: 2026-11-04
 category: guias
-draft: true
+draft: false
 description: "Cómo escribir una carta de presentación corta y útil para candidaturas sanitarias en España: estructura, ejemplo adaptable y errores que conviene evitar."
 summary:
   - "Una buena carta de presentación sanitaria ocupa menos de una página y dice por qué encajas en esa oferta concreta."

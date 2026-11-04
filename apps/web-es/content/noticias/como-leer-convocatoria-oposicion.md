@@ -3,7 +3,7 @@ title: "Cómo leer una convocatoria de oposición o de bolsa de empleo sanitaria
 slug: como-leer-convocatoria-oposicion
 date: 2026-11-04
 category: guias
-draft: true
+draft: false
 description: "Guía para leer convocatorias de oposiciones y bolsas de empleo sanitarias en España: BOE y boletines autonómicos, bases, requisitos, plazos, tasas, baremo, listas de admitidos y recursos."
 summary:
   - "La convocatoria se publica en el BOE o en el boletín oficial de la comunidad autónoma, y las bases son lo que manda."

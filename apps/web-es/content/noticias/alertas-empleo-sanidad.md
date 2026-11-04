@@ -3,7 +3,7 @@ title: "Cómo usar las alertas de empleo de VacantesSalud"
 slug: alertas-empleo-sanidad
 date: 2026-11-04
 category: guias
-draft: true
+draft: false
 description: "Paso a paso para crear una alerta de empleo sanitario en VacantesSalud: elige comunidad, profesión y sector, confirma tu email y gestiona la suscripción."
 summary:
   - "Una alerta te avisa por email de las nuevas ofertas que encajan con tu comunidad, profesión y sector."
