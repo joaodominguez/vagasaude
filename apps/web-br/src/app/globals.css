@@ -404,6 +404,16 @@ select {
   background: var(--primary-soft);
 }
 
+.tag-accent {
+  border-color: color-mix(in srgb, #d97706 40%, var(--border));
+  color: #b45309;
+  background: color-mix(in srgb, #f59e0b 14%, var(--surface));
+}
+
+.dark .tag-accent {
+  color: #fbbf24;
+}
+
 .tag-danger {
   border-color: color-mix(in srgb, var(--danger) 35%, var(--border));
   color: var(--danger);

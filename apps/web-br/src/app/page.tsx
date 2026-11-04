@@ -16,6 +16,13 @@ import {
   isCategoryEligible,
   listCategoryChips,
 } from "@/lib/categories";
+import { listEligibleCities } from "@/lib/cities";
+import {
+  concursosPath,
+  concursosProfessions,
+  listConcursos,
+  listEligibleConcursos,
+} from "@/lib/concursos-hub";
 import { getJobs } from "@/lib/jobs-data";
 import { professions } from "@/lib/jobs";
 import { formatNewsDate, listArticles, newsCategoryLabel, newsPath } from "@/lib/news";
@@ -42,6 +49,13 @@ export default async function Home() {
   const categoryChips = listCategoryChips(jobs, Number.POSITIVE_INFINITY);
   const professionCategories = categoryChips.filter((c) => c.kind === "profession");
   const districtCategories = categoryChips.filter((c) => c.kind === "district");
+
+  const topCities = listEligibleCities(jobs).slice(0, 16);
+  const concursos = listConcursos(jobs);
+  const concursoPaths = new Set(listEligibleConcursos(concursos).map((ref) => ref.path));
+  const concursoProfessions = concursosProfessions(concursos)
+    .filter(([name]) => concursoPaths.has(concursosPath(name)))
+    .slice(0, 8);
 
   return (
     <>
@@ -144,6 +158,37 @@ export default async function Home() {
           </section>
         )}
 
+        {concursos.length > 0 && (
+          <section className="page-container pb-14 sm:pb-18">
+            <div className="mb-5 flex items-end justify-between gap-4">
+              <div>
+                <span className="section-kicker">Setor público</span>
+                <h2 className="section-title">Concursos e processos seletivos</h2>
+                <p className="mt-2 text-sm leading-6 text-muted sm:text-base">
+                  {concursos.length} {concursos.length === 1 ? "edital aberto" : "editais abertos"}{" "}
+                  na área da saúde, com link para o edital.
+                </p>
+              </div>
+              <Link
+                href="/concursos"
+                className="hidden items-center gap-1.5 text-sm font-bold text-primary hover:underline sm:flex"
+              >
+                Ver concursos <ArrowRight size={16} />
+              </Link>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {concursoProfessions.map(([name, count]) => (
+                <Link key={name} href={concursosPath(name)} className="filter-chip">
+                  {name} ({count})
+                </Link>
+              ))}
+              <Link href="/concursos" className="filter-chip font-extrabold">
+                Todos os concursos
+              </Link>
+            </div>
+          </section>
+        )}
+
         {categoryChips.length > 0 && (
           <section className="page-container pb-14 sm:pb-18">
             <span className="section-kicker">Categorias</span>
@@ -171,6 +216,20 @@ export default async function Home() {
                   {districtCategories.map((category) => (
                     <Link key={category.path} href={category.path} className="filter-chip">
                       {category.district}
+                    </Link>
+                  ))}
+                </div>
+              </>
+            )}
+            {topCities.length > 0 && (
+              <>
+                <h3 className="mt-6 text-sm font-extrabold uppercase tracking-wider text-muted">
+                  Por cidade
+                </h3>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {topCities.map((city) => (
+                    <Link key={city.path} href={city.path} className="filter-chip">
+                      {city.name} ({city.uf})
                     </Link>
                   ))}
                 </div>

@@ -5,6 +5,13 @@ import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { formatBRL } from "@/lib/salary-benchmarks";
 import { SITE_NAME } from "@/lib/seo";
+import {
+  careerReference,
+  formatBRL2,
+  MEDICO_EBSERH_ROWS,
+  MINIMUM_WAGE_2026,
+  SOURCES,
+} from "@/lib/salary-tables";
 import { listSalaryPages, SALARY_MIN_SAMPLE } from "@/lib/salary-observatory";
 
 export const dynamic = "force-static";
@@ -50,7 +57,7 @@ export default async function SalariesIndexPage() {
 
         <div className="page-container space-y-6 py-10">
           <section className="content-card overflow-x-auto p-5">
-            <h2 className="text-lg font-extrabold">Por função</h2>
+            <h2 className="text-lg font-extrabold">Por função: salários anunciados</h2>
             <table className="mt-4 w-full min-w-[28rem] text-left text-sm">
               <thead className="text-xs uppercase tracking-wider text-muted">
                 <tr>
@@ -77,6 +84,64 @@ export default async function SalariesIndexPage() {
                 ))}
               </tbody>
             </table>
+          </section>
+
+          <section className="content-card overflow-x-auto p-5">
+            <h2 className="text-lg font-extrabold">Por carreira: pisos e tabelas oficiais</h2>
+            <table className="mt-4 w-full min-w-[32rem] text-left text-sm">
+              <thead className="text-xs uppercase tracking-wider text-muted">
+                <tr>
+                  <th className="pb-2 font-extrabold">Carreira</th>
+                  <th className="pb-2 text-right font-extrabold">Piso nacional</th>
+                  <th className="pb-2 pl-3 text-right font-extrabold">Ebserh (inicial)</th>
+                  <th className="pb-2 pl-3 text-right font-extrabold">Mediana dos anúncios</th>
+                </tr>
+              </thead>
+              <tbody>
+                {roles.map((page) => {
+                  const ref = careerReference(page.role.slug);
+                  return (
+                    <tr key={page.path} className="border-t border-border">
+                      <td className="py-2.5 pr-3">
+                        <Link href={page.path} className="font-semibold text-primary hover:underline">
+                          {page.role.label.charAt(0).toUpperCase() + page.role.label.slice(1)}
+                        </Link>
+                      </td>
+                      <td className="py-2.5 text-right">{ref.floor ? formatBRL2(ref.floor) : "—"}</td>
+                      <td className="py-2.5 pl-3 text-right text-muted">
+                        {ref.ebserh ? `${formatBRL2(ref.ebserh.value)} (${ref.ebserh.workload})` : "—"}
+                      </td>
+                      <td className="py-2.5 pl-3 text-right font-semibold">{money(page.stats.median)}</td>
+                    </tr>
+                  );
+                })}
+                <tr className="border-t border-border">
+                  <td className="py-2.5 pr-3">Médico</td>
+                  <td className="py-2.5 text-right">—</td>
+                  <td className="py-2.5 pl-3 text-right text-muted">
+                    {formatBRL2(MEDICO_EBSERH_ROWS[0].value)} (24 h) · {formatBRL2(MEDICO_EBSERH_ROWS[1].value)} (40 h)
+                  </td>
+                  <td className="py-2.5 pl-3 text-right">—</td>
+                </tr>
+              </tbody>
+            </table>
+            <p className="mt-3 text-xs leading-5 text-muted">
+              Pisos: <a className="underline" href={SOURCES.lei14434.url} rel="noopener" target="_blank">Lei 14.434/2022</a>{" "}
+              (44 h; proporcional à jornada). Ebserh: editais{" "}
+              <a className="underline" href={SOURCES.ebserhAssistencial.url} rel="noopener" target="_blank">03/2024</a> e{" "}
+              <a className="underline" href={SOURCES.ebserhMedica.url} rel="noopener" target="_blank">02/2026</a> (Área Médica). Salário
+              mínimo nacional em 2026:{" "}
+              <a className="underline" href={SOURCES.salarioMinimo.url} rel="noopener" target="_blank">{formatBRL2(MINIMUM_WAGE_2026)}</a>.
+            </p>
+          </section>
+
+          <section className="content-card p-5">
+            <h2 className="text-lg font-extrabold">Ferramentas</h2>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <Link href="/salarios/simulador-salario-liquido" className="filter-chip">
+                Simulador de salário líquido CLT 2026
+              </Link>
+            </div>
           </section>
 
           {states.length > 0 && (

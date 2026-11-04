@@ -11,6 +11,9 @@ import {
   formatBRLRange,
   getSalaryBenchmark,
 } from "@/lib/salary-benchmarks";
+import { cityOfJob, citiesOfDistrict, getCityIndex } from "@/lib/cities";
+import { concursosPath, listConcursos, listEligibleConcursos } from "@/lib/concursos-hub";
+import { getJobs } from "@/lib/jobs-data";
 import { articlesForCategory, newsPath } from "@/lib/news";
 import { salaryPathForProfession } from "@/lib/salary-observatory";
 
@@ -50,6 +53,17 @@ export async function CategoryInsights({
   allCategoryRefs: CategoryRef[];
 }) {
   const eligible = new Set(allCategoryRefs.map((ref) => ref.path));
+  const allJobs = await getJobs();
+  const cityIndex = getCityIndex(allJobs);
+  const concursoPaths = new Set(
+    listEligibleConcursos(listConcursos(allJobs)).map((ref) => ref.path),
+  );
+  const concursoHref = category.profession
+    ? [
+        concursosPath(category.profession, category.district),
+        concursosPath(category.profession),
+      ].find((path) => concursoPaths.has(path))
+    : undefined;
   const salaryHref = await salaryPathForProfession(category.profession);
   const linkIfEligible = (
     profession: string | null,
@@ -90,16 +104,35 @@ export async function CategoryInsights({
             count,
             href: linkIfEligible(name, category.district),
           }))
-        : countBy(
-            jobs.map((job) => job.city),
-            15,
-          )
-            .filter(([, count]) => count >= 2)
-            .map(([name, count]) => ({
-              name,
-              count,
-              href: undefined as string | undefined,
-            }));
+        : (() => {
+            // Combo: cidades validadas, com link quando têm landing própria.
+            const byCity = new Map<string, { name: string; count: number; href?: string }>();
+            for (const job of jobs) {
+              const city = cityOfJob(job);
+              if (!city) continue;
+              const key = `${city.district}/${city.slug}`;
+              const entry = byCity.get(key) ?? {
+                name: city.name,
+                count: 0,
+                href: cityIndex.all.find(
+                  (c) => c.district === city.district && c.slug === city.slug,
+                )?.path,
+              };
+              entry.count += 1;
+              byCity.set(key, entry);
+            }
+            return [...byCity.values()]
+              .filter((entry) => entry.count >= 2)
+              .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, "pt"))
+              .slice(0, 15);
+          })();
+  // Estado: todas as cidades com landing própria ("Por cidade").
+  const cityPlaces =
+    category.kind === "district" && category.district
+      ? citiesOfDistrict(allJobs, category.district)
+          .slice(0, 30)
+          .map((city) => ({ name: city.name, count: city.jobs.length, href: city.path }))
+      : [];
   const placesTitle =
     category.kind === "profession"
       ? `Vagas de ${what} por estado`
@@ -161,6 +194,21 @@ export async function CategoryInsights({
               </ul>
             </>
           )}
+          {cityPlaces.length > 0 && (
+            <>
+              <h2 className="text-xl font-extrabold">Por cidade em {category.district}</h2>
+              <ul className="mb-8 mt-4 grid gap-x-6 gap-y-2 text-sm sm:grid-cols-2">
+                {cityPlaces.map((place) => (
+                  <li key={place.href} className="flex justify-between gap-3">
+                    <Link href={place.href} className="font-semibold text-primary hover:underline">
+                      {place.name}
+                    </Link>
+                    <span className="text-muted">{place.count}</span>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
           {employers.length > 0 && (
             <>
               <h2 className="text-xl font-extrabold">Quem está contratando</h2>
@@ -198,6 +246,14 @@ export async function CategoryInsights({
                 ))}
               </ul>
             </div>
+          )}
+          {concursoHref && (
+            <Link
+              href={concursoHref}
+              className="mt-5 block text-sm font-bold text-primary hover:underline"
+            >
+              Ver concursos e processos seletivos abertos →
+            </Link>
           )}
           {salaryHref && (
             <Link

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { notFound, permanentRedirect, redirect } from "next/navigation";
 import { CategoryPageView } from "@/components/category-page-view";
+import { CityPageView } from "@/components/city-page-view";
+import { buildCityMetadata, resolveCity } from "@/lib/cities";
 import {
   buildCategoryMetadata,
   categoryTotalPages,
@@ -32,6 +34,9 @@ export async function generateMetadata({
   params: Params;
 }): Promise<Metadata> {
   const { slug, district, page: pageSegment } = await params;
+  const cityPage = parseCategoryPageSegment(pageSegment);
+  const city = cityPage ? resolveCity(await getJobs(), slug, district) : null;
+  if (city && cityPage) return buildCityMetadata(city, cityPage);
   const resolved = resolveSegments(slug, district, pageSegment);
   if (!resolved) return { title: "Categoria não encontrada" };
   const { category, page } = resolved;
@@ -50,6 +55,14 @@ export default async function ProfessionDistrictPagedPage({
   params: Params;
 }) {
   const { slug, district, page: pageSegment } = await params;
+  const cityJobs = await getJobs();
+  const city = resolveCity(cityJobs, slug, district);
+  if (city) {
+    if (isFirstPageSegment(pageSegment)) permanentRedirect(city.path);
+    const cityPage = parseCategoryPageSegment(pageSegment);
+    if (!cityPage || cityPage > categoryTotalPages(city.jobs.length)) notFound();
+    return <CityPageView city={city} page={cityPage} allJobs={cityJobs} />;
+  }
   if (isFirstPageSegment(pageSegment)) {
     const first = resolveCategoryFromSegments(slug, district);
     if (first) permanentRedirect(first.path);

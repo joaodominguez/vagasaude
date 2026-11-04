@@ -4,7 +4,10 @@ import { Breadcrumbs, type BreadcrumbItem } from "@/components/breadcrumbs";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { formatBRL } from "@/lib/salary-benchmarks";
+import { NetSalarySimulator } from "@/components/net-salary-simulator";
+import { SalaryOfficialTables } from "@/components/salary-official-tables";
 import { SITE_NAME, truncateMeta } from "@/lib/seo";
+import { OFFICIAL_TABLES, SOURCES } from "@/lib/salary-tables";
 import {
   salaryPath,
   type getSalaryPage,
@@ -126,6 +129,18 @@ export function SalaryPageView({
   if (district) crumbs.push({ label: district });
   const floorGap = role.floor ? (stats.median / role.floor.value - 1) * 100 : null;
 
+  const officialTables = OFFICIAL_TABLES[role.slug] ?? [];
+  const sources = [
+    ...new Map(
+      [
+        ...officialTables.flatMap((table) => table.rows.map((row) => row.source)),
+        SOURCES.inss,
+        SOURCES.receita,
+        SOURCES.lei15270,
+      ].map((source) => [source.url, source]),
+    ).values(),
+  ];
+
   const faq = [
     {
       q: `Quanto ganha um ${role.label} ${where(district)} em ${YEAR}?`,
@@ -211,6 +226,8 @@ export function SalaryPageView({
             </section>
           )}
 
+          {!district && officialTables.length > 0 && <SalaryOfficialTables tables={officialTables} />}
+
           <div className="grid gap-6 lg:grid-cols-2">
             <StatsTable
               title="Por estado"
@@ -223,6 +240,16 @@ export function SalaryPageView({
             <StatsTable title="Por empregador" rows={data.byCompany} />
           </div>
 
+          <section>
+            <h2 className="mb-3 text-lg font-extrabold">Calcule seu salário líquido</h2>
+            <NetSalarySimulator initialGross={role.floor?.value ?? Math.round(stats.median)} />
+            <p className="mt-2 text-sm">
+              <Link href="/salarios/simulador-salario-liquido" className="font-semibold text-primary hover:underline">
+                Abrir o simulador de salário líquido
+              </Link>
+            </p>
+          </section>
+
           <section className="content-card p-5">
             <h2 className="text-lg font-extrabold">Perguntas frequentes</h2>
             <div className="mt-4 space-y-5">
@@ -234,6 +261,19 @@ export function SalaryPageView({
               ))}
             </div>
           </section>
+
+          <p className="text-xs leading-5 text-muted">
+            Fontes oficiais:{" "}
+            {sources.map((source, index) => (
+              <span key={source.url}>
+                {index > 0 && "; "}
+                <a href={source.url} className="underline" rel="noopener" target="_blank">
+                  {source.label}
+                </a>
+              </span>
+            ))}
+            . Salários dos anúncios: vagas reais agregadas pelo VagaSaúde; valores brutos mensais.
+          </p>
         </div>
       </main>
       <Footer />

@@ -4,7 +4,9 @@ import {
   filterJobsForCategory,
   listEligibleCategories,
 } from "@/lib/categories";
+import { listEligibleCities } from "@/lib/cities";
 import { isConcursoJob } from "@/lib/concursos";
+import { listConcursos, listEligibleConcursos } from "@/lib/concursos-hub";
 import type { Job } from "@/lib/jobs";
 import { getJobs } from "@/lib/jobs-data";
 import { getSalaryObservations, listSalaryPages } from "@/lib/salary-observatory";
@@ -133,6 +135,37 @@ async function buildCategoriesSitemap() {
         ),
     );
   });
+  // Landings de cidade (/vagas/<estado>/<cidade>), com paginação self-canonical.
+  for (const city of listEligibleCities(jobs)) {
+    const lastmod = newestPublished(city.jobs, fallback);
+    for (let page = 1; page <= categoryTotalPages(city.jobs.length); page++) {
+      entries.push(
+        urlEntry(`${SITE_URL}${categoryPagePath(city.path, page)}`, lastmod, "daily", "0.6"),
+      );
+    }
+  }
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${entries.join("\n")}
+</urlset>
+`;
+}
+
+async function buildConcursosSitemap() {
+  const jobs = await getJobs();
+  const items = listConcursos(jobs);
+  const lastmod = newestPublished(
+    items.map((item) => item.job),
+    STATIC_PAGES_UPDATED,
+  );
+  const entries = items.length
+    ? [
+        urlEntry(`${SITE_URL}/concursos`, lastmod, "daily", "0.8"),
+        ...listEligibleConcursos(items).map((ref) =>
+          urlEntry(`${SITE_URL}${ref.path}`, lastmod, "daily", ref.district ? "0.6" : "0.7"),
+        ),
+      ]
+    : [];
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${entries.join("\n")}
@@ -147,6 +180,7 @@ async function buildSalariesSitemap() {
   const pages = await listSalaryPages();
   const entries = [
     urlEntry(`${SITE_URL}/salarios`, lastmod, "weekly", "0.7"),
+    urlEntry(`${SITE_URL}/salarios/simulador-salario-liquido`, lastmod, "monthly", "0.6"),
     ...pages.map((page) =>
       urlEntry(`${SITE_URL}${page.path}`, lastmod, "weekly", page.district ? "0.6" : "0.7"),
     ),
@@ -199,6 +233,9 @@ export async function GET(
   }
   if (segment === "categories.xml") {
     return xmlResponse(await buildCategoriesSitemap());
+  }
+  if (segment === "concursos.xml") {
+    return xmlResponse(await buildConcursosSitemap());
   }
   if (segment === "salarios.xml") {
     return xmlResponse(await buildSalariesSitemap());

@@ -236,7 +236,7 @@ function paginationWindow(page: number, totalPages: number) {
   return [...pages].sort((a, b) => a - b);
 }
 
-function CategoryPagination({
+export function CategoryPagination({
   basePath,
   page,
   totalPages,

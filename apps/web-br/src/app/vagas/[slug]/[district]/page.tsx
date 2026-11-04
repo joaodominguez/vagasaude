@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { notFound, permanentRedirect, redirect } from "next/navigation";
 import { CategoryPageView } from "@/components/category-page-view";
+import { CityPageView } from "@/components/city-page-view";
+import { buildCityMetadata, resolveCity } from "@/lib/cities";
 import {
   buildCategoryMetadata,
   categoryTotalPages,
@@ -41,6 +43,10 @@ export async function generateMetadata({
   params: Params;
 }): Promise<Metadata> {
   const { slug, district } = await params;
+  const city = parseCategoryPageSegment(district)
+    ? null
+    : resolveCity(await getJobs(), slug, district);
+  if (city) return buildCityMetadata(city);
   const resolved = resolveSegments(slug, district);
   if (!resolved) return { title: "Categoria não encontrada" };
   const { category, page } = resolved;
@@ -63,11 +69,17 @@ export default async function ProfessionDistrictPage({
     const first = resolveCategoryFromSegments(slug);
     if (first) permanentRedirect(first.path);
   }
+  const allJobs = await getJobs();
+  // /vagas/<estado>/<cidade>: landing de cidade (≥ CATEGORY_MIN_JOBS vagas).
+  const city = parseCategoryPageSegment(district)
+    ? null
+    : resolveCity(allJobs, slug, district);
+  if (city) return <CityPageView city={city} allJobs={allJobs} />;
+
   const resolved = resolveSegments(slug, district);
   if (!resolved) notFound();
   const { category, page } = resolved;
 
-  const allJobs = await getJobs();
   if (!isCategoryEligible(allJobs, category.profession, category.district)) {
     const qs = new URLSearchParams();
     if (category.profession) qs.set("profissao", category.profession);

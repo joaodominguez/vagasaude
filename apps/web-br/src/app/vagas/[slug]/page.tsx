@@ -18,6 +18,7 @@ import { FavoriteButton } from "@/components/favorite-button";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { JobCard } from "@/components/job-card";
+import { JobTypeBadge } from "@/components/job-type-badge";
 import { JobDescription } from "@/components/job-description";
 import { SalaryInsight } from "@/components/salary-insight";
 import { ShareButtons } from "@/components/share-buttons";
@@ -31,6 +32,14 @@ import {
   listEligibleCategories,
   resolveCategoryFromSegments,
 } from "@/lib/categories";
+import { cityRefOfJob } from "@/lib/cities";
+import {
+  concursosPath,
+  filterConcursos,
+  listConcursos,
+  listEligibleConcursos,
+} from "@/lib/concursos-hub";
+import { classifyJob } from "@/lib/job-type";
 import type { Job } from "@/lib/jobs";
 import { getJob, getJobs } from "@/lib/jobs-data";
 import { buildJobMetadata, buildJobPostingJsonLd, jobUrl } from "@/lib/seo";
@@ -202,6 +211,7 @@ function ActiveJobView({
                   <span className="tag tag-primary">{job.sector}</span>
                   <span className="tag">{job.contract}</span>
                   <span className="tag">{job.profession}</span>
+                  <JobTypeBadge job={job} />
                 </div>
                 {categoryLinks.length > 0 && (
                   <div className="mt-4 flex flex-wrap gap-2">
@@ -482,11 +492,36 @@ function buildJobCategoryLinks(job: Job, allJobs: Job[]) {
       label: `${sub} em ${job.district}`,
     });
   }
+  const city = cityRefOfJob(allJobs, job);
+  if (city) links.push({ href: city.path, label: `Vagas em ${city.name}` });
+  if (classifyJob(job) !== "oferta") {
+    const eligible = new Set(
+      listEligibleConcursos(listConcursos(allJobs)).map((ref) => ref.path),
+    );
+    links.push({ href: "/concursos", label: "Concursos na saúde" });
+    const leaf = sub ?? job.profession;
+    if (eligible.has(concursosPath(leaf))) {
+      links.push({ href: concursosPath(leaf), label: `Concursos de ${leaf.toLowerCase()}` });
+    }
+  }
   return links;
 }
 
 /** Início › Vagas › profissão › [sub-profissão] › profissão × estado › vaga (só landings que existem). */
 function buildJobBreadcrumbs(job: Job, allJobs: Job[]): BreadcrumbItem[] {
+  if (classifyJob(job) !== "oferta") {
+    // Editais: Início › Concursos › [profissão] › vaga.
+    const crumbs: BreadcrumbItem[] = [
+      { label: "Início", href: "/" },
+      { label: "Concursos", href: "/concursos" },
+    ];
+    const leaf = jobSubProfession(job) ?? job.profession;
+    if (filterConcursos(listConcursos(allJobs), leaf, null).length > 0) {
+      crumbs.push({ label: leaf, href: concursosPath(leaf) });
+    }
+    crumbs.push({ label: job.title });
+    return crumbs;
+  }
   const items: BreadcrumbItem[] = [
     { label: "Início", href: "/" },
     { label: "Vagas", href: "/vagas" },

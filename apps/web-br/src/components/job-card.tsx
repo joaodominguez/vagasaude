@@ -7,6 +7,7 @@ import {
   Stethoscope,
 } from "lucide-react";
 import type { Job } from "@/lib/jobs";
+import { JobTypeBadge } from "@/components/job-type-badge";
 import { FavoriteButton } from "@/components/favorite-button";
 import { SalaryInsight } from "@/components/salary-insight";
 
@@ -56,6 +57,7 @@ export function JobCard({ job }: { job: Job }) {
             </span>
             <span className="tag tag-primary">{job.sector}</span>
             <span className="tag">{job.contract}</span>
+            <JobTypeBadge job={job} />
             <span className="job-card-salary min-w-0 max-w-full">
               <SalaryInsight job={job} variant="compact" />
             </span>

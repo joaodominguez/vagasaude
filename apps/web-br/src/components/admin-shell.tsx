@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { LucideIcon } from "lucide-react";
 import {
+  BarChart3,
   Bell,
   BriefcaseBusiness,
   LayoutDashboard,
@@ -20,6 +21,7 @@ const NAV: Array<{ href: string; label: string; icon: LucideIcon }> = [
   { href: "/admin/fontes", label: "Fontes", icon: Rss },
   { href: "/admin/scrapers", label: "Scrapers", icon: RefreshCw },
   { href: "/admin/alertas", label: "Alertas", icon: Bell },
+  { href: "/admin/estatisticas", label: "Estatísticas", icon: BarChart3 },
   { href: "/admin/sistema", label: "Sistema", icon: Settings },
 ];
 
