@@ -49,9 +49,15 @@ export function Footer() {
             © {new Date().getFullYear()} VagaSaúde. As candidaturas são feitas
             nos sites das entidades.
           </p>
-          <a className="hover:text-primary" href="https://vagasaude.com.br/">
-            Também no Brasil
-          </a>
+          <p className="flex flex-wrap gap-x-4 gap-y-1">
+            <span>Também em</span>
+            <a className="hover:text-primary" href="https://vagasaude.com.br/">
+              Brasil
+            </a>
+            <a className="hover:text-primary" href="https://vacantessalud.es/" hrefLang="es">
+              Espanha
+            </a>
+          </p>
         </div>
       </div>
     </footer>
