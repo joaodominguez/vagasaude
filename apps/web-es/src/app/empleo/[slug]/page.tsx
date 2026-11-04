@@ -10,6 +10,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { AlertForm } from "@/components/alert-form";
+import { GuiasCta } from "@/components/guias-cta";
 import { Breadcrumbs, type BreadcrumbItem } from "@/components/breadcrumbs";
 import { applyTrackingProps } from "@/lib/analytics";
 import { CategoryPageView } from "@/components/category-page-view";
@@ -285,6 +286,8 @@ function ActiveJobView({
                   />
                 </div>
               </div>
+
+              <GuiasCta profession={job.profession} sector={job.sector} />
             </aside>
           </div>
 

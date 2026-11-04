@@ -18,6 +18,7 @@ import {
 } from "@/lib/categories";
 import { getJobs } from "@/lib/jobs-data";
 import { professions } from "@/lib/jobs";
+import { formatNewsDate, listArticles, newsCategoryLabel, newsPath } from "@/lib/news";
 import { buildHomeMetadata } from "@/lib/seo";
 import {
   listEligibleOposiciones,
@@ -50,6 +51,7 @@ export default async function Home() {
   }, {});
   // Todas las landings de profesión y de comunidad (enlaces internos para Google).
   const categoryChips = listCategoryChips(jobs, Number.POSITIVE_INFINITY);
+  const latestNews = listArticles().slice(0, 3);
   const oposiciones = listOposiciones(jobs);
   const oposicionRefs = listEligibleOposiciones(oposiciones).filter(
     (ref) => !ref.district,
@@ -171,6 +173,38 @@ export default async function Home() {
             >
               Ver todas las oposiciones
             </Link>
+          </section>
+        )}
+
+        {latestNews.length > 0 && (
+          <section className="page-container pb-14 sm:pb-18">
+            <div className="mb-7 flex items-end justify-between gap-4">
+              <div>
+                <span className="section-kicker">Mercado laboral</span>
+                <h2 className="section-title">Últimas noticias</h2>
+              </div>
+              <Link
+                href="/noticias"
+                className="hidden items-center gap-1.5 text-sm font-bold text-primary hover:underline sm:flex"
+              >
+                Todas las noticias <ArrowRight size={16} />
+              </Link>
+            </div>
+            <div className="grid min-w-0 gap-4 sm:grid-cols-3">
+              {latestNews.map((article) => (
+                <article key={article.slug} className="content-card flex min-w-0 flex-col p-5">
+                  <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
+                    <span className="tag tag-primary">{newsCategoryLabel(article.category)}</span>
+                    <time dateTime={article.date}>{formatNewsDate(article.date)}</time>
+                  </div>
+                  <h3 className="mt-3 font-extrabold leading-snug">
+                    <Link href={newsPath(article.slug)} className="hover:text-primary">
+                      {article.title}
+                    </Link>
+                  </h3>
+                </article>
+              ))}
+            </div>
           </section>
         )}
 

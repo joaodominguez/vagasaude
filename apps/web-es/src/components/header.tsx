@@ -10,6 +10,7 @@ import { ThemeToggle } from "./theme-toggle";
 const NAV_ITEMS = [
   { href: "/empleo", label: "Buscar empleo" },
   { href: "/oposiciones", label: "Oposiciones" },
+  { href: "/noticias", label: "Noticias" },
   { href: "/favoritos", label: "Favoritos" },
   { href: "/alertas", label: "Crear alerta" },
   { href: "/como-funciona", label: "Cómo funciona" },

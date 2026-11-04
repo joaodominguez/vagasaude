@@ -6,6 +6,14 @@ import {
 } from "@/lib/categories";
 import { getJobs } from "@/lib/jobs-data";
 import { listEligibleOposiciones, listOposiciones } from "@/lib/oposiciones";
+import {
+  listArticles,
+  listNewsCategories,
+  newsCategoryPath,
+  newsPagePath,
+  newsPath,
+  newsTotalPages,
+} from "@/lib/news";
 import { CAREERS } from "@/lib/salary-tables";
 import { SITE_URL } from "@/lib/seo";
 
@@ -156,6 +164,34 @@ ${paths.map((path) => urlEntry(`${SITE_URL}${path}`, SALARY_TABLES_UPDATED, "mon
 `;
 }
 
+function buildNewsSitemap() {
+  const articles = listArticles();
+  const lastmodOf = (date: string) => new Date(`${date}T00:00:00Z`);
+  const entries: string[] = [];
+  if (articles.length > 0) {
+    const newest = lastmodOf(articles[0].updated ?? articles[0].date);
+    for (let page = 1; page <= newsTotalPages(articles.length); page++) {
+      entries.push(urlEntry(`${SITE_URL}${newsPagePath(page)}`, newest, "daily", page === 1 ? "0.7" : "0.4"));
+    }
+    for (const category of listNewsCategories()) {
+      const latest = articles.find((a) => a.category === category)!;
+      entries.push(
+        urlEntry(`${SITE_URL}${newsCategoryPath(category)}`, lastmodOf(latest.updated ?? latest.date), "weekly", "0.5"),
+      );
+    }
+    for (const article of articles) {
+      entries.push(
+        urlEntry(`${SITE_URL}${newsPath(article.slug)}`, lastmodOf(article.updated ?? article.date), "monthly", "0.6"),
+      );
+    }
+  }
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${entries.join("\n")}
+</urlset>
+`;
+}
+
 export async function GET(
   _request: Request,
   context: { params: Promise<{ segment: string }> },
@@ -175,6 +211,9 @@ export async function GET(
   }
   if (segment === "salarios.xml") {
     return xmlResponse(buildSalariesSitemap());
+  }
+  if (segment === "noticias.xml") {
+    return xmlResponse(buildNewsSitemap());
   }
   return new Response("Not Found", { status: 404 });
 }

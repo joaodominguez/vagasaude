@@ -22,6 +22,9 @@ export function Footer() {
           <Link className="hover:text-primary" href="/salarios">
             Salarios
           </Link>
+          <Link className="hover:text-primary" href="/noticias">
+            Noticias
+          </Link>
           <Link className="hover:text-primary" href="/favoritos">
             Favoritos
           </Link>

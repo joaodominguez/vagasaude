@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Bell, ChevronLeft, ChevronRight } from "lucide-react";
 import { AlertForm } from "@/components/alert-form";
+import { GuiasCta } from "@/components/guias-cta";
 import { Breadcrumbs, type BreadcrumbItem } from "@/components/breadcrumbs";
 import { CategoryInsights } from "@/components/category-insights";
 import { Footer } from "@/components/footer";
@@ -205,6 +206,8 @@ export function CategoryPageView({
                 />
               </div>
             </div>
+
+            <GuiasCta profession={category.profession ?? undefined} />
 
             {(siblings.length > 0 || related.length > 0) && (
               <div className="content-card p-5">
