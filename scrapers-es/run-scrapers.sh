@@ -15,6 +15,8 @@ if [[ -f /var/www/vacantessalud/.env.production ]]; then
 fi
 # Fijado DESPUÉS del .env (que define PORT=3012) para que nada lo sobrescriba.
 export INGEST_BASE_URL="http://127.0.0.1:3012"
+# Caché de descripciones (DomusVi/SuccessFactors) en la carpeta de datos: sobrevive a los despliegues.
+export ES_DETAIL_CACHE_DIR="${ES_DETAIL_CACHE_DIR:-/var/www/vacantessalud/data}"
 
 if [[ -d "$ROOT/.venv" ]]; then
   # shellcheck source=/dev/null

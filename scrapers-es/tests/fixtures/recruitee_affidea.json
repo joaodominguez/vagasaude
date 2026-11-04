@@ -1,0 +1,67 @@
+{
+ "offers": [
+  {
+   "id": 2290844,
+   "guid": "nr4uv",
+   "title": "Radiólogo/a - Presencial centros Murcia.",
+   "status": "published",
+   "country_code": "ES",
+   "city": "Murcia",
+   "state_name": "Región de Murcia",
+   "department": "Medicina",
+   "category_code": "healthcare",
+   "employment_type_code": "parttime_permanent",
+   "careers_url": "https://affideaspain.recruitee.com/o/radiologoa-presencial-centros-murcia",
+   "published_at": "2025-09-30 11:26:09 UTC",
+   "created_at": "2025-09-30 11:24:15 UTC",
+   "description": "<p>Affidea busca <strong>radiólogo</strong>.</p>",
+   "requirements": "<ul><li>Especialidad MIR</li></ul>",
+   "postal_code": null
+  },
+  {
+   "id": 2245510,
+   "guid": "abc12",
+   "title": "Reumatólogo",
+   "status": "published",
+   "country_code": "ES",
+   "city": "Algete",
+   "state_name": "Comunidad de Madrid",
+   "department": "Clinical",
+   "category_code": "healthcare",
+   "employment_type_code": "fulltime_permanent",
+   "careers_url": "https://affideaspain.recruitee.com/o/reumatologo",
+   "published_at": "2025-08-21 07:39:09 UTC",
+   "description": "<p>En Affidea España estamos buscando MEDICO REUMATÓLOGO con presencia.</p>",
+   "requirements": null,
+   "postal_code": null
+  },
+  {
+   "id": 1,
+   "guid": "x",
+   "title": "Radiologista",
+   "status": "published",
+   "country_code": "PT",
+   "city": "Porto",
+   "state_name": "Porto",
+   "department": "Medicina",
+   "category_code": "healthcare",
+   "careers_url": "https://affideaspain.recruitee.com/o/pt",
+   "description": "",
+   "requirements": null
+  },
+  {
+   "id": 2,
+   "guid": "y",
+   "title": "Business Controller",
+   "status": "published",
+   "country_code": "ES",
+   "city": "Madrid",
+   "state_name": "Comunidad de Madrid",
+   "department": "Finance",
+   "category_code": "finance",
+   "careers_url": "https://affideaspain.recruitee.com/o/bc",
+   "description": "",
+   "requirements": null
+  }
+ ]
+}

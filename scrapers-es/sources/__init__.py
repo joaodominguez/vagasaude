@@ -7,6 +7,13 @@ Para añadir una fuente:
   3. añadir la entrada correspondiente en apps/web-es/src/lib/sources.ts.
 """
 from sources.amavir import AmavirScraper
+from sources.affidea import AffideaScraper
+from sources.clece import CleceScraper
+from sources.clinicabaviera import ClinicaBavieraScraper
+from sources.domusvi import DomusviScraper
+from sources.hla import HlaScraper
+from sources.matia import MatiaScraper
+from sources.vithas import VithasScraper
 from sources.boc_canarias import BocCanariasScraper
 from sources.bocm import BocmScraper
 from sources.bocyl import BocylScraper
@@ -27,6 +34,13 @@ SCRAPERS: dict = {
     HospitenScraper.slug: HospitenScraper,
     OsakidetzaScraper.slug: OsakidetzaScraper,
     SanitasScraper.slug: SanitasScraper,
+    AffideaScraper.slug: AffideaScraper,
+    CleceScraper.slug: CleceScraper,
+    ClinicaBavieraScraper.slug: ClinicaBavieraScraper,
+    DomusviScraper.slug: DomusviScraper,
+    HlaScraper.slug: HlaScraper,
+    MatiaScraper.slug: MatiaScraper,
+    VithasScraper.slug: VithasScraper,
     BocCanariasScraper.slug: BocCanariasScraper,
     BocmScraper.slug: BocmScraper,
     BocylScraper.slug: BocylScraper,
