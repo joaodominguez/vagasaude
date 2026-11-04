@@ -105,6 +105,12 @@ export default function PrivacyPage() {
             </table>
           </div>
           <p>
+            <strong>Estadísticas propias:</strong> además de lo anterior,
+            recopilamos estadísticas de uso anónimas y agregadas, sin cookies y
+            sin almacenar nada en tu dispositivo. No se guardan direcciones IP.
+            Estos datos se usan únicamente para mejorar el servicio.
+          </p>
+          <p>
             <strong>Favoritos:</strong> se guardan solo en el almacenamiento
             local de tu navegador y no se envían a nuestros servidores.{" "}
             <strong>Candidaturas:</strong> se realizan en las webs de las

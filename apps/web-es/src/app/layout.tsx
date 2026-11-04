@@ -6,6 +6,7 @@ import {
   GoogleAnalytics,
 } from "@/components/google-analytics";
 import { MicrosoftClarity } from "@/components/microsoft-clarity";
+import { SiteStatsTracker } from "@/components/site-stats-tracker";
 import {
   buildOrganizationJsonLd,
   buildWebsiteJsonLd,
@@ -111,6 +112,7 @@ export default function RootLayout({
         {children}
         <GoogleAnalytics />
         <MicrosoftClarity />
+        <SiteStatsTracker />
         <CookieConsent />
       </body>
     </html>

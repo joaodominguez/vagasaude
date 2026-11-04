@@ -98,6 +98,13 @@ export default function CookiesPage() {
             visitantes.
           </p>
 
+          <p>
+            Además, medimos el uso del Sitio con estadísticas propias anónimas y
+            agregadas que no usan cookies ni almacenan nada en tu dispositivo.
+            No se guardan direcciones IP y los datos se usan únicamente para
+            mejorar el servicio, por lo que no requieren consentimiento.
+          </p>
+
           <h2>4. Cookies analíticas (solo con tu consentimiento)</h2>
           <p>
             Nos permiten medir el uso del Sitio y mejorarlo. No se instalan
