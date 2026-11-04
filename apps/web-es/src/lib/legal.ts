@@ -10,11 +10,11 @@
  */
 export const LEGAL_OWNER = {
   /** Nombre y apellidos (autónomo) o razón social (sociedad). */
-  name: "[Nombre o razón social]",
+  name: "Truecode, Lda.",
   /** NIF / NIE / CIF. */
-  taxId: "[NIF/NIE/CIF]",
+  taxId: "513626409 (NIF de Portugal)",
   /** Domicilio postal completo. */
-  address: "[Domicilio postal: calle, número, CP, localidad, provincia, España]",
+  address: "Rua São Romão, n.º 43, Portugal",
   /** Email de contacto general y para ejercer derechos de protección de datos. */
   email: "hola@vacantessalud.es",
   /** Datos registrales (solo si es sociedad inscrita en el Registro Mercantil); dejar "" si no aplica. */
