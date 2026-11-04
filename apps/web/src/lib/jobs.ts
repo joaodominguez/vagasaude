@@ -4,6 +4,8 @@ export type Job = {
   company: string;
   district: string;
   city: string;
+  /** Concelho tal como veio da fonte (null quando só há distrito). */
+  concelho?: string | null;
   sector: "Público" | "Privado" | "IPSS";
   contract: string;
   profession: string;

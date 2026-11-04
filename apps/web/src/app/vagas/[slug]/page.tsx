@@ -18,6 +18,7 @@ import { FavoriteButton } from "@/components/favorite-button";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { JobCard } from "@/components/job-card";
+import { JobTypeBadge } from "@/components/job-type-badge";
 import { JobDescription } from "@/components/job-description";
 import { SalaryInsight } from "@/components/salary-insight";
 import { ShareButtons } from "@/components/share-buttons";
@@ -29,6 +30,9 @@ import {
   listEligibleCategories,
   resolveCategoryFromSegments,
 } from "@/lib/categories";
+import { concursosPath, hasConcursoLanding, listConcursos } from "@/lib/concursos";
+import { concelhoPath, isConcelhoEligible, jobConcelho } from "@/lib/concelhos";
+import { classifyJob, JOB_TYPE_LABEL } from "@/lib/job-type";
 import type { Job } from "@/lib/jobs";
 import { getJob, getJobs } from "@/lib/jobs-data";
 import { buildJobMetadata, buildJobPostingJsonLd, jobUrl } from "@/lib/seo";
@@ -191,6 +195,7 @@ function ActiveJobView({
                     {job.publishedLabel.toLowerCase()}
                   </span>
                   <span className="tag tag-primary">{job.sector}</span>
+                  <JobTypeBadge job={job} />
                   <span className="tag">{job.contract}</span>
                   <span className="tag">{job.profession}</span>
                 </div>
@@ -230,6 +235,9 @@ function ActiveJobView({
                   {[
                     ["Localização", job.city],
                     ["Setor", job.sector],
+                    ...(classifyJob(job) !== "oferta"
+                      ? [["Tipo", JOB_TYPE_LABEL[classifyJob(job)]]]
+                      : []),
                     ["Contrato", job.contract],
                     ["Publicado", job.publishedLabel],
                   ].map(([term, value]) => (
@@ -431,11 +439,30 @@ function buildJobCategoryLinks(job: Job, allJobs: Job[]) {
       label: `${job.profession} ${emLocal(job.district)}`,
     });
   }
+  const concelho = jobConcelho(job);
+  if (concelho && isConcelhoEligible(allJobs, job.district, concelho)) {
+    links.push({
+      href: concelhoPath(job.district, concelho),
+      label: `Vagas ${emLocal(concelho)}`,
+    });
+  }
   return links;
 }
 
 /** Início › Vagas › profissão › profissão × distrito › vaga (só landings que existem). */
 function buildJobBreadcrumbs(job: Job, allJobs: Job[]): BreadcrumbItem[] {
+  // Procedimentos públicos: Início › Concursos › Profissão › vaga.
+  if (
+    classifyJob(job) !== "oferta" &&
+    hasConcursoLanding(listConcursos(allJobs), job.profession)
+  ) {
+    return [
+      { label: "Início", href: "/" },
+      { label: "Concursos", href: "/concursos" },
+      { label: job.profession, href: concursosPath(job.profession) },
+      { label: job.title },
+    ];
+  }
   const items: BreadcrumbItem[] = [
     { label: "Início", href: "/" },
     { label: "Vagas", href: "/vagas" },

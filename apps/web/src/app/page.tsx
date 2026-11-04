@@ -16,6 +16,7 @@ import {
   isCategoryEligible,
   listCategoryChips,
 } from "@/lib/categories";
+import { concursosPath, listConcursos } from "@/lib/concursos";
 import { getJobs } from "@/lib/jobs-data";
 import { professions } from "@/lib/jobs";
 import { formatNewsDate, listArticles, newsCategoryLabel, newsPath } from "@/lib/news";
@@ -38,6 +39,7 @@ export default async function Home() {
       return a.title.localeCompare(b.title, "pt");
     })
     .slice(0, 6);
+  const concursos = listConcursos(jobs);
   const latestNews = listArticles().slice(0, 3);
   const districtCounts = jobs.reduce<Record<string, number>>((acc, job) => {
     const key = job.district || "Portugal";
@@ -117,6 +119,36 @@ export default async function Home() {
             Ver todas as vagas
           </Link>
         </section>
+
+        {concursos.length > 0 && (
+          <section className="page-container pb-14 sm:pb-18">
+            <div className="mb-7 flex items-end justify-between gap-4">
+              <div>
+                <span className="section-kicker">Emprego público</span>
+                <h2 className="section-title">Concursos abertos</h2>
+                <p className="mt-2 text-sm text-muted">
+                  {concursos.length}{" "}
+                  {concursos.length === 1 ? "procedimento aberto" : "procedimentos abertos"} na BEP, no
+                  Diário da República e em unidades de saúde públicas.
+                </p>
+              </div>
+              <Link
+                href={concursosPath()}
+                className="hidden items-center gap-1.5 text-sm font-bold text-primary hover:underline sm:flex"
+              >
+                Ver todos os concursos <ArrowRight size={16} />
+              </Link>
+            </div>
+            <div className="grid min-w-0 gap-3 sm:grid-cols-2">
+              {concursos.slice(0, 4).map(({ job }) => (
+                <JobCard key={job.slug} job={job} />
+              ))}
+            </div>
+            <Link href={concursosPath()} className="button button-secondary mt-6 w-full sm:hidden">
+              Ver todos os concursos
+            </Link>
+          </section>
+        )}
 
         {latestNews.length > 0 && (
           <section className="page-container pb-14 sm:pb-18">

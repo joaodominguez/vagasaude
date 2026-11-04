@@ -5,6 +5,8 @@ import {
   listEligibleCategories,
 } from "@/lib/categories";
 import { getJobs } from "@/lib/jobs-data";
+import { listEligibleConcelhos, concelhoTotalPages } from "@/lib/concelhos";
+import { listConcursos, listEligibleConcursos } from "@/lib/concursos";
 import { CAREERS } from "@/lib/salary-tables";
 import { SITE_URL } from "@/lib/seo";
 import {
@@ -116,6 +118,34 @@ async function buildCategoriesSitemap() {
         ),
     );
   });
+  // Landings de concelho (≥ CATEGORY_MIN_JOBS vagas), com /pagina-N.
+  for (const item of listEligibleConcelhos(jobs)) {
+    for (let page = 1; page <= concelhoTotalPages(item.count); page++) {
+      entries.push(
+        urlEntry(`${SITE_URL}${categoryPagePath(item.path, page)}`, latestJob, "daily", "0.65"),
+      );
+    }
+  }
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${entries.join("\n")}
+</urlset>
+`;
+}
+
+async function buildConcursosSitemap() {
+  const now = new Date();
+  const items = listConcursos(await getJobs());
+  // Hub só entra com procedimentos abertos (sem eles é noindex).
+  const entries =
+    items.length === 0
+      ? []
+      : [
+          urlEntry(`${SITE_URL}/concursos`, now, "daily", "0.8"),
+          ...listEligibleConcursos(items).map((ref) =>
+            urlEntry(`${SITE_URL}${ref.path}`, now, "daily", ref.district ? "0.6" : "0.7"),
+          ),
+        ];
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${entries.join("\n")}
@@ -180,6 +210,9 @@ export async function GET(
   }
   if (segment === "categories.xml") {
     return xmlResponse(await buildCategoriesSitemap());
+  }
+  if (segment === "concursos.xml") {
+    return xmlResponse(await buildConcursosSitemap());
   }
   if (segment === "salarios.xml") {
     return xmlResponse(buildSalariesSitemap());

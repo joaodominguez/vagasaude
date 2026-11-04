@@ -49,6 +49,8 @@ export type JobCardData = {
   company: string;
   district: string;
   city: string;
+  /** Concelho tal como veio da fonte (null quando só há distrito). */
+  concelho?: string | null;
   sector: "Público" | "Privado" | "IPSS";
   contract: string;
   profession: string;
@@ -557,6 +559,7 @@ export function toJobCard(job: StoredJob): JobCardData {
     company: decodeHtmlEntities(job.company),
     district: job.locationDistrict,
     city: job.locationConcelho || job.locationDistrict,
+    concelho: job.locationConcelho,
     sector: SECTOR_LABEL[job.sector],
     contract: job.contractType || "A definir",
     profession: isVeterinaryTitle(job.title) ? "Veterinária" : job.profession,

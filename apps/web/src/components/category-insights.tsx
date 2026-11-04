@@ -6,6 +6,13 @@ import {
   isKnownProfession,
   type CategoryRef,
 } from "@/lib/categories";
+import {
+  CONCURSOS_MIN_COMBO,
+  concursosPath,
+  filterConcursos,
+  listConcursos,
+} from "@/lib/concursos";
+import { listEligibleConcelhos } from "@/lib/concelhos";
 import { articlesForCategory, newsPath } from "@/lib/news";
 import { emLocal } from "@/lib/pt-locative";
 import { careerForProfession } from "@/lib/salary-tables";
@@ -108,6 +115,38 @@ export function CategoryInsights({
         ? `Profissões com vagas ${where}`
         : `Localidades com vagas de ${what} ${where}`;
 
+  // Concursos públicos abertos relacionados (só ligações a landings que existem).
+  const concursoItems = listConcursos(jobs);
+  const concursoLink = (() => {
+    if (concursoItems.length === 0) return null;
+    if (category.profession) {
+      const forProfession = filterConcursos(concursoItems, category.profession, null);
+      if (forProfession.length === 0 || category.profession === "Outros") return null;
+      const forCombo = category.district
+        ? filterConcursos(concursoItems, category.profession, category.district)
+        : [];
+      const href =
+        category.district && forCombo.length >= CONCURSOS_MIN_COMBO
+          ? concursosPath(category.profession, category.district)
+          : concursosPath(category.profession);
+      return {
+        href,
+        label: `Ver concursos de ${what}${category.district && href !== concursosPath(category.profession) ? ` ${where}` : ""}`,
+        count: href === concursosPath(category.profession) ? forProfession.length : forCombo.length,
+      };
+    }
+    return {
+      href: "/concursos",
+      label: "Ver concursos e bolsas de recrutamento na saúde",
+      count: concursoItems.length,
+    };
+  })();
+  // "Por concelho": concelhos do distrito com landing própria.
+  const concelhoLinks =
+    category.kind === "district" && category.district
+      ? listEligibleConcelhos(jobs).filter((item) => item.district === category.district)
+      : [];
+
   const salary =
     category.profession && category.profession !== "Outros"
       ? getSalaryBenchmark(category.profession)
@@ -162,6 +201,24 @@ export function CategoryInsights({
               </ul>
             </>
           )}
+          {concelhoLinks.length > 0 && (
+            <>
+              <h2 className="text-xl font-extrabold">Por concelho</h2>
+              <ul className="mb-8 mt-4 grid gap-x-6 gap-y-2 text-sm sm:grid-cols-2">
+                {concelhoLinks.map((item) => (
+                  <li key={item.path} className="flex justify-between gap-3">
+                    <Link
+                      href={item.path}
+                      className="font-semibold text-primary hover:underline"
+                    >
+                      {item.concelho}
+                    </Link>
+                    <span className="text-muted">{item.count}</span>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
           {employers.length > 0 && (
             <>
               <h2 className="text-xl font-extrabold">Quem está a recrutar</h2>
@@ -199,6 +256,14 @@ export function CategoryInsights({
                 ))}
               </ul>
             </div>
+          )}
+          {concursoLink && (
+            <Link
+              href={concursoLink.href}
+              className="mt-5 flex text-sm font-bold text-primary hover:underline"
+            >
+              {concursoLink.label} ({concursoLink.count}) →
+            </Link>
           )}
           {salaryCareer && (
             <Link

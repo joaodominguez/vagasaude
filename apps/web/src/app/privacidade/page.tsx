@@ -23,6 +23,12 @@ export default function PrivacyPage() {
             serviços pedidos, como o endereço de email usado na criação de
             alertas.
           </p>
+          <h2>Estatísticas de utilização</h2>
+          <p>
+            Recolhemos estatísticas de utilização anónimas e agregadas, sem
+            cookies e sem guardar nada no teu dispositivo. Os endereços IP não
+            são guardados. Estes dados servem apenas para melhorar o serviço.
+          </p>
           <h2>Alertas de vagas</h2>
           <p>
             O email é utilizado exclusivamente para enviar oportunidades e
