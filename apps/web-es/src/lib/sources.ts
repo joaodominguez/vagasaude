@@ -63,6 +63,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "BOIB",
     url: "https://www.caib.es/eboibfront/",
     sector: "Público",
+    logo: "/partners/boib.jpg",
   },
   {
     id: "doe",
@@ -70,6 +71,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "DOE",
     url: "https://doe.juntaex.es/",
     sector: "Público",
+    logo: "/partners/doe.png",
   },
   {
     id: "boc-canarias",
@@ -77,6 +79,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "BOC Canarias",
     url: "https://www.gobiernodecanarias.org/boc/",
     sector: "Público",
+    logo: "/partners/boc-canarias.svg",
   },
   {
     id: "bocyl",
@@ -84,6 +87,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "BOCYL",
     url: "https://bocyl.jcyl.es/",
     sector: "Público",
+    logo: "/partners/bocyl.svg",
   },
   {
     id: "docm",
@@ -91,6 +95,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "DOCM",
     url: "https://docm.jccm.es/portaldocm/",
     sector: "Público",
+    logo: "/partners/docm.svg",
   },
   {
     id: "amavir",
