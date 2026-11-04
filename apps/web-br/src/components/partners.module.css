@@ -1,0 +1,104 @@
+/* Carrossel contínuo de logótipos (duas filas em sentidos opostos). */
+.marquee {
+  margin-top: 1.75rem;
+  display: grid;
+  gap: 0.75rem;
+  /* Esbate as margens para os logótipos entrarem e saírem suavemente. */
+  mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+}
+
+.row {
+  overflow: hidden;
+}
+
+.track {
+  display: flex;
+  width: max-content;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0.25rem 0;
+  list-style: none;
+  animation: scroll var(--duration, 60s) linear infinite;
+}
+
+.reverse {
+  animation-direction: reverse;
+}
+
+/* Pausa ao passar o rato ou ao navegar com o teclado. */
+.marquee:hover .track,
+.marquee:focus-within .track {
+  animation-play-state: paused;
+}
+
+@keyframes scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    /* A pista contém a lista duas vezes: -50% volta ao início sem salto. */
+    transform: translateX(calc(-50% - 0.375rem));
+  }
+}
+
+.card {
+  display: flex;
+  width: 11rem;
+  height: 4.5rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0.7rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 0.9rem;
+  background: #fdfdfd;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+:global(.dark) .card {
+  background: #f8fafc;
+}
+
+.card:hover,
+.card:focus-visible {
+  border-color: color-mix(in srgb, var(--primary) 45%, var(--border));
+  box-shadow: var(--shadow);
+}
+
+.card img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+.name {
+  font-size: 0.875rem;
+  font-weight: 800;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.2;
+}
+
+@media (min-width: 640px) {
+  .card {
+    width: 12.5rem;
+    height: 5rem;
+  }
+}
+
+/* Sem animação para quem a desativa no sistema: fila deslizável. */
+@media (prefers-reduced-motion: reduce) {
+  .track {
+    animation: none;
+  }
+  .row {
+    overflow-x: auto;
+  }
+  .duplicate {
+    display: none;
+  }
+}
