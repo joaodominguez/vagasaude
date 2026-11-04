@@ -1034,9 +1034,8 @@ select {
   }
 }
 
-/* Notícias: tipografia de leitura (~70ch) */
+/* Notícias: o artigo ocupa o contentor todo (sem sidebar). */
 .news-article {
-  max-width: 70ch;
   min-width: 0;
 }
 
@@ -1109,6 +1108,13 @@ select {
   border-collapse: collapse;
   font-size: 0.92rem;
   line-height: 1.5;
+}
+
+/* Em ecrãs largos, as tabelas esticam até à largura do texto. */
+@media (min-width: 768px) {
+  .news-prose table {
+    display: table;
+  }
 }
 
 .news-prose th,
