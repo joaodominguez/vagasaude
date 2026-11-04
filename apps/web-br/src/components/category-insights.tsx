@@ -11,6 +11,7 @@ import {
   formatBRLRange,
   getSalaryBenchmark,
 } from "@/lib/salary-benchmarks";
+import { articlesForCategory, newsPath } from "@/lib/news";
 import { salaryPathForProfession } from "@/lib/salary-observatory";
 
 const DAY_MS = 86_400_000;
@@ -57,6 +58,7 @@ export async function CategoryInsights({
     const path = categoryPath(profession, district);
     return eligible.has(path) ? path : undefined;
   };
+  const news = articlesForCategory(category.profession, category.district);
   const recent = countRecentJobs(jobs, 7);
   const withSalary = jobs.filter((job) => job.salary).length;
   const employers = countBy(
@@ -183,6 +185,20 @@ export async function CategoryInsights({
               </div>
             ))}
           </div>
+          {news.length > 0 && (
+            <div className="mt-6">
+              <h2 className="text-xl font-extrabold">Notícias relacionadas</h2>
+              <ul className="mt-3 space-y-2 text-sm">
+                {news.map((article) => (
+                  <li key={article.slug}>
+                    <Link href={newsPath(article.slug)} className="font-semibold text-primary hover:underline">
+                      {article.title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
           {salaryHref && (
             <Link
               href={salaryHref}

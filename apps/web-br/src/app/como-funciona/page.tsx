@@ -95,7 +95,7 @@ export default function HowItWorksPage() {
             <Link href="/alertas" className="button button-secondary">
               Criar alerta
             </Link>
-            <Link href="/artigos" className="button button-secondary">
+            <Link href="/noticias/categoria/guias" className="button button-secondary">
               Guias de candidatura
             </Link>
           </div>

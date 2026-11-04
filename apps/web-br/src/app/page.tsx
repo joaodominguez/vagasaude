@@ -18,6 +18,7 @@ import {
 } from "@/lib/categories";
 import { getJobs } from "@/lib/jobs-data";
 import { professions } from "@/lib/jobs";
+import { formatNewsDate, listArticles, newsCategoryLabel, newsPath } from "@/lib/news";
 import { buildHomeMetadata } from "@/lib/seo";
 
 // ISR homepage; dados vêm do cache em memória do job-store (ingest ≤~2 min).
@@ -31,6 +32,7 @@ export async function generateMetadata() {
 export default async function Home() {
   const jobs = await getJobs();
   const recentJobs = jobs.slice(0, 6);
+  const latestNews = listArticles().slice(0, 3);
   const districtCounts = jobs.reduce<Record<string, number>>((acc, job) => {
     const key = job.district || "Brasil";
     acc[key] = (acc[key] || 0) + 1;
@@ -109,6 +111,38 @@ export default async function Home() {
             Ver todas as vagas
           </Link>
         </section>
+
+        {latestNews.length > 0 && (
+          <section className="page-container pb-14 sm:pb-18">
+            <div className="mb-7 flex items-end justify-between gap-4">
+              <div>
+                <span className="section-kicker">Mercado de trabalho</span>
+                <h2 className="section-title">Últimas notícias</h2>
+              </div>
+              <Link
+                href="/noticias"
+                className="hidden items-center gap-1.5 text-sm font-bold text-primary hover:underline sm:flex"
+              >
+                Todas as notícias <ArrowRight size={16} />
+              </Link>
+            </div>
+            <div className="grid min-w-0 gap-4 sm:grid-cols-3">
+              {latestNews.map((article) => (
+                <article key={article.slug} className="content-card flex min-w-0 flex-col p-5">
+                  <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
+                    <span className="tag tag-primary">{newsCategoryLabel(article.category)}</span>
+                    <time dateTime={article.date}>{formatNewsDate(article.date)}</time>
+                  </div>
+                  <h3 className="mt-3 font-extrabold leading-snug">
+                    <Link href={newsPath(article.slug)} className="hover:text-primary">
+                      {article.title}
+                    </Link>
+                  </h3>
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
 
         {categoryChips.length > 0 && (
           <section className="page-container pb-14 sm:pb-18">
@@ -200,7 +234,7 @@ export default async function Home() {
                 Brasil.
               </p>
             </div>
-            <Link href="/artigos" className="button button-secondary shrink-0">
+            <Link href="/noticias/categoria/guias" className="button button-secondary shrink-0">
               Ver guias <ArrowRight size={16} />
             </Link>
           </div>

@@ -24,10 +24,10 @@ export function ArticlesGuideCta({
     profession?.toLowerCase().includes("tecnico");
 
   const primaryHref = isPublic
-    ? "/artigos/ler-edital-concurso-saude"
+    ? "/noticias/ler-edital-concurso-saude"
     : isNursing
-      ? "/artigos/cv-enfermagem-saude"
-      : "/artigos";
+      ? "/noticias/cv-enfermagem-saude"
+      : "/noticias/categoria/guias";
   const primaryLabel = isPublic
     ? "Como ler um edital de concurso"
     : isNursing
@@ -42,7 +42,7 @@ export function ArticlesGuideCta({
           {primaryLabel}
         </Link>
         {" · "}
-        <Link href="/artigos" className="font-semibold text-primary hover:underline">
+        <Link href="/noticias/categoria/guias" className="font-semibold text-primary hover:underline">
           ver todos os guias
         </Link>
       </p>
@@ -67,7 +67,7 @@ export function ArticlesGuideCta({
         </li>
         <li>
           <Link
-            href="/artigos"
+            href="/noticias/categoria/guias"
             className="font-semibold text-primary hover:underline"
           >
             Ver todos os guias

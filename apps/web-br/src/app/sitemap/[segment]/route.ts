@@ -8,6 +8,14 @@ import { isConcursoJob } from "@/lib/concursos";
 import type { Job } from "@/lib/jobs";
 import { getJobs } from "@/lib/jobs-data";
 import { getSalaryObservations, listSalaryPages } from "@/lib/salary-observatory";
+import {
+  listArticles,
+  listNewsCategories,
+  newsCategoryPath,
+  newsPagePath,
+  newsPath,
+  newsTotalPages,
+} from "@/lib/news";
 import { SITE_URL } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -60,35 +68,13 @@ function newestPublished(jobs: Job[], fallback: Date) {
 
 async function buildPagesSitemap() {
   const latestJob = newestPublished(await getJobs(), STATIC_PAGES_UPDATED);
-  const { articles } = await import("@/content/articles");
-  const articleDates = articles
-    .map((article) => Date.parse(article.publishedAt))
-    .filter((t) => !Number.isNaN(t));
-  const latestArticle = articleDates.length
-    ? new Date(Math.max(...articleDates))
-    : STATIC_PAGES_UPDATED;
   const entries = [
     urlEntry(`${SITE_URL}/`, latestJob, "weekly", "1.0"),
     urlEntry(`${SITE_URL}/vagas`, latestJob, "daily", "0.9"),
     urlEntry(`${SITE_URL}/alertas`, STATIC_PAGES_UPDATED, "weekly", "0.6"),
-    urlEntry(`${SITE_URL}/artigos`, latestArticle, "weekly", "0.7"),
     urlEntry(`${SITE_URL}/como-funciona`, STATIC_PAGES_UPDATED, "monthly", "0.5"),
     urlEntry(`${SITE_URL}/privacidade`, STATIC_PAGES_UPDATED, "weekly", "0.6"),
   ];
-  for (const article of articles) {
-    const published = Date.parse(article.publishedAt);
-    const lastmod = Number.isNaN(published)
-      ? STATIC_PAGES_UPDATED
-      : new Date(published);
-    entries.push(
-      urlEntry(
-        `${SITE_URL}/artigos/${article.slug}`,
-        lastmod,
-        "monthly",
-        "0.65",
-      ),
-    );
-  }
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${entries.join("\n")}
@@ -172,6 +158,34 @@ ${entries.join("\n")}
 `;
 }
 
+function buildNewsSitemap() {
+  const articles = listArticles();
+  const lastmodOf = (date: string) => new Date(`${date}T00:00:00Z`);
+  const entries: string[] = [];
+  if (articles.length > 0) {
+    const newest = lastmodOf(articles[0].updated ?? articles[0].date);
+    for (let page = 1; page <= newsTotalPages(articles.length); page++) {
+      entries.push(urlEntry(`${SITE_URL}${newsPagePath(page)}`, newest, "daily", page === 1 ? "0.7" : "0.4"));
+    }
+    for (const category of listNewsCategories()) {
+      const latest = articles.find((a) => a.category === category)!;
+      entries.push(
+        urlEntry(`${SITE_URL}${newsCategoryPath(category)}`, lastmodOf(latest.updated ?? latest.date), "weekly", "0.5"),
+      );
+    }
+    for (const article of articles) {
+      entries.push(
+        urlEntry(`${SITE_URL}${newsPath(article.slug)}`, lastmodOf(article.updated ?? article.date), "monthly", "0.6"),
+      );
+    }
+  }
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${entries.join("\n")}
+</urlset>
+`;
+}
+
 export async function GET(
   _request: Request,
   context: { params: Promise<{ segment: string }> },
@@ -188,6 +202,9 @@ export async function GET(
   }
   if (segment === "salarios.xml") {
     return xmlResponse(await buildSalariesSitemap());
+  }
+  if (segment === "noticias.xml") {
+    return xmlResponse(buildNewsSitemap());
   }
   return new Response("Not Found", { status: 404 });
 }
