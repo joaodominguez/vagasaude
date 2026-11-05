@@ -48,6 +48,15 @@ fi
   python3 "$ROOT/tools/jobs_integrity.py" /var/www/vacantessalud/data http://127.0.0.1:3012 /empleo/ || true
 ) || true
 
+# Google Indexing API: ofertas nuevas/retiradas. Proyecto Google Cloud propio del ES
+# (le-frique-1479653849743, "vacantessalud-es"): 200 peticiones/día solo para este sitio.
+INDEXING_KEY="${GOOGLE_INDEXING_KEY:-/home/portal/.config/vagasaude/indexing-key-es.json}"
+if [[ -f "$INDEXING_KEY" && -x /home/portal/.venvs/indexing/bin/python ]]; then
+  GOOGLE_INDEXING_KEY="$INDEXING_KEY" INDEXING_DAILY_QUOTA="${INDEXING_DAILY_QUOTA:-200}" /home/portal/.venvs/indexing/bin/python "$ROOT/tools/indexing_notify.py" \
+    --sitemap http://127.0.0.1:3012/sitemap/jobs.xml \
+    --state /var/www/vacantessalud/data/indexing-state.json || true
+fi
+
 # Digest de nuevas ofertas a los suscriptores ES (solo si Resend está configurado).
 if [[ -n "${RESEND_API_KEY:-}" && -n "${SCRAPER_API_TOKEN:-}" ]]; then
   curl -sS -X POST "http://127.0.0.1:3012/api/alerts/digest" \
