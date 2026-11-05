@@ -817,7 +817,7 @@ async function writeJobsFile(file: JobsFile) {
   const filePath = jobsFilePath();
   // Uma escrita que deixa menos de metade das vagas é quase de certeza um bug
   // (ex.: base lida como vazia): recusar em vez de apagar o histórico.
-  if (knownJobsCount >= 1000 && file.jobs.length < knownJobsCount / 2) {
+  if (knownJobsCount >= 100 && file.jobs.length < knownJobsCount / 2) {
     throw new Error(
       `Escrita do jobs.json recusada: passaria de ${knownJobsCount} para ${file.jobs.length} vagas.`,
     );
