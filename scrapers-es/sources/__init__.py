@@ -38,6 +38,16 @@ from sources.csdm import CsdmScraper
 from sources.clinic_barcelona import ClinicBarcelonaScraper
 from sources.althaia import AlthaiaScraper
 from sources.csa import CsaScraper
+from sources.multiopticas import MultiopticasScraper
+from sources.gaes import GaesScraper
+from sources.cigna import CignaScraper
+from sources.mutua_navarra import MutuaNavarraScraper
+from sources.corachan import CorachanScraper
+from sources.colisee import ColiseeScraper
+from sources.efisioterapia import EfisioterapiaScraper
+from sources.talentsalud import TalentSaludScraper
+from sources.endivo import EndivoScraper
+from sources.winid import WinidScraper
 
 SCRAPERS: dict = {
     AmavirScraper.slug: AmavirScraper,
@@ -72,4 +82,14 @@ SCRAPERS: dict = {
     ClinicBarcelonaScraper.slug: ClinicBarcelonaScraper,
     AlthaiaScraper.slug: AlthaiaScraper,
     CsaScraper.slug: CsaScraper,
+    MultiopticasScraper.slug: MultiopticasScraper,
+    GaesScraper.slug: GaesScraper,
+    CignaScraper.slug: CignaScraper,
+    MutuaNavarraScraper.slug: MutuaNavarraScraper,
+    CorachanScraper.slug: CorachanScraper,
+    ColiseeScraper.slug: ColiseeScraper,
+    EfisioterapiaScraper.slug: EfisioterapiaScraper,
+    TalentSaludScraper.slug: TalentSaludScraper,
+    EndivoScraper.slug: EndivoScraper,
+    WinidScraper.slug: WinidScraper,
 }
