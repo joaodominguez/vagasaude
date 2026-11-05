@@ -39,6 +39,9 @@ fi
 # Fontes avariadas (últimas 4 execuções com 0 vagas ou erro): log + email se ALERTS_TO.
 HEALTH_IGNORE="${HEALTH_IGNORE:-einstein,fleury}" python3 "$ROOT/tools/scraper_health.py" /var/www/vagasaudebr/data/scraper-runs.json || true
 
+# Integridade do jobs.json (incidente BR 2026-10-27): slugs desaparecidos, quedas, 404.
+python3 "$ROOT/tools/jobs_integrity.py" /var/www/vagasaudebr/data http://127.0.0.1:3011 /vagas/ || true
+
 # Google Indexing API: vagas novas/removidas (só se a chave da conta de serviço existir).
 INDEXING_KEY="${GOOGLE_INDEXING_KEY:-/home/portal/.config/vagasaude/indexing-key.json}"
 if [[ -f "$INDEXING_KEY" && -x /home/portal/.venvs/indexing/bin/python ]]; then
