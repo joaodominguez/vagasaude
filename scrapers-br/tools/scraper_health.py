@@ -7,6 +7,8 @@ Uso (no fim do run-scrapers.sh):
 Envia email (Resend) só quando a lista de fontes avariadas muda, se
 RESEND_API_KEY, EMAIL_FROM e ALERTS_TO estiverem definidos; senão só imprime.
 Fontes esperadas fora do VPS podem ser ignoradas com HEALTH_IGNORE=a,b.
+Fontes em que 0 vagas é normal (sem concursos abertos, boletins diários) vão em
+HEALTH_ALLOW_EMPTY=a,b: só contam como avariadas se derem erro.
 """
 from __future__ import annotations
 
@@ -21,7 +23,9 @@ import httpx
 RUNS_TO_CHECK = int(os.environ.get("HEALTH_RUNS", "4"))
 
 
-def broken_sources(runs: list[dict], ignore: set[str]) -> dict[str, str]:
+def broken_sources(
+    runs: list[dict], ignore: set[str], allow_empty: frozenset[str] = frozenset()
+) -> dict[str, str]:
     by_source: dict[str, list[dict]] = defaultdict(list)
     for run in runs:
         by_source[run.get("source") or "?"].append(run)
@@ -33,7 +37,11 @@ def broken_sources(runs: list[dict], ignore: set[str]) -> dict[str, str]:
         recent = recent[:RUNS_TO_CHECK]
         if len(recent) < RUNS_TO_CHECK:
             continue
-        if all(r.get("status") == "error" or not r.get("found") for r in recent):
+        if source in allow_empty:
+            failed = all(r.get("status") == "error" for r in recent)
+        else:
+            failed = all(r.get("status") == "error" or not r.get("found") for r in recent)
+        if failed:
             last = recent[0]
             reason = (last.get("error") or "0 vagas")[:160]
             broken[source] = f"{reason} (desde {(recent[-1].get('startedAt') or '?')[:16]})"
@@ -65,7 +73,8 @@ def main() -> int:
     data = json.loads(runs_path.read_text(encoding="utf-8"))
     runs = data if isinstance(data, list) else data.get("runs", [])
     ignore = {s for s in os.environ.get("HEALTH_IGNORE", "").split(",") if s}
-    broken = broken_sources(runs, ignore)
+    allow_empty = frozenset(s for s in os.environ.get("HEALTH_ALLOW_EMPTY", "").split(",") if s)
+    broken = broken_sources(runs, ignore, allow_empty)
 
     for source, reason in sorted(broken.items()):
         print(f"[scraper-health] AVARIADA {source}: {reason}")

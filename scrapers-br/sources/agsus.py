@@ -1,18 +1,21 @@
 from __future__ import annotations
 
 import re
-from datetime import datetime, timedelta, timezone
-from html import unescape
+from datetime import date, datetime, timedelta
 
 from common.http import HttpClient
 from common.models import BaseScraper, JobPayload
-from common.normalize import guess_contract, guess_profession, html_to_text, state_from_uf
+from common.normalize import guess_contract, guess_profession, state_from_uf
 
-WP_POSTS = "https://agenciasus.org.br/wp-json/wp/v2/posts"
-# 50 = Trabalhe Conosco · 105 = Processos Seletivos Abertos
-CATEGORIES = (105, 50)
-MAX_AGE_DAYS = 180
-MAX_PAGES_PER_CAT = 4
+# Desde 2026-11 o site da AgSUS é Plone 6 (Volto): a antiga API WordPress devolve 404.
+SITE = "https://www.agenciasus.org.br"
+API = f"{SITE}/++api++"
+SEARCH = f"{API}/@search"
+# Etiqueta que o site usa nos editais com inscrições/etapas em curso.
+OPEN_SUBJECT = "Processo Seletivo em Andamento"
+MAX_ITEMS = 100
+# Editais sem bloco de prazo: só os publicados recentemente (os antigos ficam com a etiqueta).
+NO_DEADLINE_MAX_AGE_DAYS = 45
 UF_RE = re.compile(
     r"\b("
     r"AC|AL|AP|AM|BA|CE|DF|ES|GO|MA|MT|MS|MG|PA|PB|PR|PE|PI|RJ|RN|RS|RO|RR|SC|SP|SE|TO"
@@ -59,98 +62,93 @@ REGION_HINTS = (
     ("purus", "Amazonas"),
     ("yanomami", "Roraima"),
     ("porto velho", "Rondônia"),
+    ("amapá", "Amapá"),
+    ("amapa", "Amapá"),
+    ("cuiabá", "Mato Grosso"),
+    ("cuiaba", "Mato Grosso"),
+    ("potiguara", "Paraíba"),
+    ("alto rio negro", "Amazonas"),
+    ("kaiapó", "Pará"),
+    ("kaiapo", "Pará"),
 )
 
 
 class AgsusScraper(BaseScraper):
-    """AgSUS — PSS / editais públicos via WP REST (Trabalhe Conosco)."""
+    """AgSUS — editais de processo seletivo via API REST do Plone (Trabalhe na AgSUS)."""
 
     slug = "agsus"
     name = "AgSUS — Trabalhe Conosco"
 
     def fetch(self) -> list[JobPayload]:
         client = HttpClient(min_interval=0.35)
+        client.client.headers.update({"Accept": "application/json"})
         try:
-            posts = self._collect_posts(client)
+            items = self._collect_items(client)
             jobs: list[JobPayload] = []
-            for post in posts:
-                title = unescape(post.get("title", {}).get("rendered") or "").strip()
-                if not title:
+            today = date.today()
+            for item in items:
+                title = (item.get("title") or "").strip()
+                link = item.get("@id") or ""
+                if not title or not link or not self._looks_like_selection(title):
                     continue
-                if not self._looks_like_selection(title):
+                try:
+                    detail = client.get_json(API + link.removeprefix(SITE))
+                except Exception:  # noqa: BLE001 — um edital falhado não derruba a fonte
+                    detail = {}
+                prazo = _find_block(detail, "agsusPrazo")
+                end_date = _parse_date(prazo.get("dataFim"))
+                # Inscrições já encerradas: o edital fica "em andamento" (resultados), mas não é vaga.
+                if end_date and end_date < today:
                     continue
-                link = post.get("link") or ""
-                if not link:
+                published = _parse_date(item.get("effective"))
+                if not end_date and (
+                    not published or published < today - timedelta(days=NO_DEADLINE_MAX_AGE_DAYS)
+                ):
                     continue
-                content_html = post.get("content", {}).get("rendered") or ""
-                excerpt_html = post.get("excerpt", {}).get("rendered") or ""
-                description = html_to_text(content_html) or html_to_text(excerpt_html) or title
+                description = _build_description(title, detail, prazo)
                 blob = f"{title} {description[:500]}"
-                state = self._guess_state(blob)
-                contract = guess_contract(blob) or "PSS"
                 jobs.append(
                     JobPayload(
                         title=title[:200],
                         company="AgSUS — Agência Brasileira de Apoio à Gestão do SUS",
-                        location_district=state,
+                        location_district=self._guess_state(blob),
                         location_concelho=None,
                         profession=guess_profession(title),
                         specialty=None,
                         sector="publico",
-                        contract_type=contract,
+                        contract_type=guess_contract(blob) or "PSS",
                         description=description[:8000],
                         requirements=None,
                         salary=None,
                         application_url=link,
                         source=self.slug,
-                        source_id=str(post.get("id")),
-                        published_at=post.get("date"),
-                        expires_at=None,
+                        source_id=str(item.get("UID") or link),
+                        published_at=item.get("effective"),
+                        expires_at=f"{end_date.isoformat()}T23:59:59-03:00" if end_date else None,
                     )
                 )
             return jobs
         finally:
             client.close()
 
-    def _collect_posts(self, client: HttpClient) -> list[dict]:
-        cutoff = datetime.now(timezone.utc) - timedelta(days=MAX_AGE_DAYS)
-        by_id: dict[int, dict] = {}
-        for cat in CATEGORIES:
-            for page in range(1, MAX_PAGES_PER_CAT + 1):
-                batch = client.get_json(
-                    WP_POSTS,
-                    params={
-                        "categories": cat,
-                        "per_page": 50,
-                        "page": page,
-                        "orderby": "date",
-                        "order": "desc",
-                    },
-                )
-                if not isinstance(batch, list) or not batch:
-                    break
-                older_only = True
-                for post in batch:
-                    pid = post.get("id")
-                    if pid is None:
-                        continue
-                    date_raw = post.get("date") or ""
-                    try:
-                        # WP dates are local without Z; treat as naive UTC-ish cutoff.
-                        dt = datetime.fromisoformat(date_raw.replace("Z", "+00:00"))
-                        if dt.tzinfo is None:
-                            dt = dt.replace(tzinfo=timezone.utc)
-                    except ValueError:
-                        dt = cutoff
-                    if dt < cutoff and cat != 105:
-                        continue
-                    older_only = False
-                    by_id[int(pid)] = post
-                if older_only and cat != 105:
-                    break
-                if len(batch) < 50:
-                    break
-        return list(by_id.values())
+    @staticmethod
+    def _collect_items(client: HttpClient) -> list[dict]:
+        data = client.get_json(
+            SEARCH,
+            params={
+                "path.query": "/trabalhe-na-agsus",
+                "portal_type": "News Item",
+                "Subject": OPEN_SUBJECT,
+                "sort_on": "effective",
+                "sort_order": "descending",
+                "b_size": MAX_ITEMS,
+                "metadata_fields": ["UID", "effective"],
+            },
+        )
+        items = data.get("items") if isinstance(data, dict) else None
+        if not isinstance(items, list):
+            raise RuntimeError("AgSUS: resposta inesperada da API de pesquisa do Plone")
+        return items
 
     @staticmethod
     def _looks_like_selection(title: str) -> bool:
@@ -181,3 +179,62 @@ class AgsusScraper(BaseScraper):
             if needle in low:
                 return name
         return "Brasil"
+
+
+def _find_block(detail: dict, block_type: str) -> dict:
+    blocks = detail.get("blocks") if isinstance(detail, dict) else None
+    if not isinstance(blocks, dict):
+        return {}
+    for block in blocks.values():
+        if isinstance(block, dict) and block.get("@type") == block_type:
+            return block
+    return {}
+
+
+def _parse_date(raw: object) -> date | None:
+    if not isinstance(raw, str) or not raw:
+        return None
+    try:
+        return datetime.fromisoformat(raw[:10]).date()
+    except ValueError:
+        return None
+
+
+def _fmt(raw: object) -> str:
+    d = _parse_date(raw)
+    return d.strftime("%d/%m/%Y") if d else ""
+
+
+def _build_description(title: str, detail: dict, prazo: dict) -> str:
+    lines = [title, ""]
+    summary = (detail.get("description") or "").strip() if isinstance(detail, dict) else ""
+    if summary:
+        lines += [summary, ""]
+    start, end = _fmt(prazo.get("dataInicio")), _fmt(prazo.get("dataFim"))
+    if start and end:
+        lines += [f"Inscrições: de {start} a {end}.", ""]
+    etapas = prazo.get("etapas") if isinstance(prazo.get("etapas"), list) else []
+    if etapas:
+        lines.append("Cronograma do processo seletivo:")
+        for etapa in etapas:
+            nome = (etapa.get("nome") or "").strip()
+            ini, fim = _fmt(etapa.get("inicio")), _fmt(etapa.get("fim"))
+            if not nome:
+                continue
+            when = ini if ini == fim or not fim else f"{ini} a {fim}"
+            lines.append(f"- {nome}: {when}" if when else f"- {nome}")
+        lines.append("")
+    anexos = [
+        (i.get("title") or "").strip()
+        for i in (detail.get("items") or [])
+        if isinstance(i, dict) and i.get("@type") == "File"
+    ]
+    if anexos:
+        lines.append("Documentos publicados (edital, anexos e retificações):")
+        lines += [f"- {a}" for a in anexos if a]
+        lines.append("")
+    lines.append(
+        "O edital completo, com o quadro de vagas, requisitos, remuneração e forma de "
+        "inscrição, está na página oficial do processo seletivo da AgSUS."
+    )
+    return "\n".join(lines).strip()
