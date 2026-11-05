@@ -35,7 +35,8 @@ python3 "/var/www/vagasaude/scrapers/tools/jobs_integrity.py" /var/www/vagasaude
 # Google Indexing API: vagas novas/removidas (só se a chave da conta de serviço existir).
 INDEXING_KEY="${GOOGLE_INDEXING_KEY:-/home/portal/.config/vagasaude/indexing-key.json}"
 if [[ -f "$INDEXING_KEY" && -x /home/portal/.venvs/indexing/bin/python ]]; then
-  GOOGLE_INDEXING_KEY="$INDEXING_KEY" /home/portal/.venvs/indexing/bin/python "/var/www/vagasaude/scrapers/tools/indexing_notify.py" \
+  # Projeto Google Cloud exclusivo do PT (exce-305211): os 200 pedidos/dia são só deste site.
+  GOOGLE_INDEXING_KEY="$INDEXING_KEY" INDEXING_DAILY_QUOTA="${INDEXING_DAILY_QUOTA:-200}" /home/portal/.venvs/indexing/bin/python "/var/www/vagasaude/scrapers/tools/indexing_notify.py" \
     --sitemap http://127.0.0.1:3010/sitemap/jobs.xml \
     --state /var/www/vagasaude/data/indexing-state.json || true
 fi
