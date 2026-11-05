@@ -35,7 +35,12 @@ class UlsSaoJoaoScraper(BaseScraper):
             html = client.get_text(LIST)
         finally:
             client.close()
-        return _parse(html)
+        jobs = _parse(html)
+        # Sem concursos abertos o site mostra esta frase: 0 vagas é legítimo.
+        # Sem a frase e sem links, a página mudou: erro (o health check avisa).
+        if not jobs and "Não existem procedimentos" not in html:
+            raise RuntimeError("ULS São João: lista de processos sem links nem aviso de vazio (página mudou?)")
+        return jobs
 
 
 def _parse(html: str) -> list[JobPayload]:

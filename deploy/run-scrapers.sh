@@ -27,7 +27,7 @@ if [[ "$scrape_rc" -ne 0 ]]; then
 fi
 
 # Fontes avariadas (últimas 4 execuções com 0 vagas ou erro): log + email se ALERTS_TO.
-python3 "/var/www/vagasaude/scrapers/tools/scraper_health.py" /var/www/vagasaude/data/scraper-runs.json || true
+HEALTH_ALLOW_EMPTY="${HEALTH_ALLOW_EMPTY:-uls_sao_joao}" python3 "/var/www/vagasaude/scrapers/tools/scraper_health.py" /var/www/vagasaude/data/scraper-runs.json || true
 
 # Google Indexing API: vagas novas/removidas (só se a chave da conta de serviço existir).
 INDEXING_KEY="${GOOGLE_INDEXING_KEY:-/home/portal/.config/vagasaude/indexing-key.json}"
