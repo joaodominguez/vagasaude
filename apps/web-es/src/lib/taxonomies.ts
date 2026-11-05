@@ -27,6 +27,7 @@ export const professions = [
   "Psicología",
   "Nutrición",
   "Odontología",
+  "Óptica y audiología",
   "Veterinaria",
   "Trabajo social",
   "Formación",

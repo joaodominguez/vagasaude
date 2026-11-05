@@ -146,6 +146,8 @@ export function guessProfession(title: string, fallback = "Otros") {
   // "Técnico/a Superior", "Trabajador/a social" → sin la marca de género.
   const t = normalize(title.replace(/\/(?:a|as|os|o)\b/gi, ""));
   if (t.includes("veterin")) return "Veterinaria";
+  // Profesiones sanitarias reguladas: óptico-optometrista y técnico superior en audiología protésica.
+  if (/optometr|optico optometrista|audioprotesi|audiologia protesica/.test(t)) return "Óptica y audiología";
   // Solo títulos que empiezan por "Formación …" (no texto de descripción).
   if (t.length < 70 && t.startsWith("formacion ")) return "Formación";
   // Mantener sincronizado con scrapers-es/common/normalize.py (guess_profession).
@@ -1006,7 +1008,9 @@ function keepFullerDescription(existing: StoredJob | undefined, incoming: string
 
 /** Agregadores: perdem para a mesma vaga publicada pelo próprio empregador. */
 const AGGREGATOR_SOURCES = new Set<string>([
-  // Portales generalistas / agregadores (ids de fuente). Vacío hasta definir fuentes ES.
+  // Portales generalistas / agregadores (ids de fuente): si el empleador publica la misma
+  // oferta directamente, la suya pasa a principal y la copia queda como duplicado.
+  "sne",
 ]);
 
 export function ingestJobs(...args: Parameters<typeof ingestJobsUnlocked>) {

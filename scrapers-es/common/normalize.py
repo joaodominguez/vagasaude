@@ -446,6 +446,9 @@ def guess_profession(title: str, fallback: str | None = None) -> str:
     t = norm(_GENDER_SUFFIX_RE.sub("", title or ""))
     if "veterin" in t:
         return "Veterinaria"
+    # Profesiones sanitarias reguladas: óptico-optometrista y técnico en audiología protésica.
+    if re.search(r"optometr|optico optometrista|audioprotesi|audiologia protesica", t):
+        return "Óptica y audiología"
     # Solo títulos que empiezan por "Formación ..." (no texto de descripción).
     if len(t) < 70 and t.startswith("formacion "):
         return "Formación"

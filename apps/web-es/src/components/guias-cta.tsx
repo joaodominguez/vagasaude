@@ -34,6 +34,7 @@ const REGULATED = new Set([
   "Psicología",
   "Nutrición",
   "Odontología",
+  "Óptica y audiología",
   "Veterinaria",
 ]);
 

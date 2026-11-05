@@ -432,6 +432,7 @@ const PROFESSION_SEARCH_PHRASE: Record<string, string> = {
   Psicología: "Empleo de Psicología",
   Nutrición: "Empleo de Nutricionista",
   Odontología: "Empleo de Odontología",
+  "Óptica y audiología": "Empleo de Óptica y audiología",
   Veterinaria: "Empleo de Veterinaria",
   "Trabajo social": "Empleo de Trabajo social",
   Formación: "Empleo de Formación sanitaria",
