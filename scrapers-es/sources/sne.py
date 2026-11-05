@@ -242,6 +242,10 @@ class SneScraper(BaseScraper):
         city = detail.get("city") or (row.get("city") or "").title() or None
         province = detail.get("province") or row.get("province")
         description = detail.get("description") or title
+        # Títulos del SNE son ocupaciones genéricas ("Enfermeros de cuidados generales") y la
+        # empresa no se publica: la localidad distingue ofertas (deduplicación) y da títulos únicos.
+        if city and city.lower() not in title.lower():
+            title = f"{title} — {city}"
         return JobPayload(
             title=title[:200],
             company=COMPANY,
