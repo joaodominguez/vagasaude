@@ -44,6 +44,8 @@ fi
   # Devuelven 0 legítimamente: Osakidetza sin convocatorias abiertas y los boletines
   # que solo publican el sumario del día. Solo avisan si dan error.
   HEALTH_ALLOW_EMPTY="${HEALTH_ALLOW_EMPTY:-osakidetza,dog,borm,doe,boc-canarias,bocyl,docm,boib}" python3 "$ROOT/tools/scraper_health.py" /var/www/vacantessalud/data/scraper-runs.json
+  # Integridad de jobs.json (incidente BR 2026-10-27): slugs desaparecidos, caídas, 404.
+  python3 "$ROOT/tools/jobs_integrity.py" /var/www/vacantessalud/data http://127.0.0.1:3012 /empleo/ || true
 ) || true
 
 # Digest de nuevas ofertas a los suscriptores ES (solo si Resend está configurado).
