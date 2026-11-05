@@ -29,6 +29,15 @@ from sources.hospiten import HospitenScraper
 from sources.ivc_evidensia import IvcEvidensiaScraper
 from sources.osakidetza import OsakidetzaScraper
 from sources.sanitas import SanitasScraper
+from sources.sne import SneScraper
+from sources.csi import CsiScraper
+from sources.cst import CstScraper
+from sources.hospital_del_mar import HospitalDelMarScraper
+from sources.salut_emporda import SalutEmpordaScraper
+from sources.csdm import CsdmScraper
+from sources.clinic_barcelona import ClinicBarcelonaScraper
+from sources.althaia import AlthaiaScraper
+from sources.csa import CsaScraper
 
 SCRAPERS: dict = {
     AmavirScraper.slug: AmavirScraper,
@@ -38,6 +47,7 @@ SCRAPERS: dict = {
     IvcEvidensiaScraper.slug: IvcEvidensiaScraper,
     OsakidetzaScraper.slug: OsakidetzaScraper,
     SanitasScraper.slug: SanitasScraper,
+    SneScraper.slug: SneScraper,
     AffideaScraper.slug: AffideaScraper,
     CleceScraper.slug: CleceScraper,
     ClinicaBavieraScraper.slug: ClinicaBavieraScraper,
@@ -54,4 +64,12 @@ SCRAPERS: dict = {
     DocmScraper.slug: DocmScraper,
     DoeScraper.slug: DoeScraper,
     DogScraper.slug: DogScraper,
+    CsiScraper.slug: CsiScraper,
+    CstScraper.slug: CstScraper,
+    HospitalDelMarScraper.slug: HospitalDelMarScraper,
+    SalutEmpordaScraper.slug: SalutEmpordaScraper,
+    CsdmScraper.slug: CsdmScraper,
+    ClinicBarcelonaScraper.slug: ClinicBarcelonaScraper,
+    AlthaiaScraper.slug: AlthaiaScraper,
+    CsaScraper.slug: CsaScraper,
 }

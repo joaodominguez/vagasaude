@@ -31,10 +31,52 @@ NON_CLINICAL = {"Otros", "Gestión y apoyo", "Administrativo", "Comercial / Farm
 _DENTAL_RE = re.compile(r"higiene bucodental|higienista|auxiliar (de )?clinica dental|asistente dental|protesico dental")
 
 
+# Catalán (fuentes SISCAT: CSI, CST, Mar, Clínic...). Se evalúa en orden sobre el título sin
+# marca de género ("Infermer/a" -> "infermer") y normalizado (sin acentos). Solo roles sanitarios
+# inequívocos; el resto cae en guess_profession.
+_CA_GENDER_RE = re.compile(r"/\s*\w+")
+_CA_RULES: list[tuple[re.Pattern[str], str]] = [
+    (re.compile(r"\benginyer"), "Otros"),
+    (re.compile(r"\btcai\b|cures auxiliars|cura auxiliar|auxiliars? d infermeria|auxiliars? de infermeria|"
+                r"tecnics? (en|de) cures|auxiliar sociosanitari|gerocultor"), "TCAE"),
+    (re.compile(r"\bzelador|\bcelador|\bcamiller"), "Celador"),
+    (re.compile(r"\bfarmaceutic|\bfarmacia hospitalaria"), "Farmacia"),
+    (re.compile(r"\bllevador|\bmatron"), "Enfermería"),
+    (re.compile(r"\binfermer"), "Enfermería"),
+    (re.compile(r"\bpsicoleg|\bpsicologia"), "Psicología"),
+    (re.compile(r"treballador social|treball social"), "Trabajo social"),
+    (re.compile(r"\bfisioterap"), "Fisioterapia"),
+    (re.compile(r"\bodontoleg|\bdentista|\bhigienista dental"), "Odontología"),
+    (re.compile(r"tecnic superior sanitari|\btss\b|tecnics? superiors? (en|de) (laboratori|radio|imatge|diagnostic|anatomia)|"
+                r"tecnics? (en|de) (radiodiagnostic|radioterapia|laboratori|emergencies sanitaries|imatge|anatomia)|"
+                r"tecnics? especialistes?|\blogoped|terapeuta ocupacional|\bpodoleg|\boptometr"), "Técnico sanitario"),
+    (re.compile(r"\bmetg|\bmedic\b|\bmedics\b|personal facultatiu|\bfacultatius?\b|\badjunt especialista|"
+                r"\b(oftalmoleg|dermatoleg|ginecoleg|neuroleg|pneumoleg|hematoleg|oncoleg|endocrinoleg|digestoleg|"
+                r"reumatoleg|otorrinolaringoleg|anestesioleg|psiquiatre|cardioleg|radioleg|urgenciolog|geriatre|"
+                r"pediatre|internista|cirurgia)s?\b"), "Medicina"),
+]
+
+
+def _catalan_profession(title: str) -> str | None:
+    t = norm(_CA_GENDER_RE.sub("", title or ""))
+    for pattern, label in _CA_RULES:
+        if pattern.search(t):
+            return label
+    return None
+
+
 def es_profession(title: str) -> str:
-    """guess_profession + ajuste dental (el normalizador devuelve 'Otros' para higienista/auxiliar dental)."""
+    """guess_profession + ajuste dental + roles en catalán (el normalizador devuelve 'Otros' para ellos)."""
     t = norm(title)
     prof = guess_profession(title)
+    ca = _catalan_profession(title)
+    if ca is not None and (
+        prof in ("Otros", "Gestión y apoyo")
+        or ca == "Otros"
+        # "Adjunt/a especialista en anatomia patològica" es facultativo, no técnico.
+        or (ca == "Medicina" and prof == "Técnico sanitario" and re.search(r"adjunt|metg|facultatiu", t))
+    ):
+        return ca
     if prof in ("Otros", "Técnico sanitario") and _DENTAL_RE.search(t):
         return "Odontología"
     return prof
