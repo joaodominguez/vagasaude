@@ -87,7 +87,9 @@ def run_source(slug: str, dry_run: bool = False) -> dict:
                 "status": "ok",
             }
 
-        ingest = ingest_jobs(slug, jobs)
+        ingest = ingest_jobs(
+            slug, jobs, authoritative=bool(getattr(scraper, "authoritative", False))
+        )
         print(f"[{slug}] ingestão: {ingest}")
         result = {
             "source": slug,

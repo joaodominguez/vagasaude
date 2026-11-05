@@ -28,6 +28,7 @@ export async function POST(request: Request) {
   const body = (await request.json().catch(() => null)) as {
     source?: unknown;
     jobs?: unknown;
+    authoritative?: unknown;
   } | null;
 
   const source = typeof body?.source === "string" ? body.source.trim() : "";
@@ -70,7 +71,9 @@ export async function POST(request: Request) {
     });
   }
 
-  const result = await ingestJobs(source, jobs);
+  const result = await ingestJobs(source, jobs, {
+    authoritative: body?.authoritative === true,
+  });
   // In-memory job-store já invalida por mtime; limpar Data Cache do Next.
   revalidateTag(JOBS_CACHE_TAG, "max");
   return NextResponse.json(result);

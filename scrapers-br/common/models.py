@@ -32,6 +32,9 @@ class JobPayload:
 class BaseScraper:
     slug: str
     name: str
+    # True quando fetch() devolve a lista completa e fiável da fonte: o ingest
+    # expira as vagas em falta mesmo que o lote seja pequeno.
+    authoritative: bool = False
 
     def fetch(self) -> list[JobPayload]:
         raise NotImplementedError

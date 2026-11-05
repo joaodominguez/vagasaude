@@ -1183,7 +1183,19 @@ export function ingestJobs(...args: Parameters<typeof ingestJobsUnlocked>) {
   return withJobsFileLock(() => ingestJobsUnlocked(...args));
 }
 
-async function ingestJobsUnlocked(source: string, incoming: IngestJobInput[]) {
+export type IngestOptions = {
+  /**
+   * O scraper garante que a lista é completa (ex.: API que devolve só os editais
+   * abertos): expira as vagas em falta mesmo quando o lote é pequeno.
+   */
+  authoritative?: boolean;
+};
+
+async function ingestJobsUnlocked(
+  source: string,
+  incoming: IngestJobInput[],
+  options: IngestOptions = {},
+) {
   const file = await readJobsFile();
   const now = new Date().toISOString();
   const bySourceId = new Map(
@@ -1324,6 +1336,7 @@ async function ingestJobsUnlocked(source: string, incoming: IngestJobInput[]) {
     (job) => job.source === source && job.status === "published",
   ).length;
   const shouldExpireMissing =
+    (options.authoritative === true && incoming.length > 0) ||
     incoming.length >= Math.max(5, Math.floor(existingPublished * 0.5));
   if (shouldExpireMissing) {
     const seen = new Set(incoming.map((item) => String(item.source_id)));

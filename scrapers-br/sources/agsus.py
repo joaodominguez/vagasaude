@@ -78,6 +78,8 @@ class AgsusScraper(BaseScraper):
 
     slug = "agsus"
     name = "AgSUS — Trabalhe Conosco"
+    # A API devolve exatamente os editais com a etiqueta "em andamento".
+    authoritative = True
 
     def fetch(self) -> list[JobPayload]:
         client = HttpClient(min_interval=0.35)

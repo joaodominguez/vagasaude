@@ -14,6 +14,7 @@ def ingest_jobs(
     *,
     base_url: str | None = None,
     token: str | None = None,
+    authoritative: bool = False,
 ) -> dict[str, Any]:
     base = (
         base_url or os.environ.get("INGEST_BASE_URL") or "http://127.0.0.1:3011"
@@ -23,6 +24,9 @@ def ingest_jobs(
         "source": source,
         "jobs": [job.to_dict() for job in jobs],
     }
+    if authoritative:
+        # Lista completa da fonte: o ingest expira as vagas que deixaram de aparecer.
+        payload["authoritative"] = True
     headers = {"Content-Type": "application/json"}
     if auth:
         headers["Authorization"] = f"Bearer {auth}"
