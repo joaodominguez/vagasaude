@@ -114,6 +114,22 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     logo: "/partners/sanitas.svg",
   },
   {
+    id: "anicura",
+    name: "AniCura — Empleo",
+    shortName: "AniCura",
+    url: "https://empleo.anicura.es/jobs",
+    sector: "Privado",
+    logo: "/partners/anicura.svg",
+  },
+  {
+    id: "ivc_evidensia",
+    name: "IVC Evidensia — Empleo",
+    shortName: "IVC Evidensia",
+    url: "https://carreras.ivcevidensia.es/jobs",
+    sector: "Privado",
+    logo: "/partners/ivc-evidensia.png",
+  },
+  {
     id: "hospiten",
     name: "Hospiten — Empleo",
     shortName: "Hospiten",
