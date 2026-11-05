@@ -43,9 +43,11 @@ HEALTH_IGNORE="${HEALTH_IGNORE:-einstein,fleury}" python3 "$ROOT/tools/scraper_h
 python3 "$ROOT/tools/jobs_integrity.py" /var/www/vagasaudebr/data http://127.0.0.1:3011 /vagas/ || true
 
 # Google Indexing API: vagas novas/removidas (só se a chave da conta de serviço existir).
-INDEXING_KEY="${GOOGLE_INDEXING_KEY:-/home/portal/.config/vagasaude/indexing-key.json}"
+# Chave do projeto Google Cloud próprio do BR (quota de 200/dia só para o BR). Enquanto
+# o ficheiro não existir, o BR não envia pedidos: a chave antiga é agora exclusiva do PT.
+INDEXING_KEY="${GOOGLE_INDEXING_KEY:-/home/portal/.config/vagasaude/indexing-key-br.json}"
 if [[ -f "$INDEXING_KEY" && -x /home/portal/.venvs/indexing/bin/python ]]; then
-  GOOGLE_INDEXING_KEY="$INDEXING_KEY" /home/portal/.venvs/indexing/bin/python "$ROOT/tools/indexing_notify.py" \
+  GOOGLE_INDEXING_KEY="$INDEXING_KEY" INDEXING_DAILY_QUOTA="${INDEXING_DAILY_QUOTA:-200}" /home/portal/.venvs/indexing/bin/python "$ROOT/tools/indexing_notify.py" \
     --sitemap http://127.0.0.1:3011/sitemap/jobs.xml \
     --state /var/www/vagasaudebr/data/indexing-state.json || true
 fi
