@@ -42,8 +42,8 @@ fi
   fi
   export NEXT_PUBLIC_SITE_URL="https://vacantessalud.es"
   # Devuelven 0 legítimamente: Osakidetza sin convocatorias abiertas y los boletines
-  # que solo publican el sumario del día (días sin convocatorias sanitarias).
-  HEALTH_IGNORE="${HEALTH_IGNORE:-osakidetza,dog,borm,doe,boc-canarias,bocyl,docm,boib}" python3 "$ROOT/tools/scraper_health.py" /var/www/vacantessalud/data/scraper-runs.json
+  # que solo publican el sumario del día. Solo avisan si dan error.
+  HEALTH_ALLOW_EMPTY="${HEALTH_ALLOW_EMPTY:-osakidetza,dog,borm,doe,boc-canarias,bocyl,docm,boib}" python3 "$ROOT/tools/scraper_health.py" /var/www/vacantessalud/data/scraper-runs.json
 ) || true
 
 # Digest de nuevas ofertas a los suscriptores ES (solo si Resend está configurado).
