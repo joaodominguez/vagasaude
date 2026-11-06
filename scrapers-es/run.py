@@ -47,7 +47,12 @@ def run_source(slug: str, dry_run: bool = False) -> dict:
                         f"[{slug}] soft-expire desligado "
                         f"(lote incompleto: {len(jobs)} ofertas)"
                     )
-            ingest = ingest_jobs(slug, jobs, expire_missing=expire_missing)
+            ingest = ingest_jobs(
+                slug,
+                jobs,
+                expire_missing=expire_missing,
+                authoritative=bool(getattr(scraper, "authoritative", False)),
+            )
             print(f"[{slug}] ingesta: {ingest}")
             result = {
                 "source": slug,

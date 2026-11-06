@@ -1017,7 +1017,18 @@ export function ingestJobs(...args: Parameters<typeof ingestJobsUnlocked>) {
   return withJobsFileLock(() => ingestJobsUnlocked(...args));
 }
 
-async function ingestJobsUnlocked(source: string, incoming: IngestJobInput[]) {
+export type IngestOptions = {
+  /** false: el scraper sabe que el lote está incompleto (no expirar las ausentes). */
+  expireMissing?: boolean;
+  /** La lista es completa aunque sea pequeña (expira las ausentes con cualquier lote > 0). */
+  authoritative?: boolean;
+};
+
+async function ingestJobsUnlocked(
+  source: string,
+  incoming: IngestJobInput[],
+  options: IngestOptions = {},
+) {
   const file = await readJobsFile();
   const now = new Date().toISOString();
   const bySourceId = new Map(
@@ -1163,15 +1174,28 @@ async function ingestJobsUnlocked(source: string, incoming: IngestJobInput[]) {
   }
 
   // Soft-expire jobs from this source that disappeared from the latest scrape.
-  const seen = new Set(incoming.map((item) => String(item.source_id)));
-  for (const job of file.jobs) {
-    if (
-      job.source === source &&
-      job.status === "published" &&
-      !seen.has(job.sourceId)
-    ) {
-      job.status = "expired";
-      job.updatedAt = now;
+  // No con lotes parciales: el 2026-11-06 el SNE devolvió 5 ofertas (en vez de ~870)
+  // y se expiraron todas las demás. Solo expira con un lote de al menos la mitad de lo
+  // publicado (o si el scraper declara la lista completa) y nunca con 0 ofertas.
+  const existingPublished = file.jobs.filter(
+    (job) => job.source === source && job.status === "published",
+  ).length;
+  const shouldExpireMissing =
+    options.expireMissing !== false &&
+    incoming.length > 0 &&
+    (options.authoritative === true ||
+      incoming.length >= Math.floor(existingPublished * 0.5));
+  if (shouldExpireMissing) {
+    const seen = new Set(incoming.map((item) => String(item.source_id)));
+    for (const job of file.jobs) {
+      if (
+        job.source === source &&
+        job.status === "published" &&
+        !seen.has(job.sourceId)
+      ) {
+        job.status = "expired";
+        job.updatedAt = now;
+      }
     }
   }
 

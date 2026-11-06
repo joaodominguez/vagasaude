@@ -15,6 +15,7 @@ def ingest_jobs(
     base_url: str | None = None,
     token: str | None = None,
     expire_missing: bool = True,
+    authoritative: bool = False,
 ) -> dict[str, Any]:
     # Sin valor por defecto: el 3010 es el puerto del sitio PT en el servidor.
     base_raw = base_url or os.environ.get("INGEST_BASE_URL")
@@ -27,6 +28,8 @@ def ingest_jobs(
         "jobs": [job.to_dict() for job in jobs],
         "expireMissing": expire_missing,
     }
+    if authoritative:
+        payload["authoritative"] = True
     headers = {"Content-Type": "application/json"}
     if auth:
         headers["Authorization"] = f"Bearer {auth}"

@@ -139,6 +139,7 @@ class SneScraper(BaseScraper):
     def fetch(self) -> list[JobPayload]:
         client = HttpClient(timeout=45.0, min_interval=1.0)
         cache = DetailCache(self.slug)
+        cached_before = len(cache.data)
         complete = True
         listed: dict[str, dict] = {}
         try:
@@ -165,6 +166,11 @@ class SneScraper(BaseScraper):
                         continue
                     cache.set(oid, detail)
                 jobs.append(self._build(oid, row, detail))
+            # Respuesta anómala (el 2026-11-06 a las 00:25 el SNE devolvió 5 ofertas sin error):
+            # con menos de la mitad de lo que había, no podar la caché ni expirar ausentes.
+            if cached_before >= 50 and len(listed) < cached_before * 0.5:
+                complete = False
+                print(f"[sne] listado anómalo: {len(listed)} ofertas (caché {cached_before})")
             cache.save(prune=complete)
         finally:
             client.close()
