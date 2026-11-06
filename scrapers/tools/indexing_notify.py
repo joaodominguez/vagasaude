@@ -13,6 +13,8 @@ Uso (no fim do run-scrapers.sh):
 Credenciais: GOOGLE_INDEXING_KEY = JSON da conta de serviço (proprietária da
 propriedade no Search Console). Sem chave corre em simulação (--dry-run implícito).
 Quota: INDEXING_DAILY_QUOTA pedidos/dia (por defeito 100; o projeto tem 200 no total).
+O Google reinicia a quota à meia-noite do Pacífico (America/Los_Angeles), não em UTC:
+o contador local usa o mesmo dia, senão as execuções da madrugada (UTC) recebem 429.
 """
 from __future__ import annotations
 
@@ -20,13 +22,24 @@ import argparse
 import json
 import os
 import re
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import httpx
 
 ENDPOINT = "https://indexing.googleapis.com/v3/urlNotifications:publish"
 SCOPE = "https://www.googleapis.com/auth/indexing"
+
+
+def quota_day() -> str:
+    """Dia da quota do Google (meia-noite do Pacífico)."""
+    try:
+        from zoneinfo import ZoneInfo
+
+        tz = ZoneInfo("America/Los_Angeles")
+    except Exception:  # noqa: BLE001 — sem base de fusos: PST fixo (erro máx. 1 h no verão)
+        tz = timezone(timedelta(hours=-8))
+    return datetime.now(tz).date().isoformat()
 
 
 def read_sitemap(url: str) -> dict[str, str]:
@@ -78,7 +91,7 @@ def main() -> int:
     key_path = os.environ.get("GOOGLE_INDEXING_KEY", "")
     dry_run = args.dry_run or not (key_path and Path(key_path).is_file())
     quota = int(os.environ.get("INDEXING_DAILY_QUOTA", "100"))
-    today = datetime.now(timezone.utc).date().isoformat()
+    today = quota_day()
     now = datetime.now(timezone.utc).isoformat()
 
     current = read_sitemap(args.sitemap)
@@ -108,10 +121,12 @@ def main() -> int:
 
     session = authorized_session(key_path)
     sent = errors = 0
+    exhausted = False
     for url, kind in plan[:budget]:
         response = session.post(ENDPOINT, json={"url": url, "type": kind}, timeout=30)
         if response.status_code == 429:
             print("[indexing] quota da API esgotada (429)")
+            exhausted = True
             break
         if response.status_code >= 400:
             errors += 1
@@ -125,7 +140,8 @@ def main() -> int:
         else:
             notified.pop(url, None)
     state["notified"] = notified
-    state["used"] = int(state.get("used", 0)) + sent
+    # Com 429 não vale a pena tentar de novo até o Google reiniciar a quota.
+    state["used"] = quota if exhausted else int(state.get("used", 0)) + sent
     save_state(state_path, state)
     print(f"[indexing] enviados {sent} pedidos ({errors} erros)")
     return 0
