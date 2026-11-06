@@ -1185,14 +1185,15 @@ async function ingestJobsUnlocked(
     incoming.length > 0 &&
     (options.authoritative === true ||
       incoming.length >= Math.floor(existingPublished * 0.5));
-  if (shouldExpireMissing) {
+  // Con lote parcial, una oferta que no aparece hace más de 3 días expira igualmente
+  // (si la fuente encoge de verdad, las antiguas no quedan publicadas para siempre).
+  const staleBefore = Date.now() - 3 * 24 * 3600 * 1000;
+  if (incoming.length > 0) {
     const seen = new Set(incoming.map((item) => String(item.source_id)));
     for (const job of file.jobs) {
-      if (
-        job.source === source &&
-        job.status === "published" &&
-        !seen.has(job.sourceId)
-      ) {
+      if (job.source !== source || job.status !== "published" || seen.has(job.sourceId)) continue;
+      const lastSeen = Date.parse(job.lastSeenAt || job.updatedAt || "");
+      if (shouldExpireMissing || (!Number.isNaN(lastSeen) && lastSeen < staleBefore)) {
         job.status = "expired";
         job.updatedAt = now;
       }
