@@ -28,5 +28,10 @@ ssh "$H" "set -e; R=/var/www/$site/releases/$rel; CUR=\$(readlink -f /var/www/$s
   kill %1 2>/dev/null || true; wait 2>/dev/null || true
   if grep -qi 'error' /tmp/smoke-$site.log; then echo 'ERROS no log do teste'; grep -i error /tmp/smoke-$site.log | head -5; fail=1; fi
   [ \$fail = 0 ] || { echo 'TESTE DE FUMO FALHOU — produção não foi trocada'; exit 1; }
-  cd /var/www/$site && ln -sfn \$R current.new && mv -T current.new current && echo current=\$(readlink current)"
+  cd /var/www/$site && ln -sfn \$R current.new && mv -T current.new current && echo current=\$(readlink current)
+  rm -f /tmp/$(basename "$tgz")
+  # Limpeza: cada release acumula a cache ISR do Next (BR ~2,5 GB/release). Guardar as
+  # ${KEEP_RELEASES:-4} mais recentes (rollback) e nunca a atual nem pastas _*.
+  OLD=\$(ls -td releases/*/ | sed 's#/\$##' | tail -n +$(( ${KEEP_RELEASES:-4} + 1 )) | grep -v '/_' | grep -vx \"releases/\$(basename \$R)\" || true)
+  [ -z \"\$OLD\" ] || { echo \"\$OLD\" | xargs rm -rf --; echo removidas=\$(echo \"\$OLD\" | wc -l) releases antigas; }"
 ssh "$ROOT_H" "tmux kill-session -t $sess; tmux new-session -d -s $sess -c /var/www/$site /var/www/$site/start.sh; sleep 4; tmux ls | grep $sess"
