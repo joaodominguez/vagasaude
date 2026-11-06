@@ -26,6 +26,8 @@ export async function POST(request: Request) {
   const body = (await request.json().catch(() => null)) as {
     source?: unknown;
     jobs?: unknown;
+    expireMissing?: unknown;
+    authoritative?: unknown;
   } | null;
 
   const source = typeof body?.source === "string" ? body.source.trim() : "";
@@ -68,7 +70,10 @@ export async function POST(request: Request) {
     });
   }
 
-  const result = await ingestJobs(source, jobs);
+  const result = await ingestJobs(source, jobs, {
+    expireMissing: body?.expireMissing !== false,
+    authoritative: body?.authoritative === true,
+  });
   // In-memory job-store invalida por mtime do jobs.json (sem Data Cache Next).
   return NextResponse.json(result);
 }
