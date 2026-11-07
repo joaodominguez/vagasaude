@@ -1,6 +1,7 @@
 import { cache } from "react";
 import { jobs as seedJobs, type Job } from "@/lib/jobs";
 import { getJobCard, listJobCards } from "@/lib/job-store";
+import { isConcursoJob } from "@/lib/concursos";
 
 export type { Job };
 
@@ -27,6 +28,16 @@ export const getJobs = cache(async (): Promise<Job[]> => {
   const stored = await listJobCards();
   return resolveJobs(stored);
 });
+
+/**
+ * Vagas de emprego para listagens indexáveis (homepage, categorias, cidades, semelhantes).
+ * Sem editais de concurso: são noindex e têm secção própria (/concursos). Em 2026-11-07
+ * as 6 "vagas mais recentes" da homepage e ~metade da 1.ª página de /vagas/enfermagem eram
+ * editais da PCI — as ligações mais rastreadas do site apontavam para páginas noindex.
+ */
+export const getListingJobs = cache(async (): Promise<Job[]> =>
+  (await getJobs()).filter((job) => !isConcursoJob(job)),
+);
 
 export const getJob = cache(
   async (

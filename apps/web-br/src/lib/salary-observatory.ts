@@ -5,7 +5,7 @@ import {
   listEligibleCategories,
   toCategorySlug,
 } from "@/lib/categories";
-import { getJobs } from "@/lib/jobs-data";
+import { getListingJobs } from "@/lib/jobs-data";
 
 /**
  * Observatório de salários: salários reais anunciados pelos próprios empregadores
@@ -226,7 +226,7 @@ export function salaryPath(role: SalaryRole, district?: string | null) {
 
 /** Landing de vagas da função (e do estado, se existir); senão a da função ou /vagas. */
 export async function salaryJobsHref(role: SalaryRole, district?: string | null) {
-  const eligible = new Set(listEligibleCategories(await getJobs()).map((ref) => ref.path));
+  const eligible = new Set(listEligibleCategories(await getListingJobs()).map((ref) => ref.path));
   const candidates = [
     district ? categoryPath(role.hubProfession, district) : null,
     categoryPath(role.hubProfession, null),

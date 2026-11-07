@@ -13,7 +13,7 @@ import {
 } from "@/lib/salary-benchmarks";
 import { cityOfJob, citiesOfDistrict, getCityIndex } from "@/lib/cities";
 import { concursosPath, listConcursos, listEligibleConcursos } from "@/lib/concursos-hub";
-import { getJobs } from "@/lib/jobs-data";
+import { getListingJobs } from "@/lib/jobs-data";
 import { articlesForCategory, newsPath } from "@/lib/news";
 import { salaryPathForProfession } from "@/lib/salary-observatory";
 
@@ -53,7 +53,7 @@ export async function CategoryInsights({
   allCategoryRefs: CategoryRef[];
 }) {
   const eligible = new Set(allCategoryRefs.map((ref) => ref.path));
-  const allJobs = await getJobs();
+  const allJobs = await getListingJobs();
   const cityIndex = getCityIndex(allJobs);
   const concursoPaths = new Set(
     listEligibleConcursos(listConcursos(allJobs)).map((ref) => ref.path),

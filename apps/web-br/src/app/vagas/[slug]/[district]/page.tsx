@@ -14,7 +14,7 @@ import {
   professionFromSlug,
   resolveCategoryFromSegments,
 } from "@/lib/categories";
-import { getJobs } from "@/lib/jobs-data";
+import { getListingJobs } from "@/lib/jobs-data";
 
 export const dynamic = "force-static";
 export const revalidate = 600;
@@ -45,13 +45,13 @@ export async function generateMetadata({
   const { slug, district } = await params;
   const city = parseCategoryPageSegment(district)
     ? null
-    : resolveCity(await getJobs(), slug, district);
+    : resolveCity(await getListingJobs(), slug, district);
   if (city) return buildCityMetadata(city);
   const resolved = resolveSegments(slug, district);
   if (!resolved) return { title: "Categoria não encontrada" };
   const { category, page } = resolved;
   const jobs = filterJobsForCategory(
-    await getJobs(),
+    await getListingJobs(),
     category.profession,
     category.district,
   );
@@ -69,7 +69,7 @@ export default async function ProfessionDistrictPage({
     const first = resolveCategoryFromSegments(slug);
     if (first) permanentRedirect(first.path);
   }
-  const allJobs = await getJobs();
+  const allJobs = await getListingJobs();
   // /vagas/<estado>/<cidade>: landing de cidade (≥ CATEGORY_MIN_JOBS vagas).
   const city = parseCategoryPageSegment(district)
     ? null

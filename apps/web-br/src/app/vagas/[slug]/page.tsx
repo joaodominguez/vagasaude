@@ -41,7 +41,7 @@ import {
 } from "@/lib/concursos-hub";
 import { classifyJob } from "@/lib/job-type";
 import type { Job } from "@/lib/jobs";
-import { getJob, getJobs } from "@/lib/jobs-data";
+import { getJob, getListingJobs } from "@/lib/jobs-data";
 import { buildJobMetadata, buildJobPostingJsonLd, jobUrl } from "@/lib/seo";
 
 // force-static + revalidate: HTML ISR on-demand (revalidate sozinho não
@@ -57,7 +57,7 @@ export async function generateMetadata({
   params: Params;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const allJobs = await getJobs();
+  const allJobs = await getListingJobs();
   const category = resolveCategoryFromSegments(slug);
   if (
     category &&
@@ -86,7 +86,7 @@ export async function generateMetadata({
 
 export default async function VagasSlugPage({ params }: { params: Params }) {
   const { slug } = await params;
-  const allJobs = await getJobs();
+  const allJobs = await getListingJobs();
   const category = resolveCategoryFromSegments(slug);
 
   if (

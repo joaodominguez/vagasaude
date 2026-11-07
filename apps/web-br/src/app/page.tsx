@@ -23,7 +23,7 @@ import {
   listConcursos,
   listEligibleConcursos,
 } from "@/lib/concursos-hub";
-import { getJobs } from "@/lib/jobs-data";
+import { getListingJobs } from "@/lib/jobs-data";
 import { professions } from "@/lib/jobs";
 import { formatNewsDate, listArticles, newsCategoryLabel, newsPath } from "@/lib/news";
 import { buildHomeMetadata } from "@/lib/seo";
@@ -32,13 +32,13 @@ import { buildHomeMetadata } from "@/lib/seo";
 export const revalidate = 120;
 
 export async function generateMetadata() {
-  const jobs = await getJobs();
+  const jobs = await getListingJobs();
   return buildHomeMetadata(jobs.length);
 }
 
 export default async function Home() {
-  const jobs = await getJobs();
-  const recentJobs = jobs.slice(0, 6);
+  const jobs = await getListingJobs();
+  const recentJobs = jobs.slice(0, 12);
   const latestNews = listArticles().slice(0, 3);
   const districtCounts = jobs.reduce<Record<string, number>>((acc, job) => {
     const key = job.district || "Brasil";

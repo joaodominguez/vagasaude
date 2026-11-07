@@ -8,7 +8,7 @@ import { listEligibleCities } from "@/lib/cities";
 import { isConcursoJob } from "@/lib/concursos";
 import { listConcursos, listEligibleConcursos } from "@/lib/concursos-hub";
 import type { Job } from "@/lib/jobs";
-import { getJobs } from "@/lib/jobs-data";
+import { getJobs, getListingJobs } from "@/lib/jobs-data";
 import { getSalaryObservations, listSalaryPages } from "@/lib/salary-observatory";
 import {
   listArticles,
@@ -111,7 +111,7 @@ ${entries.join("\n")}
 }
 
 async function buildCategoriesSitemap() {
-  const jobs = await getJobs();
+  const jobs = await getListingJobs();
   const categories = listEligibleCategories(jobs);
   const fallback = newestPublished(jobs, STATIC_PAGES_UPDATED);
   const entries = categories.flatMap((category) => {

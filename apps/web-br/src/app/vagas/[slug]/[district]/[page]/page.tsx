@@ -13,7 +13,7 @@ import {
   parseCategoryPageSegment,
   resolveCategoryFromSegments,
 } from "@/lib/categories";
-import { getJobs } from "@/lib/jobs-data";
+import { getListingJobs } from "@/lib/jobs-data";
 
 export const dynamic = "force-static";
 export const revalidate = 600;
@@ -35,13 +35,13 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug, district, page: pageSegment } = await params;
   const cityPage = parseCategoryPageSegment(pageSegment);
-  const city = cityPage ? resolveCity(await getJobs(), slug, district) : null;
+  const city = cityPage ? resolveCity(await getListingJobs(), slug, district) : null;
   if (city && cityPage) return buildCityMetadata(city, cityPage);
   const resolved = resolveSegments(slug, district, pageSegment);
   if (!resolved) return { title: "Categoria não encontrada" };
   const { category, page } = resolved;
   const jobs = filterJobsForCategory(
-    await getJobs(),
+    await getListingJobs(),
     category.profession,
     category.district,
   );
@@ -55,7 +55,7 @@ export default async function ProfessionDistrictPagedPage({
   params: Params;
 }) {
   const { slug, district, page: pageSegment } = await params;
-  const cityJobs = await getJobs();
+  const cityJobs = await getListingJobs();
   const city = resolveCity(cityJobs, slug, district);
   if (city) {
     if (isFirstPageSegment(pageSegment)) permanentRedirect(city.path);
@@ -71,7 +71,7 @@ export default async function ProfessionDistrictPagedPage({
   if (!resolved) notFound();
   const { category, page } = resolved;
 
-  const allJobs = await getJobs();
+  const allJobs = await getListingJobs();
   if (!isCategoryEligible(allJobs, category.profession, category.district)) {
     const qs = new URLSearchParams();
     if (category.profession) qs.set("profissao", category.profession);
