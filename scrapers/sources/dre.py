@@ -3,8 +3,10 @@ from __future__ import annotations
 import json
 import os
 import re
+import shutil
 import signal
 import subprocess
+import tempfile
 import unicodedata
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -56,39 +58,39 @@ class DreScraper(BaseScraper):
         return jobs
 
 
-PROFILE_DIR = os.environ.get("DRE_USER_DATA_DIR", "/tmp/vagasaude-dre-chrome")
-
-
-def _clear_stale_chrome() -> None:
-    """Mata um Chrome órfão preso ao perfil (execução anterior cortada) e apaga os locks."""
-    subprocess.run(["pkill", "-f", "--", f"--user-data-dir={PROFILE_DIR}"], check=False)
-    for name in ("SingletonLock", "SingletonCookie", "SingletonSocket"):
-        try:
-            os.unlink(os.path.join(PROFILE_DIR, name))
-        except OSError:
-            pass
+def _kill_chrome(profile: str) -> None:
+    """Mata qualquer Chrome que tenha ficado preso a este perfil."""
+    subprocess.run(["pkill", "-f", "--", f"--user-data-dir={profile}"], check=False)
 
 
 def _run_search() -> list[dict]:
     if not SEARCH_SCRIPT.exists():
         raise FileNotFoundError(f"Script DR em falta: {SEARCH_SCRIPT}")
-    _clear_stale_chrome()
-    # Grupo de processos próprio: no timeout matamos node + Chrome, não só o node.
-    child = subprocess.Popen(
-        ["node", str(SEARCH_SCRIPT)],
-        cwd=str(ROOT),
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True,
-        start_new_session=True,
-    )
+    # Perfil novo em cada execução: o perfil fixo em /tmp cresceu (388 MB) e corrompeu-se em
+    # 2026-11-06 — o Chrome fechava a sessão e o DR falhou 4 execuções seguidas. O DR não
+    # precisa de login nem de cache entre execuções.
+    profile = tempfile.mkdtemp(prefix="vagasaude-dre-")
+    env = {**os.environ, "DRE_USER_DATA_DIR": profile}
     try:
-        stdout, stderr = child.communicate(timeout=420)
-    except subprocess.TimeoutExpired:
-        os.killpg(child.pid, signal.SIGKILL)
-        child.communicate()
-        _clear_stale_chrome()
-        raise RuntimeError("dre_search excedeu 420 s (processos terminados)")
+        # Grupo de processos próprio: no timeout matamos node + Chrome, não só o node.
+        child = subprocess.Popen(
+            ["node", str(SEARCH_SCRIPT)],
+            cwd=str(ROOT),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            start_new_session=True,
+            env=env,
+        )
+        try:
+            stdout, stderr = child.communicate(timeout=420)
+        except subprocess.TimeoutExpired:
+            os.killpg(child.pid, signal.SIGKILL)
+            child.communicate()
+            raise RuntimeError("dre_search excedeu 420 s (processos terminados)")
+    finally:
+        _kill_chrome(profile)
+        shutil.rmtree(profile, ignore_errors=True)
     proc = subprocess.CompletedProcess(child.args, child.returncode, stdout, stderr)
     if proc.returncode != 0:
         raise RuntimeError(
