@@ -35,6 +35,7 @@ import { concursosPath, hasConcursoLanding, listConcursos } from "@/lib/concurso
 import { concelhoPath, isConcelhoEligible, jobConcelho } from "@/lib/concelhos";
 import { classifyJob, JOB_TYPE_LABEL } from "@/lib/job-type";
 import type { Job } from "@/lib/jobs";
+import { relatedJobs } from "@/lib/related-jobs";
 import { getJob, getJobs } from "@/lib/jobs-data";
 import { buildJobMetadata, buildJobPostingJsonLd, jobUrl } from "@/lib/seo";
 import { emLocal } from "@/lib/pt-locative";
@@ -116,26 +117,6 @@ export default async function VagasSlugPage({ params }: { params: Params }) {
     />;
 }
 
-function scoreRelated(candidate: Job, target: Job): number {
-  let score = 0;
-  if (candidate.profession === target.profession) score += 5;
-  if (candidate.district === target.district) score += 3;
-  if (candidate.sector === target.sector) score += 2;
-  const tWords = new Set(
-    target.title
-      .toLocaleLowerCase("pt")
-      .split(/\s+/)
-      .filter((w) => w.length > 3),
-  );
-  for (const w of candidate.title
-    .toLocaleLowerCase("pt")
-    .split(/\s+/)
-    .filter((w) => w.length > 3)) {
-    if (tWords.has(w)) score += 1;
-  }
-  if (candidate.company === target.company) score += 1;
-  return score;
-}
 
 function ActiveJobView({
   job,
@@ -146,14 +127,7 @@ function ActiveJobView({
   allJobs: Job[];
   canonicalSlug?: string;
 }) {
-  const related = allJobs
-    .filter(
-      (item) =>
-        item.slug !== job.slug &&
-        (item.profession === job.profession || item.district === job.district),
-    )
-    .sort((a, b) => scoreRelated(b, job) - scoreRelated(a, job))
-    .slice(0, 6);
+  const related = relatedJobs(job, allJobs);
 
   // Republicação de outra vaga: sem JobPosting (só a vaga principal).
   const jsonLd = canonicalSlug ? null : buildJobPostingJsonLd(job);
@@ -333,14 +307,7 @@ function ActiveJobView({
 }
 
 function ExpiredJobView({ job, allJobs }: { job: Job; allJobs: Job[] }) {
-  const similar = allJobs
-    .filter(
-      (item) =>
-        item.slug !== job.slug &&
-        (item.profession === job.profession || item.district === job.district),
-    )
-    .sort((a, b) => scoreRelated(b, job) - scoreRelated(a, job))
-    .slice(0, 6);
+  const similar = relatedJobs(job, allJobs);
   const categoryLinks = buildJobCategoryLinks(job, allJobs);
 
   return (
