@@ -100,7 +100,8 @@ class BepScraper(BaseScraper):
     name = "BEP (Bolsa de Emprego Público)"
 
     def fetch(self) -> list[JobPayload]:
-        client = HttpClient(min_interval=0.35)
+        # O BEP tem picos de lentidão (4 execuções seguidas com timeout a 30 s em 2026-11-08/09).
+        client = HttpClient(timeout=60.0, min_interval=0.35)
         try:
             listed = self._collect_listings(client)
             jobs: list[JobPayload] = []
