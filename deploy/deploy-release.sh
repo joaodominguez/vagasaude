@@ -31,6 +31,9 @@ ssh "$H" "set -e; R=/var/www/$site/releases/$rel; CUR=\$(readlink -f /var/www/$s
   cd /var/www/$site && ln -sfn \$R current.new && mv -T current.new current && echo current=\$(readlink current)
   rm -f /tmp/$(basename "$tgz")"
 ssh "$ROOT_H" "tmux kill-session -t $sess; tmux new-session -d -s $sess -c /var/www/$site /var/www/$site/start.sh; sleep 4; tmux ls | grep $sess"
+# Aquecer a cache das páginas mais visitadas (não bloqueia o deploy se falhar).
+case "$site" in vagasaude) prod=3010 ;; vagasaudebr) prod=3011 ;; vacantessalud) prod=3012 ;; *) prod= ;; esac
+[ -z "$prod" ] || ssh "$ROOT_H" "bash -s -- $prod" < "$(dirname "$0")/warm-cache.sh" || echo "AVISO: aquecimento falhou (deploy concluído)"
 # Limpeza (como root, DEPOIS do reinício, nunca bloqueia o deploy): cada release acumula a
 # cache ISR do Next, escrita pelo app que corre como root (BR ~2,5 GB/release) — o portal
 # não a consegue apagar. Guardar as KEEP_RELEASES (4) mais recentes, nunca a atual nem _*.
