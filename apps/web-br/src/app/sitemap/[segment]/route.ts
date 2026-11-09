@@ -9,6 +9,7 @@ import { isConcursoJob } from "@/lib/concursos";
 import { listConcursos, listEligibleConcursos } from "@/lib/concursos-hub";
 import type { Job } from "@/lib/jobs";
 import { getJobs, getListingJobs } from "@/lib/jobs-data";
+import { employerLastmod, listEmployers } from "@/lib/employers";
 import { getSalaryObservations, listSalaryPages } from "@/lib/salary-observatory";
 import {
   listArticles,
@@ -220,6 +221,22 @@ ${entries.join("\n")}
 `;
 }
 
+/** Páginas de empregador (/empresas e /empresas/[slug]); lastmod = vaga mais recente. */
+async function buildEmployersSitemap() {
+  const employers = listEmployers(await getListingJobs());
+  const entries = [
+    urlEntry(`${SITE_URL}/empresas`, newestPublished(await getListingJobs(), STATIC_PAGES_UPDATED), "daily", "0.7"),
+    ...employers.map((employer) =>
+      urlEntry(`${SITE_URL}${employer.path}`, employerLastmod(employer, STATIC_PAGES_UPDATED), "daily", "0.7"),
+    ),
+  ];
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${entries.join("\n")}
+</urlset>
+`;
+}
+
 export async function GET(
   _request: Request,
   context: { params: Promise<{ segment: string }> },
@@ -227,6 +244,9 @@ export async function GET(
   const { segment } = await context.params;
   if (segment === "pages.xml") {
     return xmlResponse(await buildPagesSitemap());
+  }
+  if (segment === "empresas.xml") {
+    return xmlResponse(await buildEmployersSitemap());
   }
   if (segment === "jobs.xml") {
     return xmlResponse(await buildJobsSitemap());
