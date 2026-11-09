@@ -10,6 +10,7 @@ import {
   listEligibleCategories,
   parseCategoryPageSegment,
   resolveCategoryFromSegments,
+  fallbackCategoryPath,
 } from "@/lib/categories";
 import { getJobs } from "@/lib/jobs-data";
 
@@ -68,10 +69,7 @@ export default async function ProfessionDistrictPagedPage({
       category.province ?? null,
     )
   ) {
-    const qs = new URLSearchParams();
-    if (category.profession) qs.set("profesion", category.profession);
-    if (category.district) qs.set("comunidad", category.district);
-    redirect(`/empleo?${qs.toString()}`);
+    redirect(fallbackCategoryPath(allJobs, category.profession, category.district));
   }
 
   const jobs = filterJobsForCategory(

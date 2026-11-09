@@ -30,6 +30,7 @@ import {
   listEligibleCategories,
   provincePath,
   resolveCategoryFromSegments,
+  fallbackCategoryPath,
 } from "@/lib/categories";
 import type { Job } from "@/lib/jobs";
 import { getJob, getJobs } from "@/lib/jobs-data";
@@ -99,10 +100,7 @@ export default async function EmpleoSlugPage({ params }: { params: Params }) {
 
   // Slug reservado a categoría sin inventario suficiente → listado filtrado.
   if (category) {
-    const paramsQs = new URLSearchParams();
-    if (category.profession) paramsQs.set("profesion", category.profession);
-    if (category.district) paramsQs.set("comunidad", category.district);
-    redirect(`/empleo?${paramsQs.toString()}`);
+    redirect(fallbackCategoryPath(allJobs, category.profession, category.district));
   }
 
   const found = await getJob(slug);
