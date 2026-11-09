@@ -31,6 +31,7 @@ import {
   jobSubProfession,
   listEligibleCategories,
   resolveCategoryFromSegments,
+  fallbackCategoryPath,
 } from "@/lib/categories";
 import { cityRefOfJob } from "@/lib/cities";
 import {
@@ -109,10 +110,7 @@ export default async function VagasSlugPage({ params }: { params: Params }) {
 
   // Slug reservado a categoria sem inventário suficiente → listagem filtrada.
   if (category) {
-    const paramsQs = new URLSearchParams();
-    if (category.profession) paramsQs.set("profissao", category.profession);
-    if (category.district) paramsQs.set("distrito", category.district);
-    redirect(`/vagas?${paramsQs.toString()}`);
+    redirect(fallbackCategoryPath(allJobs, category.profession, category.district));
   }
 
   const found = await getJob(slug);
