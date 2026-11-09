@@ -35,9 +35,19 @@ export const getJobs = cache(async (): Promise<Job[]> => {
  * as 6 "vagas mais recentes" da homepage e ~metade da 1.ª página de /vagas/enfermagem eram
  * editais da PCI — as ligações mais rastreadas do site apontavam para páginas noindex.
  */
-export const getListingJobs = cache(async (): Promise<Job[]> =>
-  (await getJobs()).filter((job) => !isConcursoJob(job)),
-);
+const listingByJobs = new WeakMap<Job[], Job[]>();
+
+export const getListingJobs = cache(async (): Promise<Job[]> => {
+  // Mesma lista (mesma referência) enquanto o jobs.json não muda: permite reaproveitar
+  // índices calculados sobre ela (vagas semelhantes, empregadores) entre pedidos.
+  const all = await getJobs();
+  let listing = listingByJobs.get(all);
+  if (!listing) {
+    listing = all.filter((job) => !isConcursoJob(job));
+    listingByJobs.set(all, listing);
+  }
+  return listing;
+});
 
 export const getJob = cache(
   async (
