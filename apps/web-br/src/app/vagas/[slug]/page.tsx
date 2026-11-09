@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
+import { notFound, redirect, permanentRedirect } from "next/navigation";
 import {
   BriefcaseBusiness,
   CalendarDays,
@@ -43,6 +43,7 @@ import {
 import { classifyJob } from "@/lib/job-type";
 import type { Job } from "@/lib/jobs";
 import { relatedJobs } from "@/lib/related-jobs";
+import { LEGACY_SLUG_REDIRECTS } from "@/lib/slug-redirects";
 import { getJob, getListingJobs } from "@/lib/jobs-data";
 import { buildJobMetadata, buildJobPostingJsonLd, jobUrl } from "@/lib/seo";
 
@@ -115,7 +116,11 @@ export default async function VagasSlugPage({ params }: { params: Params }) {
   }
 
   const found = await getJob(slug);
-  if (!found) notFound();
+  if (!found) {
+    const legacy = LEGACY_SLUG_REDIRECTS[slug];
+    if (legacy) permanentRedirect(`/vagas/${legacy}`);
+    notFound();
+  }
 
   if (found.expired) {
     return <ExpiredJobView job={found.job} allJobs={allJobs} />;
