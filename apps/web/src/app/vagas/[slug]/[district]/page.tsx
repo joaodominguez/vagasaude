@@ -11,6 +11,7 @@ import {
   parseCategoryPageSegment,
   professionFromSlug,
   resolveCategoryFromSegments,
+  fallbackCategoryPath,
 } from "@/lib/categories";
 import { getJobs } from "@/lib/jobs-data";
 
@@ -69,10 +70,7 @@ export default async function ProfessionDistrictPage({
 
   const allJobs = await getJobs();
   if (!isCategoryEligible(allJobs, category.profession, category.district)) {
-    const qs = new URLSearchParams();
-    if (category.profession) qs.set("profissao", category.profession);
-    if (category.district) qs.set("distrito", category.district);
-    redirect(`/vagas?${qs.toString()}`);
+    redirect(fallbackCategoryPath(allJobs, category.profession, category.district));
   }
 
   const jobs = filterJobsForCategory(

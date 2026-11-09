@@ -7,6 +7,7 @@ import {
   listEligibleConcelhos,
   resolveConcelhoSegments,
 } from "@/lib/concelhos";
+import { categoryPath, isCategoryEligible } from "@/lib/categories";
 import { getJobs } from "@/lib/jobs-data";
 
 export const dynamic = "force-static";
@@ -30,7 +31,8 @@ export default async function ConcelhoPage({ params }: { params: Params }) {
   const allJobs = await getJobs();
   const eligible = listEligibleConcelhos(allJobs);
   if (!eligible.some((item) => item.path === ref.path)) {
-    redirect(`/vagas?distrito=${encodeURIComponent(ref.district)}`);
+    // Concelho sem vagas suficientes → landing do distrito (indexável), nunca /vagas?… (robots).
+    redirect(isCategoryEligible(allJobs, null, ref.district) ? categoryPath(null, ref.district) : "/vagas");
   }
   const jobs = filterJobsForConcelho(allJobs, ref.district, ref.concelho);
   const siblings = eligible

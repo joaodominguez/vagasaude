@@ -532,3 +532,20 @@ export function siblingDistrictLinks(
     )
     .slice(0, limit);
 }
+
+/**
+ * Destino de uma landing sem vagas suficientes: a landing-mãe elegível mais próxima
+ * (profissão, depois região), senão a listagem geral. Nunca /vagas?… — está bloqueado no
+ * robots.txt e o Google marcava estes URLs como "bloqueada pelo robots.txt" (2026-11-09).
+ */
+export function fallbackCategoryPath(
+  jobs: Parameters<typeof isCategoryEligible>[0],
+  profession: string | null | undefined,
+  district: string | null | undefined,
+) {
+  if (profession && district) {
+    if (isCategoryEligible(jobs, profession, null)) return categoryPath(profession, null);
+    if (isCategoryEligible(jobs, null, district)) return categoryPath(null, district);
+  }
+  return "/vagas";
+}

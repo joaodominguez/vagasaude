@@ -29,6 +29,7 @@ import {
   isCategoryEligible,
   listEligibleCategories,
   resolveCategoryFromSegments,
+  fallbackCategoryPath,
 } from "@/lib/categories";
 import { concursosPath, hasConcursoLanding, listConcursos } from "@/lib/concursos";
 import { concelhoPath, isConcelhoEligible, jobConcelho } from "@/lib/concelhos";
@@ -98,10 +99,7 @@ export default async function VagasSlugPage({ params }: { params: Params }) {
 
   // Slug reservado a categoria sem inventário suficiente → listagem filtrada.
   if (category) {
-    const paramsQs = new URLSearchParams();
-    if (category.profession) paramsQs.set("profissao", category.profession);
-    if (category.district) paramsQs.set("distrito", category.district);
-    redirect(`/vagas?${paramsQs.toString()}`);
+    redirect(fallbackCategoryPath(allJobs, category.profession, category.district));
   }
 
   const found = await getJob(slug);
