@@ -86,7 +86,7 @@ export default async function SalariesIndexPage() {
           <section className="content-card p-5">
             <h2 className="text-lg font-extrabold">Herramientas</h2>
             <div className="mt-4 flex flex-wrap gap-2">
-              <Link href="/salarios/simulador-sueldo-neto" className="filter-chip">
+              <Link prefetch={false} href="/salarios/simulador-sueldo-neto" className="filter-chip">
                 Simulador de sueldo neto {SALARY_YEAR}
               </Link>
             </div>

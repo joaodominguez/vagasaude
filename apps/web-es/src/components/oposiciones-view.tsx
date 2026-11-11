@@ -129,7 +129,7 @@ export function OposicionesView({
                     </h2>
                     <div className="mt-2 flex flex-wrap gap-2 text-sm">
                       {group.links.map((link) => (
-                        <Link key={link.href} href={link.href} className="filter-chip">
+                        <Link prefetch={false} key={link.href} href={link.href} className="filter-chip">
                           {link.label} ({link.count})
                         </Link>
                       ))}

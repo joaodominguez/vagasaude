@@ -90,7 +90,7 @@ export default async function Home() {
                     ? categoryPath(profession, null)
                     : `/empleo?profesion=${encodeURIComponent(profession)}`;
                   return (
-                    <Link key={profession} href={href} className="filter-chip">
+                    <Link prefetch={false} key={profession} href={href} className="filter-chip">
                       {profession}
                     </Link>
                   );
@@ -157,7 +157,7 @@ export default async function Home() {
             {oposicionRefs.length > 0 && (
               <div className="mt-5 flex flex-wrap gap-2">
                 {oposicionRefs.map((ref) => (
-                  <Link
+                  <Link prefetch={false}
                     key={ref.path}
                     href={oposicionesPath(ref.profession)}
                     className="filter-chip"
@@ -219,7 +219,7 @@ export default async function Home() {
                 </h3>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {professionCategories.map((category) => (
-                    <Link key={category.path} href={category.path} className="filter-chip">
+                    <Link prefetch={false} key={category.path} href={category.path} className="filter-chip">
                       {category.profession}
                     </Link>
                   ))}
@@ -233,7 +233,7 @@ export default async function Home() {
                 </h3>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {districtCategories.map((category) => (
-                    <Link key={category.path} href={category.path} className="filter-chip">
+                    <Link prefetch={false} key={category.path} href={category.path} className="filter-chip">
                       {category.district}
                     </Link>
                   ))}

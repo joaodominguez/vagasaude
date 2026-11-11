@@ -117,7 +117,7 @@ export function CategoryPageView({
             {parentLinks.length > 1 && (
               <nav className="mt-5 flex flex-wrap gap-2 text-sm" aria-label="Categorías relacionadas">
                 {parentLinks.map((link) => (
-                  <Link key={link.href} href={link.href} className="filter-chip">
+                  <Link prefetch={false} key={link.href} href={link.href} className="filter-chip">
                     {link.label}
                   </Link>
                 ))}
@@ -133,7 +133,7 @@ export function CategoryPageView({
                 </h2>
                 <div className="mt-2 flex flex-wrap gap-2 text-sm">
                   {provinces.map((item) => (
-                    <Link key={item.path} href={item.path} className="filter-chip">
+                    <Link prefetch={false} key={item.path} href={item.path} className="filter-chip">
                       {item.province}
                     </Link>
                   ))}
@@ -271,7 +271,7 @@ function CategoryPagination({
       aria-label="Paginación"
     >
       {page > 1 && (
-        <Link
+        <Link prefetch={false}
           href={categoryPagePath(basePath, page - 1)}
           className="filter-chip inline-flex items-center gap-1"
           rel="prev"
@@ -291,14 +291,14 @@ function CategoryPagination({
               {n}
             </span>
           ) : (
-            <Link href={categoryPagePath(basePath, n)} className="filter-chip">
+            <Link prefetch={false} href={categoryPagePath(basePath, n)} className="filter-chip">
               {n}
             </Link>
           )}
         </span>
       ))}
       {page < totalPages && (
-        <Link
+        <Link prefetch={false}
           href={categoryPagePath(basePath, page + 1)}
           className="filter-chip inline-flex items-center gap-1"
           rel="next"

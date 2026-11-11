@@ -78,7 +78,7 @@ export default async function EmployerPage({ params }: { params: Params }) {
             <nav className="mt-5 flex flex-wrap gap-2 text-sm" aria-label="Áreas con ofertas">
               {stats.professions.map((item) =>
                 item.href ? (
-                  <Link key={item.label} href={item.href} className="filter-chip">
+                  <Link prefetch={false} key={item.label} href={item.href} className="filter-chip">
                     {item.label} · {item.count}
                   </Link>
                 ) : (
