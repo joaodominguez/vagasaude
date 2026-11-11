@@ -122,9 +122,10 @@ async function buildCategoriesSitemap() {
       category.profession,
       category.district,
     );
-    // Página 1 + /pagina-N (paginação self-canonical das landings).
+    // Só a página 1 (2026-11-11): as /pagina-N continuam acessíveis e self-canonical, ligadas
+    // pela paginação, mas fora do sitemap — eram mais de metade das entradas e gastavam rastreio.
     return Array.from(
-      { length: categoryTotalPages(categoryJobs.length) },
+      { length: Math.min(1, categoryTotalPages(categoryJobs.length)) },
       (_, index) =>
         urlEntry(
       `${SITE_URL}${categoryPagePath(category.path, index + 1)}`,
@@ -140,7 +141,7 @@ async function buildCategoriesSitemap() {
   // Landings de cidade (/vagas/<estado>/<cidade>), com paginação self-canonical.
   for (const city of listEligibleCities(jobs)) {
     const lastmod = newestPublished(city.jobs, fallback);
-    for (let page = 1; page <= categoryTotalPages(city.jobs.length); page++) {
+    for (let page = 1; page <= Math.min(1, categoryTotalPages(city.jobs.length)); page++) {
       entries.push(
         urlEntry(`${SITE_URL}${categoryPagePath(city.path, page)}`, lastmod, "daily", "0.6"),
       );
