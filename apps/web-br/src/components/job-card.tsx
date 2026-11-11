@@ -1,27 +1,21 @@
 import Link from "next/link";
-import {
-  ArrowUpRight,
-  Building2,
-  MapPin,
-  ShieldPlus,
-  Stethoscope,
-} from "lucide-react";
+import { CardIcon, type CardIconName } from "@/components/card-icons";
 import type { Job } from "@/lib/jobs";
 import { JobTypeBadge } from "@/components/job-type-badge";
 import { FavoriteButton } from "@/components/favorite-button";
 import { SalaryInsight } from "@/components/salary-insight";
 
 function JobIcon({ profession }: { profession: string }) {
-  const Icon =
+  const icon: CardIconName =
     profession === "Medicina"
-      ? Stethoscope
+      ? "stethoscope"
       : profession === "Enfermagem"
-        ? Building2
-        : ShieldPlus;
+        ? "building-2"
+        : "shield-plus";
 
   return (
     <span className="job-card-icon flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary sm:h-12 sm:w-12">
-      <Icon size={22} strokeWidth={1.8} />
+      <CardIcon name={icon} size={22} strokeWidth={1.8} />
     </span>
   );
 }
@@ -44,7 +38,8 @@ export function JobCard({ job }: { job: Job }) {
             <span className="job-card-aside flex shrink-0 items-center gap-2 text-xs text-muted">
               <span className="whitespace-nowrap">{job.publishedLabel}</span>
               <FavoriteButton slug={job.slug} size={15} />
-              <ArrowUpRight
+              <CardIcon
+                name="arrow-up-right"
                 size={17}
                 className="text-muted transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary"
               />
@@ -52,7 +47,7 @@ export function JobCard({ job }: { job: Job }) {
           </span>
           <span className="job-card-meta mt-2.5 flex flex-wrap items-center gap-1.5 text-xs text-muted">
             <span className="inline-flex min-w-0 max-w-full items-center gap-1">
-              <MapPin size={13} className="shrink-0" />
+              <CardIcon name="map-pin" size={13} className="shrink-0" />
               <span className="truncate">{job.city}</span>
             </span>
             <span className="tag tag-primary">{job.sector}</span>

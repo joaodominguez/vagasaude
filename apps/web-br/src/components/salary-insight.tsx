@@ -1,4 +1,5 @@
 import { CircleHelp, Wallet } from "lucide-react";
+import { CardIcon } from "@/components/card-icons";
 import type { Job } from "@/lib/jobs";
 import {
   formatBRL,
@@ -19,7 +20,7 @@ export function SalaryInsight({ job, variant = "full" }: Props) {
   if (variant === "compact") {
     return (
       <span className="inline-flex max-w-full min-w-0 items-center gap-1 text-xs text-muted">
-        <Wallet size={12} className="shrink-0 opacity-70" aria-hidden="true" />
+        <CardIcon name="wallet" size={12} className="shrink-0 opacity-70" />
         <span className="min-w-0 break-words">
           Média da profissão · {formatBRL(benchmark.average)}
           <span className="sr-only">
