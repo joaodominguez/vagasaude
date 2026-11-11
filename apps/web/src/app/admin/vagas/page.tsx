@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Search } from "lucide-react";
 import { listAllStoredJobs, type StoredJob } from "@/lib/job-store";
 
 export const dynamic = "force-dynamic";
@@ -12,7 +12,14 @@ const STATUS_LABEL: Record<StoredJob["status"], string> = {
   duplicate: "Duplicada",
 };
 
-type SearchParams = Promise<{ estado?: string }>;
+type SearchParams = Promise<{ estado?: string; q?: string }>;
+
+function searchKey(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+}
 
 export default async function AdminJobsPage({
   searchParams,
@@ -21,11 +28,36 @@ export default async function AdminJobsPage({
 }) {
   const params = await searchParams;
   const statusFilter = params.estado?.trim() || "all";
+  const query = params.q?.trim() || "";
+  const needle = searchKey(query);
   const jobs = await listAllStoredJobs();
-  const filtered =
+  const byStatus =
     statusFilter === "all"
       ? jobs
       : jobs.filter((job) => job.status === statusFilter);
+  // Pesquisa por título, empresa, local, slug, fonte ou ID na fonte.
+  const filtered = needle
+    ? byStatus.filter((job) =>
+        searchKey(
+          [
+            job.title,
+            job.company,
+            job.locationDistrict,
+            job.locationConcelho ?? "",
+            job.slug,
+            job.source,
+            job.sourceId,
+          ].join(" "),
+        ).includes(needle),
+      )
+    : byStatus;
+  const listHref = (estado: string) => {
+    const search = new URLSearchParams();
+    if (estado !== "all") search.set("estado", estado);
+    if (query) search.set("q", query);
+    const qs = search.toString();
+    return qs ? `/admin/vagas?${qs}` : "/admin/vagas";
+  };
 
   const counts = jobs.reduce<Record<string, number>>(
     (acc, job) => {
@@ -65,11 +97,7 @@ export default async function AdminJobsPage({
             return (
               <Link
                 key={filter.key}
-                href={
-                  filter.key === "all"
-                    ? "/admin/vagas"
-                    : `/admin/vagas?estado=${filter.key}`
-                }
+                href={listHref(filter.key)}
                 className={`filter-chip ${active ? "filter-chip-active" : ""}`}
               >
                 {filter.label} ({count})
@@ -77,6 +105,24 @@ export default async function AdminJobsPage({
             );
           })}
         </div>
+
+        <form action="/admin/vagas" className="mt-4 flex flex-wrap items-center gap-2">
+          {statusFilter !== "all" && (
+            <input type="hidden" name="estado" value={statusFilter} />
+          )}
+          <span className="input-shell min-w-0 flex-1">
+            <Search aria-hidden="true" size={16} />
+            <input
+              type="search"
+              name="q"
+              defaultValue={query}
+              placeholder="Pesquisar por título, empresa, local, slug ou ID da fonte"
+            />
+          </span>
+          <button type="submit" className="filter-chip">
+            Pesquisar
+          </button>
+        </form>
 
         <section className="content-card mt-6 overflow-hidden">
           <div className="divide-y divide-border">
@@ -91,7 +137,13 @@ export default async function AdminJobsPage({
                 className="grid gap-3 px-5 py-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center"
               >
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-bold">{job.title}</p>
+                  <Link
+                    href={`/admin/vagas/${encodeURIComponent(job.id)}`}
+                    prefetch={false}
+                    className="block truncate text-sm font-bold hover:text-primary"
+                  >
+                    {job.title}
+                  </Link>
                   <p className="mt-0.5 text-xs text-muted">
                     {job.company} · {job.locationDistrict} · {job.source}
                   </p>
