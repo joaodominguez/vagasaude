@@ -368,3 +368,37 @@ export const SOURCE_META = Object.fromEntries(
     { name: source.name, url: source.url, sector: source.sector },
   ]),
 ) as Record<string, { name: string; url: string; sector: string }>;
+
+function getSourceMeta(id: string) {
+  return JOB_SOURCES.find((source) => source.id === id) ?? null;
+}
+
+const BOARD_SOURCES = new Set(["iefp", "sapo_emprego", "omv", "ordem_enfermeiros", "aefful", "net_empregos", "bep", "dre"]);
+const ANONYMOUS_COMPANY_RE = /anunciante|confidencial|bolsa de emprego|ofertas de emprego/i;
+
+function compactName(value: string) {
+  return value
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
+}
+
+/**
+ * Logótipo do empregador para o JobPosting (hiringOrganization.logo) — só quando a fonte É o
+ * empregador da vaga (ex.: fonte "Rede D'Or" e empresa "Rede D'Or"). Fontes que são plataformas
+ * ou agregadores (Gupy, Pandapé, IEFP, PCI…) publicam vagas de muitas empresas: aí não há logo.
+ */
+export function employerLogo(job: { source?: string | null; company?: string | null }) {
+  if (!job.source || !job.company) return null;
+  // Bolsas/agregadores que divulgam vagas de terceiros e anunciantes anónimos: nunca logótipo.
+  if (BOARD_SOURCES.has(job.source) || ANONYMOUS_COMPANY_RE.test(job.company)) return null;
+  const source = getSourceMeta(job.source);
+  if (!source?.logo) return null;
+  const company = compactName(job.company);
+  const short = compactName(source.shortName);
+  const full = compactName(source.name);
+  if (short.length < 3 || company.length < 3) return null;
+  const matches = company.includes(short) || short.includes(company) || full.includes(company);
+  return matches ? { logo: source.logo, url: source.url } : null;
+}
