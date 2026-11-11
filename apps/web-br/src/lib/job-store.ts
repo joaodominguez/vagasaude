@@ -866,6 +866,18 @@ export async function listAllStoredJobs() {
     });
 }
 
+/** Admin (só leitura): registo completo por id, em qualquer estado, e as outras entradas
+ * com o mesmo dedupeHash (a mesma vaga noutras fontes / duplicados). */
+export async function getStoredJobById(id: string) {
+  const file = await readJobsFile();
+  const job = file.jobs.find((item) => item.id === id);
+  if (!job) return null;
+  const sameHash = file.jobs.filter(
+    (item) => item.dedupeHash === job.dedupeHash && item.id !== job.id,
+  );
+  return { job, sameHash };
+}
+
 export async function listStoredJobs(status: StoredJob["status"] = "published") {
   const jobs = await listAllStoredJobs();
   return jobs.filter((job) => job.status === status);
