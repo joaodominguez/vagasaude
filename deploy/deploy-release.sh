@@ -22,7 +22,7 @@ ssh "$H" "set -e; R=/var/www/$site/releases/$rel; CUR=\$(readlink -f /var/www/$s
   mkdir -p \$R && tar -C \$R -xzf /tmp/$(basename "$tgz")
   rm -rf \$R/node_modules/@img/*darwin*; cp -a \$CUR/node_modules/@img/sharp-linux* \$CUR/node_modules/@img/sharp-libvips-linux* \$R/node_modules/@img/
   if ss -ltn | grep -q ':$port '; then echo 'ERRO: porta de teste $port ocupada'; exit 1; fi
-  ( set -a; . /var/www/$site/.env.production; set +a; export PORT=$port; cd \$R && exec timeout 60 node server.js ) > /tmp/smoke-$site.log 2>&1 &
+  ( set -a; . /var/www/$site/.env.production; set +a; export PORT=$port; NODE_BIN=\$(grep -oE '^exec [^ ]*node' /var/www/$site/start.sh | awk '{print \$2}'); cd \$R && exec timeout 60 \${NODE_BIN:-node} server.js ) > /tmp/smoke-$site.log 2>&1 &
   for i in \$(seq 1 40); do curl -s -o /dev/null http://127.0.0.1:$port/robots.txt && break; sleep 0.5; done
   fail=0; for u in $*; do c=\$(curl -s -o /dev/null -w '%{http_code}' \"http://127.0.0.1:$port\$u\"); echo \"smoke \$c \$u\"; [ \"\$c\" = 200 ] || fail=1; done
   kill %1 2>/dev/null || true; wait 2>/dev/null || true
