@@ -1,10 +1,7 @@
 import Link from "next/link";
-import { listArticles } from "@/lib/news";
 import { Logo } from "./logo";
 
 export function Footer() {
-  // Sin noticias publicadas, el enlace llevaría a una página vacía.
-  const hasNews = listArticles().length > 0;
   return (
     <footer className="mt-auto border-t border-border bg-surface">
       <div className="page-container grid gap-8 py-10 sm:grid-cols-[1fr_auto] sm:items-end">
@@ -19,8 +16,6 @@ export function Footer() {
           <Link className="hover:text-primary" href="/salarios">
             Salarios
           </Link>
-          {hasNews && (
-          )}
           <Link className="hover:text-primary" href="/privacidad">
             Privacidad
           </Link>
