@@ -10,11 +10,14 @@ só pode crescer. Este script corre no fim de cada run-scrapers.sh e verifica:
   2. nenhum slug que existia na execução anterior desapareceu (URLs a 404);
   3. o total de entradas não diminuiu e as publicadas não caíram mais de 30%;
   4. o ficheiro foi atualizado nas últimas horas (scrapers não pararam);
-  5. páginas de amostra (vagas novas e expiradas) respondem 200 na app local.
+  5. páginas de amostra (vagas novas e expiradas) respondem 200 na app local;
+  6. se existir data/jobs.db (migração para SQLite, JOB_STORE=dual/sqlite-dual), tem
+     exatamente as mesmas vagas, pela mesma ordem, que o jobs.json.
 
 Uso:
     python3 tools/jobs_integrity.py <data_dir> <base_url_local> <prefixo_url>
     ex.: python3 tools/jobs_integrity.py /var/www/vagasaude/data http://127.0.0.1:3010 /vagas/
+    python3 tools/jobs_integrity.py --db <data_dir>   (só a comparação jobs.db ↔ jobs.json)
 
 Imprime sempre o resultado. Envia email (Resend: RESEND_API_KEY, EMAIL_FROM,
 ALERTS_TO) quando a lista de problemas muda e, enquanto persistir, no máximo um
@@ -25,6 +28,7 @@ from __future__ import annotations
 import json
 import os
 import random
+import sqlite3
 import sys
 import time
 from datetime import datetime, timezone
@@ -45,6 +49,53 @@ def load_jobs(path: Path) -> list[dict]:
     if not isinstance(jobs, list):
         raise ValueError("formato inesperado (sem lista de vagas)")
     return jobs
+
+
+def compare_db(data_dir: Path, attempts: int = 3) -> tuple[str | None, str]:
+    """jobs.db ↔ jobs.json. Devolve (problema ou None, resumo). Sem jobs.db: (None, "").
+
+    O site grava os dois ficheiros um a seguir ao outro; se a comparação apanhar uma
+    gravação a meio, repete passados alguns segundos antes de dar alarme."""
+    db_path = data_dir / "jobs.db"
+    if not db_path.exists():
+        return None, ""
+    problem = None
+    for attempt in range(attempts):
+        if attempt:
+            time.sleep(5)
+        try:
+            data = json.loads((data_dir / "jobs.json").read_text(encoding="utf-8"))
+            con = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True, timeout=30)
+            try:
+                rows = con.execute("SELECT pos, body FROM jobs ORDER BY pos").fetchall()
+                meta = dict(con.execute("SELECT key, value FROM meta").fetchall())
+            finally:
+                con.close()
+        except (OSError, ValueError, sqlite3.Error) as exc:
+            problem = f"jobs.db ilegível: {exc}"
+            continue
+        jobs = data.get("jobs") or []
+        positions = [pos for pos, _ in rows]
+        if positions != list(range(len(rows))):
+            problem = "jobs.db com posições em falta ou repetidas"
+            continue
+        diff = [
+            i for i in range(max(len(jobs), len(rows)))
+            if i >= len(jobs) or i >= len(rows) or json.loads(rows[i][1]) != jobs[i]
+        ]
+        if meta.get("updatedAt") != data.get("updatedAt"):
+            diff = diff or [-1]
+        if not diff:
+            return None, f"jobs.db = jobs.json ({len(jobs)} vagas, versão {meta.get('version')})"
+        examples = ", ".join(
+            (jobs[i].get("slug") if 0 <= i < len(jobs) else f"posição {i}") or f"posição {i}"
+            for i in diff[:3]
+        )
+        problem = (
+            f"jobs.db diferente do jobs.json: {len(diff)} vagas diferentes "
+            f"(jobs.json {len(jobs)}, jobs.db {len(rows)}; ex.: {examples})"
+        )
+    return problem, ""
 
 
 def http_status(url: str) -> int:
@@ -101,6 +152,10 @@ def check(data_dir: Path, base_url: str, prefix: str, previous: dict) -> tuple[l
     if bad:
         problems.append("páginas de vaga sem 200: " + "; ".join(bad))
 
+    db_problem, db_summary = compare_db(data_dir)
+    if db_problem:
+        problems.append(db_problem)
+
     # Com perda de URLs, manter a referência antiga: o alerta persiste até as vagas voltarem.
     keep_old = lost_urls or (prev_total and len(jobs) < prev_total)
     state = {
@@ -109,6 +164,8 @@ def check(data_dir: Path, base_url: str, prefix: str, previous: dict) -> tuple[l
         "published": len(published),
         "checkedAt": datetime.now(timezone.utc).isoformat(),
     }
+    if db_summary:
+        state["db"] = db_summary
     return problems, state
 
 
@@ -132,6 +189,10 @@ def send_email(subject: str, body: str) -> None:
 
 
 def main() -> int:
+    if len(sys.argv) == 3 and sys.argv[1] == "--db":
+        problem, summary = compare_db(Path(sys.argv[2]))
+        print(f"[jobs-integrity] {problem or summary or 'sem jobs.db (JOB_STORE=json)'}")
+        return 1 if problem else 0
     if len(sys.argv) != 4:
         print(__doc__)
         return 2
@@ -147,7 +208,11 @@ def main() -> int:
     for p in problems:
         print(f"[jobs-integrity] PROBLEMA {site}: {p}")
     if not problems:
-        print(f"[jobs-integrity] {site}: OK ({state['total']} vagas, {state['published']} publicadas)")
+        db_summary = state.get("db")
+        print(
+            f"[jobs-integrity] {site}: OK ({state['total']} vagas, {state['published']} publicadas"
+            + (f"; {db_summary}" if db_summary else "") + ")"
+        )
 
     signature = sorted(p.split(":")[0] for p in problems)
     last_sig = previous.get("alertSignature") or []
