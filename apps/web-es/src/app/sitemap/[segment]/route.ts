@@ -109,9 +109,10 @@ async function buildCategoriesSitemap() {
       category.district,
       category.province ?? null,
     );
-    // Página 1 + /pagina-N (paginação self-canonical das landings).
+    // Só a página 1 (2026-11-11): as /pagina-N continuam acessíveis e self-canonical, ligadas
+    // pela paginação, mas fora do sitemap — eram mais de metade das entradas e gastavam rastreio.
     return Array.from(
-      { length: categoryTotalPages(categoryJobs.length) },
+      { length: Math.min(1, categoryTotalPages(categoryJobs.length)) },
       (_, index) =>
         urlEntry(
       `${SITE_URL}${categoryPagePath(category.path, index + 1)}`,
