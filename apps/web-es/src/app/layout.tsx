@@ -6,6 +6,7 @@ import {
   GoogleAnalytics,
 } from "@/components/google-analytics";
 import { MicrosoftClarity } from "@/components/microsoft-clarity";
+import { CardIconSprite } from "@/components/card-icons";
 import { SiteStatsTracker } from "@/components/site-stats-tracker";
 import {
   buildOrganizationJsonLd,
@@ -109,6 +110,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen">
+        <CardIconSprite />
         {children}
         <GoogleAnalytics />
         <MicrosoftClarity />
