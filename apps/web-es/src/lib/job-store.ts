@@ -1,17 +1,9 @@
 import { createHash } from "node:crypto";
 import {
-  chmod,
-  chown,
-  copyFile,
-  mkdir,
-  readdir,
-  readFile,
-  rename,
-  stat,
-  unlink,
-  writeFile,
-} from "node:fs/promises";
-import path from "node:path";
+  createJobRepository,
+  type JobRepository,
+  type JobsFile as StoredJobsFile,
+} from "@/lib/job-repository";
 import { CONTRACT_UNKNOWN } from "@/lib/contracts";
 import { normalizeInlineLists } from "@/lib/format-job-text";
 import { shortenJobTitle, tidyTitleEnd } from "@/lib/shorten-job-title";
@@ -69,10 +61,7 @@ export type JobCardData = {
   featured?: boolean;
 };
 
-type JobsFile = {
-  updatedAt: string;
-  jobs: StoredJob[];
-};
+type JobsFile = StoredJobsFile<StoredJob>;
 
 const SECTOR_LABEL: Record<StoredJob["sector"], JobCardData["sector"]> = {
   publico: "Público",
@@ -80,12 +69,12 @@ const SECTOR_LABEL: Record<StoredJob["sector"], JobCardData["sector"]> = {
   concertado: "Concertado",
 };
 
-function dataDir() {
-  return process.env.DATA_DIR ?? path.join(process.cwd(), "data");
-}
+// Onde as vagas ficam guardadas (jobs.json / jobs.db — ver job-repository.ts e JOB_STORE).
+let jobRepository: JobRepository<StoredJob> | null = null;
 
-function jobsFilePath() {
-  return path.join(dataDir(), "jobs.json");
+function repo() {
+  jobRepository ??= createJobRepository<StoredJob>();
+  return jobRepository;
 }
 
 function normalize(text: string) {
@@ -659,14 +648,12 @@ function withJobsFileLock<T>(task: () => Promise<T>): Promise<T> {
 let knownJobsCount = 0;
 
 async function readJobsFile(): Promise<JobsFile> {
-  const filePath = jobsFilePath();
   try {
-    const info = await stat(filePath);
-    if (jobsCache && jobsCache.mtimeMs === info.mtimeMs) {
+    const mtimeMs = await repo().version();
+    if (jobsCache && jobsCache.mtimeMs === mtimeMs) {
       return jobsCache.file;
     }
-    const raw = await readFile(filePath, "utf8");
-    const parsed = JSON.parse(raw) as JobsFile;
+    const parsed = await repo().load();
     const jobs = Array.isArray(parsed.jobs) ? parsed.jobs : [];
     knownJobsCount = jobs.length;
     const repaired = repairJobSlugs(jobs);
@@ -679,7 +666,7 @@ async function readJobsFile(): Promise<JobsFile> {
       await writeJobsFile(file);
       return file;
     }
-    jobsCache = { mtimeMs: info.mtimeMs, file };
+    jobsCache = { mtimeMs, file };
     clearDerivedJobsCache();
     return file;
   } catch (error) {
@@ -825,30 +812,7 @@ function repairJobSlugs(jobs: StoredJob[]) {
   return { jobs: next, changed };
 }
 
-/** Cópias diárias do jobs.json (as mais recentes) — rede de segurança contra perdas. */
-const DAILY_BACKUPS_KEPT = 7;
-
-async function backupJobsFileDaily(filePath: string) {
-  const backup = `${filePath}.bak-daily-${new Date().toISOString().slice(0, 10)}`;
-  if (await stat(backup).then(() => true, () => false)) return;
-  try {
-    await copyFile(filePath, backup);
-  } catch {
-    return; // ainda não existe jobs.json (1.ª escrita)
-  }
-  const dir = path.dirname(filePath);
-  const prefix = `${path.basename(filePath)}.bak-daily-`;
-  const old = (await readdir(dir))
-    .filter((name) => name.startsWith(prefix))
-    .sort()
-    .slice(0, -DAILY_BACKUPS_KEPT);
-  await Promise.all(
-    old.map((name) => unlink(path.join(dir, name)).catch(() => undefined)),
-  );
-}
-
 async function writeJobsFile(file: JobsFile) {
-  const filePath = jobsFilePath();
   // Uma escrita que deixa menos de metade das vagas é quase de certeza um bug
   // (ex.: base lida como vazia): recusar em vez de apagar o histórico.
   if (knownJobsCount >= 100 && file.jobs.length < knownJobsCount / 2) {
@@ -856,23 +820,12 @@ async function writeJobsFile(file: JobsFile) {
       `Escritura de jobs.json rechazada: pasaría de ${knownJobsCount} a ${file.jobs.length} ofertas.`,
     );
   }
-  await mkdir(dataDir(), { recursive: true });
-  await backupJobsFileDaily(filePath);
-  // Escrita atómica (temporário + rename): nenhuma leitura apanha o ficheiro a meio.
-  // Mantém dono e permissões do ficheiro anterior (a app corre como root).
-  const before = await stat(filePath).catch(() => null);
-  const tmpPath = `${filePath}.tmp-${process.pid}-${Date.now()}`;
-  await writeFile(tmpPath, JSON.stringify(file, null, 2), { mode: 0o600 });
-  if (before) {
-    await chmod(tmpPath, before.mode & 0o777);
-    await chown(tmpPath, before.uid, before.gid).catch(() => undefined);
-  }
-  await rename(tmpPath, filePath);
+  // Cópia diária + escrita atómica (ver job-repository.ts).
+  await repo().save(file);
   knownJobsCount = file.jobs.length;
   // Manter o cache coerente após escrita (ingest/reclassify/repair).
   try {
-    const info = await stat(jobsFilePath());
-    jobsCache = { mtimeMs: info.mtimeMs, file };
+    jobsCache = { mtimeMs: await repo().version(), file };
   } catch {
     jobsCache = null;
   }
