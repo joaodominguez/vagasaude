@@ -76,6 +76,7 @@ async function buildPagesSitemap() {
     urlEntry(`${SITE_URL}/vagas`, latestJob, "daily", "0.9"),
     urlEntry(`${SITE_URL}/alertas`, STATIC_PAGES_UPDATED, "weekly", "0.6"),
     urlEntry(`${SITE_URL}/como-funciona`, STATIC_PAGES_UPDATED, "monthly", "0.5"),
+    urlEntry(`${SITE_URL}/dados`, latestJob, "daily", "0.7"),
     urlEntry(`${SITE_URL}/privacidade`, STATIC_PAGES_UPDATED, "weekly", "0.6"),
   ];
   return `<?xml version="1.0" encoding="UTF-8"?>
