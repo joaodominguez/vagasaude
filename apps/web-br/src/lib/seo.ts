@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { Job } from "@/lib/jobs";
+import { employerLogo } from "@/lib/sources";
 
 export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://vagasaude.com.br";
@@ -258,6 +259,7 @@ function buildBaseSalaryJsonLd(job: Job) {
 }
 
 export function buildJobPostingJsonLd(job: Job) {
+  const employer = employerLogo(job);
   const datePosted = safeDatePosted(job.publishedAt);
   const validThrough = jobValidThrough(job);
   const description =
@@ -282,6 +284,8 @@ export function buildJobPostingJsonLd(job: Job) {
     hiringOrganization: {
       "@type": "Organization",
       name: job.company,
+      // Logótipo só quando a fonte é o próprio empregador (o Google for Jobs mostra-o na lista).
+      ...(employer ? { logo: absoluteUrl(employer.logo), sameAs: employer.url } : {}),
     },
     jobLocation: {
       "@type": "Place",
