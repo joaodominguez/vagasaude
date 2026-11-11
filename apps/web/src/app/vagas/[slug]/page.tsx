@@ -1,14 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import {
-  BriefcaseBusiness,
-  CalendarDays,
-  Check,
-  ExternalLink,
-  MapPin,
-  ShieldCheck,
-} from "lucide-react";
+import { Check, ExternalLink, ShieldCheck } from "lucide-react";
 import { AlertForm } from "@/components/alert-form";
 import { Breadcrumbs, type BreadcrumbItem } from "@/components/breadcrumbs";
 import { applyTrackingProps } from "@/lib/analytics";
@@ -33,7 +26,7 @@ import {
 } from "@/lib/categories";
 import { concursosPath, hasConcursoLanding, listConcursos } from "@/lib/concursos";
 import { concelhoPath, isConcelhoEligible, jobConcelho } from "@/lib/concelhos";
-import { classifyJob, JOB_TYPE_LABEL } from "@/lib/job-type";
+import { classifyJob } from "@/lib/job-type";
 import type { Job } from "@/lib/jobs";
 import { relatedJobs } from "@/lib/related-jobs";
 import { getJob, getJobs } from "@/lib/jobs-data";
@@ -133,58 +126,46 @@ function ActiveJobView({
   const jsonLd = canonicalSlug ? null : buildJobPostingJsonLd(job);
   const shareUrl = jobUrl(job.slug);
   const categoryLinks = buildJobCategoryLinks(job, allJobs);
+  const professionHref = isCategoryEligible(allJobs, job.profession, null)
+    ? categoryPath(job.profession, null)
+    : null;
+  const moreLinks = categoryLinks.filter((link) => link.label !== job.profession);
 
   return (
     <>
+      <div className="job-detail">
       <Header />
-      <main className="pb-24 md:pb-0">
-        <div className="page-container py-7 sm:py-10">
+      <main>
+        <div className="page-container py-5 sm:py-10">
           <Breadcrumbs items={buildJobBreadcrumbs(job, allJobs)} />
 
-          <div className="grid min-w-0 gap-8 lg:grid-cols-[minmax(0,1fr)_21rem]">
-            <article className="min-w-0">
-              <header className="border-b border-border pb-8">
-                <div className="flex min-w-0 items-start gap-3 sm:gap-4">
-                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary-soft text-primary sm:h-14 sm:w-14">
-                    <BriefcaseBusiness size={26} strokeWidth={1.7} />
-                  </span>
-                  <div className="min-w-0">
-                    <h1 className="break-words text-2xl font-extrabold leading-tight tracking-[-0.05em] sm:text-4xl">
-                      {job.title}
-                    </h1>
-                    <p className="mt-2 truncate text-base font-semibold text-muted">
-                      {job.company}
-                    </p>
-                  </div>
-                </div>
-                <div className="mt-5 flex flex-wrap items-center gap-2 text-sm text-muted">
-                  <span className="inline-flex items-center gap-1.5">
-                    <MapPin size={15} /> {job.city}
-                  </span>
-                  <span aria-hidden="true">•</span>
-                  <span className="inline-flex items-center gap-1.5">
-                    <CalendarDays size={15} /> Publicado{" "}
-                    {job.publishedLabel.toLowerCase()}
-                  </span>
-                  <span className="tag tag-primary">{job.sector}</span>
+          <div className="job-layout">
+            <article className="job-main min-w-0">
+              <header>
+                <h1 className="break-words text-2xl font-extrabold leading-tight tracking-[-0.04em] sm:text-4xl">
+                  {job.title}
+                </h1>
+                <p className="mt-2 text-base font-semibold leading-snug">
+                  {job.company}
+                </p>
+                <p className="mt-1.5 flex flex-wrap items-center gap-2 text-sm">
+                  {professionHref ? (
+                    <Link
+                      prefetch={false}
+                      href={professionHref}
+                      className="font-semibold text-primary hover:underline"
+                    >
+                      {job.profession}
+                    </Link>
+                  ) : (
+                    <span className="font-semibold text-muted">{job.profession}</span>
+                  )}
                   <JobTypeBadge job={job} />
-                  <span className="tag">{job.contract}</span>
-                  <span className="tag">{job.profession}</span>
+                </p>
+                <JobFacts job={job} />
+                <div className="mt-3">
+                  <SalaryInsight job={job} />
                 </div>
-                {categoryLinks.length > 0 && (
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {categoryLinks.map((link) => (
-                      <Link prefetch={false} key={link.href} href={link.href} className="filter-chip">
-                        {link.label}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-                <ShareButtons
-                  url={shareUrl}
-                  title={job.title}
-                  summary={`${job.company} · ${job.city}`}
-                />
               </header>
 
               <div className="job-content">
@@ -197,40 +178,39 @@ function ActiveJobView({
                   title="Responsabilidades"
                   items={job.responsibilities}
                 />
+                <ShareButtons
+                  url={shareUrl}
+                  title={job.title}
+                  summary={`${job.company} · ${job.city}`}
+                />
+                {moreLinks.length > 0 && (
+                  <nav className="mt-6" aria-label="Mais vagas">
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
+                      {moreLinks.map((link) => (
+                        <Link
+                          prefetch={false}
+                          key={link.href}
+                          href={link.href}
+                          className="font-semibold text-primary hover:underline"
+                        >
+                          {link.label}
+                        </Link>
+                      ))}
+                    </div>
+                  </nav>
+                )}
               </div>
             </article>
 
-            <aside className="space-y-4 lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:overscroll-contain">
-              <div className="content-card p-5">
-                <h2 className="font-extrabold">Resumo da vaga</h2>
-                <dl className="mt-4 divide-y divide-border rounded-xl border border-border text-sm">
-                  {[
-                    ["Localização", job.city],
-                    ["Setor", job.sector],
-                    ...(classifyJob(job) !== "oferta"
-                      ? [["Tipo", JOB_TYPE_LABEL[classifyJob(job)]]]
-                      : []),
-                    ["Contrato", job.contract],
-                    ["Publicado", job.publishedLabel],
-                  ].map(([term, value]) => (
-                    <div
-                      key={term}
-                      className="grid grid-cols-[1fr_auto] gap-3 px-3 py-3"
-                    >
-                      <dt className="text-muted">{term}</dt>
-                      <dd className="font-semibold">{value}</dd>
-                    </div>
-                  ))}
-                </dl>
-                <div className="mt-4">
-                  <SalaryInsight job={job} />
-                </div>
-                <div className="mt-5 flex gap-2">
+            <aside className="job-aside">
+              <div className="content-card hidden p-5 lg:block">
+                <h2 className="font-extrabold">Candidatura</h2>
+                <div className="mt-4 flex gap-2">
                   <a
                     href={job.applicationUrl}
                     target="_blank"
                     rel="noopener noreferrer nofollow"
-                    className="button button-primary flex-1 text-center"
+                    className="button button-primary min-w-0 flex-1 text-center"
                     {...applyTrackingProps(job, "sidebar")}
                   >
                     <span className="truncate">Candidatar</span>
@@ -260,42 +240,44 @@ function ActiveJobView({
 
               <GuidesCta profession={job.profession} sector={job.sector} />
             </aside>
-          </div>
 
-          {related.length > 0 && (
-            <section className="mt-12 border-t border-border pt-9">
-              <div className="flex items-center justify-between gap-3">
-                <h2 className="section-title">Vagas relacionadas</h2>
-                <Link
-                  href={relatedJobsHref(job, allJobs)}
-                  rel={relatedJobsHref(job, allJobs).startsWith("/vagas?") ? "nofollow" : undefined}
-                  className="text-sm font-bold text-primary hover:underline"
-                >
-                  Ver mais
-                </Link>
-              </div>
-              <div className="mt-5 grid min-w-0 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {related.map((item) => (
-                  <JobCard key={item.slug} job={item} />
-                ))}
-              </div>
-            </section>
-          )}
+            {related.length > 0 && (
+              <section className="job-related border-t border-border pt-8">
+                <div className="flex items-center justify-between gap-3">
+                  <h2 className="section-title">Vagas relacionadas</h2>
+                  <Link
+                    href={relatedJobsHref(job, allJobs)}
+                    rel={relatedJobsHref(job, allJobs).startsWith("/vagas?") ? "nofollow" : undefined}
+                    className="text-sm font-bold text-primary hover:underline"
+                  >
+                    Ver mais
+                  </Link>
+                </div>
+                <div className="mt-5 grid min-w-0 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {related.map((item) => (
+                    <JobCard key={item.slug} job={item} />
+                  ))}
+                </div>
+              </section>
+            )}
+          </div>
         </div>
       </main>
+      <Footer />
+      </div>
 
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/95 p-3 backdrop-blur md:hidden">
+      <div className="job-apply-bar">
         <a
           href={job.applicationUrl}
           target="_blank"
           rel="noopener noreferrer nofollow"
-          className="button button-primary w-full"
+          className="button button-primary min-w-0 flex-1"
           {...applyTrackingProps(job, "mobile")}
         >
           Candidatar <ExternalLink size={16} />
         </a>
+        <FavoriteButton slug={job.slug} size={18} className="detail-fav-button" />
       </div>
-      <Footer />
       {jsonLd && (
         <script
           type="application/ld+json"
@@ -447,7 +429,28 @@ function buildJobBreadcrumbs(job: Job, allJobs: Job[]): BreadcrumbItem[] {
   return items;
 }
 
+function JobFacts({ job }: { job: Job }) {
+  const facts = [
+    ["Local", job.city],
+    ["Contrato", job.contract || "A definir"],
+    ["Setor", job.sector],
+    ["Publicado", job.publishedLabel],
+  ];
+
+  return (
+    <dl className="job-facts">
+      {facts.map(([term, value]) => (
+        <div key={term} className="job-fact">
+          <dt>{term}</dt>
+          <dd>{value}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
 function CheckList({ title, items }: { title: string; items: string[] }) {
+  if (items.length === 0) return null;
   return (
     <section>
       <h2>{title}</h2>
