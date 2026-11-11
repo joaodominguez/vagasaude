@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { categoryEligibleCached, facetCounts, searchHaystack } from "@/lib/listing-cache";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronLeft, ChevronRight, SlidersHorizontal, X } from "lucide-react";
@@ -11,7 +12,6 @@ import { MobileFilterSheet } from "@/components/mobile-filter-sheet";
 import { SearchForm } from "@/components/search-form";
 import {
   categoryPath,
-  isCategoryEligible,
   listCategoryChips,
 } from "@/lib/categories";
 import {
@@ -128,8 +128,7 @@ export default async function JobsPage({
   const periodCutoff = periodDays ? periodCutoffIso(periodDays) : "";
 
   let filteredJobs = jobs.filter((job) => {
-    const haystack =
-      `${job.title} ${job.company} ${job.profession} ${job.description}`.toLocaleLowerCase("es");
+    const haystack = searchHaystack(job, "es");
     return (
       (!query || haystack.includes(query)) &&
       (!district || job.district === district) &&
@@ -415,10 +414,11 @@ function SidebarFilters({
   hasFilters: boolean;
   queryRaw: string;
 }) {
+  const facets = facetCounts(jobs);
   const districtItems = districts
     .map((item) => ({
       item,
-      count: jobs.filter((job) => job.district === item).length,
+      count: facets.district.get(item) ?? 0,
     }))
     .filter(({ count }) => count > 0)
     .sort((a, b) => b.count - a.count);
@@ -435,7 +435,7 @@ function SidebarFilters({
         {professions
           .map((item) => ({
             item,
-            count: jobs.filter((job) => job.profession === item).length,
+            count: facets.profession.get(item) ?? 0,
           }))
           .filter(({ count }) => count > 0)
           .map(({ item, count }) => (
@@ -449,11 +449,11 @@ function SidebarFilters({
               count={count}
               preferCategory={
                 !queryRaw && !sector && !district && !contract
-                  ? isCategoryEligible(jobs, item, null)
+                  ? categoryEligibleCached(jobs, item, null)
                     ? categoryPath(item, null)
                     : null
                   : !queryRaw && !sector && !contract && district
-                    ? isCategoryEligible(jobs, item, district)
+                    ? categoryEligibleCached(jobs, item, district)
                       ? categoryPath(item, district)
                       : null
                     : null
@@ -482,7 +482,7 @@ function SidebarFilters({
         {["Público", "Privado", "Concertado"]
           .map((item) => ({
             item,
-            count: jobs.filter((job) => job.sector === item).length,
+            count: facets.sector.get(item) ?? 0,
           }))
           .filter(({ count }) => count > 0)
           .map(({ item, count }) => (
@@ -500,9 +500,7 @@ function SidebarFilters({
 
       <FilterGroup title="Contrato">
         {CONTRACT_FILTERS.map((item) => {
-          const count = jobs.filter(
-            (job) => contractBucket(job.contract) === item,
-          ).length;
+          const count = facets.contract.get(item) ?? 0;
           if (!count) return null;
           return (
             <FilterLink
