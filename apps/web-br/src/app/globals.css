@@ -78,7 +78,9 @@ select {
 }
 
 :focus-visible {
-  outline: 2px solid var(--accent);
+  /* --primary (≈5,4:1 sobre branco) em vez de --accent (≈2,3:1): foco visível ao navegar por teclado. */
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
 
 ::selection {
@@ -1359,4 +1361,19 @@ select {
 .news-prose th {
   background: var(--surface);
   font-weight: 800;
+}
+
+/* fix: menu/Filtros só no mobile */
+/* As utilitárias md:hidden / lg:hidden (Tailwind, @layer utilities) perdiam para .icon-button e
+   .filter-sheet-trigger (regras sem camada, acima): no desktop apareciam o menu de telemóvel e um
+   segundo botão "Filtros". Só estes dois casos; os outros .icon-button (tema) não mudam. */
+@media (min-width: 48rem) {
+  .icon-button.md\:hidden {
+    display: none;
+  }
+}
+@media (min-width: 64rem) {
+  .filter-sheet-trigger.lg\:hidden {
+    display: none;
+  }
 }
