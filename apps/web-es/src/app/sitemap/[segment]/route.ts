@@ -59,6 +59,7 @@ async function buildPagesSitemap() {
     urlEntry(`${SITE_URL}/empleo`, now, "daily", "0.9"),
     urlEntry(`${SITE_URL}/alertas`, now, "weekly", "0.6"),
     urlEntry(`${SITE_URL}/como-funciona`, now, "monthly", "0.5"),
+    urlEntry(`${SITE_URL}/datos`, now, "daily", "0.7"),
     urlEntry(`${SITE_URL}/privacidad`, now, "weekly", "0.6"),
     urlEntry(`${SITE_URL}/aviso-legal`, now, "monthly", "0.3"),
     urlEntry(`${SITE_URL}/cookies`, now, "monthly", "0.3"),
