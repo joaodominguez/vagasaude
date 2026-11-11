@@ -20,11 +20,24 @@ export type SalaryBenchmark = {
 
 type BenchmarkRule = {
   needles: string[];
+  /** Só aplica a regra se o título/profissão contiver também um destes termos. */
+  requires?: string[];
   label: string;
   average: number;
   low: number;
   high: number;
 };
+
+/**
+ * Termo no início de uma palavra (e palavra inteira se tiver até 4 letras). Antes era um
+ * `includes` solto: "uti" apanhava "farmacêUTIco" e todas as vagas de farmacêutico recebiam
+ * a estimativa de enfermagem de UTI.
+ */
+function hasNeedle(blob: string, needle: string) {
+  const escaped = needle.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const end = needle.replace(/[^a-z0-9]/g, "").length <= 4 ? "(?![a-z0-9])" : "";
+  return new RegExp(`(?<![a-z0-9])${escaped}${end}`).test(blob);
+}
 
 function norm(text: string) {
   return text
@@ -70,6 +83,7 @@ const TITLE_RULES: BenchmarkRule[] = [
       "bloco operatorio",
       "atendimento permanente",
     ],
+    requires: ["enferm"],
     label: "Enfermagem (UCI / urgência / bloco)",
     average: 1900,
     low: 1650,
@@ -147,6 +161,7 @@ const TITLE_RULES: BenchmarkRule[] = [
   },
   {
     needles: ["cirurgi"],
+    requires: ["medic", "cirurgiao", "cirurgia"],
     label: "Médico cirurgião",
     average: 5500,
     low: 4000,
@@ -271,7 +286,10 @@ export function getSalaryBenchmark(
   const blob = norm(`${title || ""} ${profession || ""}`);
 
   for (const rule of TITLE_RULES) {
-    if (rule.needles.some((needle) => blob.includes(norm(needle)))) {
+    if (
+      rule.needles.some((needle) => hasNeedle(blob, norm(needle))) &&
+      (!rule.requires || rule.requires.some((term) => blob.includes(norm(term))))
+    ) {
       const adjusted = applySector(
         {
           label: rule.label,

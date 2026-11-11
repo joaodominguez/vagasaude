@@ -21,7 +21,7 @@ export function SalaryInsight({ job, variant = "full" }: Props) {
       <span className="inline-flex items-center gap-1 text-xs text-muted">
         <Wallet size={12} className="shrink-0 opacity-70" aria-hidden="true" />
         <span>
-          Média PT · {formatEuro(benchmark.average)}
+          Média da profissão · {formatEuro(benchmark.average)}
           <span className="sr-only">
             {" "}
             brutos/mês para {benchmark.label} ({formatEuroRange(benchmark.low, benchmark.high)})
