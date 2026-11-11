@@ -26,16 +26,23 @@ export function AlertForm({
     event.preventDefault();
     setStatus("loading");
     const form = new FormData(event.currentTarget);
-    const response = await fetch("/api/alerts", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: form.get("email"),
-        district: form.get("district") || null,
-        profession: form.get("profession") || null,
-        sector: form.get("sector") || null,
-      }),
-    });
+    let response: Response;
+    try {
+      response = await fetch("/api/alerts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: form.get("email"),
+          district: form.get("district") || null,
+          profession: form.get("profession") || null,
+          sector: form.get("sector") || null,
+        }),
+      });
+    } catch {
+      // Sem rede / pedido interrompido: mostrar o erro em vez de ficar a carregar para sempre.
+      setStatus("error");
+      return;
+    }
 
     if (!response.ok) {
       setStatus("error");
@@ -67,7 +74,10 @@ export function AlertForm({
 
   if (status === "success") {
     return (
-      <div className="flex items-start gap-3 rounded-xl bg-success-soft p-4 text-sm text-success">
+      <div
+        role="status"
+        className="flex items-start gap-3 rounded-xl bg-success-soft p-4 text-sm text-success"
+      >
         <CheckCircle2 className="mt-0.5 shrink-0" size={19} />
         <p>
           <strong className="block">Casi listo.</strong>
@@ -162,7 +172,7 @@ export function AlertForm({
         Crear alerta gratuita
       </button>
       {status === "error" && (
-        <p className="text-sm text-danger">
+        <p role="alert" className="text-sm text-danger">
           No se ha podido crear la alerta. Inténtalo de nuevo.
         </p>
       )}
