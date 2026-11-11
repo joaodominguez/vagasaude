@@ -515,7 +515,11 @@ function hasFutureExpiry(job: StoredJob) {
 
 /** Vaga publicada que já não deve ser servida como ativa (listagens, sitemap, JobPosting). */
 function isInactive(job: StoredJob) {
-  if (isClosedNoticeTitle(job.title)) return true;
+  return isClosedNoticeTitle(job.title) || isInactiveByDate(job);
+}
+
+/** A parte de isInactive que depende da hora (prazo, última vez vista, idade). */
+function isInactiveByDate(job: StoredJob) {
   const now = Date.now();
   const lastSeen = Date.parse(job.lastSeenAt || job.updatedAt || "");
   // Prazo da fonte passado, mas a fonte ainda publica a vaga (visto há <2 dias):
@@ -619,6 +623,10 @@ const CARDS_TTL_MS = 60_000;
 type DerivedJobsCache = {
   mtimeMs: number;
   builtAt: number;
+  /** Publicadas sem título de aviso (não depende da hora). */
+  candidates: StoredJob[];
+  /** Ativas quando a cache foi construída (depende da hora: prazos, vistas há >7 dias). */
+  active: StoredJob[];
   cards: JobCardData[];
   bySlug: Map<string, StoredJob>;
   /** Republicações: slug da cópia → slug da vaga principal. */
@@ -681,16 +689,49 @@ async function readJobsFile(): Promise<JobsFile> {
   }
 }
 
+function sameJobs(a: StoredJob[], b: StoredJob[]) {
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i += 1) if (a[i] !== b[i]) return false;
+  return true;
+}
+
+/**
+ * Atualiza as etiquetas relativas ("Hoje", "Há 3 dias") com o passar do tempo. Uma vaga que
+ * já tinha 7+ dias quando as etiquetas foram calculadas (labelsAt) mostra a data fixa, que
+ * não muda mais: só se recalculam as outras. Devolve a mesma lista se nada mudou.
+ */
+function refreshPublishedLabels(cards: JobCardData[], labelsAt: number) {
+  let next: JobCardData[] | null = null;
+  for (let i = 0; i < cards.length; i += 1) {
+    const card = cards[i];
+    const time = Date.parse(card.publishedAt);
+    if (!Number.isNaN(time) && labelsAt - time >= 7 * DAY_MS) continue;
+    const label = publishedLabel(card.publishedAt);
+    if (label === card.publishedLabel) continue;
+    next ??= cards.slice();
+    next[i] = { ...card, publishedLabel: label };
+  }
+  return next ?? cards;
+}
+
 async function getDerivedJobsCache(): Promise<DerivedJobsCache> {
   const file = await readJobsFile();
   const mtimeMs = jobsCache?.mtimeMs ?? 0;
   const now = Date.now();
-  if (
-    derivedJobsCache &&
-    derivedJobsCache.mtimeMs === mtimeMs &&
-    now - derivedJobsCache.builtAt < CARDS_TTL_MS
-  ) {
-    return derivedJobsCache;
+  if (derivedJobsCache && derivedJobsCache.mtimeMs === mtimeMs) {
+    if (now - derivedJobsCache.builtAt < CARDS_TTL_MS) return derivedJobsCache;
+    // Mesmos dados, só passou o tempo. Se as vagas ativas são as mesmas, basta atualizar as
+    // etiquetas "Hoje"/"Ontem" (milissegundos) em vez de reconstruir tudo — a reconstrução
+    // (~0,7 s no BR) bloqueava a app e atrasava os cliques de 60 em 60 s.
+    const active = derivedJobsCache.candidates.filter((job) => !isInactiveByDate(job));
+    if (sameJobs(active, derivedJobsCache.active)) {
+      derivedJobsCache = {
+        ...derivedJobsCache,
+        builtAt: now,
+        cards: refreshPublishedLabels(derivedJobsCache.cards, derivedJobsCache.builtAt),
+      };
+      return derivedJobsCache;
+    }
   }
 
   const bySlug = new Map<string, StoredJob>();
@@ -702,12 +743,10 @@ async function getDerivedJobsCache(): Promise<DerivedJobsCache> {
     }
   }
 
-  const active = file.jobs.filter(
-    (job) =>
-      job.status === "published" &&
-      !isInactive(job) &&
-      !isClosedNoticeTitle(job.title),
+  const candidates = file.jobs.filter(
+    (job) => job.status === "published" && !isClosedNoticeTitle(job.title),
   );
+  const active = candidates.filter((job) => !isInactiveByDate(job));
   const canonicalOf = findRepostings(active);
   const listed = active
     .filter((job) => !canonicalOf.has(job.slug))
@@ -727,6 +766,8 @@ async function getDerivedJobsCache(): Promise<DerivedJobsCache> {
   derivedJobsCache = {
     mtimeMs,
     builtAt: now,
+    candidates,
+    active,
     cards,
     bySlug,
     canonicalOf,
