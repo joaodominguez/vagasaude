@@ -13,6 +13,12 @@ export function Footer() {
           </p>
         </div>
         <nav className="flex flex-wrap gap-x-6 gap-y-3 text-sm text-muted">
+          <Link className="hover:text-primary" href="/empresas">
+            Empresas
+          </Link>
+          <Link className="hover:text-primary" href="/datos">
+            Datos
+          </Link>
           <Link className="hover:text-primary" href="/salarios">
             Salarios
           </Link>
