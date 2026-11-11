@@ -85,7 +85,7 @@ export default async function SalariesIndexPage() {
           <section className="content-card p-5">
             <h2 className="text-lg font-extrabold">Ferramentas</h2>
             <div className="mt-4 flex flex-wrap gap-2">
-              <Link href="/salarios/simulador-salario-liquido" className="filter-chip">
+              <Link prefetch={false} href="/salarios/simulador-salario-liquido" className="filter-chip">
                 Simulador de salário líquido {SALARY_YEAR}
               </Link>
             </div>

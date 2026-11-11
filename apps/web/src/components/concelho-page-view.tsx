@@ -88,11 +88,11 @@ export function ConcelhoPageView({
             <p className="mt-4 max-w-3xl text-sm leading-7 text-muted sm:text-base">{intro}</p>
 
             <nav className="mt-5 flex flex-wrap gap-2 text-sm" aria-label="Categorias relacionadas">
-              <Link href="/vagas" className="filter-chip">
+              <Link prefetch={false} href="/vagas" className="filter-chip">
                 Todas as vagas
               </Link>
               {districtEligible && (
-                <Link href={categoryPath(null, concelho.district)} className="filter-chip">
+                <Link prefetch={false} href={categoryPath(null, concelho.district)} className="filter-chip">
                   {concelho.district}
                 </Link>
               )}

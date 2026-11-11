@@ -174,7 +174,7 @@ function ActiveJobView({
                 {categoryLinks.length > 0 && (
                   <div className="mt-4 flex flex-wrap gap-2">
                     {categoryLinks.map((link) => (
-                      <Link key={link.href} href={link.href} className="filter-chip">
+                      <Link prefetch={false} key={link.href} href={link.href} className="filter-chip">
                         {link.label}
                       </Link>
                     ))}
@@ -335,7 +335,7 @@ function ExpiredJobView({ job, allJobs }: { job: Job; allJobs: Job[] }) {
             {categoryLinks.length > 0 && (
               <div className="mt-4 flex flex-wrap gap-2">
                 {categoryLinks.map((link) => (
-                  <Link key={link.href} href={link.href} className="filter-chip">
+                  <Link prefetch={false} key={link.href} href={link.href} className="filter-chip">
                     {link.label}
                   </Link>
                 ))}
