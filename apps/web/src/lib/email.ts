@@ -315,7 +315,7 @@ export function alertConfirmEmail(
   const summary = alertSummary(alert);
   const rows: Array<[string, string]> = [
     ["O teu alerta", capitalize(summary)],
-    ["Frequência", "1 email por dia, de manhã — só quando há vagas novas"],
+    ["Frequência", "No máximo 2 emails por dia (manhã e fim do dia) — só quando há vagas novas"],
   ];
   if (matchingCount > 0) {
     rows.push([
@@ -337,7 +337,7 @@ ${rows
     html: layout({
       campaign: "alerta_confirmacao",
       preheader:
-        "Um clique para começares a receber as vagas novas, uma vez por dia.",
+        "Um clique para começares a receber as vagas novas por email.",
       title: "Falta só confirmar",
       body: `${paragraph("Confirma o teu email para activarmos o alerta. Sem confirmação não enviamos nada.")}
 ${details}
@@ -368,8 +368,8 @@ export function alertConfirmedEmail(
   const listHref = trackedUrl(alertJobsPath(alert, allJobs), "alerta_ativo");
   const intro =
     latest.length > 0
-      ? `A partir de amanhã recebes um email por dia, de manhã, com as novas ${summary}. Para começares já, estas são as mais recentes:`
-      : `A partir de amanhã recebes um email por dia, de manhã, sempre que houver novas ${summary}.`;
+      ? `Vais receber as novas ${summary} por email, de manhã e ao fim do dia — só quando houver vagas novas. Para começares já, estas são as mais recentes:`
+      : `Vais receber as novas ${summary} por email, de manhã e ao fim do dia, sempre que houver vagas novas.`;
 
   return {
     subject: `Alerta activo: ${summary}`,

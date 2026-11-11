@@ -29,8 +29,10 @@ export async function buildAlertConfirmedEmail(alert: StoredAlert) {
 
 type AlertState = {
   lastDigestAt: string | null;
-  /** Dia local (AAAA-MM-DD) do último resumo — garante 1 email por dia. */
+  /** Dia local (AAAA-MM-DD) do último resumo da manhã — no máximo 1 por manhã. */
   lastDigestDay?: string | null;
+  /** Dia local do último resumo do fim do dia — no máximo 1 por fim do dia. */
+  lastEveningDigestDay?: string | null;
   deliveries: Record<string, string[]>;
 };
 
@@ -69,13 +71,18 @@ function jobKey(job: JobCardData) {
 
 /**
  * O digest é chamado no fim de cada execução dos scrapers (de 6 em 6 h), mas só
- * envia uma vez por dia, de manhã: na primeira execução entre DIGEST_START_HOUR e
- * DIGEST_END_HOUR (hora local). Se a manhã falhar, fica para o dia seguinte.
+ * envia em duas janelas (hora local): de manhã, na primeira execução entre
+ * DIGEST_START_HOUR e DIGEST_END_HOUR (6–14 h), e ao fim do dia, na primeira entre
+ * DIGEST_EVENING_START_HOUR e DIGEST_EVENING_END_HOUR (17–23 h). Cada resumo leva só as
+ * vagas que entraram desde o anterior, e cada subscritor só recebe se houver vagas novas
+ * para o seu alerta — portanto no máximo 2 emails por dia.
  */
 function digestClock(now: Date) {
   const timeZone = process.env.DIGEST_TIMEZONE?.trim() || "Europe/Lisbon";
   const startHour = Number(process.env.DIGEST_START_HOUR ?? 6);
   const endHour = Number(process.env.DIGEST_END_HOUR ?? 14);
+  const eveningStartHour = Number(process.env.DIGEST_EVENING_START_HOUR ?? 17);
+  const eveningEndHour = Number(process.env.DIGEST_EVENING_END_HOUR ?? 23);
   const parts = new Intl.DateTimeFormat("en-CA", {
     timeZone,
     year: "numeric",
@@ -90,6 +97,8 @@ function digestClock(now: Date) {
     hour: Number(part("hour")),
     startHour: Number.isFinite(startHour) ? startHour : 6,
     endHour: Number.isFinite(endHour) ? endHour : 14,
+    eveningStartHour: Number.isFinite(eveningStartHour) ? eveningStartHour : 17,
+    eveningEndHour: Number.isFinite(eveningEndHour) ? eveningEndHour : 23,
   };
 }
 
@@ -107,11 +116,17 @@ export async function sendNewJobsDigest(limit = 10) {
   ]);
   const base = { subscribers: alerts.length, jobs: 0, sent: 0, failed: 0 };
 
-  if (clock.hour < clock.startHour || clock.hour >= clock.endHour) {
-    return { ok: true, ...base, skipped: "fora da janela do resumo diário" };
+  const morning = clock.hour >= clock.startHour && clock.hour < clock.endHour;
+  const evening =
+    !morning && clock.hour >= clock.eveningStartHour && clock.hour < clock.eveningEndHour;
+  if (!morning && !evening) {
+    return { ok: true, ...base, skipped: "fora das janelas do resumo (manhã / fim do dia)" };
   }
-  if (state.lastDigestDay === clock.day) {
-    return { ok: true, ...base, skipped: "resumo de hoje já enviado" };
+  if (morning && state.lastDigestDay === clock.day) {
+    return { ok: true, ...base, skipped: "resumo da manhã já enviado" };
+  }
+  if (evening && state.lastEveningDigestDay === clock.day) {
+    return { ok: true, ...base, skipped: "resumo do fim do dia já enviado" };
   }
 
   const nowMs = now.getTime();
@@ -170,9 +185,17 @@ export async function sendNewJobsDigest(limit = 10) {
   // Se falhou tudo (ex.: Resend em baixo), não avançar: a próxima execução tenta de novo.
   if (failed === 0 || sent > 0) {
     state.lastDigestAt = now.toISOString();
-    state.lastDigestDay = clock.day;
+    if (morning) state.lastDigestDay = clock.day;
+    else state.lastEveningDigestDay = clock.day;
     await writeState(state);
   }
 
-  return { ok: failed === 0, ...base, jobs: freshJobs.length, sent, failed };
+  return {
+    ok: failed === 0,
+    ...base,
+    slot: morning ? "manhã" : "fim do dia",
+    jobs: freshJobs.length,
+    sent,
+    failed,
+  };
 }
