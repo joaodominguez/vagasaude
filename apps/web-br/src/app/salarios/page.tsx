@@ -138,7 +138,7 @@ export default async function SalariesIndexPage() {
           <section className="content-card p-5">
             <h2 className="text-lg font-extrabold">Ferramentas</h2>
             <div className="mt-4 flex flex-wrap gap-2">
-              <Link href="/salarios/simulador-salario-liquido" className="filter-chip">
+              <Link prefetch={false} href="/salarios/simulador-salario-liquido" className="filter-chip">
                 Simulador de salário líquido CLT 2026
               </Link>
             </div>
@@ -149,7 +149,7 @@ export default async function SalariesIndexPage() {
               <h2 className="text-lg font-extrabold">Por função e estado</h2>
               <div className="mt-4 flex flex-wrap gap-2">
                 {states.map((page) => (
-                  <Link key={page.path} href={page.path} className="filter-chip">
+                  <Link prefetch={false} key={page.path} href={page.path} className="filter-chip">
                     {page.role.label} em {page.district} · {money(page.stats.median)}
                   </Link>
                 ))}

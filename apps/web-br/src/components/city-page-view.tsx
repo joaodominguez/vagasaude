@@ -99,11 +99,11 @@ export function CityPageView({
               {buildCityIntro(city)}
             </p>
             <nav className="mt-5 flex flex-wrap gap-2 text-sm" aria-label="Categorias relacionadas">
-              <Link href="/vagas" className="filter-chip">
+              <Link prefetch={false} href="/vagas" className="filter-chip">
                 Todas as vagas
               </Link>
               {stateEligible && (
-                <Link href={statePath} className="filter-chip">
+                <Link prefetch={false} href={statePath} className="filter-chip">
                   Vagas em {city.district}
                 </Link>
               )}

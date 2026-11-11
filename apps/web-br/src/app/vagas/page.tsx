@@ -193,7 +193,7 @@ export default async function JobsPage({
             {topCategories.length > 0 && !hasFilters && (
               <div className="mt-5 flex flex-wrap gap-2">
                 {topCategories.map((category) => (
-                  <Link
+                  <Link prefetch={false}
                     key={category.path}
                     href={category.path}
                     className="filter-chip"

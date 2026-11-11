@@ -88,7 +88,7 @@ export default async function Home() {
                     ? categoryPath(profession, null)
                     : `/vagas?profissao=${encodeURIComponent(profession)}`;
                   return (
-                    <Link key={profession} href={href} className="filter-chip">
+                    <Link prefetch={false} key={profession} href={href} className="filter-chip">
                       {profession}
                     </Link>
                   );
@@ -178,11 +178,11 @@ export default async function Home() {
             </div>
             <div className="flex flex-wrap gap-2">
               {concursoProfessions.map(([name, count]) => (
-                <Link key={name} href={concursosPath(name)} className="filter-chip">
+                <Link prefetch={false} key={name} href={concursosPath(name)} className="filter-chip">
                   {name} ({count})
                 </Link>
               ))}
-              <Link href="/concursos" className="filter-chip font-extrabold">
+              <Link prefetch={false} href="/concursos" className="filter-chip font-extrabold">
                 Todos os concursos
               </Link>
             </div>
@@ -200,7 +200,7 @@ export default async function Home() {
                 </h3>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {professionCategories.map((category) => (
-                    <Link key={category.path} href={category.path} className="filter-chip">
+                    <Link prefetch={false} key={category.path} href={category.path} className="filter-chip">
                       {category.profession}
                     </Link>
                   ))}
@@ -214,7 +214,7 @@ export default async function Home() {
                 </h3>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {districtCategories.map((category) => (
-                    <Link key={category.path} href={category.path} className="filter-chip">
+                    <Link prefetch={false} key={category.path} href={category.path} className="filter-chip">
                       {category.district}
                     </Link>
                   ))}
@@ -228,7 +228,7 @@ export default async function Home() {
                 </h3>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {topCities.map((city) => (
-                    <Link key={city.path} href={city.path} className="filter-chip">
+                    <Link prefetch={false} key={city.path} href={city.path} className="filter-chip">
                       {city.name} ({city.uf})
                     </Link>
                   ))}
