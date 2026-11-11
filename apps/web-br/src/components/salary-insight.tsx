@@ -21,7 +21,7 @@ export function SalaryInsight({ job, variant = "full" }: Props) {
       <span className="inline-flex max-w-full min-w-0 items-center gap-1 text-xs text-muted">
         <Wallet size={12} className="shrink-0 opacity-70" aria-hidden="true" />
         <span className="min-w-0 break-words">
-          Média BR · {formatBRL(benchmark.average)}
+          Média da profissão · {formatBRL(benchmark.average)}
           <span className="sr-only">
             {" "}
             brutos/mês para {benchmark.label} (
