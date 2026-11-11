@@ -13,26 +13,8 @@ export function Footer() {
           </p>
         </div>
         <nav className="flex flex-wrap gap-x-6 gap-y-3 text-sm text-muted">
-          <Link className="hover:text-primary" href="/vagas">
-            Vagas
-          </Link>
-          <Link className="hover:text-primary" href="/concursos">
-            Concursos
-          </Link>
           <Link className="hover:text-primary" href="/salarios">
             Salários
-          </Link>
-          <Link className="hover:text-primary" href="/noticias">
-            Notícias
-          </Link>
-          <Link className="hover:text-primary" href="/favoritos">
-            Favoritos
-          </Link>
-          <Link className="hover:text-primary" href="/alertas">
-            Alertas
-          </Link>
-          <Link className="hover:text-primary" href="/como-funciona">
-            Como funciona
           </Link>
           <Link className="hover:text-primary" href="/contato">
             Contato
