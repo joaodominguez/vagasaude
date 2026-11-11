@@ -2,6 +2,17 @@ import { NextRequest, NextResponse } from "next/server";
 import { GONE_JOB_SLUGS } from "@/lib/gone-job-slugs";
 import { jobSlugExists } from "@/lib/job-slug-exists";
 
+const GONE_LINKS: Array<[string, string]> = [
+  ["/vagas/enfermagem", "Enfermagem"],
+  ["/vagas/farmacia", "Farmácia"],
+  ["/vagas/medicina", "Medicina"],
+  ["/vagas/sao-paulo", "São Paulo"],
+  ["/vagas/minas-gerais", "Minas Gerais"],
+  ["/vagas/rio-de-janeiro", "Rio de Janeiro"],
+];
+
+// Página leve (sem JS) para vagas removidas de vez: pesquisa, atalhos e alerta, para quem chega
+// do Google não ficar num beco sem saída. noindex; o 410 diz ao Google para a retirar.
 const GONE_HTML = `<!doctype html>
 <html lang="pt-BR">
 <head>
@@ -10,19 +21,37 @@ const GONE_HTML = `<!doctype html>
 <meta name="robots" content="noindex">
 <title>Vaga removida | VagaSaúde</title>
 <style>
+*{box-sizing:border-box}
 body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#f7faf9;color:#10221d}
-main{max-width:560px;margin:12vh auto;padding:0 20px}
-h1{font-size:1.6rem;margin:0 0 .6rem}
-p{line-height:1.6;color:#475569}
-a{display:inline-block;margin:1rem .6rem 0 0;padding:.65rem 1.1rem;border-radius:999px;background:#0f766e;color:#fff;text-decoration:none;font-weight:600}
-a.sec{background:transparent;color:#0f766e;border:1px solid #0f766e}
+header{border-bottom:1px solid #e2e8f0;background:#fff}
+.wrap{max-width:640px;margin:0 auto;padding:0 20px}
+.brand{display:inline-block;padding:16px 0;font-weight:800;font-size:1.15rem;color:#10221d;text-decoration:none}
+.brand span{color:#0f766e}
+main{padding:9vh 0 12vh}
+h1{font-size:1.6rem;margin:0 0 .6rem;letter-spacing:-.02em}
+p{line-height:1.6;color:#475569;margin:0 0 1.2rem}
+form{display:flex;gap:8px;margin:0 0 1.4rem}
+input{flex:1;min-width:0;padding:.75rem 1rem;border:1px solid #cbd5e1;border-radius:12px;font:inherit;background:#fff}
+button,.btn{padding:.75rem 1.1rem;border:0;border-radius:12px;background:#0f766e;color:#fff;font:inherit;font-weight:700;text-decoration:none;cursor:pointer}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 1.6rem;padding:0;list-style:none}
+.chips a{display:inline-block;padding:.5rem .9rem;border:1px solid #cbd5e1;border-radius:999px;color:#0f766e;text-decoration:none;font-weight:600;background:#fff}
+.sec{background:transparent;color:#0f766e;border:1px solid #0f766e}
+:focus-visible{outline:2px solid #0f766e;outline-offset:2px}
 </style>
 </head>
 <body>
-<main>
+<header><div class="wrap"><a class="brand" href="/">Vaga<span>Saúde</span></a></div></header>
+<main class="wrap">
 <h1>Esta vaga foi removida</h1>
-<p>A vaga que você procura não está mais disponível. Veja as vagas de saúde abertas agora:</p>
-<a href="/vagas">Ver vagas abertas</a><a class="sec" href="/">Página inicial</a>
+<p>A vaga que você procura não está mais disponível. Busque outras vagas abertas na saúde:</p>
+<form action="/vagas" method="get" role="search">
+<input type="search" name="q" placeholder="Profissão, cargo ou empresa" aria-label="Buscar vagas">
+<button type="submit">Buscar</button>
+</form>
+<ul class="chips">
+${GONE_LINKS.map(([href, label]) => `<li><a href="${href}">${label}</a></li>`).join("")}
+</ul>
+<a class="btn" href="/vagas">Ver todas as vagas</a> <a class="btn sec" href="/alertas">Criar alerta de vagas</a>
 </main>
 </body>
 </html>`;
