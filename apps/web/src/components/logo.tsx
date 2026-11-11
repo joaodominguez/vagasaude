@@ -4,6 +4,7 @@ export function Logo({ compact = false }: { compact?: boolean }) {
   return (
     <Link
       href="/"
+      prefetch={false}
       aria-label="VagaSaúde — página inicial"
       className="inline-flex items-center gap-2.5"
     >

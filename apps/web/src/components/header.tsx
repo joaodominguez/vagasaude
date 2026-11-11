@@ -47,7 +47,7 @@ export function Header() {
           className="hidden items-center gap-8 text-sm font-semibold md:flex"
         >
           {NAV_ITEMS.map((item) => (
-            <Link key={item.href} className="nav-link" href={item.href}>
+            <Link key={item.href} className="nav-link" href={item.href} prefetch={false}>
               {item.label}
             </Link>
           ))}
