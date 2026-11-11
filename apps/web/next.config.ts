@@ -2,7 +2,8 @@ import type { NextConfig } from "next";
 
 /**
  * Cache-Control para HTML anónimo (Cloudflare).
- * - s-maxage: edge pode servir 2 min sem bater na origem
+ * - s-maxage: edge pode servir 10 min sem bater na origem (= revalidate das páginas;
+ *   a origem só regenera de 10 em 10 min, por isso 2 min só repetia a mesma página)
  * - stale-while-revalidate: edge serve stale enquanto revalida
  * /vagas (listagem com searchParams) fica de fora de propósito.
  * Em CF: Cache Rule "Eligible for cache" em GET HTML de / e /vagas/* se o
@@ -10,7 +11,7 @@ import type { NextConfig } from "next";
  * Ver docs/ARQUITETURA.md § Cloudflare Cache Rules.
  */
 const PUBLIC_HTML_CACHE =
-  "public, s-maxage=120, stale-while-revalidate=600";
+  "public, s-maxage=600, stale-while-revalidate=600";
 
 const nextConfig: NextConfig = {
   output: "standalone",
