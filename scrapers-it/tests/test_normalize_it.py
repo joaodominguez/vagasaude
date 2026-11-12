@@ -12,8 +12,9 @@ from common.normalize import (  # noqa: E402
 from sources import SCRAPERS  # noqa: E402
 
 
-def test_registry_is_empty():
-    assert SCRAPERS == {}
+def test_registry_has_public_sources():
+    assert set(SCRAPERS) == {"veneto-concorsi"}
+    assert all(cls.slug == slug for slug, cls in SCRAPERS.items())
 
 
 def test_all_tables_point_to_official_regions():

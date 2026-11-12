@@ -17,7 +17,15 @@ export type JobSourceMeta = {
  *   { id: "esempio", name: "Esempio - Concorsi ASL", shortName: "Esempio",
  *     url: "https://example.org/", sector: "Pubblico" }
  */
-export const JOB_SOURCES: JobSourceMeta[] = [];
+export const JOB_SOURCES: JobSourceMeta[] = [
+  {
+    id: "veneto-concorsi",
+    name: "Veneto - Concorsi, Avvisi e Incarichi (Azienda Zero)",
+    shortName: "Veneto Concorsi",
+    url: "https://aziendazero.concorsieavvisi.it/",
+    sector: "Pubblico",
+  },
+];
 
 export const SOURCE_META = Object.fromEntries(
   JOB_SOURCES.map((source) => [

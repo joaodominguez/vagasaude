@@ -1,0 +1,232 @@
+
+<script type="text/javascript">
+	cambia_concorsi_elenco = function (campo,valore) {
+		var campo = (campo == null) ? '' : campo;
+		var tabbo = '';
+		if ($('#tab_blocco').length > 0) { tabbo = '&tabbo='+$('#tab_blocco').find('li.active a').attr('aria-controls'); }
+		document.getElementById('startrowele_concorsi_elenco').value = 1;
+		if (campo != '') { document.getElementById(campo).value = valore; }
+		submittami('lista_elenco_concorsi_elenco','/index.cfm?action=trasparenza.concorsi_elenco'+tabbo,'filtriele_concorsi_elenco');
+	}
+	
+	riordina_concorsi_elenco = function(campo,direzione) {
+		document.getElementById('campord_concorsi_elenco').value = campo;
+		document.getElementById('tipoord_concorsi_elenco').value = direzione;
+		cambia_concorsi_elenco();
+	}
+	
+	lelefiltri_concorsi_elenco = function() {
+		if ($('.aprichiudi_concorsi_elenco').hasClass('fa-caret-down')) {
+			$('.aprichiudi_concorsi_elenco').removeClass('fa-caret-down');
+			$('.aprichiudi_concorsi_elenco').addClass('fa-caret-up');
+		} else {
+			$('.aprichiudi_concorsi_elenco').removeClass('fa-caret-up');
+			$('.aprichiudi_concorsi_elenco').addClass('fa-caret-down');
+		}
+		$('#blkfele_concorsi_elenco').slideToggle();
+	}
+</script>	
+	
+	
+<form id="filtriele_concorsi_elenco" class="form-horizontal">
+	<input type="hidden" name="startrow" value="1" id="startrowele_concorsi_elenco">
+	<input type="hidden" name="campord" value="inizio" id="campord_concorsi_elenco">
+	<input type="hidden" name="tipoord" value="desc" id="tipoord_concorsi_elenco">
+	<input type="hidden" name="maxrows" value="100" id="maxrows_concorsi_elenco">
+	
+	
+	<input type="hidden" name="titolo" value="" id="titoloconc">
+	<input type="hidden" name="tipo_reclutamento" value="0" id="tipo_reclutamentoconc">
+	<input type="hidden" name="figura" value="0" id="figuraconc">
+	<input type="hidden" name="cate_figura" value="0" id="cate_figuraconc">
+	<input type="hidden" name="specialscad" value="" id="specialscadconc">
+	<input type="hidden" name="stato" value="1" id="statoconc">
+	<input type="hidden" name="ente" value="0" id="enteconc">
+
+	
+</form>
+
+ 
+
+
+
+<a class="alert alert-warning d-block" target="_blank" rel="noopener" href="https://aziendazero.concorsieavvisi.it/index.cfm?action=mys.apridoc&iddoc=1"><strong>Comunicazione organizzativa</strong> - Ordine di convocazione prove orali anno 2026</a>
+
+
+
+<div class="elenco_bandi">
+	
+		<a href="/index.cfm?action=trasparenza.concorso&id=915" class="elemento_conc cconc_1">
+			<div class="content">
+				<div class="titolo">Concorso pubblico, per titoli ed esami, per n. 15 posti, a tempo pieno, indeterminato ed a rapporto esclusivo, di Dirigente Medico – disciplina Neurologia.</div>
+				<div class="datibando">
+					
+						<div>
+						
+						<span class="stronger" style="display: table-cell;">Enti: &nbsp;</span><div style="display:table-cell;">
+						Azienda ULSS 1 Dolomiti (5 Posti)<br>Azienda ULSS 2 Marca Trevigiana (1 Posto)<br>Azienda ULSS 3 Serenissima (1 Posto)<br>Azienda ULSS 4 Veneto Orientale (1 Posto)<br>Azienda ULSS 6 Euganea (1 Posto)<br>Azienda ULSS 7 Pedemontana (3 Posti)<br>Azienda ULSS 8 Berica (1 Posto)<br>Azienda Ospedale - Università Padova (1 Posto)<br>A.O. Universitaria Integrata Verona (1 Posto)<br></div>
+						</div>
+					
+					<div>
+						<span class="stronger">Data di scadenza:</span>
+						3 Dicembre 2026
+					</div>
+					
+						<div>
+						<span class="stronger">Figura professionale:</span>
+							Disciplina Neurologia
+						</div>
+					
+						<div>
+						<span class="stronger">Tipo reclutamento:</span>
+							Tempo indeterminato
+						</div>
+					
+				</div>
+			</div>
+			<div class="blksotto">
+                <span class="conti">vedi dettagli &gt;</span>
+            </div>
+		</a>
+	
+		<a href="/index.cfm?action=trasparenza.concorso&id=914" class="elemento_conc cconc_1">
+			<div class="content">
+				<div class="titolo">Concorso pubblico, per titoli ed esami, per n. 9 posti, a tempo pieno, indeterminato ed a rapporto esclusivo, di Dirigente Medico – disciplina Cure Palliative.</div>
+				<div class="datibando">
+					
+						<div>
+						
+						<span class="stronger" style="display: table-cell;">Enti: &nbsp;</span><div style="display:table-cell;">
+						Azienda ULSS 1 Dolomiti (1 Posto)<br>Azienda ULSS 2 Marca Trevigiana (1 Posto)<br>Azienda ULSS 4 Veneto Orientale (1 Posto)<br>Azienda ULSS 6 Euganea (2 Posti)<br>Azienda ULSS 7 Pedemontana (2 Posti)<br>Azienda ULSS 8 Berica (1 Posto)<br>Azienda ULSS 9 Scaligera (1 Posto)<br></div>
+						</div>
+					
+					<div>
+						<span class="stronger">Data di scadenza:</span>
+						3 Dicembre 2026
+					</div>
+					
+						<div>
+						<span class="stronger">Figura professionale:</span>
+							Disciplina di Cure Palliative
+						</div>
+					
+						<div>
+						<span class="stronger">Tipo reclutamento:</span>
+							Tempo indeterminato
+						</div>
+					
+				</div>
+			</div>
+			<div class="blksotto">
+                <span class="conti">vedi dettagli &gt;</span>
+            </div>
+		</a>
+	
+		<a href="/index.cfm?action=trasparenza.concorso&id=913" class="elemento_conc cconc_1">
+			<div class="content">
+				<div class="titolo">Concorso pubblico, per titoli ed esami, per n. 10 posti, a tempo pieno, indeterminato ed a rapporto esclusivo, di Dirigente Medico – disciplina Chirurgia Vascolare.</div>
+				<div class="datibando">
+					
+						<div>
+						
+						<span class="stronger" style="display: table-cell;">Enti: &nbsp;</span><div style="display:table-cell;">
+						Azienda ULSS 2 Marca Trevigiana (1 Posto)<br>Azienda ULSS 1 Dolomiti (1 Posto)<br>Azienda ULSS 3 Serenissima (2 Posti)<br>Azienda ULSS 4 Veneto Orientale (2 Posti)<br>Azienda ULSS 7 Pedemontana (4 Posti)<br></div>
+						</div>
+					
+					<div>
+						<span class="stronger">Data di scadenza:</span>
+						3 Dicembre 2026
+					</div>
+					
+						<div>
+						<span class="stronger">Figura professionale:</span>
+							Disciplina di Chirurgia Vascolare
+						</div>
+					
+						<div>
+						<span class="stronger">Tipo reclutamento:</span>
+							Tempo indeterminato
+						</div>
+					
+				</div>
+			</div>
+			<div class="blksotto">
+                <span class="conti">vedi dettagli &gt;</span>
+            </div>
+		</a>
+	
+		<a href="/index.cfm?action=trasparenza.concorso&id=846" class="elemento_conc cconc_1">
+			<div class="content">
+				<div class="titolo">Avviso pubblico di manifestazione di interesse, per titoli e colloquio, per il reclutamento temporaneo presso le strutture di emergenza-urgenza e di pronto soccorso delle Aziende Ulss del Veneto di medici specialisti cittadini U.E. ed extra U.E. in possesso dei titoli professionali CONSEGUITI IN PAESI ESTERI non ancora riconosciuti dal ministero della salute .</div>
+				<div class="datibando">
+					
+						<div>
+						
+						<span class="stronger" style="display: table-cell;">Enti: &nbsp;</span><div style="display:table-cell;">
+						Azienda ULSS 1 Dolomiti (0 Posti)<br>Azienda ULSS 2 Marca Trevigiana (0 Posti)<br>Azienda ULSS 3 Serenissima (0 Posti)<br>Azienda ULSS 4 Veneto Orientale (0 Posti)<br>Azienda ULSS 5 Polesana (0 Posti)<br>Azienda ULSS 6 Euganea (0 Posti)<br>Azienda ULSS 7 Pedemontana (0 Posti)<br>Azienda ULSS 8 Berica (0 Posti)<br>Azienda ULSS 9 Scaligera (0 Posti)<br></div>
+						</div>
+					
+					<div>
+						<span class="stronger">Data di scadenza:</span>
+						31 Dicembre 2029
+					</div>
+					
+						<div>
+						<span class="stronger">Figura professionale:</span>
+							Medici
+						</div>
+					
+						<div>
+						<span class="stronger">Tipo reclutamento:</span>
+							Tempo determinato
+						</div>
+					
+				</div>
+			</div>
+			<div class="blksotto">
+                <span class="conti">vedi dettagli &gt;</span>
+            </div>
+		</a>
+	
+		<a href="/index.cfm?action=trasparenza.concorso&id=304" class="elemento_conc cconc_1">
+			<div class="content">
+				<div class="titolo">AVVISO PUBBLICO DI MANIFESTAZIONE DI INTERESSE PER L'ESERCIZIO TEMPORANEO DI ATTIVITA' LAVORATIVA DA PARTE DI COLORO CHE SONO IN POSSESSO DELLA QUALIFICA PROFESSIONALE DI INFERMIERE O DI OPERATORE SOCIO SANITARIO CONSEGUITA ALL'ESTERO REGOLATA DA SPECIFICHE DIRETTIVE DELL'UNIONE EUROPEA AI SENSI DELL'ART. 13 DEL D.L. 18/2020, CONVERTITO DALLA L. 27/2020 E S.M.I. E DELL’ART. 15 DEL D.L. 34/2023, CONVERTITO DALLA L. 56/2023.</div>
+				<div class="datibando">
+					
+						<div>
+						
+						<span class="stronger" style="display: table-cell;">Ente: &nbsp;</span><div style="display:table-cell;">
+						Regione Veneto (0 Posti)<br></div>
+						</div>
+					
+					<div>
+						<span class="stronger">Data di scadenza:</span>
+						31 Dicembre 2026
+					</div>
+					
+						<div>
+						<span class="stronger">Figura professionale:</span>
+							Indicata/e nel bando
+						</div>
+					
+						<div>
+						<span class="stronger">Tipo reclutamento:</span>
+							Lavoro autonomo
+						</div>
+					
+				</div>
+			</div>
+			<div class="blksotto">
+                <span class="conti">vedi dettagli &gt;</span>
+            </div>
+		</a>
+	
+</div>
+
+
+
+
+
+
+<script type="text/javascript">$($('.selectpicker').selectpicker());</script>
+
