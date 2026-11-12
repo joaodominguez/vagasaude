@@ -50,10 +50,12 @@ from sources.endivo import EndivoScraper
 from sources.winid import WinidScraper
 from sources.fresenius import FreseniusEsScraper
 from sources.ascires import AsciresScraper
+from sources.ballesol import BallesolScraper
 
 SCRAPERS: dict = {
     FreseniusEsScraper.slug: FreseniusEsScraper,
     AsciresScraper.slug: AsciresScraper,
+    BallesolScraper.slug: BallesolScraper,
     AmavirScraper.slug: AmavirScraper,
     AnicuraScraper.slug: AnicuraScraper,
     BoeScraper.slug: BoeScraper,
