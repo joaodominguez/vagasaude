@@ -1,3 +1,4 @@
+from sources.diaverum import DiaverumScraper
 from sources.pequenos_pt import ApdpScraper, CruzVermelhaScraper, IrmasHospitaleirasScraper
 from sources.oralmed import OralmedScraper
 from sources.elo_farma import EloFarmaScraper
@@ -90,6 +91,7 @@ SCRAPERS = {
     CruzVermelhaScraper.slug: CruzVermelhaScraper,
     IrmasHospitaleirasScraper.slug: IrmasHospitaleirasScraper,
     ApdpScraper.slug: ApdpScraper,
+    DiaverumScraper.slug: DiaverumScraper,
     EloFarmaScraper.slug: EloFarmaScraper,
     ReisBarataScraper.slug: ReisBarataScraper,
     FarmaciasSilveiraScraper.slug: FarmaciasSilveiraScraper,
