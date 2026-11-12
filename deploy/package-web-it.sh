@@ -47,4 +47,4 @@ for page in index concorsi stipendi; do
 done
 
 tar -C "$STAGE" -czf "$OUT" .
-echo "OK $OUT (css=$CSS_COUNT, data prerenders stripped: index oposiciones salarios)"
+echo "OK $OUT (css=$CSS_COUNT, data prerenders stripped: index concorsi stipendi)"
