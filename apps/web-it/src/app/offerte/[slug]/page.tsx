@@ -1,0 +1,492 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound, redirect } from "next/navigation";
+import {
+  BriefcaseBusiness,
+  CalendarDays,
+  Check,
+  ExternalLink,
+  MapPin,
+  ShieldCheck,
+} from "lucide-react";
+import { AlertForm } from "@/components/alert-form";
+import { GuideCta } from "@/components/guide-cta";
+import { Breadcrumbs, type BreadcrumbItem } from "@/components/breadcrumbs";
+import { applyTrackingProps } from "@/lib/analytics";
+import { CategoryPageView } from "@/components/category-page-view";
+import { FavoriteButton } from "@/components/favorite-button";
+import { Footer } from "@/components/footer";
+import { Header } from "@/components/header";
+import { JobCard } from "@/components/job-card";
+import { JobTypeBadge } from "@/components/job-type-badge";
+import { JobDescription } from "@/components/job-description";
+import { SalaryInsight } from "@/components/salary-insight";
+import { ShareButtons } from "@/components/share-buttons";
+import {
+  buildCategoryMetadata,
+  categoryPath,
+  filterJobsForCategory,
+  isCategoryEligible,
+  listEligibleCategories,
+  provincePath,
+  resolveCategoryFromSegments,
+  fallbackCategoryPath,
+} from "@/lib/categories";
+import type { Job } from "@/lib/jobs";
+import { relatedJobs } from "@/lib/related-jobs";
+import { getJob, getJobs } from "@/lib/jobs-data";
+import { buildJobMetadata, buildJobPostingJsonLd, jobUrl } from "@/lib/seo";
+import { inRegione } from "@/lib/it-locative";
+import { classifyJob, isConcorsoJob, JOB_TYPE_LABEL } from "@/lib/job-type";
+import { jobProvince } from "@/lib/provinces";
+import { hasConcorsoLanding, listConcorsi, concorsiPath } from "@/lib/concorsi";
+
+// force-static + revalidate: ISR on-demand (il solo revalidate non basta
+// se l'albero viene trattato come dinamico per via dell'I/O).
+export const dynamic = "force-static";
+export const revalidate = 600;
+
+type Params = Promise<{ slug: string }>;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Params;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const allJobs = await getJobs();
+  const category = resolveCategoryFromSegments(slug);
+  if (
+    category &&
+    isCategoryEligible(allJobs, category.profession, category.district)
+  ) {
+    const jobs = filterJobsForCategory(
+      allJobs,
+      category.profession,
+      category.district,
+    );
+    return buildCategoryMetadata(category, jobs.length, jobs);
+  }
+
+  const found = await getJob(slug);
+  if (!found) return { title: "Offerta non trovata", robots: { index: false } };
+  return buildJobMetadata(found.job, {
+    expired: found.expired,
+    canonicalSlug: found.canonicalSlug,
+  });
+}
+
+export default async function OffertaSlugPage({ params }: { params: Params }) {
+  const { slug } = await params;
+  const allJobs = await getJobs();
+  const category = resolveCategoryFromSegments(slug);
+
+  if (
+    category &&
+    isCategoryEligible(allJobs, category.profession, category.district)
+  ) {
+    const jobs = filterJobsForCategory(
+      allJobs,
+      category.profession,
+      category.district,
+    );
+    return (
+      <CategoryPageView
+        category={category}
+        jobs={jobs}
+        allCategoryRefs={listEligibleCategories(allJobs)}
+      />
+    );
+  }
+
+  // Slug riservato a una categoria senza offerte sufficienti → elenco filtrato.
+  if (category) {
+    redirect(fallbackCategoryPath(allJobs, category.profession, category.district));
+  }
+
+  const found = await getJob(slug);
+  if (!found) notFound();
+
+  if (found.expired) {
+    return <ExpiredJobView job={found.job} allJobs={allJobs} />;
+  }
+
+  return <ActiveJobView
+      job={found.job}
+      allJobs={allJobs}
+      canonicalSlug={found.canonicalSlug}
+    />;
+}
+
+
+function ActiveJobView({
+  job,
+  allJobs,
+  canonicalSlug,
+}: {
+  job: Job;
+  allJobs: Job[];
+  canonicalSlug?: string;
+}) {
+  const related = relatedJobs(job, allJobs);
+
+  // Ripubblicazione di un'altra offerta: senza JobPosting (solo l'offerta principale).
+  const jsonLd = canonicalSlug ? null : buildJobPostingJsonLd(job);
+  const shareUrl = jobUrl(job.slug);
+  const categoryLinks = buildJobCategoryLinks(job, allJobs);
+
+  return (
+    <>
+      <Header />
+      <main className="pb-24 md:pb-0">
+        <div className="page-container py-7 sm:py-10">
+          <Breadcrumbs items={buildJobBreadcrumbs(job, allJobs)} />
+
+          <div className="grid min-w-0 gap-8 lg:grid-cols-[minmax(0,1fr)_21rem]">
+            <article className="min-w-0">
+              <header className="border-b border-border pb-8">
+                <div className="flex min-w-0 items-start gap-3 sm:gap-4">
+                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary-soft text-primary sm:h-14 sm:w-14">
+                    <BriefcaseBusiness size={26} strokeWidth={1.7} />
+                  </span>
+                  <div className="min-w-0">
+                    <h1 className="break-words text-2xl font-extrabold leading-tight tracking-[-0.05em] sm:text-4xl">
+                      {job.title}
+                    </h1>
+                    <p className="mt-2 truncate text-base font-semibold text-muted">
+                      {job.company}
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-5 flex flex-wrap items-center gap-2 text-sm text-muted">
+                  <span className="inline-flex items-center gap-1.5">
+                    <MapPin size={15} /> {job.city}
+                  </span>
+                  <span aria-hidden="true">•</span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <CalendarDays size={15} /> Pubblicata{" "}
+                    {job.publishedLabel.toLowerCase()}
+                  </span>
+                  <JobTypeBadge job={job} />
+                  <span className="tag tag-primary">{job.sector}</span>
+                  <span className="tag">{job.contract}</span>
+                  <span className="tag">{job.profession}</span>
+                </div>
+                {categoryLinks.length > 0 && (
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {categoryLinks.map((link) => (
+                      <Link prefetch={false} key={link.href} href={link.href} className="filter-chip">
+                        {link.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+                <ShareButtons
+                  url={shareUrl}
+                  title={job.title}
+                  summary={`${job.company} · ${job.city}`}
+                />
+              </header>
+
+              <div className="job-content">
+                <section>
+                  <h2>Sull’offerta</h2>
+                  <JobDescription text={job.description} />
+                </section>
+                <CheckList title="Cosa cerchiamo" items={job.requirements} />
+                <CheckList
+                  title="Mansioni"
+                  items={job.responsibilities}
+                />
+              </div>
+            </article>
+
+            <aside className="space-y-4 lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:overscroll-contain">
+              <div className="content-card p-5">
+                <h2 className="font-extrabold">Riepilogo dell’offerta</h2>
+                <dl className="mt-4 divide-y divide-border rounded-xl border border-border text-sm">
+                  {[
+                    ["Sede", job.city],
+                    ...(classifyJob(job) !== "offerta"
+                      ? [["Tipo", JOB_TYPE_LABEL[classifyJob(job)]]]
+                      : []),
+                    ["Settore", job.sector],
+                    ["Contratto", job.contract],
+                    ["Pubblicata", job.publishedLabel],
+                  ].map(([term, value]) => (
+                    <div
+                      key={term}
+                      className="grid grid-cols-[1fr_auto] gap-3 px-3 py-3"
+                    >
+                      <dt className="text-muted">{term}</dt>
+                      <dd className="font-semibold">{value}</dd>
+                    </div>
+                  ))}
+                </dl>
+                <div className="mt-4">
+                  <SalaryInsight job={job} />
+                </div>
+                <div className="mt-5 flex gap-2">
+                  <a
+                    href={job.applicationUrl}
+                    target="_blank"
+                    rel="noopener noreferrer nofollow"
+                    className="button button-primary flex-1 text-center"
+                    {...applyTrackingProps(job, "sidebar")}
+                  >
+                    <span className="truncate">Candidati</span>
+                    <ExternalLink size={16} className="shrink-0" />
+                  </a>
+                  <FavoriteButton slug={job.slug} size={18} className="detail-fav-button" />
+                </div>
+                <p className="mt-3 flex items-center justify-center gap-1.5 text-center text-xs text-muted">
+                  <ShieldCheck size={14} className="text-primary" />
+                  La candidatura si invia sul sito dell’ente o dell’azienda.
+                </p>
+              </div>
+
+              <div className="alert-card">
+                <h2 className="font-extrabold">Ricevi offerte simili</h2>
+                <p className="mt-1.5 text-sm leading-6 text-muted">
+                  Ti avvisiamo quando compare un’opportunità interessante.
+                </p>
+                <div className="mt-4">
+                  <AlertForm
+                    compact
+                    defaultDistrict={job.district}
+                    defaultProfession={job.profession}
+                  />
+                </div>
+              </div>
+
+              <GuideCta profession={job.profession} sector={job.sector} />
+            </aside>
+          </div>
+
+          {related.length > 0 && (
+            <section className="mt-12 border-t border-border pt-9">
+              <div className="flex items-center justify-between gap-3">
+                <h2 className="section-title">Offerte correlate</h2>
+                <Link
+                  href={relatedJobsHref(job, allJobs)}
+                  rel={relatedJobsHref(job, allJobs).startsWith("/offerte?") ? "nofollow" : undefined}
+                  className="text-sm font-bold text-primary hover:underline"
+                >
+                  Vedi altre
+                </Link>
+              </div>
+              <div className="mt-5 grid min-w-0 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {related.map((item) => (
+                  <JobCard key={item.slug} job={item} />
+                ))}
+              </div>
+            </section>
+          )}
+        </div>
+      </main>
+
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/95 p-3 backdrop-blur md:hidden">
+        <a
+          href={job.applicationUrl}
+          target="_blank"
+          rel="noopener noreferrer nofollow"
+          className="button button-primary w-full"
+          {...applyTrackingProps(job, "mobile")}
+        >
+          Candidati <ExternalLink size={16} />
+        </a>
+      </div>
+      <Footer />
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
+    </>
+  );
+}
+
+function ExpiredJobView({ job, allJobs }: { job: Job; allJobs: Job[] }) {
+  const similar = relatedJobs(job, allJobs);
+  const categoryLinks = buildJobCategoryLinks(job, allJobs);
+
+  return (
+    <>
+      <Header />
+      <main>
+        <div className="page-container py-7 sm:py-10">
+          <Breadcrumbs items={buildJobBreadcrumbs(job, allJobs)} />
+
+          <div className="content-card border-amber-500/30 bg-amber-500/5 p-5 sm:p-6">
+            <p className="text-sm font-extrabold uppercase tracking-wider text-amber-800 dark:text-amber-200">
+              Offerta chiusa
+            </p>
+            <h1 className="mt-2 text-2xl font-extrabold tracking-[-0.04em] sm:text-3xl">
+              {job.title}
+            </h1>
+            <p className="mt-2 text-muted">
+              {job.company} · {job.city}
+            </p>
+            <p className="mt-4 text-sm leading-6 text-muted">
+              Questa offerta non è più attiva. Puoi esplorare opportunità
+              simili qui sotto o creare un avviso per {job.profession}
+              {job.district ? ` ${inRegione(job.district)}` : ""}.
+            </p>
+            {categoryLinks.length > 0 && (
+              <div className="mt-4 flex flex-wrap gap-2">
+                {categoryLinks.map((link) => (
+                  <Link prefetch={false} key={link.href} href={link.href} className="filter-chip">
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem]">
+            <section>
+              <h2 className="section-title">Offerte simili</h2>
+              {similar.length > 0 ? (
+                <div className="mt-5 space-y-3">
+                  {similar.map((item) => (
+                    <JobCard key={item.slug} job={item} />
+                  ))}
+                </div>
+              ) : (
+                <p className="mt-4 text-sm text-muted">
+                  Al momento non ci sono offerte simili attive.{" "}
+                  <Link href="/offerte" className="font-bold text-primary">
+                    Vedi tutte
+                  </Link>
+                </p>
+              )}
+            </section>
+            <aside>
+              <div className="alert-card">
+                <h2 className="font-extrabold">Crea avviso</h2>
+                <p className="mt-1.5 text-sm leading-6 text-muted">
+                  Ti avvisiamo quando compaiono nuove opportunità.
+                </p>
+                <div className="mt-4">
+                  <AlertForm
+                    compact
+                    defaultDistrict={job.district}
+                    defaultProfession={job.profession}
+                  />
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </main>
+      <Footer />
+    </>
+  );
+}
+
+function buildJobCategoryLinks(job: Job, allJobs: Job[]) {
+  const links: Array<{ href: string; label: string }> = [];
+  if (isCategoryEligible(allJobs, job.profession, null)) {
+    links.push({
+      href: categoryPath(job.profession, null),
+      label: job.profession,
+    });
+  }
+  if (isCategoryEligible(allJobs, null, job.district)) {
+    links.push({
+      href: categoryPath(null, job.district),
+      label: job.district,
+    });
+  }
+  if (isCategoryEligible(allJobs, job.profession, job.district)) {
+    links.push({
+      href: categoryPath(job.profession, job.district),
+      label: `${job.profession} ${inRegione(job.district)}`,
+    });
+  }
+  const province = jobProvince(job);
+  if (province && isCategoryEligible(allJobs, null, job.district, province)) {
+    links.push({
+      href: provincePath(job.district, province),
+      label: `Offerte ${inRegione(province)}`,
+    });
+  }
+  const type = classifyJob(job);
+  if (
+    type !== "offerta" &&
+    hasConcorsoLanding(listConcorsi(allJobs), job.profession)
+  ) {
+    links.push({
+      href: concorsiPath(job.profession),
+      label: `Concorsi di ${job.profession === "OSS" ? "OSS" : job.profession.toLowerCase()}`,
+    });
+  }
+  return links;
+}
+
+/** Home › Offerte › professione › professione × regione › offerta (solo landing esistenti). */
+function buildJobBreadcrumbs(job: Job, allJobs: Job[]): BreadcrumbItem[] {
+  // Concorsi/graduatorie/mobilità pubblici: Home › Concorsi › Professione › offerta.
+  if (isConcorsoJob(job)) {
+    if (!hasConcorsoLanding(listConcorsi(allJobs), job.profession)) {
+      return [
+        { label: "Home", href: "/" },
+        { label: "Concorsi", href: "/concorsi" },
+        { label: job.title },
+      ];
+    }
+    return [
+      { label: "Home", href: "/" },
+      { label: "Concorsi", href: "/concorsi" },
+      { label: job.profession, href: concorsiPath(job.profession) },
+      { label: job.title },
+    ];
+  }
+  const items: BreadcrumbItem[] = [
+    { label: "Home", href: "/" },
+    { label: "Offerte", href: "/offerte" },
+  ];
+  if (isCategoryEligible(allJobs, job.profession, null)) {
+    items.push({ label: job.profession, href: categoryPath(job.profession, null) });
+    if (job.district && isCategoryEligible(allJobs, job.profession, job.district)) {
+      items.push({
+        label: job.district,
+        href: categoryPath(job.profession, job.district),
+      });
+    }
+  } else if (job.district && isCategoryEligible(allJobs, null, job.district)) {
+    items.push({ label: job.district, href: categoryPath(null, job.district) });
+  }
+  items.push({ label: job.title });
+  return items;
+}
+
+function CheckList({ title, items }: { title: string; items: string[] }) {
+  return (
+    <section>
+      <h2>{title}</h2>
+      <ul>
+        {items.map((item) => (
+          <li key={item}>
+            <Check size={17} aria-hidden="true" />
+            <span>{item}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+/** "Vedi altre": landing di categoria quando esiste (link interno indicizzabile). */
+function relatedJobsHref(job: Job, allJobs: Job[]) {
+  if (isCategoryEligible(allJobs, job.profession, job.district)) {
+    return categoryPath(job.profession, job.district);
+  }
+  if (isCategoryEligible(allJobs, job.profession, null)) {
+    return categoryPath(job.profession, null);
+  }
+  const qs = new URLSearchParams({ professione: job.profession });
+  if (job.district) qs.set("regione", job.district);
+  return `/offerte?${qs.toString()}`;
+}

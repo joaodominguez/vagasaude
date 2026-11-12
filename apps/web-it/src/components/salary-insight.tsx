@@ -1,0 +1,94 @@
+import { CircleHelp, Wallet } from "lucide-react";
+import { CardIcon } from "@/components/card-icons";
+import type { Job } from "@/lib/jobs";
+import {
+  formatEuro,
+  formatEuroRange,
+  getSalaryBenchmark,
+} from "@/lib/salary-benchmarks";
+
+type Props = {
+  job: Pick<Job, "title" | "profession" | "sector" | "salary">;
+  /** compact = riga breve (card); full = blocco nella scheda */
+  variant?: "full" | "compact";
+};
+
+export function SalaryInsight({ job, variant = "full" }: Props) {
+  const benchmark = getSalaryBenchmark(job.profession, job.title, job.sector);
+  const announced = job.salary?.trim() || null;
+  const isFloor = benchmark?.kind === "floor";
+
+  // Nessun riferimento verificato per questa funzione (vedi intestazione di
+  // salary-benchmarks.ts): si mostra solo la retribuzione indicata, se esiste.
+  if (!benchmark) {
+    if (variant === "compact" || !announced) return null;
+    return (
+      <div className="rounded-xl border border-border bg-primary-soft/40 px-3 py-3">
+        <p className="text-xs leading-5 text-foreground">
+          <span className="font-semibold">In questa offerta: </span>
+          <span className="text-muted">{announced}</span>
+        </p>
+      </div>
+    );
+  }
+
+  if (variant === "compact") {
+    return (
+      <span className="inline-flex items-center gap-1 text-xs text-muted">
+        <CardIcon name="wallet" size={12} className="shrink-0 opacity-70" />
+        <span>
+          {isFloor ? "Min. contratto" : "Media della professione"} ·{" "}
+          {formatEuro(benchmark.average)}
+          <span className="sr-only">
+            {" "}
+            lordi/mese (totale annuo diviso 12) per {benchmark.label}
+            {isFloor ? "" : ` (${formatEuroRange(benchmark.low, benchmark.high)})`}
+          </span>
+        </span>
+      </span>
+    );
+  }
+
+  return (
+    <div className="rounded-xl border border-border bg-primary-soft/40 px-3 py-3">
+      <div className="flex items-start gap-2.5">
+        <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-surface text-primary">
+          <Wallet size={16} strokeWidth={1.8} aria-hidden="true" />
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="text-xs font-bold uppercase tracking-wide text-muted">
+            {isFloor ? "Retribuzione minima da contratto" : "Retribuzione di riferimento in Italia"}
+          </p>
+          <p className="mt-1 text-lg font-extrabold tracking-[-0.03em] text-foreground">
+            {formatEuro(benchmark.average)}
+            <span className="ml-1 text-sm font-semibold text-muted">
+              lordi/mese
+            </span>
+          </p>
+          <p className="mt-0.5 text-xs text-muted">
+            {benchmark.label}
+            {isFloor ? (
+              <> · la retribuzione reale è spesso più alta</>
+            ) : (
+              <>
+                {" "}
+                · di norma {formatEuroRange(benchmark.low, benchmark.high)}
+              </>
+            )}
+            {" "}· annuo ÷ 12 (mensilità aggiuntive incluse)
+          </p>
+          {announced ? (
+            <p className="mt-2 text-xs leading-5 text-foreground">
+              <span className="font-semibold">In questa offerta: </span>
+              <span className="text-muted">{announced}</span>
+            </p>
+          ) : null}
+        </div>
+      </div>
+      <p className="mt-2.5 flex items-start gap-1.5 text-[11px] leading-4 text-muted">
+        <CircleHelp size={12} className="mt-0.5 shrink-0" aria-hidden="true" />
+        <span>{benchmark.source}</span>
+      </p>
+    </div>
+  );
+}

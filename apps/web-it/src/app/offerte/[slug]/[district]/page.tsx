@@ -1,0 +1,101 @@
+import type { Metadata } from "next";
+import { notFound, permanentRedirect, redirect } from "next/navigation";
+import { CategoryPageView } from "@/components/category-page-view";
+import {
+  buildCategoryMetadata,
+  categoryTotalPages,
+  filterJobsForCategory,
+  isCategoryEligible,
+  isFirstPageSegment,
+  listEligibleCategories,
+  parseCategoryPageSegment,
+  districtFromSlug,
+  professionFromSlug,
+  resolveCategoryFromSegments,
+  fallbackCategoryPath,
+} from "@/lib/categories";
+import { getJobs } from "@/lib/jobs-data";
+
+export const dynamic = "force-static";
+export const revalidate = 600;
+
+type Params = Promise<{ slug: string; district: string }>;
+
+/**
+ * /offerte/[professione]/[regione] (combo, pagina 1) oppure
+ * /offerte/[professione|regione]/pagina-N (paginazione delle landing semplici).
+ */
+function resolveSegments(slug: string, district: string) {
+  const page = parseCategoryPageSegment(district);
+  if (page) {
+    const category = resolveCategoryFromSegments(slug);
+    return category ? { category, page } : null;
+  }
+  // Solo professione/regione o regione/provincia: evita di catturare URL spuri sotto /offerte/job/foo.
+  if (!professionFromSlug(slug) && !districtFromSlug(slug)) return null;
+  const category = resolveCategoryFromSegments(slug, district);
+  return category ? { category, page: 1 } : null;
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Params;
+}): Promise<Metadata> {
+  const { slug, district } = await params;
+  const resolved = resolveSegments(slug, district);
+  if (!resolved) return { title: "Categoria non trovata" };
+  const { category, page } = resolved;
+  const jobs = filterJobsForCategory(
+    await getJobs(),
+    category.profession,
+    category.district,
+    category.province ?? null,
+  );
+  if (jobs.length < 3) return { title: category.title };
+  return buildCategoryMetadata(category, jobs.length, jobs, page);
+}
+
+export default async function ProfessionDistrictPage({
+  params,
+}: {
+  params: Params;
+}) {
+  const { slug, district } = await params;
+  if (isFirstPageSegment(district)) {
+    const first = resolveCategoryFromSegments(slug);
+    if (first) permanentRedirect(first.path);
+  }
+  const resolved = resolveSegments(slug, district);
+  if (!resolved) notFound();
+  const { category, page } = resolved;
+
+  const allJobs = await getJobs();
+  if (
+    !isCategoryEligible(
+      allJobs,
+      category.profession,
+      category.district,
+      category.province ?? null,
+    )
+  ) {
+    redirect(fallbackCategoryPath(allJobs, category.profession, category.district));
+  }
+
+  const jobs = filterJobsForCategory(
+    allJobs,
+    category.profession,
+    category.district,
+    category.province ?? null,
+  );
+  if (page > categoryTotalPages(jobs.length)) notFound();
+
+  return (
+    <CategoryPageView
+      category={category}
+      jobs={jobs}
+      page={page}
+      allCategoryRefs={listEligibleCategories(allJobs)}
+    />
+  );
+}

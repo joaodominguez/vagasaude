@@ -1,0 +1,27 @@
+export type JobSourceMeta = {
+  id: string;
+  name: string;
+  shortName: string;
+  url: string;
+  sector: "Pubblico" | "Privato" | "Accreditato";
+  /** Senza logo, la scheda partner mostra il nome. */
+  logo?: string;
+};
+
+/**
+ * Fonti degli annunci. VUOTO per ora: le fonti italiane non sono ancora state
+ * decise (vedi docs/it/). Ogni scraper in scrapers-it/sources/ deve avere qui
+ * una voce con lo stesso `id`. Non aggiungere loghi senza verificarne la licenza
+ * d'uso. Esempio:
+ *
+ *   { id: "esempio", name: "Esempio - Concorsi ASL", shortName: "Esempio",
+ *     url: "https://example.org/", sector: "Pubblico" }
+ */
+export const JOB_SOURCES: JobSourceMeta[] = [];
+
+export const SOURCE_META = Object.fromEntries(
+  JOB_SOURCES.map((source) => [
+    source.id,
+    { name: source.name, url: source.url, sector: source.sector },
+  ]),
+) as Record<string, { name: string; url: string; sector: string }>;
