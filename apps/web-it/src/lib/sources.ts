@@ -42,6 +42,13 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     // Logo ufficiale (resources/img/logo.png, pensato per sfondo scuro) su riquadro blu scuro.
     logo: "/partners/gazzetta-ufficiale.svg",
   },
+  {
+    id: "humanitas",
+    name: "Humanitas - Lavora con noi",
+    shortName: "Humanitas",
+    url: "https://jobs.humanitas.it/",
+    sector: "Privato",
+  },
 ];
 
 export const SOURCE_META = Object.fromEntries(
