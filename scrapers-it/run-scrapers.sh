@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
-# Helper per cron -- solo IT (Offerte Sanita'). NON usato in produzione: il deploy e' rimandato
-# (vedi apps/web-it/README-IT.md). Mai verso l'ingest PT (3010), BR (3011) o ES (3012).
-# I percorsi /var/www/offertesanita sono segnaposto, da confermare al momento del deploy.
+# Helper per cron -- solo IT (Offerte Sanita', /var/www/offertesanita, app su 127.0.0.1:3014).
+# Mai verso l'ingest PT (3010), BR (3011), ES (3012) o vagaeducacao (3013).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 cd "$ROOT"
@@ -19,6 +18,8 @@ if [[ -f "$APP_DIR/.env.production" ]]; then
 fi
 # Fissato DOPO il .env (che puo' definire PORT) cosi' nulla lo sovrascrive.
 export INGEST_BASE_URL="http://127.0.0.1:3014"
+# Cache dei dettagli inPA (evita ~1900 richieste a ogni esecuzione): nella cartella dati, persistente.
+export INPA_CACHE="${INPA_CACHE:-$DATA_DIR/inpa-cache.json}"
 
 if [[ -d "$ROOT/.venv" ]]; then
   # shellcheck source=/dev/null
