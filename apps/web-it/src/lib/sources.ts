@@ -70,6 +70,13 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     url: "https://cerbahealthcare-career.talent-soft.com/offre-de-emploi/liste-toutes-offres.aspx?LCID=1040",
     sector: "Privato",
   },
+  {
+    id: "fresenius",
+    name: "NephroCare - Fresenius Medical Care Italia",
+    shortName: "NephroCare",
+    url: "https://jobs.freseniusmedicalcare.com/it/",
+    sector: "Privato",
+  },
 ];
 
 export const SOURCE_META = Object.fromEntries(

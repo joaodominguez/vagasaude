@@ -11,6 +11,7 @@ vedi sources/_it_pub.py: i lettori a priorita' piu' bassa rileggono le chiavi di
 from .anicura import AnicuraScraper
 from .cerba import CerbaScraper
 from .clariane import ClarianeScraper
+from .fresenius import FreseniusScraper
 from .gu_s4 import GuS4Scraper
 from .humanitas import HumanitasScraper
 from .inpa import InpaScraper
@@ -18,7 +19,7 @@ from .veneto_concorsi import VenetoConcorsiScraper
 
 SCRAPERS: dict = {
     scraper.slug: scraper
-    for scraper in (VenetoConcorsiScraper, InpaScraper, GuS4Scraper, HumanitasScraper, ClarianeScraper, AnicuraScraper, CerbaScraper,)
+    for scraper in (VenetoConcorsiScraper, InpaScraper, GuS4Scraper, HumanitasScraper, ClarianeScraper, AnicuraScraper, CerbaScraper, FreseniusScraper,)
 }
 
 # Fonti private (settore "privato", tipo "offerta"): vedi sources/_it_priv.py.
