@@ -8,6 +8,7 @@ Per aggiungere una fonte:
 Fonti pubbliche (ordine di priorita' contro i duplicati: Veneto > inPA > Gazzetta Ufficiale;
 vedi sources/_it_pub.py: i lettori a priorita' piu' bassa rileggono le chiavi di quelli piu' ricchi).
 """
+from .anicura import AnicuraScraper
 from .clariane import ClarianeScraper
 from .gu_s4 import GuS4Scraper
 from .humanitas import HumanitasScraper
@@ -16,7 +17,7 @@ from .veneto_concorsi import VenetoConcorsiScraper
 
 SCRAPERS: dict = {
     scraper.slug: scraper
-    for scraper in (VenetoConcorsiScraper, InpaScraper, GuS4Scraper, HumanitasScraper, ClarianeScraper,)
+    for scraper in (VenetoConcorsiScraper, InpaScraper, GuS4Scraper, HumanitasScraper, ClarianeScraper, AnicuraScraper,)
 }
 
 # Fonti private (settore "privato", tipo "offerta"): vedi sources/_it_priv.py.

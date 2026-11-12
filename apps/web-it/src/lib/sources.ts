@@ -56,6 +56,13 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     url: "https://carriere.clariane.it/",
     sector: "Privato",
   },
+  {
+    id: "anicura",
+    name: "AniCura Italia - Lavora con noi",
+    shortName: "AniCura",
+    url: "https://jobs.anicura.it/",
+    sector: "Privato",
+  },
 ];
 
 export const SOURCE_META = Object.fromEntries(
