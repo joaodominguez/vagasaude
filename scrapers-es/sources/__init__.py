@@ -48,8 +48,10 @@ from sources.efisioterapia import EfisioterapiaScraper
 from sources.talentsalud import TalentSaludScraper
 from sources.endivo import EndivoScraper
 from sources.winid import WinidScraper
+from sources.fresenius import FreseniusEsScraper
 
 SCRAPERS: dict = {
+    FreseniusEsScraper.slug: FreseniusEsScraper,
     AmavirScraper.slug: AmavirScraper,
     AnicuraScraper.slug: AnicuraScraper,
     BoeScraper.slug: BoeScraper,
