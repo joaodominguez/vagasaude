@@ -24,6 +24,7 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "Veneto Concorsi",
     url: "https://aziendazero.concorsieavvisi.it/",
     sector: "Pubblico",
+    logo: "/partners/azienda-zero-veneto.png",
   },
   {
     id: "inpa",
@@ -38,6 +39,8 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     shortName: "Gazzetta Ufficiale",
     url: "https://www.gazzettaufficiale.it/",
     sector: "Pubblico",
+    // Logo ufficiale (resources/img/logo.png, pensato per sfondo scuro) su riquadro blu scuro.
+    logo: "/partners/gazzetta-ufficiale.svg",
   },
 ];
 
