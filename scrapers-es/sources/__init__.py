@@ -49,6 +49,9 @@ from sources.talentsalud import TalentSaludScraper
 from sources.endivo import EndivoScraper
 from sources.winid import WinidScraper
 from sources.fresenius import FreseniusEsScraper
+from sources.comb import CombScraper
+from sources.codem import CodemScraper
+from sources.cgcof import CgcofScraper
 from sources.ascires import AsciresScraper
 from sources.ics import IcsScraper
 from sources.sespa import SespaScraper
@@ -58,6 +61,9 @@ from sources.vitalia import VitaliaScraper
 
 SCRAPERS: dict = {
     FreseniusEsScraper.slug: FreseniusEsScraper,
+    CombScraper.slug: CombScraper,
+    CodemScraper.slug: CodemScraper,
+    CgcofScraper.slug: CgcofScraper,
     AsciresScraper.slug: AsciresScraper,
     IcsScraper.slug: IcsScraper,
     SespaScraper.slug: SespaScraper,

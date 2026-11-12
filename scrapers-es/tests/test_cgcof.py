@@ -54,3 +54,17 @@ class Cgcof(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def test_clean_text_drops_contacts_and_empty_labels():
+    from sources.cgcof import clean_text, is_generic_company
+
+    text = (
+        "Se necesita farmacéutico\nInteresados envien CV a jacobo.x@gmail.com\nLlamar al 666 123 456\n"
+        "Tipo de contrato: <No especificado>\nExperiencia mínima:\nTipo de jornada: Tardes"
+    )
+    cleaned = clean_text(text)
+    assert "@" not in cleaned and "666" not in cleaned and "No especificado" not in cleaned
+    assert "Tipo de jornada: Tardes" in cleaned
+    assert is_generic_company("Oficina de Farmacia") and is_generic_company("farmaceutico")
+    assert not is_generic_company("Farmacia Tres Cantos")

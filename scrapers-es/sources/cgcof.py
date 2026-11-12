@@ -33,6 +33,29 @@ _PROFESSIONS = (
     ("tecnico", "Técnico de farmacia"), ("auxiliar", "Técnico de farmacia"), ("ayudante", "Técnico de farmacia"),
     ("farmaceutic", "Farmacia"), ("adjunt", "Farmacia"), ("titular", "Farmacia"), ("sustitut", "Farmacia"),
 )
+# Contactos dentro do texto livre (emails pessoais, telemóveis): a linha inteira sai.
+_CONTACT_RE = re.compile(
+    r"[\w.+-]+@[\w-]+\.[\w.]+|(?:\+34[\s.-]?)?(?<!\d)[6789]\d{2}[\s.-]?\d{2,3}[\s.-]?\d{2,3}[\s.-]?\d{0,3}(?!\d)|whats?app",
+    re.I,
+)
+# "Tipo de contrato: <No especificado>", "Experiencia mínima:" (rótulo sem valor)
+_EMPTY_LINE_RE = re.compile(r"<\s*no especificado\s*>|^[^:\n]{2,40}:\s*$", re.I)
+_GENERIC_WORDS = {"farmacia", "farmacias", "farmaceutico", "farmaceutica", "farmaceuticos", "oficina", "de", "la",
+                  "parafarmacia", "botica", "empresa", "particular"}
+MIN_BODY = 60
+
+
+def clean_text(text: str) -> str:
+    lines = [ln.strip() for ln in (text or "").splitlines()]
+    kept = [ln for ln in lines if not _CONTACT_RE.search(ln) and not _EMPTY_LINE_RE.search(ln)]
+    return re.sub(r"\n{3,}", "\n\n", "\n".join(kept)).strip()
+
+
+def is_generic_company(company: str) -> bool:
+    words = norm(company).split()
+    return not words or all(w in _GENERIC_WORDS for w in words)
+
+
 _CV_BANK_RE = re.compile(r"bolsa de (candidatos|trabajo|empleo)|deja tu (cv|curr)|autocandidatura|candidatura espontanea")
 
 
@@ -70,10 +93,10 @@ def build_job(row: dict, source: str = "cgcof", today: date | None = None) -> Jo
     profession = _profession(row)
     if not profession:
         return None
-    body = html_to_text(row.get("description"))
-    offered = html_to_text(row.get("offered"))
-    reqs = html_to_text(row.get("requirements"))
-    if len(body) < 25 or _CV_BANK_RE.search(norm(body[:400])):
+    body = clean_text(html_to_text(row.get("description")))
+    offered = clean_text(html_to_text(row.get("offered")))
+    reqs = clean_text(html_to_text(row.get("requirements")))
+    if len(body) < MIN_BODY or _CV_BANK_RE.search(norm(body[:400])):
         return None
     city = (row.get("city_name") or "").strip() or None
     state = (row.get("state_name") or "").strip() or None
@@ -91,9 +114,9 @@ def build_job(row: dict, source: str = "cgcof", today: date | None = None) -> Jo
     title = f"{label} - {city or state}"
     company_raw = re.sub(r"\s+", " ", (row.get("company") or "")).strip()
     company = company_raw.title() if company_raw.isupper() else company_raw
-    if not (company and _BUSINESS_RE.search(company) and len(company) < 80):
+    if not (company and _BUSINESS_RE.search(company) and len(company) < 80) or is_generic_company(company):
         company = GENERIC_COMPANY
-    reqs_clean = reqs if reqs and len(norm(reqs)) > len("Experiencia mínima:") + 2 else None
+    reqs_clean = reqs or None
     description = "\n\n".join(x for x in (body, offered, reqs_clean) if x)
     return JobPayload(
         title=title,

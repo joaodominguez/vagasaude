@@ -122,6 +122,8 @@ def build_job(row: dict, detail: dict, source: str = "codem") -> JobPayload | No
     company = f.get("empresa") or "Oferta vía Colegio Oficial de Enfermería de Madrid"
     if len(company) > 120 or norm(company) in ("confidencial", "no consta", "-"):
         company = "Oferta vía Colegio Oficial de Enfermería de Madrid"
+    elif company.isupper():
+        company = re.sub(r"\b(De|Del|La|Las|Los|Y|E)\b", lambda m: m.group(1).lower(), company.title())
     contract_src = " ".join([f.get("duracion del contrato") or "", f.get("jornada laboral") or "", f.get("turno de trabajo") or ""])
     return JobPayload(
         title=title,
