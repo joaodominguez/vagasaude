@@ -32,6 +32,13 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     url: "https://www.inpa.gov.it/bandi-e-avvisi/",
     sector: "Pubblico",
   },
+  {
+    id: "gu-s4",
+    name: "Gazzetta Ufficiale - 4ª Serie Speciale Concorsi ed esami",
+    shortName: "Gazzetta Ufficiale",
+    url: "https://www.gazzettaufficiale.it/",
+    sector: "Pubblico",
+  },
 ];
 
 export const SOURCE_META = Object.fromEntries(

@@ -13,7 +13,7 @@ from sources import SCRAPERS  # noqa: E402
 
 
 def test_registry_has_public_sources():
-    assert set(SCRAPERS) == {"veneto-concorsi", "inpa"}
+    assert set(SCRAPERS) == {"veneto-concorsi", "inpa", "gu-s4"}
     assert all(cls.slug == slug for slug, cls in SCRAPERS.items())
 
 
