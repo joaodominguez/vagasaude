@@ -32,7 +32,13 @@ export function tidyTitleEnd(text: string): string {
   return ellipsis ? `${out}…` : out;
 }
 
-export function shortenJobTitle(title: string, maxLen = 96): string {
+/**
+ * Limite alzato a 130 (era 96): i bandi pubblici italiani hanno titoli del tipo
+ * "Concorso pubblico per 5 posti di Tecnico Sanitario di Radiologia Medica — ASST Fatebenefratelli Sacco"
+ * e a 96 caratteri perdevano profilo o ente (e il dedupe hash li confondeva). I lettori di
+ * scrapers-it/sources/_it_pub.py (TITLE_MAX) costruiscono titoli entro lo stesso limite.
+ */
+export function shortenJobTitle(title: string, maxLen = 130): string {
   let out = (title || "").trim().replace(WHITESPACE_RE, " ").replace(ELLIPSIS_RE, "");
   if (out.length > maxLen) {
     out = out.slice(0, maxLen - 1).replace(/[ ,;—\-]+$/g, "") + "…";

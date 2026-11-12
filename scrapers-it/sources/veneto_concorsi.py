@@ -218,6 +218,8 @@ def collect_calls(client: HttpClient, now: datetime | None = None, stats: dict |
     ids: list[str] = []
     for page in range(MAX_PAGES):
         html = client.get_text(LIST_URL.format(start=page * 5 + 1))
+        if page == 0 and "elenco_bandi" not in html and "navbar_mys" not in html:
+            raise RuntimeError("veneto-concorsi: elenco non riconosciuto (struttura della pagina cambiata?)")
         page_ids = [i for i in parse_list(html) if i not in ids]
         if not page_ids:
             break
@@ -241,6 +243,7 @@ def collect_calls(client: HttpClient, now: datetime | None = None, stats: dict |
 class VenetoConcorsiScraper(BaseScraper):
     slug = "veneto-concorsi"
     name = "Veneto — Concorsi, Avvisi e Incarichi (Azienda Zero)"
+    last_listings_complete = True
 
     def __init__(self) -> None:
         self.stats: dict = {}
@@ -253,4 +256,6 @@ class VenetoConcorsiScraper(BaseScraper):
             client.close()
         jobs = P.dedupe_titles([c.job for c in calls])
         self.stats["published"] = len(jobs)
+        # Con errori sui dettagli l'elenco e' incompleto: niente soft-expire delle offerte mancanti.
+        self.last_listings_complete = not self.stats.get("errors")
         return jobs

@@ -172,7 +172,7 @@ const PROFESSION_RULES: Array<[RegExp, string]> = [
   ],
   [
     new RegExp(
-      "logoped|terapista occupazional|terapista della neuro|neuropsicomotric|psicomotricist|tecnico della riabilitazione|riabilitazione psichiatrica|ortottist|audiologo",
+      "logoped|terapista occupazional|terapista della neuro|terapista della riabilitazione|\\bterapista\\b|neuropsicomotric|psicomotricist|tecnico della riabilitazione|riabilitazione psichiatrica|ortottist|audiologo",
     ),
     "Logopedia e riabilitazione",
   ],

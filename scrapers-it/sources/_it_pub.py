@@ -108,14 +108,19 @@ _POSTI_RE = re.compile(
 )
 
 
+def clean_posts(n: int | None) -> int | None:
+    """999/9999 sono segnaposto di avvisi aperti senza numero definito: non sono un numero di posti."""
+    return n if n and n < 500 else None
+
+
 def posts_from(text: str) -> int | None:
     """Numero di posti dichiarato ("n. 15 posti", "un posto", "ventidue posti"); None se non indicato."""
     for m in _POSTI_RE.finditer(text or ""):
         if m.group(1) or m.group(2):
-            return int(m.group(1) or m.group(2))
+            return clean_posts(int(m.group(1) or m.group(2)))
         value = it_number_word(m.group(3))
         if value:
-            return value
+            return clean_posts(value)
     return None
 
 
@@ -155,7 +160,7 @@ ACADEMIC_RE = re.compile(
 )
 # Atti successivi o che non sono un bando aperto (graduatorie, esiti, diari, ammessi, rettifiche...).
 NOT_OPEN_RE = re.compile(
-    r"^(approvazione|esito|esiti|ammissione|diario|calendario|convocazion|elenco (degli )?(ammessi|candidati|idonei)|"
+    r"^(approvazione|modifica parziale|esito|esiti|ammissione|diario|calendario|convocazion|elenco (degli )?(ammessi|candidati|idonei)|"
     r"nomina (della )?commissione|rettifica|errata|proroga|riapertura dei termini|sospensione|revoca|annullamento|"
     r"avviso di (convocazione|rettifica)|comunicazione|graduatoria (finale|definitiva|provvisoria|di merito)|"
     r"avviso (di )?(esito|ammissione)|scorrimento)|"
@@ -245,14 +250,22 @@ _PROFILE_WORDS = (
 _PROFILE_START_RE = re.compile(r"\b(?:" + _PROFILE_WORDS + r")\w*", re.I)
 _PROFILE_END_RE = re.compile(
     r"(?:[,;.(]|\s[-–—]\s|\so\s(?:di\s)?(?=(?:" + _PROFILE_WORDS + r")\w*)|\sconseguit|\sa tempo\b|\sper (?:le|il|la|l'|l’|i|gli|titoli|esami|soli|la copertura|conto|una|un)\b|\spresso\b|\sriservat|"
-    r"\sda assegnar|\sarea\b|\scon\b|\sdisciplina\b|\sin (?:regime|autonomia|qualit|possesso)|\sdella (?:asl|aziend|u\.o|uoc|struttura|sc\b)|"
-    r"\sdel (?:dipartimento|servizio|distretto|presidio)|\sappartenent|\scategoria\b|\sbanda\b|\sfascia\b|\sruolo\b|"
+    r"\sda assegnar|\sarea\b|\scon\b|\sdisciplina\b|\sin (?:regime|autonomia|qualit|possesso|esecuzione)|\snell[\'’]|\snel\b|\sai\b|\sdella (?:asl|aziend|u\.o|uoc|struttura|sc\b)|"
+    r"\sdel (?:dipartimento|servizio|distretto|presidio)|\sappartenent|\scat\b|\scategoria\b|\sbanda\b|\sfascia\b|\sruolo\b|"
     r"\sdi cui\b|\sprofilo\b|\sdestinat|\sai sensi|\sdi livello|\sdella durata|\sdella\s+durata)",
     re.I,
 )
+_DISC_END = (
+    r"(?=\s*(?:[,.;(”\"»]|\sa tempo\b|\sper\s|\spresso\b|\sarea\b|\ssettore\b|\sin\s|\s-\s|\s–\s|\sda\s|\salla\b|\sallo\b|\sai\b|\sagli\b|"
+    r"\sex\b|\scon\b|\snell['’]\s*(?:ambito|area)|\snell[ao]\s+(?:ambito|area|struttura)|\sdel\s(?:dipartimento|servizio|distretto|presidio|dips)\b|"
+    r"\sdella\s(?:asl|aziend|struttura|uoc|sc\b|u\.o)|\sdi cui\b|\ssecondo\b|$))"
+)
 _DISCIPLINE_RE = re.compile(
-    r"\bdisciplin[ae]\b\s*(?:di|in|:)?\s*(?:[“\"«']\s*)?([^,.;(”\"»]+?)(?=\s*(?:[,.;(”\"»]|\sa tempo\b|\sper\s|\spresso\b|\sarea\b|\ssettore\b|\sin\s|\s-\s|\s–\s|$))",
+    r"\bdisciplin[ae]\b\s*(?:di|in|:)?\s*(?:[“\"«']\s*)?([^,.;(”\"»]+?)" + _DISC_END,
     re.I,
+)
+_DISCIPLINE_DASH_RE = re.compile(
+    r"\b(?:dirigente\s+medico|medico|dirigente\s+veterinario)\s*[–—-]\s*([^–—,.;(]+?)" + _DISC_END, re.I
 )
 _SMALL = {"negli", "nei", "nelle", "sul", "sulla", "sui", "tra", "fra", "di", "e", "del", "della", "delle", "dei", "degli", "dello", "dell", "in", "per", "a", "ed", "il", "la", "le", "lo", "da", "al", "alla", "nel", "nella", "con", "o"}
 
@@ -285,11 +298,13 @@ def nice_case(text: str) -> str:
 
 
 def extract_discipline(text: str) -> str | None:
-    m = _DISCIPLINE_RE.search(text or "")
+    m = _DISCIPLINE_RE.search(text or "") or _DISCIPLINE_DASH_RE.search(text or "")
     if not m:
         return None
     d = re.sub(r"\s+", " ", m.group(1)).strip(" .,;:-–—")
     if not d or len(d) > 90 or re.match(r"(?i)^(varie|vari|diverse|ed|e)\b", d):
+        return None
+    if m.re is _DISCIPLINE_DASH_RE and (len(d.split()) > 6 or re.match(r"(?i)^(il|la|lo|le|gli|i|un|una|presente|dei|del|della|dell|nella|nel)\b", d)):
         return None
     return nice_case(d)
 
@@ -303,7 +318,12 @@ def extract_profile(text: str) -> str | None:
     text = re.sub(r"\s+", " ", (text or "").replace("’", "'")).strip()
     m = re.search(r"profilo professionale\s*(?:di\s+)?[“\"«']?\s*([^”\"»',.;(]+)", text, re.I)
     if m:
-        return nice_case(m.group(1))
+        cand = re.split(r"\s[–—-]\s", m.group(1))
+        if re.match(r"(?i)collaborator[ei] professional[ei] sanitari[oi]?$", cand[0].strip()) and len(cand) > 1:
+            cand = [cand[0].strip() + " – " + re.split(r"(?i)\sai sensi|\sda assegnare|\spresso", cand[1])[0].strip()]
+        valid = _valid_profile(nice_case(cand[0]))
+        if valid:
+            return valid
     uoc = re.search(
         r"(?:direttore|direzione)\s+(?:medico\s+)?(?:di\s+|della\s+|dell['’]\s*)?(?:unit[aà]'?\s+operativa\s+complessa|struttura complessa|u\.?o\.?c\.?)\s*(?:di\s+)?"
         r"([^,.;(]+?)(?=,|\.|;|\(|\sdel\sdipartimento|\sdisciplin|\sarea\b|\sdella\sdurata|\sp\.o\.|$)", text, re.I)
@@ -331,9 +351,38 @@ def extract_profile(text: str) -> str | None:
         if alt and len(alt.group(1)) < 40:
             snippet = f"{snippet.strip()} o {alt.group(1).strip()}"
     snippet = snippet.strip(" ,;.-–—")
-    if len(snippet) < 4 or len(snippet) > 90:
+    parts = re.split(r"\s[–—-]\s", snippet)
+    if len(parts) > 1:
+        if re.match(r"(?i)collaborator[ei] professional[ei] sanitari[oi]?$", parts[0].strip()):
+            snippet = f"{parts[0].strip()} – {re.split(r'(?i)\\sai sensi|\\sda assegnare|\\spresso', parts[1])[0].strip()}"
+        else:
+            snippet = parts[0].strip()
+    return _valid_profile(nice_case(snippet))
+
+
+_PROFILE_OK_RE = re.compile(
+    r"dirigent|direttor|collaborator|infermier|ostetric|operator|tecnic|fisioterap|farmacist|medic|psicolog|biolog|veterinar|assistent|educator|"
+    r"logoped|dietist|podolog|ortottist|terapist|igienist|odontoiatr|coadiutor|ingegner|analist|funzionar|istruttor|autist|ausiliar|puericult|"
+    r"fisico|chimic|statistic|sociolog|specialist|cuoc|amministrativ|medicina|programmator|architett|geometr|perfusionist|massofisio|audio",
+    re.I,
+)
+
+
+def _valid_profile(profile: str | None) -> str | None:
+    """Scarta estratti senza un nome di profilo ("Oggetto di selezione", "Da rivestire", frasi di testo)."""
+    if not profile:
         return None
-    return nice_case(snippet)
+    words = profile.split()
+    while words and words[-1].lower() in _SMALL | {"nella", "nel", "nei", "negli", "nelle", "al", "alla", "ai"}:
+        words.pop()  # "Medici del", "Dirigenti Veterinari nella": preposizione rimasta in coda
+    profile = " ".join(words)
+    if len(profile) < 4 or len(profile) > 80 or len(profile.split()) > 9:
+        return None
+    if re.search(r"(?i)\b(approvat\w*|contro|progetto|denominat\w*)\b", profile):
+        return None
+    if not _PROFILE_OK_RE.search(profile) or re.match(r"(?i)^(oggetto|da |il |la |lo |le |gli |in |è |e |per |che |con )", profile):
+        return None
+    return profile
 
 
 _STEM_STOP = {"di", "del", "della", "delle", "dei", "degli", "e", "ed", "in", "per", "a", "il", "la", "le", "lo", "dell", "d", "area", "settore",
@@ -375,11 +424,19 @@ _ENTE_SHORT = [
     (re.compile(r"^azienda ospedaliera\s*", re.I), "AO "),
     (re.compile(r"^agenzia di tutela della salute\s*(?:della |di |del )?", re.I), "ATS "),
     (re.compile(r"^fondazione irccs\s*", re.I), "IRCCS "),
+    (re.compile(r"^azienda sanitaria universitaria integrata del trentino.*$", re.I), "ASUIT Trentino"),
+    (re.compile(r"^azienda sanitaria universitaria friuli centrale\s*(?:di udine)?", re.I), "ASUFC Udine"),
+    (re.compile(r"^azienda sanitaria universitaria giuliano isontina\s*(?:di trieste)?", re.I), "ASUGI Trieste"),
+    (re.compile(r"^azienda sanitaria universitaria integrata\s*(?:di |del )?", re.I), "ASUI "),
+    (re.compile(r"^azienda sanitaria universitaria\s*(?:di |del )?", re.I), "ASU "),
+    (re.compile(r"^azienda sanitaria provinciale\s*(?:di |del )?", re.I), "ASP "),
+    (re.compile(r"^azienda regionale della salute\s*(?:regione )?", re.I), "ARES "),
+    (re.compile(r"^azienda per il governo della sanit[aà]\s*(?:della )?regione\s*", re.I), "Azienda Zero "),
 ]
 _ACRONYM_FIX = re.compile(r"^(ASST|AST|AUSL|ASL|AOUI|AOU|AORN|AO|ATS|IRCCS)\s+(.*)$")
 
 
-_ACRONYMS = ("ASL", "ASST", "AUSL", "ULSS", "IRCCS", "ESTAR", "AOU", "AOUI", "AORN", "ATS", "ARES", "ARCS", "APSS", "USL", "AO", "AST", "ASP", "IZS", "AUSS", "ASUGI", "ASUFC", "ASFO", "ASUIT", "SABES")
+_ACRONYMS = ("ASUIT", "ASUFC", "ASUGI", "ASUI", "ASU", "ASL", "ASST", "AUSL", "ULSS", "IRCCS", "ESTAR", "AOU", "AOUI", "AORN", "ATS", "ARES", "ARCS", "APSS", "USL", "AO", "AST", "ASP", "IZS", "AUSS", "ASUGI", "ASUFC", "ASFO", "ASUIT", "SABES")
 
 
 def _fix_acronyms(text: str) -> str:
@@ -546,18 +603,30 @@ def _truncate(text: str, limit: int) -> str:
     return cut + "…"
 
 
+TITLE_MAX = 130  # il sito (shortenJobTitle, maxLen) taglia i titoli oltre questo limite prima del dedupe hash
+
+
+def fit_title(body: str, ente_short: str, limit: int = TITLE_MAX) -> str:
+    """"<body> — <ente>" entro `limit` caratteri: si accorcia il corpo, non l'ente."""
+    if len(ente_short) > 42:
+        ente_short = ente_short[:42].rsplit(" ", 1)[0].rstrip(" ,;:-–—")
+    suffix = f" — {ente_short}"
+    return f"{_truncate(body, max(limit - len(suffix), 30))}{suffix}"
+
+
 def build_title(kind: str, profile: str | None, discipline: str | None, ente_short: str, posts: int | None) -> str:
-    """"Concorso pubblico per 3 posti di Dirigente Medico – Cardiologia — ULSS 6 Euganea"."""
+    """"Concorso pubblico per 3 posti di Dirigente Medico – Cardiologia — ULSS 6 Euganea" (max TITLE_MAX caratteri)."""
     if profile:
-        who = profile
+        cps = re.match(r"(?i)collaborator[ei] professional[ei] sanitari[oi]?\s*[–-]\s*(.+)$", profile)
+        who = cps.group(1).strip() if cps else profile  # "Collaboratore Professionale Sanitario – Infermiere" -> "Infermiere"
         if posts:
-            who = f"{posts} post{'o' if posts == 1 else 'i'} di {profile}"
+            who = f"{posts} post{'o' if posts == 1 else 'i'} di {who}"
         if discipline and norm(discipline) not in norm(profile):
             who += f" – {discipline}"
         body = f"{kind} per {who}"
     else:
         body = kind
-    return f"{_truncate(body, 120)} — {ente_short}"
+    return fit_title(body, ente_short)
 
 
 def province_label(sigla: str) -> str | None:
@@ -577,6 +646,11 @@ def location_from_text(*texts: str | None) -> tuple[str, str | None]:
             return SIGLA_TO_REGION[sig], province_label(sig)
     region = guess_district(blob)
     if region not in REGIONS:
+        # "... DI COMO", "... DI FERMO": toponimi ambigui (parola comune) ammessi solo come frammento esatto.
+        for piece in re.findall(r"(?:\bdi |\bdel |\bdella |\s-\s)([^-]+?)\s*$", blob, re.I):
+            region = guess_district(piece.strip())
+            if region in REGIONS:
+                return region, nice_case(piece.strip())
         return "Italia", None
     # citta'/provincia: la voce piu' lunga trovata nel testo
     key = norm(blob)
@@ -604,19 +678,27 @@ def profession_for(profile: str | None, discipline: str | None, title_text: str,
 
 
 def dedupe_titles(jobs: list[JobPayload]) -> list[JobPayload]:
-    """La web deduplica per titolo|azienda|regione: due bandi con lo stesso titolo ottengono un suffisso (data)."""
+    """La web deduplica per titolo|azienda|regione: due bandi con lo stesso titolo ottengono un suffisso (scadenza, poi codice)."""
     seen: set[tuple[str, str, str]] = set()
+
+    def key_of(job: JobPayload) -> tuple[str, str, str]:
+        return (norm(job.title), norm(job.company), norm(job.location_district))
+
+    def with_suffix(title: str, suffix: str) -> str:
+        body, sep, ente = title.rpartition(" — ")
+        if not sep:
+            return _truncate(title, TITLE_MAX - len(suffix) - 1) + f" {suffix}"
+        room = TITLE_MAX - len(sep) - len(ente) - len(suffix) - 1
+        return f"{_truncate(body, max(room, 20))} {suffix}{sep}{ente}"
+
     for job in jobs:
-        key = (norm(job.title), norm(job.company), norm(job.location_district))
-        if key in seen:
+        if key_of(job) in seen:
             stamp = (job.expires_at or job.published_at or "")[:10]
-            suffix = f"scad. {stamp[8:10]}/{stamp[5:7]}" if len(stamp) == 10 else job.source_id[-6:]
-            job.title = f"{job.title} ({suffix})"
-            key = (norm(job.title), key[1], key[2])
-            if key in seen:
-                job.title = f"{job.title} · {job.source_id[-6:]}"
-                key = (norm(job.title), key[1], key[2])
-        seen.add(key)
+            if len(stamp) == 10:
+                job.title = with_suffix(job.title, f"(scad. {stamp[8:10]}/{stamp[5:7]})")
+            if key_of(job) in seen:
+                job.title = with_suffix(job.title, f"[{job.source_id[-6:]}]")
+        seen.add(key_of(job))
     return jobs
 
 

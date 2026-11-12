@@ -156,3 +156,23 @@ def test_kinds_classification():
     assert P.classify_kind("Avviso pubblico a tempo determinato per infermieri") == P.KIND_TEMPO_DET
     assert P.classify_kind("Avviso per incarichi libero-professionali") == P.KIND_INCARICO
     assert P.classify_kind("Conferimento incarico di direzione") == P.KIND_SELEZIONE
+
+
+def _job(title, source_id, expires="2026-12-10T23:59:00+00:00"):
+    from common.models import JobPayload
+
+    return JobPayload(title=title, company="ASST X", location_district="Lombardia", location_concelho=None, profession="Medicina",
+                      specialty=None, sector="pubblico", contract_type=None, description="x", requirements=None, salary=None,
+                      application_url="u", source="s", source_id=source_id, published_at=None, expires_at=expires)
+
+
+def test_titles_fit_site_limit_and_dedupe_survives_site_truncation():
+    long_title = P.build_title(P.KIND_CONCORSO, "Collaboratore Professionale Sanitario – Tecnico Sanitario di Laboratorio Biomedico",
+                               "Disciplina molto lunga di esempio", "ASST Grande Ospedale Metropolitano Niguarda", 12)
+    assert len(long_title) <= P.TITLE_MAX and long_title.endswith("— ASST Grande Ospedale Metropolitano")  # ente tagliato a ~42, senza puntini
+    jobs = [_job(long_title, f"id-{i}aaaaaa") for i in range(3)]
+    P.dedupe_titles(jobs)
+    titles = [j.title for j in jobs]
+    assert len(set(P.norm(t) for t in titles)) == 3
+    assert all(len(t) <= P.TITLE_MAX for t in titles)
+    assert titles[1].count("(scad. 10/12)") == 1 and "[" in titles[2]
