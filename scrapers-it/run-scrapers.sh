@@ -40,8 +40,14 @@ fi
   python3 "$ROOT/tools/jobs_integrity.py" "$DATA_DIR" http://127.0.0.1:3014 /offerte/ || true
 ) || true
 
-# Google Indexing API: TODO -- progetto Google Cloud e chiave dedicati a offertesanita.it,
-# da creare solo dopo approvazione. Nessuna chiave in questo repository.
+# Google Indexing API: offerte nuove/ritirate. Progetto Google Cloud proprio dell'IT
+# (my-project-1483913428749, "offertesanita-it"): 200 richieste/giorno solo per questo sito.
+INDEXING_KEY="${GOOGLE_INDEXING_KEY:-/home/portal/.config/vagasaude/indexing-key-it.json}"
+if [[ -f "$INDEXING_KEY" && -x /home/portal/.venvs/indexing/bin/python ]]; then
+  GOOGLE_INDEXING_KEY="$INDEXING_KEY" INDEXING_DAILY_QUOTA="${INDEXING_DAILY_QUOTA:-200}" /home/portal/.venvs/indexing/bin/python "$ROOT/tools/indexing_notify.py" \
+    --sitemap http://127.0.0.1:3014/sitemap/jobs.xml \
+    --state "$DATA_DIR/indexing-state.json" || true
+fi
 
 # Digest delle nuove offerte agli iscritti IT (solo se Resend e' configurato).
 if [[ -n "${RESEND_API_KEY:-}" && -n "${SCRAPER_API_TOKEN:-}" ]]; then
