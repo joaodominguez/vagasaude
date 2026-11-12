@@ -18,7 +18,7 @@ if [[ -f "$APP_DIR/.env.production" ]]; then
   set +a
 fi
 # Fissato DOPO il .env (che puo' definire PORT) cosi' nulla lo sovrascrive.
-export INGEST_BASE_URL="http://127.0.0.1:3013"
+export INGEST_BASE_URL="http://127.0.0.1:3014"
 
 if [[ -d "$ROOT/.venv" ]]; then
   # shellcheck source=/dev/null
@@ -36,7 +36,7 @@ fi
 (
   export NEXT_PUBLIC_SITE_URL="https://offertesanita.it"
   python3 "$ROOT/tools/scraper_health.py" "$DATA_DIR/scraper-runs.json"
-  python3 "$ROOT/tools/jobs_integrity.py" "$DATA_DIR" http://127.0.0.1:3013 /offerte/ || true
+  python3 "$ROOT/tools/jobs_integrity.py" "$DATA_DIR" http://127.0.0.1:3014 /offerte/ || true
 ) || true
 
 # Google Indexing API: TODO -- progetto Google Cloud e chiave dedicati a offertesanita.it,
@@ -44,7 +44,7 @@ fi
 
 # Digest delle nuove offerte agli iscritti IT (solo se Resend e' configurato).
 if [[ -n "${RESEND_API_KEY:-}" && -n "${SCRAPER_API_TOKEN:-}" ]]; then
-  curl -sS -X POST "http://127.0.0.1:3013/api/alerts/digest" \
+  curl -sS -X POST "http://127.0.0.1:3014/api/alerts/digest" \
     -H "Authorization: Bearer ${SCRAPER_API_TOKEN}" \
     -H "Content-Type: application/json" \
     || true

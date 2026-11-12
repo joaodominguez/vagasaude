@@ -11,12 +11,12 @@ si decideranno dopo la ricerca in `../docs/it/`. Derivato da `../scrapers-es` (f
   Libero professionale, Apprendistato, Tirocinio, Contratto). Da mantenere sincronizzata con
   `apps/web-it/src/lib/taxonomies.ts` e `guessProfession` in `apps/web-it/src/lib/job-store.ts`.
 - `run.py`: esegue le fonti e le invia a `POST {INGEST_BASE_URL}/api/ingest`.
-  `INGEST_BASE_URL` è obbligatorio, senza valore predefinito (3013 = sito IT, solo in futuro).
+  `INGEST_BASE_URL` è obbligatorio, senza valore predefinito (3014 = sito IT, solo in futuro).
 - `run-scrapers.sh`: helper cron, **solo segnaposto** (nessun deploy fatto).
 
 ```bash
 cd scrapers-it
 python3 -m pip install -r requirements.txt pytest
 python3 -m pytest -q
-INGEST_BASE_URL=http://127.0.0.1:3013 SCRAPER_API_TOKEN=... python3 run.py --source all --dry-run
+INGEST_BASE_URL=http://127.0.0.1:3014 SCRAPER_API_TOKEN=... python3 run.py --source all --dry-run
 ```

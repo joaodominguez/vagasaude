@@ -51,6 +51,6 @@ removido mais tarde.
 - **Notícias/guias**: `content/notizie/` vazio; escrever artigos em italiano antes de mostrar a secção.
 - **Caixa de email** `contatti@offertesanita.it` **ainda não existe**; também `avvisi@offertesanita.it` (EMAIL_FROM).
 - **Analytics**: criar propriedades GA4/Clarity próprias para o IT.
-- **Deploy**: porta 3013, Apache vhost, Cloudflare (cache rules), Search Console, Resend (domínio de envio),
+- **Deploy**: porta 3014, Apache vhost, Cloudflare (cache rules), Search Console, Resend (domínio de envio),
   `run-scrapers.sh` de `scrapers-it` (placeholder) — nada feito.
 - Comentários em `globals.css` e `partners.module.css`/`card-icons.tsx` ainda em PT/ES (não visíveis ao utilizador).
