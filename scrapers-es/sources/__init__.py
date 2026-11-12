@@ -51,11 +51,13 @@ from sources.winid import WinidScraper
 from sources.fresenius import FreseniusEsScraper
 from sources.ascires import AsciresScraper
 from sources.ballesol import BallesolScraper
+from sources.vitalia import VitaliaScraper
 
 SCRAPERS: dict = {
     FreseniusEsScraper.slug: FreseniusEsScraper,
     AsciresScraper.slug: AsciresScraper,
     BallesolScraper.slug: BallesolScraper,
+    VitaliaScraper.slug: VitaliaScraper,
     AmavirScraper.slug: AmavirScraper,
     AnicuraScraper.slug: AnicuraScraper,
     BoeScraper.slug: BoeScraper,
