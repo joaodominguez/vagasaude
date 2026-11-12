@@ -18,6 +18,7 @@ from .fatebenefratelli import FatebenefratelliScraper
 from .fresenius import FreseniusScraper
 from .gu_s4 import GuS4Scraper
 from .humanitas import HumanitasScraper
+from .ieo import IeoScraper
 from .inpa import InpaScraper
 from .maugeri import MaugeriScraper
 from .veneto_concorsi import VenetoConcorsiScraper
@@ -25,7 +26,7 @@ from .veneto_concorsi import VenetoConcorsiScraper
 SCRAPERS: dict = {
     scraper.slug: scraper
     for scraper in (VenetoConcorsiScraper, InpaScraper, GuS4Scraper, HumanitasScraper, ClarianeScraper, AnicuraScraper, CerbaScraper, FreseniusScraper,
-                    AffideaScraper, MaugeriScraper, AuxologicoScraper, FatebenefratelliScraper, BianalisiScraper,)
+                    AffideaScraper, MaugeriScraper, AuxologicoScraper, FatebenefratelliScraper, BianalisiScraper, IeoScraper,)
 }
 
 # Fonti private (settore "privato", tipo "offerta"): vedi sources/_it_priv.py.

@@ -112,6 +112,13 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     url: "https://bianalisi.it/ricerca-personale-sanitario",
     sector: "Privato",
   },
+  {
+    id: "ieo",
+    name: "IEO - Istituto Europeo di Oncologia",
+    shortName: "IEO",
+    url: "https://www.ieo.it/it/CHI-SIAMO/Lo-IEO/Lavora-con-noi/",
+    sector: "Privato",
+  },
 ];
 
 export const SOURCE_META = Object.fromEntries(
