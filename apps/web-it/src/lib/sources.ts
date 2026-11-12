@@ -84,6 +84,13 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     url: "https://affideaitaly.recruitee.com/",
     sector: "Privato",
   },
+  {
+    id: "maugeri",
+    name: "ICS Maugeri - Lavora con noi",
+    shortName: "ICS Maugeri",
+    url: "https://carriere.icsmaugeri.it/",
+    sector: "Privato",
+  },
 ];
 
 export const SOURCE_META = Object.fromEntries(
