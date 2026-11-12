@@ -11,6 +11,7 @@ vedi sources/_it_pub.py: i lettori a priorita' piu' bassa rileggono le chiavi di
 from .affidea import AffideaScraper
 from .anicura import AnicuraScraper
 from .auxologico import AuxologicoScraper
+from .bianalisi import BianalisiScraper
 from .cerba import CerbaScraper
 from .clariane import ClarianeScraper
 from .fatebenefratelli import FatebenefratelliScraper
@@ -24,7 +25,7 @@ from .veneto_concorsi import VenetoConcorsiScraper
 SCRAPERS: dict = {
     scraper.slug: scraper
     for scraper in (VenetoConcorsiScraper, InpaScraper, GuS4Scraper, HumanitasScraper, ClarianeScraper, AnicuraScraper, CerbaScraper, FreseniusScraper,
-                    AffideaScraper, MaugeriScraper, AuxologicoScraper, FatebenefratelliScraper,)
+                    AffideaScraper, MaugeriScraper, AuxologicoScraper, FatebenefratelliScraper, BianalisiScraper,)
 }
 
 # Fonti private (settore "privato", tipo "offerta"): vedi sources/_it_priv.py.

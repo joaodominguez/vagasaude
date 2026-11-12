@@ -105,6 +105,13 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     url: "https://www.fatebenefratelli.it/lavora-con-noi",
     sector: "Privato",
   },
+  {
+    id: "bianalisi",
+    name: "Bianalisi - Ricerca personale sanitario",
+    shortName: "Bianalisi",
+    url: "https://bianalisi.it/ricerca-personale-sanitario",
+    sector: "Privato",
+  },
 ];
 
 export const SOURCE_META = Object.fromEntries(
