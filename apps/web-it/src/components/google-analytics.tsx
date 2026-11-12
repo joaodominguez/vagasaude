@@ -11,6 +11,13 @@ import { useConsent } from "@/lib/consent";
  * (NEXT_PUBLIC_* viene incorporata nel build.)
  */
 export const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ?? "";
+/**
+ * Anche un contenitore Google Tag Manager ("GTM-XXXX") è accettato nella stessa
+ * variabile: in quel caso si carica gtm.js (snippet "tag Google" del contenitore) e le
+ * visualizzazioni di pagina della navigazione client vengono inviate come evento
+ * "virtual_page_view" nel dataLayer (trigger in GTM). Stesso consenso opt-in.
+ */
+const IS_GTM = GA_MEASUREMENT_ID.startsWith("GTM-");
 
 declare global {
   interface Window {
@@ -38,6 +45,11 @@ function GoogleAnalyticsTracker() {
       return;
     }
 
+    if (IS_GTM) {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({ event: "virtual_page_view", page_path: pagePath(pathname, searchParams) });
+      return;
+    }
     if (typeof window.gtag !== "function") return;
     window.gtag("config", GA_MEASUREMENT_ID, {
       page_path: pagePath(pathname, searchParams),
@@ -93,7 +105,11 @@ export function GoogleAnalytics() {
   return (
     <>
       <Script
-        src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+        src={
+          IS_GTM
+            ? `https://www.googletagmanager.com/gtm.js?id=${GA_MEASUREMENT_ID}`
+            : `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`
+        }
         strategy="lazyOnload"
       />
       <Script id="ga4-init" strategy="afterInteractive">
@@ -103,7 +119,7 @@ export function GoogleAnalytics() {
           window.gtag = window.gtag || gtag;
           gtag('consent', 'update', { analytics_storage: 'granted' });
           gtag('js', new Date());
-          gtag('config', '${GA_MEASUREMENT_ID}', { anonymize_ip: true });
+          ${IS_GTM ? "" : `gtag('config', '${GA_MEASUREMENT_ID}', { anonymize_ip: true });`}
         `}
       </Script>
       <Suspense fallback={null}>
