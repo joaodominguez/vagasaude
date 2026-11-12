@@ -77,6 +77,13 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     url: "https://jobs.freseniusmedicalcare.com/it/",
     sector: "Privato",
   },
+  {
+    id: "affidea",
+    name: "Affidea Italia - Lavora con noi",
+    shortName: "Affidea",
+    url: "https://affideaitaly.recruitee.com/",
+    sector: "Privato",
+  },
 ];
 
 export const SOURCE_META = Object.fromEntries(
