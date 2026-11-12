@@ -838,4 +838,6 @@ class PandapeHospitaisScraper(PandapeBoardScraper):
         ("complexodesaudesbc", "Complexo de Saúde de São Bernardo do Campo", "publico"),
         ("hospitalematernidademarieta", "Hospital e Maternidade Marieta", "ipss"),
         ("hospitalpequenoprincipe", "Hospital Pequeno Príncipe", "ipss"),
+        # 2026-11-12: laboratórios (probe: 131 vagas, 129 passam o filtro hospital)
+        ("biomega", "Biomega Medicina Diagnóstica", "privado"),
     ]

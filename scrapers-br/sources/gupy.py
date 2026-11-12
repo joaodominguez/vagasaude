@@ -1081,6 +1081,9 @@ class CaudaGupyScraper(GupyScraper):
         ("prodalsaude", "Prodal Saúde", "privado", "prodal"),
         ("vagasamparosaude", "Amparo Saúde", "privado", "amparo"),
         ("medsenior", "MedSênior", "privado", "medsenior"),
+        # 2026-11-12: odontologia (probe: 57 de 150 vagas passam o filtro saúde)
+        ("orthodontic", "Orthodontic", "privado", "orthodontic"),
+        ("orthodonticdentista", "Orthodontic", "privado", "orthodenti"),
     ]
 
 

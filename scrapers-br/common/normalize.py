@@ -114,6 +114,8 @@ def guess_profession(title: str, fallback: str | None = None) -> str:
     t = norm(title)
     rules: list[tuple[tuple[str, ...], str]] = [
         (("enfermeir", "enfermagem", "tecnic de enfermagem", "tecnica de enfermagem", "auxiliar de enfermagem"), "Enfermagem"),
+        # Antes de Medicina: "Cirurgião Dentista" não é médico; "ortodontista" não contém "dentista".
+        (("odontolog", "dentista", "ortodont", "auxiliar de saude bucal"), "Técnico de Saúde"),
         (("medico", "médico", "psiquiatra", "pediatra", "cirurgiao", "anestesi"), "Medicina"),
         (("fisioterap",), "Fisioterapia"),
         (("nutricion", "nutri "), "Nutrição"),
@@ -122,7 +124,6 @@ def guess_profession(title: str, fallback: str | None = None) -> str:
         (("fonoaudi",), "Técnico de Saúde"),
         (("terapeuta ocupacional", "terapia ocupacional"), "Técnico de Saúde"),
         (("radiolog", "biomédic", "biomedic", "laboratorio", "laborator", "gasoterapia"), "Técnico de Saúde"),
-        (("odontolog", "dentista", "auxiliar de saude bucal"), "Técnico de Saúde"),
         (("assistente social",), "Assistência Social"),
         (("agente comunitario", "agente de combate as endemias", "agente de saude"), "Auxiliares"),
         (("auxiliar de saude", "tecnico de saude", "tecnica de saude", "instrumentador"), "Auxiliares"),
