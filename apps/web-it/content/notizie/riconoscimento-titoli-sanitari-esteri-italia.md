@@ -47,9 +47,9 @@ Per i titoli ottenuti fuori da UE, SEE e Svizzera il Ministero della Salute pubb
 
 Le schede ministeriali indicano, in genere:
 
-- la domanda, con il modulo previsto per la professione e l'eventuale marca da bollo;
-- i titoli di studio e i documenti che dimostrano formazione ed eventuale esperienza professionale (di norma non si inviano gli originali dei titoli);
-- la **traduzione in italiano** dei documenti redatti in altra lingua, certificata dalla rappresentanza diplomatica o consolare italiana oppure giurata presso un tribunale italiano.
+- la domanda in bollo al Ministero, con il modulo previsto per la professione;
+- i titoli di studio e i documenti che dimostrano formazione ed eventuale esperienza professionale, nella forma richiesta dalla modulistica;
+- la **traduzione in italiano** dei documenti redatti in altra lingua, con le modalità di certificazione indicate negli allegati della scheda.
 
 Controlla sempre l'elenco aggiornato nella scheda della tua professione, perché moduli e allegati cambiano da una professione all'altra.
 
