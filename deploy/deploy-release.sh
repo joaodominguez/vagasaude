@@ -33,7 +33,7 @@ ssh "$H" "set -e; R=/var/www/$site/releases/$rel; CUR=\$(readlink -f /var/www/$s
 ssh "$ROOT_H" "tmux kill-session -t $sess; tmux new-session -d -s $sess -c /var/www/$site /var/www/$site/start.sh; sleep 4; tmux ls | grep $sess"
 # Limpar a cache do Cloudflare (regra de cache das páginas de vagas/categorias, 2026-11-09):
 # sem isto o edge podia servir HTML do build anterior a apontar para ficheiros JS que já não existem.
-case "$site" in vagasaude) zone=767eabea9b74de2fe7073bc0bdd1af83 ;; vagasaudebr) zone=d7a19a81de0b4dade9438b4a503fddd3 ;; vacantessalud) zone=7012aefe54fe06725b78c758410f165f ;; *) zone= ;; esac
+case "$site" in vagasaude) zone=767eabea9b74de2fe7073bc0bdd1af83 ;; vagasaudebr) zone=d7a19a81de0b4dade9438b4a503fddd3 ;; vacantessalud) zone=7012aefe54fe06725b78c758410f165f ;; offertesanita) zone=d7bb205baa3fad9abc05934e468d10aa ;; *) zone= ;; esac
 cf_token_file="${CF_PURGE_TOKEN_FILE:-$HOME/.config/vagasaude/cloudflare-purge-token}"
 if [ -n "$zone" ] && [ -f "$cf_token_file" ]; then
   if curl -s -X POST -H "Authorization: Bearer $(cat "$cf_token_file")" -H "Content-Type: application/json" \
@@ -46,7 +46,7 @@ else
   echo "AVISO: sem token Cloudflare ($cf_token_file) — cache do edge não foi limpa"
 fi
 # Aquecer a cache das páginas mais visitadas (não bloqueia o deploy se falhar).
-case "$site" in vagasaude) prod=3010 ;; vagasaudebr) prod=3011 ;; vacantessalud) prod=3012 ;; *) prod= ;; esac
+case "$site" in vagasaude) prod=3010 ;; vagasaudebr) prod=3011 ;; vacantessalud) prod=3012 ;; offertesanita) prod=3014 ;; *) prod= ;; esac
 [ -z "$prod" ] || ssh "$ROOT_H" "bash -s -- $prod" < "$(dirname "$0")/warm-cache.sh" || echo "AVISO: aquecimento falhou (deploy concluído)"
 # Limpeza (como root, DEPOIS do reinício, nunca bloqueia o deploy): cada release acumula a
 # cache ISR do Next, escrita pelo app que corre como root (BR ~2,5 GB/release) — o portal
