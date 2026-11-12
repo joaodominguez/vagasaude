@@ -365,7 +365,8 @@ RULES: list[tuple[re.Pattern, str]] = [
         r"guardia medica", r"specializzand", r"specialista ambulatoriale", r"oncolog", r"ematolog", r"nefrolog",
         r"pneumolog", r"otorino", r"endocrinolog", r"reumatolog", r"gastroenterolog", r"diabetolog", r"neonatolog",
         r"fisiatra", r"infettivolog", r"allergolog", r"medico legale", r"anatomopatolog", r"neurochirurg", r"cure palliative",
-        r"direttore sanitario", r"emergenza urgenza", r"medicina generale", r"\bdoctor\b"), "Medicina"),
+        r"direttore sanitario", r"emergenza urgenza", r"medicina generale", r"\bdoctor\b",
+        r"\bigiene\b", r"epidemiolog", r"sanita pubblica", r"neuropsichiatria", r"genetica medica", r"farmacologia clinica"), "Medicina"),
     # Ostetricia dopo Medicina: "Dirigente medico di Ostetricia" resta Medicina.
     (_r(r"ostetric", r"levatrice", r"\bmidwife\b"), "Ostetricia"),
     # Tecnici (termini generici) dopo Medicina.

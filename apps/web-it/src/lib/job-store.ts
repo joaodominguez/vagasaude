@@ -208,7 +208,7 @@ const PROFESSION_RULES: Array<[RegExp, string]> = [
   ],
   [
     new RegExp(
-      "\\bmedico\\b|\\bmedica\\b|\\bmedici\\b|dirigente medico|\\bmedicina\\b|chirurg|pediatr|anestesi|rianimator|dermatolog|ortopedic|traumatolog|urolog|oculist|oftalmolog|psichiatr|radiolog|geriatra|internista|ginecolog|neurolog|cardiolog|patolog|\\bphysician\\b|guardia medica|specializzand|specialista ambulatoriale|oncolog|ematolog|nefrolog|pneumolog|otorino|endocrinolog|reumatolog|gastroenterolog|diabetolog|neonatolog|fisiatra|infettivolog|allergolog|medico legale|anatomopatolog|neurochirurg|cure palliative|direttore sanitario|emergenza urgenza|medicina generale|\\bdoctor\\b",
+      "\\bmedico\\b|\\bmedica\\b|\\bmedici\\b|dirigente medico|\\bmedicina\\b|chirurg|pediatr|anestesi|rianimator|dermatolog|ortopedic|traumatolog|urolog|oculist|oftalmolog|psichiatr|radiolog|geriatra|internista|ginecolog|neurolog|cardiolog|patolog|\\bphysician\\b|guardia medica|specializzand|specialista ambulatoriale|oncolog|ematolog|nefrolog|pneumolog|otorino|endocrinolog|reumatolog|gastroenterolog|diabetolog|neonatolog|fisiatra|infettivolog|allergolog|medico legale|anatomopatolog|neurochirurg|cure palliative|direttore sanitario|emergenza urgenza|medicina generale|\\bdoctor\\b|\\bigiene\\b|epidemiolog|sanita pubblica|neuropsichiatria|genetica medica|farmacologia clinica",
     ),
     "Medicina",
   ],
