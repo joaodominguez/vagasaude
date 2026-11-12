@@ -1,3 +1,4 @@
+from sources.pequenos_pt import ApdpScraper, CruzVermelhaScraper, IrmasHospitaleirasScraper
 from sources.oralmed import OralmedScraper
 from sources.elo_farma import EloFarmaScraper
 from sources.factorial_farmacias import GrupoHSaudeScraper, FarmaciasCuidoScraper, QuatroFarmaScraper
@@ -86,6 +87,9 @@ SCRAPERS = {
     QuatroFarmaScraper.slug: QuatroFarmaScraper,
     GrupoHSaudeScraper.slug: GrupoHSaudeScraper,
     OralmedScraper.slug: OralmedScraper,
+    CruzVermelhaScraper.slug: CruzVermelhaScraper,
+    IrmasHospitaleirasScraper.slug: IrmasHospitaleirasScraper,
+    ApdpScraper.slug: ApdpScraper,
     EloFarmaScraper.slug: EloFarmaScraper,
     ReisBarataScraper.slug: ReisBarataScraper,
     FarmaciasSilveiraScraper.slug: FarmaciasSilveiraScraper,
