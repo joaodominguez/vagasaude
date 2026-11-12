@@ -98,6 +98,13 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     url: "https://www.auxologico.it/lavora-con-noi/posizioni-aperte",
     sector: "Privato",
   },
+  {
+    id: "fatebenefratelli",
+    name: "Fatebenefratelli - Lavora con noi",
+    shortName: "Fatebenefratelli",
+    url: "https://www.fatebenefratelli.it/lavora-con-noi",
+    sector: "Privato",
+  },
 ];
 
 export const SOURCE_META = Object.fromEntries(

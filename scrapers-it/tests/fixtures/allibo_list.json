@@ -1,0 +1,101 @@
+{
+ "ReturnCode": 0,
+ "Content": {
+  "WidgetData": {
+   "AdsList": [
+    {
+     "Job": "Psichiatri",
+     "Title": "Medico specialista in Psichiatria",
+     "EncodedTitle": "Medico specialista in Psichiatria",
+     "StyleClass": "job_4623",
+     "JobLocation": "<i class='aw_pin fas fa-map-marker-alt'></i>Italia  / San Colombano Al Lambro (MI)",
+     "LabelPlace": "Sede di lavoro",
+     "DetailLink": "https://joblink.allibo.com/ats1/job-offer.aspx?DM=2344&ID=124342&LN=IT&FT=727&SG=2",
+     "ListPlaces": [
+      {
+       "Lat": 45.1827707,
+       "Lon": 9.4889194,
+       "CountryCode": "IT",
+       "CountryName": "Italia",
+       "ProvinceName": "Milano",
+       "ProvinceCode": "MI",
+       "PlaceName": "San Colombano Al Lambro"
+      }
+     ],
+     "Rush": "<mark class='aw_rush'>Ricerca urgente</mark>",
+     "LabelHtml": "<mark class='aw_rush'>Ricerca urgente</mark>",
+     "AriaLabel_ViewDetailsFor_": "Visualizza dettaglio per "
+    },
+    {
+     "Job": "TERP",
+     "Title": "TERP",
+     "EncodedTitle": "TERP",
+     "StyleClass": "job_5513",
+     "JobLocation": "<i class='aw_pin fas fa-map-marker-alt'></i>Italia  / San Colombano Al Lambro (MI)",
+     "LabelPlace": "Sede di lavoro",
+     "DetailLink": "https://joblink.allibo.com/ats1/job-offer.aspx?DM=2344&ID=125205&LN=IT&FT=727&SG=2",
+     "ListPlaces": [
+      {
+       "Lat": 45.1827707,
+       "Lon": 9.4889194,
+       "CountryCode": "IT",
+       "CountryName": "Italia",
+       "ProvinceName": "Milano",
+       "ProvinceCode": "MI",
+       "PlaceName": "San Colombano Al Lambro"
+      }
+     ],
+     "Rush": "<mark class='aw_rush'>Ricerca urgente</mark>",
+     "LabelHtml": "<mark class='aw_rush'>Ricerca urgente</mark>",
+     "AriaLabel_ViewDetailsFor_": "Visualizza dettaglio per "
+    },
+    {
+     "Job": "Ricercatore",
+     "Title": "Ricercatore con  Laurea in Informatica, Fisica o Ingegneria",
+     "EncodedTitle": "Ricercatore con&#160; Laurea in Informatica, Fisica o Ingegneria",
+     "StyleClass": "job_5710",
+     "JobLocation": "<i class='aw_pin fas fa-map-marker-alt'></i>Italia  / Brescia (BS)",
+     "LabelPlace": "Sede di lavoro",
+     "DetailLink": "https://joblink.allibo.com/ats1/job-offer.aspx?DM=2344&ID=132870&LN=IT&FT=727&SG=2",
+     "ListPlaces": [
+      {
+       "Lat": 45.5415526,
+       "Lon": 10.2118019,
+       "CountryCode": "IT",
+       "CountryName": "Italia",
+       "ProvinceName": "Brescia",
+       "ProvinceCode": "BS",
+       "PlaceName": "Brescia"
+      }
+     ],
+     "Rush": "",
+     "LabelHtml": "",
+     "AriaLabel_ViewDetailsFor_": "Visualizza dettaglio per "
+    },
+    {
+     "Job": "Infermiere",
+     "Title": "Infermiere in Libera Professione",
+     "EncodedTitle": "Infermiere in Libera Professione",
+     "StyleClass": "job_103271",
+     "JobLocation": "<i class='aw_pin fas fa-map-marker-alt'></i>Italia  / Andora (SV)",
+     "LabelPlace": "Sede di lavoro",
+     "DetailLink": "https://joblink.allibo.com/ats9/job-offer.aspx?DM=2098&ID=176436&LN=IT&FT=100480&SG=2",
+     "ListPlaces": [
+      {
+       "Lat": 43.9848226,
+       "Lon": 8.130599199999999,
+       "CountryCode": "IT",
+       "CountryName": "Italia",
+       "ProvinceName": "Savona",
+       "ProvinceCode": "SV",
+       "PlaceName": "Andora"
+      }
+     ],
+     "Rush": "",
+     "LabelHtml": "",
+     "AriaLabel_ViewDetailsFor_": "Visualizza dettaglio per "
+    }
+   ]
+  }
+ }
+}
