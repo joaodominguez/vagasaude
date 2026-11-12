@@ -51,6 +51,9 @@ export function Footer() {
             <a className="hover:text-primary" href="https://vagasaude.com.br/">
               Brasil
             </a>
+            <a className="hover:text-primary" href="https://offertesanita.it/" hrefLang="it">
+              Italia
+            </a>
           </p>
         </div>
       </div>
