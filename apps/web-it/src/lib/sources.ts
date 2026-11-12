@@ -119,6 +119,13 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     url: "https://www.ieo.it/it/CHI-SIAMO/Lo-IEO/Lavora-con-noi/",
     sector: "Privato",
   },
+  {
+    id: "habilita",
+    name: "Habilita - Lavora con noi",
+    shortName: "Habilita",
+    url: "https://habilita.it/posizioni/",
+    sector: "Privato",
+  },
 ];
 
 export const SOURCE_META = Object.fromEntries(
