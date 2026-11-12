@@ -51,6 +51,7 @@ from sources.winid import WinidScraper
 from sources.fresenius import FreseniusEsScraper
 from sources.ascires import AsciresScraper
 from sources.ics import IcsScraper
+from sources.sespa import SespaScraper
 # Ballesol (sources/ballesol.py) fora do registo: empleo.ballesol.es responde com desafio Cloudflare
 # (403 cf-mitigated) a IPs de servidor — não se contorna. O ficheiro fica (vitalia usa os helpers).
 from sources.vitalia import VitaliaScraper
@@ -59,6 +60,7 @@ SCRAPERS: dict = {
     FreseniusEsScraper.slug: FreseniusEsScraper,
     AsciresScraper.slug: AsciresScraper,
     IcsScraper.slug: IcsScraper,
+    SespaScraper.slug: SespaScraper,
     VitaliaScraper.slug: VitaliaScraper,
     AmavirScraper.slug: AmavirScraper,
     AnicuraScraper.slug: AnicuraScraper,
