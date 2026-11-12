@@ -49,6 +49,13 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     url: "https://jobs.humanitas.it/",
     sector: "Privato",
   },
+  {
+    id: "clariane",
+    name: "Clariane Italia (Korian) - Carriere",
+    shortName: "Clariane",
+    url: "https://carriere.clariane.it/",
+    sector: "Privato",
+  },
 ];
 
 export const SOURCE_META = Object.fromEntries(

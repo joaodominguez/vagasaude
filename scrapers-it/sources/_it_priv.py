@@ -83,7 +83,7 @@ def job_posting(html: str) -> dict | None:
     """Primo JobPosting JSON-LD della pagina (anche dentro @graph)."""
     for raw in re.findall(r"<script[^>]*application/ld\+json[^>]*>(.*?)</script>", html, re.S | re.I):
         try:
-            data = json.loads(raw)
+            data = json.loads(raw, strict=False)
         except ValueError:
             continue
         items = data if isinstance(data, list) else (data.get("@graph") or [data]) if isinstance(data, dict) else []
