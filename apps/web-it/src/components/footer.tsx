@@ -43,6 +43,18 @@ export function Footer() {
             © {new Date().getFullYear()} Offerte Sanità. Le candidature si
             inviano sui siti degli enti e delle aziende.
           </p>
+          <p className="flex flex-wrap gap-x-4 gap-y-1">
+            <span>Anche in</span>
+            <a className="hover:text-primary" href="https://vagasaude.pt/" hrefLang="pt-PT">
+              Portogallo
+            </a>
+            <a className="hover:text-primary" href="https://vagasaude.com.br/" hrefLang="pt-BR">
+              Brasile
+            </a>
+            <a className="hover:text-primary" href="https://vacantessalud.es/" hrefLang="es">
+              Spagna
+            </a>
+          </p>
         </div>
       </div>
     </footer>
