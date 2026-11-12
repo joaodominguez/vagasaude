@@ -25,6 +25,13 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     url: "https://aziendazero.concorsieavvisi.it/",
     sector: "Pubblico",
   },
+  {
+    id: "inpa",
+    name: "inPA - Portale del Reclutamento",
+    shortName: "inPA",
+    url: "https://www.inpa.gov.it/bandi-e-avvisi/",
+    sector: "Pubblico",
+  },
 ];
 
 export const SOURCE_META = Object.fromEntries(
