@@ -1,3 +1,4 @@
+from sources.successfactors import SuccessFactorsScraper
 from sources.agsus import AgsusScraper
 from sources.einstein import EinsteinScraper
 from sources.fleury import FleuryScraper
@@ -101,4 +102,5 @@ SCRAPERS = {
     CaudaGupyScraper.slug: CaudaGupyScraper,
     GupyHospitais2Scraper.slug: GupyHospitais2Scraper,
     FarmaciasGupyScraper.slug: FarmaciasGupyScraper,
+    SuccessFactorsScraper.slug: SuccessFactorsScraper,
 }
