@@ -91,6 +91,13 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     url: "https://carriere.icsmaugeri.it/",
     sector: "Privato",
   },
+  {
+    id: "auxologico",
+    name: "Istituto Auxologico Italiano - Lavora con noi",
+    shortName: "Auxologico",
+    url: "https://www.auxologico.it/lavora-con-noi/posizioni-aperte",
+    sector: "Privato",
+  },
 ];
 
 export const SOURCE_META = Object.fromEntries(
