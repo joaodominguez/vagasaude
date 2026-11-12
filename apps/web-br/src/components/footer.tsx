@@ -51,6 +51,9 @@ export function Footer() {
             <a className="hover:text-primary" href="https://vacantessalud.es/" hrefLang="es">
               Espanha
             </a>
+            <a className="hover:text-primary" href="https://offertesanita.it/" hrefLang="it">
+              Itália
+            </a>
           </p>
         </div>
       </div>
