@@ -12,7 +12,7 @@ class JobPayload:
     location_concelho: str | None
     profession: str
     specialty: str | None
-    sector: str  # publico | privado | concertado
+    sector: str  # pubblico | privato | accreditato
     contract_type: str | None
     description: str
     requirements: str | None

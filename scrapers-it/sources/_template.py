@@ -3,7 +3,7 @@
 Contratto: `fetch()` restituisce una lista di JobPayload che run.py invia a
 POST {INGEST_BASE_URL}/api/ingest. Campi obbligatori nell'app: title,
 company, location_district (regione, vedi normalize.guess_district),
-application_url e source_id. `sector`: publico | privado | concertado
+application_url e source_id. `sector`: pubblico | privato | accreditato
 (valori interni invariati; la UI li mostra come Pubblico | Privato | Accreditato
 -- verificare la mappatura in apps/web-it prima di scrivere la prima fonte).
 
@@ -41,7 +41,7 @@ class ExampleScraper(BaseScraper):
             #         location_concelho=item.get("city"),
             #         profession=guess_profession(item["title"]),
             #         specialty=None,
-            #         sector="privado",
+            #         sector="privato",
             #         contract_type=guess_contract(item.get("employmentType")),
             #         description=html_to_text(item.get("description")),
             #         requirements=None,
