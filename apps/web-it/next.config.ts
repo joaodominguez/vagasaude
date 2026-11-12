@@ -2,15 +2,14 @@ import type { NextConfig } from "next";
 
 /**
  * Cache-Control per HTML anonimo (Cloudflare).
- * - s-maxage: l edge puo servire 2 min senza interrogare l origine
+ * - s-maxage: l edge puo servire 10 min senza interrogare l origine (come PT/BR, 2026-11-12)
  * - stale-while-revalidate: l edge serve stale mentre rivalida
  * /offerte (elenco con searchParams) resta fuori di proposito.
- * In CF: Cache Rule "Eligible for cache" em GET HTML di / e /offerte/* se il
- * piano non cacheizza l'HTML di default; bypass Cookie / Authorization.
- * Vedi docs/ (Cloudflare Cache Rules): da fare solo dopo approvazione.
+ * In CF (zona offertesanita.it, 2026-11-12): Cache Rule su /, /offerte/*, /aziende, /aziende/*,
+ * /dati, che rispetta questo s-maxage ed esclude le richieste RSC senza _rsc.
  */
 const PUBLIC_HTML_CACHE =
-  "public, s-maxage=120, stale-while-revalidate=600";
+  "public, s-maxage=600, stale-while-revalidate=600";
 
 const nextConfig: NextConfig = {
   output: "standalone",
