@@ -15,7 +15,7 @@ from bs4 import BeautifulSoup
 
 from common.http import HttpClient
 from common.models import BaseScraper, JobPayload
-from common.normalize import guess_contract, html_to_text
+from common.normalize import guess_contract, guess_profession, html_to_text
 from sources._farmacia_pt import PROFESSION, is_pharmacy_role, resolve_place
 
 _REGIME = re.compile(
@@ -29,6 +29,15 @@ class FactorialPharmacyScraper(BaseScraper):
     subdomain: str
     company: str
 
+    sector: str = "privado"
+
+    def keep_title(self, title: str) -> bool:
+        """Farmácias: só farmacêutico(a) / técnico(a) de farmácia."""
+        return is_pharmacy_role(title)
+
+    def profession_for(self, title: str) -> str:
+        return PROFESSION
+
     @property
     def base_url(self) -> str:
         return f"https://{self.subdomain}.factorialhr.pt"
@@ -39,7 +48,7 @@ class FactorialPharmacyScraper(BaseScraper):
         try:
             listing = client.get_text(f"{self.base_url}/")
             for item in _parse_listing(listing):
-                if not is_pharmacy_role(item["title"]):
+                if not self.keep_title(item["title"]):
                     continue
                 try:
                     detail = client.get_text(item["url"])
@@ -84,9 +93,9 @@ class FactorialPharmacyScraper(BaseScraper):
             company=self.company,
             location_district=district,
             location_concelho=concelho,
-            profession=PROFESSION,
+            profession=self.profession_for(title),
             specialty=None,
-            sector="privado",
+            sector=self.sector,
             contract_type=guess_contract(contract_text)
             or (
                 "Tempo inteiro"
@@ -165,3 +174,27 @@ class QuatroFarmaScraper(FactorialPharmacyScraper):
     name = "4Farma Shee — Farmácias (Factorial)"
     subdomain = "4farma"
     company = "4Farma Shee"
+
+
+_NOT_HEALTH = re.compile(
+    r"inform[aá]tic|\bTI\b|sistemas de informa|comercial|contabil|marketing|financeir|jur[ií]dic",
+    re.I,
+)
+
+
+class GrupoHSaudeScraper(FactorialPharmacyScraper):
+    """Grupo H Saúde (Leiria, Alcobaça/Benedita, Rio Maior) — clínicas; todas as funções de saúde.
+
+    Portal Factorial (grupohsaude.factorialhr.pt → grupohsaude.factorial.com). Adicionado 2026-11-12.
+    """
+
+    slug = "grupo_h_saude"
+    name = "Grupo H Saúde (Factorial)"
+    subdomain = "grupohsaude"
+    company = "Grupo H Saúde"
+
+    def keep_title(self, title: str) -> bool:
+        return not _NOT_HEALTH.search(title)
+
+    def profession_for(self, title: str) -> str:
+        return guess_profession(title, "Outros")

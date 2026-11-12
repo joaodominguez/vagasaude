@@ -50,6 +50,7 @@ def is_pharmacy_role(title: str) -> bool:
 # chave normalizada → (distrito, concelho)
 EXTRA_PLACES: dict[str, tuple[str, str | None]] = {
     "alcochete": ("Setúbal", "Alcochete"),
+    "benedita": ("Leiria", "Alcobaça"),
     "corroios": ("Setúbal", "Seixal"),
     "amora": ("Setúbal", "Seixal"),
     "sobreda": ("Setúbal", "Almada"),
