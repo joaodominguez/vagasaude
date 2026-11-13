@@ -20,6 +20,8 @@ fi
 export INGEST_BASE_URL="http://127.0.0.1:3014"
 # Cache dei dettagli inPA (evita ~1900 richieste a ogni esecuzione): nella cartella dati, persistente.
 export INPA_CACHE="${INPA_CACHE:-$DATA_DIR/inpa-cache.json}"
+# Cache delle pagine Randstad (pilota agenzie): solo le offerte nuove si scaricano.
+export RANDSTAD_CACHE="${RANDSTAD_CACHE:-$DATA_DIR/randstad-cache.json}"
 
 if [[ -d "$ROOT/.venv" ]]; then
   # shellcheck source=/dev/null

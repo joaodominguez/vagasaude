@@ -147,6 +147,13 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     url: "https://www.ausl.mo.it/",
     sector: "Pubblico",
   },
+  {
+    id: "randstad",
+    name: "Randstad Healthcare (agenzia per il lavoro)",
+    shortName: "Randstad Healthcare",
+    url: "https://www.randstad.it/offerte-lavoro/",
+    sector: "Privato",
+  },
 ];
 
 export const SOURCE_META = Object.fromEntries(
