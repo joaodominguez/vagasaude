@@ -126,6 +126,27 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     url: "https://habilita.it/posizioni/",
     sector: "Privato",
   },
+  {
+    id: "ausl-ferrara",
+    name: "Azienda USL di Ferrara — Concorsi e avvisi",
+    shortName: "AUSL Ferrara",
+    url: "https://www.ausl.fe.it/",
+    sector: "Pubblico",
+  },
+  {
+    id: "ausl-romagna",
+    name: "Azienda USL della Romagna — Concorsi e selezioni",
+    shortName: "AUSL Romagna",
+    url: "https://www.auslromagna.it/",
+    sector: "Pubblico",
+  },
+  {
+    id: "ausl-modena",
+    name: "Azienda USL di Modena — Concorsi",
+    shortName: "AUSL Modena",
+    url: "https://www.ausl.mo.it/",
+    sector: "Pubblico",
+  },
 ];
 
 export const SOURCE_META = Object.fromEntries(

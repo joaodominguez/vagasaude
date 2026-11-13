@@ -267,12 +267,14 @@ class GuS4Scraper(BaseScraper):
         self.dropped_by: dict[str, int] = {}
 
     def fetch(self) -> list[JobPayload]:
-        from . import inpa, veneto_concorsi
+        from . import inpa, plone_er, veneto_concorsi
 
         client = HttpClient(min_interval=1.0)
         try:
             calls = build_calls(collect_entries(client, stats=self.stats), stats=self.stats)
+            # Fonti degli enti (Veneto, Plone Emilia-Romagna) prima di inPA.
             veneto_keys = [c.key for c in veneto_concorsi.collect_calls(client)]
+            veneto_keys += plone_er.priority_keys(client)
             inpa_calls, _ = inpa.collect_calls(client)
         finally:
             client.close()

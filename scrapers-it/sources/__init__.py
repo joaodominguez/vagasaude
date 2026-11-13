@@ -23,11 +23,12 @@ from .ieo import IeoScraper
 from .inpa import InpaScraper
 from .maugeri import MaugeriScraper
 from .veneto_concorsi import VenetoConcorsiScraper
+from .plone_er import SCRAPER_CLASSES as PLONE_ER_SCRAPERS
 
 SCRAPERS: dict = {
     scraper.slug: scraper
     for scraper in (VenetoConcorsiScraper, InpaScraper, GuS4Scraper, HumanitasScraper, ClarianeScraper, AnicuraScraper, CerbaScraper, FreseniusScraper,
-                    AffideaScraper, MaugeriScraper, AuxologicoScraper, FatebenefratelliScraper, BianalisiScraper, IeoScraper, HabilitaScraper,)
+                    AffideaScraper, MaugeriScraper, AuxologicoScraper, FatebenefratelliScraper, BianalisiScraper, IeoScraper, HabilitaScraper, *PLONE_ER_SCRAPERS,)
 }
 
 # Fonti private (settore "privato", tipo "offerta"): vedi sources/_it_priv.py.

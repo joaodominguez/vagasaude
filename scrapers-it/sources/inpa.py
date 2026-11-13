@@ -325,13 +325,15 @@ class InpaScraper(BaseScraper):
         self.dropped: list[P.Call] = []
 
     def fetch(self) -> list[JobPayload]:
-        from . import veneto_concorsi
+        from . import plone_er, veneto_concorsi
 
         client = HttpClient(min_interval=1.0)
         try:
             calls, complete = collect_calls(client, stats=self.stats)
-            # Priorita': il portale Veneto vince sugli stessi bandi letti su inPA.
+            # Priorita': il portale Veneto e gli enti con lettore proprio (Plone Emilia-Romagna)
+            # vincono sugli stessi bandi letti su inPA.
             higher = [c.key for c in veneto_concorsi.collect_calls(client)]
+            higher += plone_er.priority_keys(client)
         finally:
             client.close()
         self.last_listings_complete = complete
