@@ -591,13 +591,20 @@ async function getDerivedJobsCache(): Promise<DerivedJobsCache> {
     }
   }
 
+  // Slug lunghi troncati a 100 caratteri possono coincidere tra offerte diverse: a parità di slug
+  // vince lo stato migliore (pubblicata > in revisione > scaduta > duplicata/nascosta), così una
+  // copia duplicata o scaduta non nasconde l'offerta pubblicata (prima vinceva l'ultima letta → 404).
+  const statusRank = (job: StoredJob) =>
+    job.status === "published" ? 0 : job.status === "pending_review" ? 1 : job.status === "expired" ? 2 : 3;
   const bySlug = new Map<string, StoredJob>();
+  const setBest = (key: string, job: StoredJob) => {
+    const current = bySlug.get(key);
+    if (!current || statusRank(job) < statusRank(current)) bySlug.set(key, job);
+  };
   for (const job of file.jobs) {
-    bySlug.set(job.slug, job);
+    setBest(job.slug, job);
     const normalized = slugify(job.slug);
-    if (normalized && normalized !== job.slug && !bySlug.has(normalized)) {
-      bySlug.set(normalized, job);
-    }
+    if (normalized && normalized !== job.slug) setBest(normalized, job);
   }
 
   const candidates = file.jobs.filter(
