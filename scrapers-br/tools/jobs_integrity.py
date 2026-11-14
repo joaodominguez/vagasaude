@@ -143,11 +143,13 @@ def check(data_dir: Path, base_url: str, prefix: str, previous: dict) -> tuple[l
         problems.append(f"jobs.json sem atualizações há {age_h:.0f} h (scrapers parados?)")
 
     newest = sorted(published, key=lambda j: j.get("createdAt") or "", reverse=True)[:3]
-    sample_jobs = newest + random.sample(expired, min(2, len(expired)))
+    sample_expired = random.sample(expired, min(2, len(expired)))
     bad = []
-    for job in sample_jobs:
+    # Publicadas têm de dar 200. Expiradas: 200 (noindex) ou 410 — desde 2026-11-14 o BR responde
+    # 410 às vagas encerradas há mais de 7 dias (recuperação BR, proxy.ts), de propósito.
+    for job, accepted in [(j, {200}) for j in newest] + [(j, {200, 410}) for j in sample_expired]:
         code = http_status(base_url + prefix + job["slug"])
-        if code != 200:
+        if code not in accepted:
             bad.append(f"{prefix}{job['slug']} → {code}")
     if bad:
         problems.append("páginas de vaga sem 200: " + "; ".join(bad))
