@@ -716,13 +716,20 @@ async function getDerivedJobsCache(): Promise<DerivedJobsCache> {
     }
   }
 
+  // Slugs truncados a 100 caracteres podem coincidir entre vagas diferentes: a igual slug vence o
+  // melhor estado (publicada > em revisão > expirada > duplicada/oculta). Antes vencia a última lida,
+  // e uma cópia duplicada/expirada tapava a publicada → 404 (alerta de integridade, 2026-11-13).
+  const statusRank = (job: StoredJob) =>
+    job.status === "published" ? 0 : job.status === "pending_review" ? 1 : job.status === "expired" ? 2 : 3;
   const bySlug = new Map<string, StoredJob>();
+  const setBest = (key: string, job: StoredJob) => {
+    const current = bySlug.get(key);
+    if (!current || statusRank(job) < statusRank(current)) bySlug.set(key, job);
+  };
   for (const job of file.jobs) {
-    bySlug.set(job.slug, job);
+    setBest(job.slug, job);
     const normalized = slugify(job.slug);
-    if (normalized && normalized !== job.slug && !bySlug.has(normalized)) {
-      bySlug.set(normalized, job);
-    }
+    if (normalized && normalized !== job.slug) setBest(normalized, job);
   }
 
   const candidates = file.jobs.filter(
@@ -1210,6 +1217,8 @@ async function ingestJobsUnlocked(
       .map((job) => [`${job.source}:${job.sourceId}`, job] as const),
   );
   const byHash = new Map(file.jobs.map((job) => [job.dedupeHash, job] as const));
+  // Slugs já usados por OUTRAS vagas: uma vaga nova com o mesmo slug truncado recebe um sufixo único.
+  const usedSlugs = new Set(file.jobs.map((job) => job.slug));
 
   let created = 0;
   let updated = 0;
@@ -1265,8 +1274,13 @@ async function ingestJobsUnlocked(
 
     const slugBase = buildJobSlug(title, company, sourceId);
     const existingSlug = existingSameSource?.slug;
-    const slug =
+    let slug =
       existingSlug && !slugNeedsRepair(existingSlug) ? existingSlug : slugBase;
+    if (!existingSameSource && usedSlugs.has(slug)) {
+      // Colisão com outra vaga (slug truncado): sufixo estável de 8 caracteres da origem.
+      const suffix = createHash("sha256").update(`${source}:${sourceId}`).digest("hex").slice(0, 8);
+      slug = `${slug.slice(0, 91).replace(/-+$/, "")}-${suffix}`;
+    }
 
     // PCI: não republicar off-topic soft-expired nem aceitar retítulos judiciais.
     if (source === "pci_concursos") {
@@ -1329,6 +1343,7 @@ async function ingestJobsUnlocked(
       updated += 1;
     } else {
       file.jobs.push(next);
+      usedSlugs.add(next.slug);
       created += 1;
       bySourceId.set(`${source}:${sourceId}`, next);
       byHash.set(dedupeHash, next);

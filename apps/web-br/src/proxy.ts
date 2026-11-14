@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GONE_JOB_SLUGS } from "@/lib/gone-job-slugs";
-import { jobSlugExists } from "@/lib/job-slug-exists";
+import { isStaleExpiredSlug, jobSlugExists } from "@/lib/job-slug-exists";
 
 const GONE_LINKS: Array<[string, string]> = [
   ["/vagas/enfermagem", "Enfermagem"],
@@ -81,6 +81,10 @@ export function proxy(request: NextRequest) {
     // Vagas que deixaram de existir de vez: 410 (o Google retira-as mais depressa do que com 404).
     const slug = pathname.slice("/vagas/".length).replace(/\/$/, "");
     if (GONE_JOB_SLUGS.has(slug) && !jobSlugExists(slug)) {
+      return goneResponse();
+    }
+    // Vagas encerradas há mais de 7 dias: 410 em vez de 200 noindex (recuperação BR, 2026-11-14).
+    if (slug && !slug.includes("/") && isStaleExpiredSlug(slug)) {
       return goneResponse();
     }
     return NextResponse.next();

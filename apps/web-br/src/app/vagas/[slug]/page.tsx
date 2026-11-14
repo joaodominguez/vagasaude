@@ -46,6 +46,7 @@ import { relatedJobs } from "@/lib/related-jobs";
 import { LEGACY_SLUG_REDIRECTS } from "@/lib/slug-redirects";
 import { getJob, getListingJobs } from "@/lib/jobs-data";
 import { buildJobMetadata, buildJobPostingJsonLd, jobUrl } from "@/lib/seo";
+import { isIndexableJob } from "@/lib/indexable";
 
 // force-static + revalidate: HTML ISR on-demand (revalidate sozinho não
 // chega porque os dados vinham de fs sem Data Cache). Soft-expire 10 min.
@@ -82,6 +83,10 @@ export async function generateMetadata({
   });
   if (isConcursoJob(found.job)) {
     // Notícia/edital de concurso: noindex até haver secção própria de concursos.
+    return { ...metadata, robots: { index: false, follow: true } };
+  }
+  if (!isIndexableJob(found.job)) {
+    // Recuperação BR: funções não clínicas e bancos de talentos não vão ao Google (lib/indexable.ts).
     return { ...metadata, robots: { index: false, follow: true } };
   }
   return metadata;
@@ -149,7 +154,8 @@ function ActiveJobView({
   const concursoSummary = concurso ? buildConcursoSummary(job) : null;
   // Concursos não são vagas de um empregador: sem JobPosting (Google for Jobs).
   // Republicações também sem JobPosting (só a vaga principal).
-  const jsonLd = concurso || canonicalSlug ? null : buildJobPostingJsonLd(job);
+  // Não indexáveis (lib/indexable.ts) também sem JobPosting.
+  const jsonLd = concurso || canonicalSlug || !isIndexableJob(job) ? null : buildJobPostingJsonLd(job);
   const shareUrl = jobUrl(job.slug);
   const categoryLinks = buildJobCategoryLinks(job, allJobs);
 
