@@ -6,6 +6,7 @@ import { Menu, X } from "lucide-react";
 import { FavoritesBadge } from "./favorites-badge";
 import { Logo } from "./logo";
 import { ThemeToggle } from "./theme-toggle";
+import { SocialLinks } from "./social-links";
 
 const NAV_ITEMS = [
   { href: "/vagas", label: "Buscar vagas" },
@@ -38,7 +39,7 @@ export function Header() {
   }, []);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border/80 bg-background/90 backdrop-blur-lg">
+    <header className="sticky top-0 z-40 border-b border-border/80 shadow-[0_2px_12px_rgb(15_23_42/0.05)] dark:shadow-[0_2px_12px_rgb(0_0_0/0.35)] bg-background/90 backdrop-blur-lg">
       <div className="page-container flex h-16 items-center justify-between">
         <Logo />
 
@@ -88,6 +89,7 @@ export function Header() {
               {item.label}
             </Link>
           ))}
+          <SocialLinks className="mt-2 border-t border-border px-0.5 pt-4 pb-1" />
         </nav>
       </div>
     </header>
