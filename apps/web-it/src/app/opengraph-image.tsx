@@ -1,13 +1,13 @@
 import { ImageResponse } from "next/og";
-import { LOGO_HEIGHT, LOGO_WIDTH, logoSvg } from "@/components/brand";
+import { LOGO_ASPECT, logoSvg } from "@/components/brand";
 
 export const runtime = "nodejs";
 export const alt = "Offerte Sanità — Lavoro nella sanità in Italia";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-const LOGO_SRC = `data:image/svg+xml;utf8,${encodeURIComponent(logoSvg("#ffffff", "#3fd0c9"))}`;
-const LOGO_H = 72;
+const LOGO_SRC = `data:image/svg+xml;utf8,${encodeURIComponent(logoSvg("#ffffff", "#3fc9c9"))}`;
+const LOGO_H = 64;
 
 export default function OpenGraphImage() {
   return new ImageResponse(
@@ -30,7 +30,7 @@ export default function OpenGraphImage() {
         <img
           src={LOGO_SRC}
           alt=""
-          width={Math.round((LOGO_WIDTH * LOGO_H) / LOGO_HEIGHT)}
+          width={Math.round(LOGO_H * LOGO_ASPECT)}
           height={LOGO_H}
         />
 
