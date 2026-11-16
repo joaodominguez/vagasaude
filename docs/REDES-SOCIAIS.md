@@ -61,20 +61,22 @@ Técnico de Nutrição (CEMA Hospital Especializado, São Paulo/SP).
 - Seguidores por canal, semanalmente.
 - Meta para meados de dezembro: alertas BR 16 → 100.
 
-## O que falta
+## Estado (2026-11-16): em produção
 
-**Do dono do projeto:**
-1. Criar as contas BR com o logo novo: Instagram (Business), página de Facebook ligada ao Meta Business,
-   canal de Telegram + bot (BotFather) e canal de WhatsApp. Nome sugerido: @vagasaudebr.
-2. Dar acesso: token do bot de Telegram; app Meta com permissão de publicar na página e no Instagram.
-3. Escolher como recebe o pacote diário do WhatsApp: mensagem privada do bot de Telegram ou e-mail.
+| Canal | Conta | Publicação |
+|---|---|---|
+| Telegram | t.me/vagasaudebr (bot @vagasaudebr_bot) | automática, 8h Brasília |
+| Facebook | facebook.com/vagasaudebr | automática, 8h Brasília (imagem única + links) |
+| Instagram | instagram.com/vagasaudebr | automática, 8h Brasília (carrossel de 6) |
+| Canal de WhatsApp | whatsapp.com/channel/0029Vb9QPDsLY6dDeq2VVQ2i | manual: pacote por e-mail às 7h30 |
 
-**Técnico (quando houver contas):**
-- Transformar o protótipo (`docs/redes-sociais/prototipo/`) num script único no servidor: seleção →
-  imagens → publicação (Telegram, Facebook, Instagram) → pacote do WhatsApp → registo do que foi
-  publicado (para não repetir vagas em 7 dias).
-- Cron diário às 11:00 UTC (8h de Brasília). Credenciais em `~/.config/vagasaude/` com chmod 600.
-- Primeira semana: publicar e rever todos os dias antes de deixar 100% automático.
+- Script: `scrapers-br/social/social_post.py` → servidor `/var/www/vagasaudebr/scrapers/social/`, venv `/home/portal/.venvs/social`.
+- Cron (portal): `30 10 * * *` `--deliver` (gera o pacote e envia o e-mail do WhatsApp) e `0 11 * * *` `--publish`.
+- Credenciais: `/home/portal/.config/vagasaude/social-br.json` (chmod 600): bot do Telegram, token da página
+  (system user "publicador" do portefólio Meta "VagaSaúde Brasil", app "VagaSaude Publicador", sem expiração), IDs da página e do Instagram.
+- Instagram: a API só aceita imagens por URL; o script carrega-as na página como fotos não publicadas, usa o URL do CDN e apaga-as no fim.
+- Registos: `data/social.log`, pacotes em `data/social/AAAA-MM-DD/` (30 dias), `published.json` por pacote (não publica 2x), `data/social-state.json` (não repete vagas em 7 dias).
+- Site: "Siga-nos" com os 4 canais no rodapé e no menu do telemóvel (`apps/web-br/src/components/social-links.tsx`).
 
 ## Protótipo
 
