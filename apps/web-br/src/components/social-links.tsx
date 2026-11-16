@@ -3,8 +3,8 @@
 const SOCIAL = [
   { name: "Telegram", url: "https://t.me/vagasaudebr" },
   { name: "WhatsApp", url: "https://whatsapp.com/channel/0029Vb9QPDsLY6dDeq2VVQ2i" },
-  { name: "Instagram", url: "" },
-  { name: "Facebook", url: "" },
+  { name: "Instagram", url: "https://www.instagram.com/vagasaudebr" },
+  { name: "Facebook", url: "https://www.facebook.com/vagasaudebr" },
 ] as const;
 
 const PATHS: Record<(typeof SOCIAL)[number]["name"], string> = {
