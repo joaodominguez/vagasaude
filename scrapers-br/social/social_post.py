@@ -34,6 +34,8 @@ ASSETS = HERE / "assets"
 SITE = "https://vagasaude.com.br"
 JOB_PREFIX = "/vagas/"
 CONFIG = Path.home() / ".config" / "vagasaude" / "social-br.json"
+TELEGRAM_CHANNEL = "https://t.me/vagasaudebr"
+WHATSAPP_CHANNEL = "https://whatsapp.com/channel/0029Vb9QPDsLY6dDeq2VVQ2i"
 
 NAVY, TEAL, TEAL_LIGHT = "#072f5f", "#16a6aa", "#3fc9c9"
 PILL_BG, PILL_FG = "#e3f4f4", "#0f7e82"
@@ -371,10 +373,12 @@ def build_package(root: Path, day: date, dry_run: bool) -> Path | None:
                          + "".join(f"{k}. <b>{html.escape(j['title'])}</b>\n{html.escape(j['company'])} · {html.escape(j['place'])}\n"
                                    f"<a href=\"{job_link(j['slug'], 'telegram', campaign)}\">Ver vaga e candidatar-se</a>\n\n"
                                    for k, j in enumerate(jobs, 1))
-                         + f"🔔 <a href=\"{alert}telegram\">Alertas grátis por e-mail</a>",
+                         + f"🔔 <a href=\"{alert}telegram\">Alertas grátis por e-mail</a>\n"
+                         + f"💬 <a href=\"{WHATSAPP_CHANNEL}\">Também no nosso canal de WhatsApp</a>",
         "whatsapp.txt": f"*As vagas de saúde mais procuradas {when}* 👇\n\n"
                         + "".join(f"*{j['title']}*\n{j['company']} · {j['place']}\n{job_link(j['slug'], 'whatsapp', campaign)}\n\n" for j in jobs)
-                        + "🔔 Alertas grátis: vagasaude.com.br/alertas",
+                        + "🔔 Alertas grátis: vagasaude.com.br/alertas\n"
+                        + f"📲 Também no Telegram: {TELEGRAM_CHANNEL}",
     }
     for name, body in texts.items():
         (out / name).write_text(body, "utf-8")
