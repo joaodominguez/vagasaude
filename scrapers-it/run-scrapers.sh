@@ -59,3 +59,7 @@ if [[ -n "${RESEND_API_KEY:-}" && -n "${SCRAPER_API_TOKEN:-}" ]]; then
     || true
   echo
 fi
+
+# Cache Cloudflare de 6 h (2026-11-16): limpar a cache 11 min depois do fim desta execução, em fundo
+# (ver /var/www/vagasaude/cf_purge_later.sh). Sem isto, listagens e vagas ficavam até 6 h desatualizadas.
+nohup /var/www/vagasaude/cf_purge_later.sh d7bb205baa3fad9abc05934e468d10aa >> /var/www/offertesanita/logs/cf-purge.log 2>&1 &
