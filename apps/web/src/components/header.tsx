@@ -6,6 +6,7 @@ import { Menu, X } from "lucide-react";
 import { FavoritesBadge } from "./favorites-badge";
 import { Logo } from "./logo";
 import { ThemeToggle } from "./theme-toggle";
+import { SocialLinks } from "./social-links";
 
 const NAV_ITEMS = [
   { href: "/vagas", label: "Procurar vagas" },
@@ -88,6 +89,7 @@ export function Header() {
               {item.label}
             </Link>
           ))}
+          <SocialLinks className="mt-2 border-t border-border px-0.5 pt-4 pb-1" />
         </nav>
       </div>
     </header>
