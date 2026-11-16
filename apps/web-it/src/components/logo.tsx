@@ -1,38 +1,46 @@
 import Link from "next/link";
+import {
+  ICON_CROSS,
+  ICON_PULSE,
+  ICON_TRANSFORM,
+  ICON_WIDTH,
+  LOGO_HEIGHT,
+  LOGO_WIDTH,
+  WORD_NAVY,
+  WORD_TEAL,
+} from "./brand";
 
 export function Logo({ compact = false }: { compact?: boolean }) {
+  const width = compact ? ICON_WIDTH : LOGO_WIDTH;
   return (
     <Link
       href="/"
       prefetch={false}
       aria-label="Offerte Sanità — pagina iniziale"
-      className="inline-flex items-center gap-2.5"
+      className="inline-flex items-center"
     >
       <svg
         aria-hidden="true"
-        viewBox="0 0 42 36"
-        className="h-8 w-9 shrink-0"
+        viewBox={`0 0 ${width} ${LOGO_HEIGHT}`}
+        className="h-8 w-auto shrink-0 sm:h-9"
       >
-        <circle
-          cx="17"
-          cy="19"
-          r="12.5"
+        <g
+          transform={ICON_TRANSFORM}
           fill="none"
-          stroke="currentColor"
-          strokeWidth="7"
-          className="text-primary"
-        />
-        <path
-          d="M29.5 7.5h4v4h4v4h-4v4h-4v-4h-4v-4h4v-4Z"
-          fill="currentColor"
-          className="text-accent"
-        />
+          strokeWidth={10}
+          strokeLinejoin="round"
+          strokeLinecap="round"
+        >
+          <path d={ICON_CROSS} stroke="var(--logo-navy)" />
+          <path d={ICON_PULSE} stroke="var(--logo-teal)" />
+        </g>
+        {!compact && (
+          <>
+            <path d={WORD_NAVY} fill="var(--logo-navy)" />
+            <path d={WORD_TEAL} fill="var(--logo-teal)" />
+          </>
+        )}
       </svg>
-      {!compact && (
-        <span className="text-[1.05rem] font-extrabold tracking-[-0.035em] text-foreground">
-          Offerte <span className="text-primary">Sanità</span>
-        </span>
-      )}
     </Link>
   );
 }

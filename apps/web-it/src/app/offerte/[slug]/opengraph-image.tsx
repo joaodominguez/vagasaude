@@ -1,11 +1,15 @@
 import { ImageResponse } from "next/og";
 import { getJob } from "@/lib/jobs-data";
 import { SITE_NAME } from "@/lib/seo";
+import { LOGO_HEIGHT, LOGO_WIDTH, logoSvg } from "@/components/brand";
 
 export const runtime = "nodejs";
 export const alt = "Offerta di lavoro nella sanità su Offerte Sanità";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
+
+const LOGO_SRC = `data:image/svg+xml;utf8,${encodeURIComponent(logoSvg("#ffffff", "#3fd0c9"))}`;
+const LOGO_H = 56;
 
 type Params = Promise<{ slug: string }>;
 
@@ -49,34 +53,13 @@ export default async function JobOpenGraphImage({
             width: "100%",
           }}
         >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 14,
-              fontSize: 28,
-              fontWeight: 800,
-              letterSpacing: "-0.04em",
-            }}
-          >
-            <div
-              style={{
-                width: 48,
-                height: 48,
-                borderRadius: 14,
-                background: "#2dd4bf",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "#07111a",
-                fontSize: 26,
-                fontWeight: 900,
-              }}
-            >
-              O
-            </div>
-            {SITE_NAME}
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={LOGO_SRC}
+            alt=""
+            width={Math.round((LOGO_WIDTH * LOGO_H) / LOGO_HEIGHT)}
+            height={LOGO_H}
+          />
           <div
             style={{
               fontSize: 22,

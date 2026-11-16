@@ -28,13 +28,6 @@ export function Footer() {
           <Link className="hover:text-primary" href="/note-legali">
             Note legali
           </Link>
-          <Link
-            className="hover:text-primary"
-            href="/admin"
-            prefetch={false}
-          >
-            Amministrazione
-          </Link>
         </nav>
       </div>
       <div className="border-t border-border">
