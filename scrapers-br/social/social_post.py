@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Post diário nas redes sociais — VagaSaúde BR ("as vagas mais procuradas").
+"""Post diário nas redes sociais — VagaSaúde BR e PT ("as vagas mais procuradas"). Escolher com --market br|pt.
 
 Plano: docs/REDES-SOCIAIS.md. Não mexe na app: só lê dados e escreve em data/social/.
 
@@ -7,7 +7,7 @@ Uso (como portal, com o venv /home/portal/.venvs/social):
   social_post.py --deliver      escolhe as vagas, gera imagens e textos e envia o pacote por e-mail ao dono
   social_post.py --publish      publica o pacote do dia nos canais configurados (Telegram, Facebook)
   social_post.py --dry-run      só gera o pacote (sem e-mail, sem publicar, sem marcar vagas como usadas)
-Opções: --root /var/www/vagasaudebr  --day AAAA-MM-DD (dia do post; por omissão hoje UTC)
+Opções: --market br|pt  --root (por omissão a do mercado)  --day AAAA-MM-DD (dia do post; por omissão hoje UTC)
 
 Credenciais dos canais (opcional): ~/.config/vagasaude/social-br.json (chmod 600)
   {"telegram": {"bot_token": "...", "chat_id": "@vagasaudebr"},
@@ -36,6 +36,29 @@ JOB_PREFIX = "/vagas/"
 CONFIG = Path.home() / ".config" / "vagasaude" / "social-br.json"
 TELEGRAM_CHANNEL = "https://t.me/vagasaudebr"
 WHATSAPP_CHANNEL = "https://whatsapp.com/channel/0029Vb9QPDsLY6dDeq2VVQ2i"
+DOMAIN = "vagasaude.com.br"
+
+# Mercados: o motor é o mesmo; mudam o site, as contas e alguns textos.
+MARKETS = {
+    "br": dict(root="/var/www/vagasaudebr", site="https://vagasaude.com.br", config="social-br.json",
+               telegram="https://t.me/vagasaudebr", whatsapp="https://whatsapp.com/channel/0029Vb9QPDsLY6dDeq2VVQ2i",
+               label="VagaSaúde BR", tz="Brasília", swipe="Arraste para ver →", everywhere="todo o Brasil",
+               tags="#vagasdeemprego #vagassaude #empregosaude"),
+    "pt": dict(root="/var/www/vagasaude", site="https://vagasaude.pt", config="social-pt.json",
+               telegram="https://t.me/vagasaudept", whatsapp="https://whatsapp.com/channel/0029VbDxb8A5PO0v9AeTbE32",
+               label="VagaSaúde PT", tz="Lisboa", swipe="Deslize para ver →", everywhere="todo o país",
+               tags="#emprego #empregosaude #saude #portugal"),
+}
+M = MARKETS["br"]
+
+
+def configure(market: str) -> None:
+    global M, SITE, DOMAIN, CONFIG, TELEGRAM_CHANNEL, WHATSAPP_CHANNEL
+    M = MARKETS[market]
+    SITE = M["site"]
+    DOMAIN = SITE.split("//", 1)[1]
+    CONFIG = Path.home() / ".config" / "vagasaude" / M["config"]
+    TELEGRAM_CHANNEL, WHATSAPP_CHANNEL = M["telegram"], M["whatsapp"]
 
 NAVY, TEAL, TEAL_LIGHT = "#072f5f", "#16a6aa", "#3fc9c9"
 PILL_BG, PILL_FG = "#e3f4f4", "#0f7e82"
@@ -49,10 +72,10 @@ UF = {
     "rio grande do sul": "RS", "rondônia": "RO", "roraima": "RR", "santa catarina": "SC",
     "são paulo": "SP", "sergipe": "SE", "tocantins": "TO",
 }
-ANON = re.compile(r"confidencial|empresa anunciante|sigilo|an[oô]nim|n[aã]o informad", re.I)
+ANON = re.compile(r"confidencial|anunciante|sigilo|an[oô]nim|n[aã]o informad", re.I)
 NONCLIN = re.compile(r"banco de talentos|cadastro (de )?reserva|banco de curr|aprendiz|estagi|est[aá]gio|"
                      r"cozinh|copeir|porteir|vigilant|eletricist|manuten|motorista|pedreir", re.I)
-SECONDARY = {"Administrativo", "Gestão", "Outros"}
+SECONDARY = {"Administrativo", "Gestão", "Gestão & suporte", "Outros"}
 SMALL = {"de", "da", "do", "das", "dos", "e", "em", "para", "com", "a", "o", "na", "no", "ou"}
 ACCENTS = {
     "tecnico": "técnico", "tecnica": "técnica", "farmaceutico": "farmacêutico", "farmaceutica": "farmacêutica",
@@ -195,6 +218,8 @@ def clean_company(company: str) -> str:
 
 def place(j: dict) -> str:
     city = (j.get("locationConcelho") or "").strip()
+    if M is not MARKETS["br"]:
+        return city or (j.get("locationDistrict") or "").strip() or "Portugal"
     uf = UF.get((j.get("locationDistrict") or "").strip().lower(), "")
     return f"{city}/{uf}" if city and uf else city or (j.get("locationDistrict") or "Brasil")
 
@@ -273,7 +298,7 @@ def slide_cover(badge: str, states: str, total: int) -> Image.Image:
     _, h = pill(d, (84, 400), badge, font("SemiBold", 34), TEAL, "#ffffff")
     y = text_block(d, (84, 400 + h + 40), "As vagas de saúde mais procuradas", font("Bold", 104), "#ffffff", 912, 108)
     d.text((84, y + 30), f"{total} oportunidades em {states}", font=font("Regular", 42), fill="#cfe6ef")
-    d.text((84, 1350 - 84 - 46), "Arraste para ver →", font=font("Regular", 36), fill="#9fd9db")
+    d.text((84, 1350 - 84 - 46), M["swipe"], font=font("Regular", 36), fill="#9fd9db")
     return img
 
 
@@ -291,7 +316,7 @@ def slide_job(i: int, total: int, job: dict) -> Image.Image:
     d.rectangle((0, 1150, 1080, 1350), fill=NAVY)
     d.text((84, 1226), "Candidate-se pelo link na bio", font=font("SemiBold", 40), fill="#ffffff")
     f2 = font("Regular", 34)
-    d.text((1080 - 84 - d.textlength("vagasaude.com.br", font=f2), 1232), "vagasaude.com.br", font=f2, fill=TEAL_LIGHT)
+    d.text((1080 - 84 - d.textlength(DOMAIN, font=f2), 1232), DOMAIN, font=f2, fill=TEAL_LIGHT)
     return img
 
 
@@ -303,7 +328,7 @@ def slide_cta() -> Image.Image:
     y = text_block(d, (84, 420), "Receba vagas como estas no seu e-mail", font("Bold", 96), "#ffffff", 912, 100)
     text_block(d, (84, y + 40), "Alertas grátis por profissão e cidade. No máximo 2 e-mails por dia.",
                font("Regular", 44), "#cfe6ef", 912, 56)
-    pill(d, (84, 1350 - 84 - 76), "vagasaude.com.br/alertas", font("SemiBold", 34), TEAL, "#ffffff")
+    pill(d, (84, 1350 - 84 - 76), f"{DOMAIN}/alertas", font("SemiBold", 34), TEAL, "#ffffff")
     return img
 
 
@@ -329,7 +354,7 @@ def square(jobs: list[dict], heading: str) -> Image.Image:
             ty += 46
         d.text((166, ty + 4), f"{j['company']} · {j['place']}", font=fs, fill=INK3)
         y = top + block_h + 28
-    d.text((70, min(y + 22, 1080 - 70 - 40)), "Links na legenda · vagasaude.com.br", font=font("SemiBold", 32), fill=PILL_FG)
+    d.text((70, min(y + 22, 1080 - 70 - 40)), f"Links na legenda · {DOMAIN}", font=font("SemiBold", 32), fill=PILL_FG)
     return img
 
 
@@ -345,11 +370,13 @@ def build_package(root: Path, day: date, dry_run: bool) -> Path | None:
     campaign = f"top-vagas-{day.isoformat()}"
     jobs = [{"slug": j["slug"], "title": clean_title(j.get("title", ""), j.get("company", "")),
              "company": clean_company(j.get("company", "")), "place": place(j),
-             "area": j.get("profession") or "Saúde", "score": j["_score"]} for j in picked]
+             "area": j.get("profession") or "Saúde", "score": j["_score"],
+             "region": (place(j).split("/")[-1] if M is MARKETS["br"] else (j.get("locationDistrict") or "").strip())}
+            for j in picked]
     when = "no fim de semana" if weekend else "ontem"
     heading = f"As vagas de saúde mais procuradas {when}"
-    ufs = sorted({j["place"].split("/")[-1] for j in jobs if "/" in j["place"]})
-    states = (", ".join(ufs[:-1]) + f" e {ufs[-1]}") if len(ufs) > 1 else (ufs[0] if ufs else "todo o Brasil")
+    ufs = sorted({j["region"] for j in jobs if j["region"]})
+    states = (", ".join(ufs[:-1]) + f" e {ufs[-1]}") if len(ufs) > 1 else (ufs[0] if ufs else M["everywhere"])
 
     out = root / "data" / "social" / day.isoformat()
     out.mkdir(parents=True, exist_ok=True)
@@ -364,7 +391,7 @@ def build_package(root: Path, day: date, dry_run: bool) -> Path | None:
     alert = f"{SITE}/alertas?utm_medium=social&utm_campaign={campaign}&utm_source="
     texts = {
         "instagram.txt": f"As vagas de saúde mais procuradas {when} 👇\n\n{lines}\n🔗 Candidate-se pelo link na bio.\n"
-                         f"🔔 Receba alertas grátis: vagasaude.com.br/alertas\n\n#vagasdeemprego #vagassaude #empregosaude {tags}",
+                         f"🔔 Receba alertas grátis: {DOMAIN}/alertas\n\n{M['tags']} {tags}",
         "facebook.txt": f"As vagas de saúde mais procuradas {when} no VagaSaúde 👇\n\n"
                         + "".join(f"{k}. {j['title']} – {j['company']} ({j['place']})\n👉 {job_link(j['slug'], 'facebook', campaign)}\n\n"
                                   for k, j in enumerate(jobs, 1))
@@ -373,11 +400,11 @@ def build_package(root: Path, day: date, dry_run: bool) -> Path | None:
                          + "".join(f"{k}. <b>{html.escape(j['title'])}</b>\n{html.escape(j['company'])} · {html.escape(j['place'])}\n"
                                    f"<a href=\"{job_link(j['slug'], 'telegram', campaign)}\">Ver vaga e candidatar-se</a>\n\n"
                                    for k, j in enumerate(jobs, 1))
-                         + f"🔔 <a href=\"{alert}telegram\">Alertas grátis por e-mail</a>\n"
-                         + f"💬 <a href=\"{WHATSAPP_CHANNEL}\">Também no nosso canal de WhatsApp</a>",
+                         + f"🔔 <a href=\"{alert}telegram\">Alertas grátis por e-mail</a>"
+                         + (f"\n💬 <a href=\"{WHATSAPP_CHANNEL}\">Também no nosso canal de WhatsApp</a>" if WHATSAPP_CHANNEL else ""),
         "whatsapp.txt": f"*As vagas de saúde mais procuradas {when}* 👇\n\n"
                         + "".join(f"*{j['title']}*\n{j['company']} · {j['place']}\n{job_link(j['slug'], 'whatsapp', campaign)}\n\n" for j in jobs)
-                        + "🔔 Alertas grátis: vagasaude.com.br/alertas\n"
+                        + f"🔔 Alertas grátis: {DOMAIN}/alertas\n"
                         + f"📲 Também no Telegram: {TELEGRAM_CHANNEL}",
     }
     for name, body in texts.items():
@@ -413,13 +440,13 @@ def deliver_email(root: Path, out: Path, day: date) -> None:
     jobs = json.loads((out / "picks.json").read_text("utf-8"))
     box = "white-space:pre-wrap;background:#f4f6f8;padding:12px;border-radius:8px"
     pre = lambda name: f"<pre style='{box}'>{html.escape((out / name).read_text('utf-8'))}</pre>"
-    body = (f"<p>Pacote do dia {day.strftime('%d/%m')} para o VagaSaúde BR. Telegram, Facebook e Instagram "
-            "publicam sozinhos às 8h (Brasília).</p>"
+    body = (f"<p>Pacote do dia {day.strftime('%d/%m')} para o {M['label']}. Os canais automáticos "
+            f"publicam sozinhos às 8h ({M['tz']}).</p>"
             f"<p><b>Canal de WhatsApp (manual):</b> anexar <i>square.png</i> e colar este texto:</p>{pre('whatsapp.txt')}")
     files = ["square.png"]
     payload = {
         "from": sender, "to": [to],
-        "subject": f"Post do dia VagaSaúde BR — {day.strftime('%d/%m')} ({len(jobs)} vagas)",
+        "subject": f"Post do dia {M['label']} — {day.strftime('%d/%m')} ({len(jobs)} vagas)",
         "html": body,
         "attachments": [{"filename": f, "content": base64.b64encode((out / f).read_bytes()).decode()} for f in files],
     }
@@ -530,7 +557,8 @@ def publish(out: Path, only: set[str]) -> int:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--root", default="/var/www/vagasaudebr")
+    ap.add_argument("--market", choices=sorted(MARKETS), default="br")
+    ap.add_argument("--root", default=None)
     ap.add_argument("--day", default=datetime.now(timezone.utc).date().isoformat())
     g = ap.add_mutually_exclusive_group(required=True)
     g.add_argument("--deliver", action="store_true")
@@ -538,7 +566,8 @@ def main() -> int:
     g.add_argument("--dry-run", action="store_true")
     ap.add_argument("--only", default=",".join(CHANNELS), help="canais a publicar, ex.: facebook,instagram")
     a = ap.parse_args()
-    root, day = Path(a.root), date.fromisoformat(a.day)
+    configure(a.market)
+    root, day = Path(a.root or M["root"]), date.fromisoformat(a.day)
     if a.publish:
         out = root / "data" / "social" / day.isoformat()
         if not (out / "square.png").exists():
