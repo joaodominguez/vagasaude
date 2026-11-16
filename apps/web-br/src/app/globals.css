@@ -3,6 +3,8 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
+  --logo-navy: #13294b;
+  --logo-teal: #16a0a0;
   --background: #f8fafc;
   --surface: #ffffff;
   --surface-raised: #ffffff;
@@ -37,6 +39,8 @@
 }
 
 .dark {
+  --logo-navy: #ffffff;
+  --logo-teal: #3fd0c9;
   --background: #07111a;
   --surface: #0f1c29;
   --surface-raised: #162536;

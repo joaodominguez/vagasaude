@@ -216,8 +216,7 @@ function layout(input: {
     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:600px;">
       <tr><td style="padding:0 8px 18px;">
         <a href="${trackedUrl("/", input.campaign)}" style="text-decoration:none;font-family:${FONT};">
-          <img src="${SITE_URL}/email/logo-mark.png" width="28" height="24" alt="" style="vertical-align:middle;border:0;">
-          <span style="vertical-align:middle;font-size:18px;font-weight:800;letter-spacing:-0.3px;color:${C.text};">Vaga<span style="color:${C.primary};">Saúde</span> <span style="font-weight:600;color:${C.muted};">Brasil</span></span>
+          <img src="${SITE_URL}/email/logo.png" width="156" height="30" alt="VagaSaúde" style="display:block;border:0;">
         </a>
       </td></tr>
       <tr><td bgcolor="${C.card}" style="background:${C.card};border:1px solid ${C.border};border-radius:16px;padding:28px 24px;font-family:${FONT};">
