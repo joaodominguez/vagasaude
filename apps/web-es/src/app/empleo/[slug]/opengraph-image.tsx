@@ -1,15 +1,15 @@
 import { ImageResponse } from "next/og";
 import { getJob } from "@/lib/jobs-data";
 import { SITE_NAME } from "@/lib/seo";
-import { LOGO_HEIGHT, LOGO_WIDTH, logoSvg } from "@/components/brand";
+import { LOGO_ASPECT, logoSvg } from "@/components/brand";
 
 export const runtime = "nodejs";
 export const alt = "Oferta de empleo sanitario en VacantesSalud";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-const LOGO_SRC = `data:image/svg+xml;utf8,${encodeURIComponent(logoSvg("#ffffff", "#3fd0c9"))}`;
-const LOGO_H = 56;
+const LOGO_SRC = `data:image/svg+xml;utf8,${encodeURIComponent(logoSvg("#ffffff", "#3fc9c9"))}`;
+const LOGO_H = 52;
 
 type Params = Promise<{ slug: string }>;
 
@@ -57,7 +57,7 @@ export default async function JobOpenGraphImage({
           <img
             src={LOGO_SRC}
             alt=""
-            width={Math.round((LOGO_WIDTH * LOGO_H) / LOGO_HEIGHT)}
+            width={Math.round(LOGO_H * LOGO_ASPECT)}
             height={LOGO_H}
           />
           <div

@@ -1,17 +1,15 @@
 import Link from "next/link";
 import {
   ICON_CROSS,
-  ICON_PULSE,
-  ICON_TRANSFORM,
-  ICON_WIDTH,
-  LOGO_HEIGHT,
-  LOGO_WIDTH,
+  ICON_SCALE,
+  ICON_V,
+  ICON_VIEWBOX,
+  LOGO_VIEWBOX,
   WORD_NAVY,
   WORD_TEAL,
 } from "./brand";
 
 export function Logo({ compact = false }: { compact?: boolean }) {
-  const width = compact ? ICON_WIDTH : LOGO_WIDTH;
   return (
     <Link
       href="/"
@@ -21,23 +19,29 @@ export function Logo({ compact = false }: { compact?: boolean }) {
     >
       <svg
         aria-hidden="true"
-        viewBox={`0 0 ${width} ${LOGO_HEIGHT}`}
+        viewBox={compact ? ICON_VIEWBOX : LOGO_VIEWBOX}
         className="h-8 w-auto shrink-0 sm:h-9"
       >
-        <g
-          transform={ICON_TRANSFORM}
-          fill="none"
-          strokeWidth={10}
-          strokeLinejoin="round"
-          strokeLinecap="round"
-        >
-          <path d={ICON_CROSS} stroke="var(--logo-navy)" />
-          <path d={ICON_PULSE} stroke="var(--logo-teal)" />
+        <g transform={`scale(${ICON_SCALE})`}>
+          <polyline
+            points={ICON_V}
+            fill="none"
+            strokeWidth={15}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="stroke-[#072f5f] dark:stroke-[#ffffff]"
+          />
+          <path
+            d={ICON_CROSS}
+            strokeWidth={3}
+            strokeLinejoin="round"
+            className="fill-[#16a6aa] stroke-[#16a6aa] dark:fill-[#3fc9c9] dark:stroke-[#3fc9c9]"
+          />
         </g>
         {!compact && (
           <>
-            <path d={WORD_NAVY} fill="var(--logo-navy)" />
-            <path d={WORD_TEAL} fill="var(--logo-teal)" />
+            <path d={WORD_NAVY} className="fill-[#072f5f] dark:fill-[#ffffff]" />
+            <path d={WORD_TEAL} className="fill-[#16a6aa] dark:fill-[#3fc9c9]" />
           </>
         )}
       </svg>
