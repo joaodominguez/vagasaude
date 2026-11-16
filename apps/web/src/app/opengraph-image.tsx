@@ -1,10 +1,13 @@
 import { ImageResponse } from "next/og";
-import { SITE_NAME } from "@/lib/seo";
+import { LOGO_HEIGHT, LOGO_WIDTH, logoSvg } from "@/components/brand";
 
 export const runtime = "nodejs";
 export const alt = "VagaSaúde — Emprego na saúde em Portugal";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
+
+const LOGO_SRC = `data:image/svg+xml;utf8,${encodeURIComponent(logoSvg("#ffffff", "#3fd0c9"))}`;
+const LOGO_H = 72;
 
 export default function OpenGraphImage() {
   return new ImageResponse(
@@ -23,34 +26,13 @@ export default function OpenGraphImage() {
           fontFamily: "sans-serif",
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "16px",
-            fontSize: 34,
-            fontWeight: 800,
-            letterSpacing: "-0.04em",
-          }}
-        >
-          <div
-            style={{
-              width: 58,
-              height: 58,
-              borderRadius: 16,
-              background: "#2dd4bf",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "#07111a",
-              fontSize: 30,
-              fontWeight: 900,
-            }}
-          >
-            V
-          </div>
-          {SITE_NAME}
-        </div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={LOGO_SRC}
+          alt=""
+          width={Math.round((LOGO_WIDTH * LOGO_H) / LOGO_HEIGHT)}
+          height={LOGO_H}
+        />
 
         <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
           <div

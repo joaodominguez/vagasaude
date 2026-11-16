@@ -28,13 +28,6 @@ export function Footer() {
           <Link className="hover:text-primary" href="/privacidade">
             Privacidade
           </Link>
-          <Link
-            className="hover:text-primary"
-            href="/admin"
-            prefetch={false}
-          >
-            Administração
-          </Link>
         </nav>
       </div>
       <div className="border-t border-border">
