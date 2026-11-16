@@ -413,11 +413,10 @@ def deliver_email(root: Path, out: Path, day: date) -> None:
     jobs = json.loads((out / "picks.json").read_text("utf-8"))
     box = "white-space:pre-wrap;background:#f4f6f8;padding:12px;border-radius:8px"
     pre = lambda name: f"<pre style='{box}'>{html.escape((out / name).read_text('utf-8'))}</pre>"
-    body = (f"<p>Pacote do dia {day.strftime('%d/%m')} para o VagaSaúde BR. Publicar às 8h (Brasília).</p>"
-            f"<p><b>Canal de WhatsApp:</b> anexar <i>square.png</i> e colar este texto:</p>{pre('whatsapp.txt')}"
-            f"<p><b>Instagram:</b> carrossel <i>ig-1 … ig-6.png</i> com esta legenda:</p>{pre('instagram.txt')}"
-            f"<p><b>Facebook:</b> <i>square.png</i> com este texto:</p>{pre('facebook.txt')}")
-    files = ["square.png"] + sorted(p.name for p in out.glob("ig-*.png"))
+    body = (f"<p>Pacote do dia {day.strftime('%d/%m')} para o VagaSaúde BR. Telegram, Facebook e Instagram "
+            "publicam sozinhos às 8h (Brasília).</p>"
+            f"<p><b>Canal de WhatsApp (manual):</b> anexar <i>square.png</i> e colar este texto:</p>{pre('whatsapp.txt')}")
+    files = ["square.png"]
     payload = {
         "from": sender, "to": [to],
         "subject": f"Post do dia VagaSaúde BR — {day.strftime('%d/%m')} ({len(jobs)} vagas)",
@@ -428,29 +427,105 @@ def deliver_email(root: Path, out: Path, day: date) -> None:
     print(f"[social] e-mail do pacote: HTTP {r.status_code}" + ("" if r.status_code < 300 else f" — {r.text[:200]}"))
 
 
-def publish(out: Path) -> None:
+CHANNELS = ("telegram", "facebook", "instagram")
+
+
+def _graph(httpx, ver: str, method: str, path: str, **kw) -> dict:
+    r = httpx.request(method, f"https://graph.facebook.com/{ver}/{path}", timeout=120, **kw)
+    data = r.json()
+    if r.status_code >= 300 or "error" in data:
+        raise RuntimeError(f"{path}: HTTP {r.status_code} — {str(data.get('error', data))[:200]}")
+    return data
+
+
+def publish_telegram(httpx, out: Path, tg: dict) -> str:
+    with open(out / "square.png", "rb") as fh:
+        r = httpx.post(f"https://api.telegram.org/bot{tg['bot_token']}/sendPhoto",
+                       data={"chat_id": tg["chat_id"], "caption": (out / "telegram.html").read_text("utf-8"),
+                             "parse_mode": "HTML"}, files={"photo": fh}, timeout=60)
+    if r.status_code >= 300:
+        raise RuntimeError(f"HTTP {r.status_code} — {r.text[:200]}")
+    return str(r.json().get("result", {}).get("message_id"))
+
+
+def publish_facebook(httpx, out: Path, fb: dict) -> str:
+    with open(out / "square.png", "rb") as fh:
+        d = _graph(httpx, fb["graph_version"], "POST", f"{fb['page_id']}/photos",
+                   data={"message": (out / "facebook.txt").read_text("utf-8"), "access_token": fb["page_token"]},
+                   files={"source": fh})
+    return d.get("post_id") or d.get("id", "")
+
+
+def publish_instagram(httpx, out: Path, fb: dict, ig: dict) -> str:
+    """Carrossel. A API do Instagram só aceita imagens por URL público: carregamos cada imagem na página
+    como foto NÃO publicada, usamos o URL do CDN da Meta e apagamos essas fotos no fim."""
+    import time
+
+    ver, token, ig_id = fb["graph_version"], fb["page_token"], ig["ig_user_id"]
+    staged, children = [], []
+    try:
+        for img in sorted(out.glob("ig-*.png")):
+            with open(img, "rb") as fh:
+                ph = _graph(httpx, ver, "POST", f"{fb['page_id']}/photos",
+                            data={"published": "false", "access_token": token}, files={"source": fh})
+            staged.append(ph["id"])
+            src = _graph(httpx, ver, "GET", ph["id"], params={"fields": "images", "access_token": token})["images"][0]["source"]
+            child = _graph(httpx, ver, "POST", f"{ig_id}/media",
+                           data={"image_url": src, "is_carousel_item": "true", "access_token": token})
+            children.append(child["id"])
+        caption = (out / "instagram.txt").read_text("utf-8")
+        parent = _graph(httpx, ver, "POST", f"{ig_id}/media",
+                        data={"media_type": "CAROUSEL", "children": ",".join(children), "caption": caption,
+                              "access_token": token})
+        for _ in range(30):                                   # o Instagram processa as imagens antes de publicar
+            st = _graph(httpx, ver, "GET", parent["id"], params={"fields": "status_code", "access_token": token})
+            if st.get("status_code") == "FINISHED":
+                break
+            if st.get("status_code") == "ERROR":
+                raise RuntimeError("o Instagram recusou o carrossel (status ERROR)")
+            time.sleep(5)
+        return _graph(httpx, ver, "POST", f"{ig_id}/media_publish",
+                      data={"creation_id": parent["id"], "access_token": token})["id"]
+    finally:
+        for pid in staged:                                    # limpar as fotos auxiliares da página
+            try:
+                _graph(httpx, ver, "DELETE", pid, params={"access_token": token})
+            except Exception:
+                pass
+
+
+def publish(out: Path, only: set[str]) -> int:
+    """Publica o pacote nos canais configurados. Cada canal só é publicado uma vez por pacote (published.json)."""
     import httpx
 
     cfg = load_json(CONFIG, {})
     if not cfg:
         print(f"[social] publicar: sem {CONFIG} — nada publicado")
-        return
-    tg = cfg.get("telegram") or {}
-    if tg.get("bot_token") and tg.get("chat_id"):
-        with open(out / "square.png", "rb") as fh:
-            r = httpx.post(f"https://api.telegram.org/bot{tg['bot_token']}/sendPhoto",
-                           data={"chat_id": tg["chat_id"], "caption": (out / "telegram.html").read_text("utf-8"),
-                                 "parse_mode": "HTML"}, files={"photo": fh}, timeout=60)
-        print(f"[social] telegram: HTTP {r.status_code}" + ("" if r.status_code < 300 else f" — {r.text[:200]}"))
-    fb = cfg.get("facebook") or {}
-    if fb.get("page_id") and fb.get("page_token"):
-        ver = fb.get("graph_version", "v21.0")
-        with open(out / "square.png", "rb") as fh:
-            r = httpx.post(f"https://graph.facebook.com/{ver}/{fb['page_id']}/photos",
-                           data={"message": (out / "facebook.txt").read_text("utf-8"), "access_token": fb["page_token"]},
-                           files={"source": fh}, timeout=60)
-        print(f"[social] facebook: HTTP {r.status_code}" + ("" if r.status_code < 300 else f" — {r.text[:200]}"))
-    # Instagram: a API exige o URL público de cada imagem; fica para quando houver a conta (docs/REDES-SOCIAIS.md).
+        return 1
+    done_path = out / "published.json"
+    done = load_json(done_path, {})
+    fb, ig, tg = cfg.get("facebook") or {}, cfg.get("instagram") or {}, cfg.get("telegram") or {}
+    jobs = {
+        "telegram": (lambda: publish_telegram(httpx, out, tg)) if tg.get("bot_token") and tg.get("chat_id") else None,
+        "facebook": (lambda: publish_facebook(httpx, out, fb)) if fb.get("page_id") and fb.get("page_token") else None,
+        "instagram": (lambda: publish_instagram(httpx, out, fb, ig)) if fb.get("page_token") and ig.get("ig_user_id") else None,
+    }
+    failures = 0
+    for name in CHANNELS:
+        if name not in only or jobs[name] is None:
+            continue
+        if name in done:
+            print(f"[social] {name}: já publicado ({done[name]}) — ignorado")
+            continue
+        try:
+            ref = jobs[name]()
+            done[name] = ref
+            done_path.write_text(json.dumps(done, indent=1), "utf-8")
+            print(f"[social] {name}: publicado ({ref})")
+        except Exception as exc:                              # um canal a falhar não impede os outros
+            failures += 1
+            print(f"[social] {name}: FALHOU — {exc}")
+    return 1 if failures else 0
 
 
 def main() -> int:
@@ -461,6 +536,7 @@ def main() -> int:
     g.add_argument("--deliver", action="store_true")
     g.add_argument("--publish", action="store_true")
     g.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--only", default=",".join(CHANNELS), help="canais a publicar, ex.: facebook,instagram")
     a = ap.parse_args()
     root, day = Path(a.root), date.fromisoformat(a.day)
     if a.publish:
@@ -468,8 +544,7 @@ def main() -> int:
         if not (out / "square.png").exists():
             print(f"[social] publicar: não há pacote de {day}")
             return 1
-        publish(out)
-        return 0
+        return publish(out, {c.strip() for c in a.only.split(",") if c.strip()})
     out = build_package(root, day, dry_run=a.dry_run)
     if out and a.deliver:
         deliver_email(root, out, day)
