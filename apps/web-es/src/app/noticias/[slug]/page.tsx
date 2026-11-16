@@ -119,7 +119,7 @@ export default async function NewsArticlePage({ params }: { params: Params }) {
       "@type": "Organization",
       name: SITE_NAME,
       url: SITE_URL,
-      logo: { "@type": "ImageObject", url: absoluteUrl("/icon.svg") },
+      logo: { "@type": "ImageObject", url: absoluteUrl("/logo.png") },
     },
     ...(article.image ? { image: [absoluteUrl(article.image)] } : {}),
   };
