@@ -116,3 +116,8 @@ Fase 1 (infra + schema)
 O scraping (Fase 2) depende do schema e do `/api/ingest` (Fase 1/2). Os alertas
 dependem de existir volume de vagas reais. SEO programático depende de a
 listagem/detalhe estarem estáveis.
+
+## Redes sociais (2026-11-16)
+
+Post diário "as vagas mais procuradas" no Instagram, Facebook, Telegram e canal de WhatsApp.
+Proposta aprovada e plano em [REDES-SOCIAIS.md](REDES-SOCIAIS.md).
