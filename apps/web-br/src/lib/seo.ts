@@ -319,7 +319,7 @@ export function buildOrganizationJsonLd() {
     "@type": "Organization",
     name: SITE_NAME,
     url: SITE_URL,
-    logo: absoluteUrl("/logo.png"),
+    logo: absoluteUrl("/icon.svg"),
     description: DEFAULT_DESCRIPTION,
   };
 }
