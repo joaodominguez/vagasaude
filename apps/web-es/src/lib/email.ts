@@ -178,6 +178,20 @@ const C = {
   primary: "#0f766e",
   primarySoft: "#e8f7f5",
 };
+// Redes sociais do mercado (rodapé dos emails e atalho no topo). Ícones PNG em public/email/social-*.png
+// (o Gmail e o Outlook não mostram SVG). Acrescentar aqui quando uma conta nova existir.
+const SOCIAL = [
+  { name: "Telegram", icon: "telegram", url: "https://t.me/vacantessalud" },
+];
+const SOCIAL_LABEL = "Síguenos y recibe ofertas cada día";
+
+function socialIcons(size: number, gap: number) {
+  return SOCIAL.map(
+    (s) =>
+      `<a href="${s.url}" style="display:inline-block;margin:0 ${gap}px;text-decoration:none;"><img src="${SITE_URL}/email/social-${s.icon}.png" width="${size}" height="${size}" alt="${s.name}" title="${s.name}" style="display:block;border:0;border-radius:${size / 2}px;"></a>`,
+  ).join("");
+}
+
 const FONT =
   "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif";
 
@@ -215,14 +229,23 @@ function layout(input: {
   <tr><td align="center" style="padding:28px 12px;">
     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:600px;">
       <tr><td style="padding:0 8px 18px;">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"><tr>
+        <td valign="middle">
         <a href="${trackedUrl("/", input.campaign)}" style="text-decoration:none;font-family:${FONT};">
           <img src="${SITE_URL}/email/logo-mark.png" width="28" height="24" alt="" style="vertical-align:middle;border:0;">
           <span style="vertical-align:middle;font-size:18px;font-weight:800;letter-spacing:-0.3px;color:${C.text};">Vacantes<span style="color:${C.primary};">Salud</span></span>
         </a>
+        </td>
+        <td align="right" valign="middle" style="white-space:nowrap;">${socialIcons(20, 3)}</td>
+        </tr></table>
       </td></tr>
       <tr><td bgcolor="${C.card}" style="background:${C.card};border:1px solid ${C.border};border-radius:16px;padding:28px 24px;font-family:${FONT};">
         <h1 style="margin:0 0 12px;font-size:22px;line-height:1.3;font-weight:800;color:${C.text};">${escapeHtml(input.title)}</h1>
         ${input.body}
+      </td></tr>
+      <tr><td align="center" style="padding:22px 8px 4px;font-family:${FONT};">
+        <div style="margin:0 0 10px;font-size:13px;font-weight:600;color:${C.muted};">${SOCIAL_LABEL}</div>
+        ${socialIcons(32, 5)}
       </td></tr>
       <tr><td style="padding:20px 8px 0;font-family:${FONT};font-size:12px;line-height:1.6;color:${C.subtle};">
         ${input.footer}
