@@ -154,6 +154,27 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     url: "https://www.randstad.it/offerte-lavoro/",
     sector: "Privato",
   },
+  {
+    id: "gvm",
+    name: "GVM Care & Research",
+    shortName: "GVM",
+    url: "https://jobgvm.intervieweb.it/app.php?module=career",
+    sector: "Privato",
+  },
+  {
+    id: "synlab",
+    name: "Synlab Italia",
+    shortName: "Synlab",
+    url: "https://inrecruiting.intervieweb.it/app.php?module=career&LAC=synlabitalia",
+    sector: "Privato",
+  },
+  {
+    id: "gemelli",
+    name: "Fondazione Policlinico Universitario A. Gemelli IRCCS",
+    shortName: "Gemelli",
+    url: "https://policlinicogemelli.intervieweb.it/app.php?module=career",
+    sector: "Accreditato",
+  },
 ];
 
 export const SOURCE_META = Object.fromEntries(
