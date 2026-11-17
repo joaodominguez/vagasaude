@@ -339,6 +339,34 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     url: "https://winid.teamtailor.com/jobs",
     sector: "Privado",
   },
+  {
+    id: "imed",
+    name: "IMED Hospitales",
+    shortName: "IMED",
+    url: "https://imedhospitales.teamtailor.com/",
+    sector: "Privado",
+  },
+  {
+    id: "ilunion",
+    name: "Ilunion — Sociosanitario",
+    shortName: "Ilunion",
+    url: "https://empleo.ilunion.com/",
+    sector: "Privado",
+  },
+  {
+    id: "vetpartners",
+    name: "VetPartners España",
+    shortName: "VetPartners",
+    url: "https://equipo.talentovetpartners.com/",
+    sector: "Privado",
+  },
+  {
+    id: "impress",
+    name: "Impress — Ortodoncia",
+    shortName: "Impress",
+    url: "https://impress.teamtailor.com/",
+    sector: "Privado",
+  },
 ];
 
 export const SOURCE_META = Object.fromEntries(
