@@ -192,6 +192,9 @@ def smart_case(text: str) -> str:
     words = []
     for i, w in enumerate(text.lower().split()):
         core = re.sub(r"[^\wÀ-ÿ]", "", w)
+        if core and len(core) <= 3 and core.isalpha() and core not in SMALL and core not in ACCENTS:
+            words.append(w.upper())          # siglas: PS, SAE, PL, UTI, CME, SUS…
+            continue
         if core:
             w = w.replace(core, ACCENTS.get(core, core))
         words.append(w if (i and core in SMALL) else w[:1].upper() + w[1:])
