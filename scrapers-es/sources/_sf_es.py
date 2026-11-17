@@ -12,7 +12,7 @@ from datetime import datetime, timezone
 
 from common.http import HttpClient
 from common.models import JobPayload
-from common.normalize import guess_contract, html_to_text
+from common.normalize import guess_contract, html_to_text, norm
 
 from ._es_common import es_profession
 from ._private_es import is_health_role, region_with_fallback
@@ -27,6 +27,13 @@ _LINK_RE = re.compile(r'<a href="([^"]+)" class="jobTitle-link">([^<]*)</a>')
 _LOC_RE = re.compile(r'class="colLocation[^"]*"[^>]*>\s*<span class="jobLocation">\s*(.*?)\s*</span>', re.S)
 _DATE_RE = re.compile(r'<span class="jobDate">\s*([^<]*?)\s*</span>')
 _TOTAL_RE = re.compile(r"resultados \d+ a \d+ de (\d+)")
+# Plantilla alternativa "tiles" (p. ej. empleo.ilunion.com): <li class="job-tile ..." data-url="...">, 10 por página.
+_TILE_SPLIT = re.compile(r'<li class="job-tile')
+_TILE_URL_RE = re.compile(r'data-url="([^"]+)"')
+_TILE_TITLE_RE = re.compile(r'class="jobTitle-link[^"]*"[^>]*>\s*([^<]*?)\s*</a>')
+_TILE_CITY_RE = re.compile(r'section-city-value">\s*([^<]*?)\s*</div>')
+_TILE_DATE_RE = re.compile(r'section-date-value">\s*([^<]*?)\s*</div>')
+_TILE_TOTAL_RE = re.compile(r"Mostrando \d+ a \d+ de (\d+) puestos")
 _DESC_RE = re.compile(r'itemprop="description"[^>]*>(.*?)</span>\s*</div>\s*</div>', re.S)
 _ID_RE = re.compile(r"/(\d{6,})/?$")
 _NOT_ES = {"portugal", "pt", "francia", "fr", "italia", "it", "alemania", "de", "reino unido", "uk", "gb",
@@ -57,7 +64,28 @@ def parse_location(raw: str) -> tuple[str | None, str | None, str | None, bool]:
     return city, region, postal, True
 
 
+def _parse_tiles(page: str) -> tuple[list[dict], int | None]:
+    rows = []
+    for chunk in _TILE_SPLIT.split(page)[1:]:
+        url = _TILE_URL_RE.search(chunk)
+        title = _TILE_TITLE_RE.search(chunk)
+        if not url or not title:
+            continue
+        city = _TILE_CITY_RE.search(chunk)
+        date = _TILE_DATE_RE.search(chunk)
+        rows.append({
+            "path": html_lib.unescape(url.group(1)),
+            "title": html_to_text(html_lib.unescape(title.group(1))).strip(),
+            "location": html_lib.unescape(city.group(1)).strip() if city else "",
+            "date": date.group(1) if date else None,
+        })
+    total = _TILE_TOTAL_RE.search(page)
+    return rows, int(total.group(1)) if total else None
+
+
 def parse_listing(page: str) -> tuple[list[dict], int | None]:
+    if _ROW_SPLIT.search(page) is None and _TILE_SPLIT.search(page):
+        return _parse_tiles(page)
     rows = []
     for chunk in _ROW_SPLIT.split(page)[1:]:
         link = _LINK_RE.search(chunk)
@@ -81,9 +109,11 @@ def parse_description(page: str) -> str:
 
 
 def build_job(row: dict, base: str, slug: str, company: str, sector: str = "privado",
-              description: str = "", clean_title=None) -> JobPayload | None:
+              description: str = "", clean_title=None, exclude_re=None) -> JobPayload | None:
     title = row["title"]
     if not title or not is_health_role(title):
+        return None
+    if exclude_re is not None and exclude_re.search(norm(title)):
         return None
     city, region, postal, is_es = parse_location(row["location"])
     if not is_es:
@@ -115,7 +145,7 @@ def build_job(row: dict, base: str, slug: str, company: str, sector: str = "priv
 
 def fetch_sf_es(base: str, slug: str, company: str, sector: str = "privado",
                 search_prefix: str = "", max_details: int = 60,
-                clean_title=None) -> tuple[list[JobPayload], bool]:
+                clean_title=None, exclude_re=None, max_pages: int = MAX_PAGES) -> tuple[list[JobPayload], bool]:
     """Devuelve (ofertas clínicas de España, completo)."""
     client = HttpClient()
     jobs: list[JobPayload] = []
@@ -125,7 +155,7 @@ def fetch_sf_es(base: str, slug: str, company: str, sector: str = "privado",
     cache = DetailCache(slug)
     try:
         start = 0
-        for page_no in range(MAX_PAGES):
+        for page_no in range(max_pages):
             url = f"{base.rstrip('/')}{search_prefix}/search/?q=&startrow={start}"
             try:
                 rows, total = parse_listing(client.get_text(url))
@@ -137,7 +167,7 @@ def fetch_sf_es(base: str, slug: str, company: str, sector: str = "privado",
             if not rows:
                 break
             for row in rows:
-                job = build_job(row, base, slug, company, sector, clean_title=clean_title)
+                job = build_job(row, base, slug, company, sector, clean_title=clean_title, exclude_re=exclude_re)
                 if not job or job.source_id in seen:
                     continue
                 seen.add(job.source_id)
@@ -155,7 +185,7 @@ def fetch_sf_es(base: str, slug: str, company: str, sector: str = "privado",
                     job.description = description
                     job.contract_type = guess_contract(f"{row['title']}\n{description[:1500]}")
                 jobs.append(job)
-            start += PAGE_SIZE
+            start += len(rows)
             if total is not None and start >= total:
                 break
         else:

@@ -57,7 +57,13 @@ from sources.ics import IcsScraper
 from sources.sespa import SespaScraper
 # Ballesol (sources/ballesol.py) fora do registo: empleo.ballesol.es responde com desafio Cloudflare
 # (403 cf-mitigated) a IPs de servidor — não se contorna. O ficheiro fica (vitalia usa os helpers).
+# Cofares (sources/cofares.py) fora do registo: o site funciona, mas em 2026-11-17 não tinha nenhuma vaga sanitária
+# (24 ofertas de logística/administração). Registar se passar a publicar farmacêuticos.
 from sources.vitalia import VitaliaScraper
+from sources.ilunion import IlunionScraper
+from sources.imed import ImedScraper
+from sources.impress import ImpressScraper
+from sources.vetpartners import VetPartnersScraper
 
 SCRAPERS: dict = {
     FreseniusEsScraper.slug: FreseniusEsScraper,
@@ -110,4 +116,8 @@ SCRAPERS: dict = {
     TalentSaludScraper.slug: TalentSaludScraper,
     EndivoScraper.slug: EndivoScraper,
     WinidScraper.slug: WinidScraper,
+    ImedScraper.slug: ImedScraper,
+    VetPartnersScraper.slug: VetPartnersScraper,
+    ImpressScraper.slug: ImpressScraper,
+    IlunionScraper.slug: IlunionScraper,
 }
