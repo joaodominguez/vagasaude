@@ -109,7 +109,7 @@ def is_italy(country) -> bool:
 
 _LOWER_WORDS = {"di", "da", "e", "ed", "in", "per", "a", "il", "la", "lo", "le", "dei", "del", "della", "dell", "delle",
                 "degli", "al", "alla", "con", "o", "su", "nel", "nella", "nelle", "ai", "alle"}
-_ACRONYMS = {"oss", "tsrm", "rsa", "asa", "ecg", "tac", "rm", "uo", "utic", "icu", "nsl", "cdc", "hse"}
+_ACRONYMS = {"oss", "tsrm", "rsa", "asa", "ecg", "tac", "rm", "uo", "utic", "icu", "nsl", "cdc", "hse", "lp", "bcp", "cam", "sdn", "tslb", "cococo"}
 
 
 def pretty_title(title: str) -> str:

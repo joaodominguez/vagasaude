@@ -22,6 +22,8 @@ export INGEST_BASE_URL="http://127.0.0.1:3014"
 export INPA_CACHE="${INPA_CACHE:-$DATA_DIR/inpa-cache.json}"
 # Cache delle pagine Randstad (pilota agenzie): solo le offerte nuove si scaricano.
 export RANDSTAD_CACHE="${RANDSTAD_CACHE:-$DATA_DIR/randstad-cache.json}"
+# Cache delle schede Intervieweb (Gemelli, GVM, Synlab; in futuro HSR e GSD): ~100 pagine da 300 KB, 2 s l'una.
+export INTERVIEWEB_CACHE="${INTERVIEWEB_CACHE:-$DATA_DIR/intervieweb-cache.json}"
 
 if [[ -d "$ROOT/.venv" ]]; then
   # shellcheck source=/dev/null

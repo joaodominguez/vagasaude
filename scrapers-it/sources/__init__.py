@@ -16,8 +16,10 @@ from .cerba import CerbaScraper
 from .clariane import ClarianeScraper
 from .fatebenefratelli import FatebenefratelliScraper
 from .fresenius import FreseniusScraper
+from .gemelli import GemelliScraper
 from .habilita import HabilitaScraper
 from .gu_s4 import GuS4Scraper
+from .gvm import GvmScraper
 from .humanitas import HumanitasScraper
 from .ieo import IeoScraper
 from .inpa import InpaScraper
@@ -25,11 +27,14 @@ from .maugeri import MaugeriScraper
 from .veneto_concorsi import VenetoConcorsiScraper
 from .plone_er import SCRAPER_CLASSES as PLONE_ER_SCRAPERS
 from .randstad import RandstadScraper
+from .synlab import SynlabScraper
 
 SCRAPERS: dict = {
     scraper.slug: scraper
     for scraper in (VenetoConcorsiScraper, InpaScraper, GuS4Scraper, HumanitasScraper, ClarianeScraper, AnicuraScraper, CerbaScraper, FreseniusScraper,
-                    AffideaScraper, MaugeriScraper, AuxologicoScraper, FatebenefratelliScraper, BianalisiScraper, IeoScraper, HabilitaScraper, *PLONE_ER_SCRAPERS, RandstadScraper,)
+                    AffideaScraper, MaugeriScraper, AuxologicoScraper, FatebenefratelliScraper, BianalisiScraper, IeoScraper, HabilitaScraper, *PLONE_ER_SCRAPERS, RandstadScraper,
+                    # Intervieweb: autorizzati dai gruppi il 2026-11-17 (vedi _intervieweb.py).
+                    GemelliScraper, GvmScraper, SynlabScraper,)
 }
 
 # Fonti private (settore "privato", tipo "offerta"): vedi sources/_it_priv.py.

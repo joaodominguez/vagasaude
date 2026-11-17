@@ -22,11 +22,16 @@ from common.normalize import guess_contract, html_to_text
 
 from . import _it_priv as P
 
-_NOT_CLINICAL = re.compile(r"ricercator|\brspp\b|\bhse\b|informatic|ingegner|amministrativ|segretari|contabil|addett", re.I)
+_NOT_CLINICAL = re.compile(
+    r"ricercator|\brspp\b|\bhse\b|informatic|ingegner|amministrativ|segretari|contabil|addett|"
+    r"\bstage\b|tirocin|computational|bioinformatic|biologist|data (manager|scien|analyst)",
+    re.I,
+)
 _TITLE_MAP: tuple[tuple[str, str], ...] = (
     (r"^terp\b|\bterp\b", "Logopedia e riabilitazione"),
     (r"^educatore professionale", "Servizio sociale"),
     (r"^medico (del lavoro|prelevatore)", "Medicina"),
+    (r"^tecnico di fisiopatologia|\btslb\b|\btsrm\b", "Tecnici sanitari"),
 )
 
 
@@ -49,6 +54,7 @@ def parse_detail(html: str, item: dict, cfg: type, stats: dict | None = None) ->
     h1 = soup.select_one("main h1")
     box = soup.select_one("main div.style-forced")
     raw_title = re.sub(r"\s+", " ", (h1.get_text(" ") if h1 else item.get("Title") or "")).strip()
+    raw_title = re.sub(r"^[A-Z]{1,4}-\d{4}-\d{5,}\s+", "", raw_title)  # codice bando (HSR): "GR-2024-123456 Infermiere..."
     link = item.get("DetailLink") or ""
     ident = (parse_qs(urlparse(link).query).get("ID") or [""])[0]
     if not raw_title or box is None or not ident:
