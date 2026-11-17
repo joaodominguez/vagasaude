@@ -409,6 +409,41 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     url: "https://rdsaude-farmacia.gupy.io/",
     sector: "Privado",
   },
+  {
+    id: "pandape_saude",
+    name: "Diagnóstico e operadoras: Dasa, Unimed Curitiba, Care Plus e outras",
+    shortName: "Dasa",
+    url: "https://dasa.pandape.infojobs.com.br/",
+    sector: "Privado",
+  },
+  {
+    id: "farmacias_pandape",
+    name: "Redes de farmácias: Nissei, Farmácia Indiana e Drogaria Araujo",
+    shortName: "Farmácias Pandapé",
+    url: "https://nissei.pandape.infojobs.com.br/",
+    sector: "Privado",
+  },
+  {
+    id: "oncoclinicas",
+    name: "Oncoclínicas",
+    shortName: "Oncoclínicas",
+    url: "https://trabalheconosco.vagas.com.br/oncoclinicas/oportunidades",
+    sector: "Privado",
+  },
+  {
+    id: "trasmontano",
+    name: "Trasmontano IGESP",
+    shortName: "Trasmontano",
+    url: "https://trabalheconosco.vagas.com.br/trasmontano/oportunidades",
+    sector: "Privado",
+  },
+  {
+    id: "saude_da_familia",
+    name: "Associação Saúde da Família",
+    shortName: "Saúde da Família",
+    url: "https://trabalheconosco.vagas.com.br/saude-da-familia/oportunidades",
+    sector: "Filantrópico",
+  },
 ];
 
 export function getSourceMeta(id: string) {
