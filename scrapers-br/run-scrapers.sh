@@ -37,7 +37,7 @@ if [[ "$scrape_rc" -ne 0 ]]; then
 fi
 
 # Fontes avariadas (últimas 4 execuções com 0 vagas ou erro): log + email se ALERTS_TO.
-HEALTH_IGNORE="${HEALTH_IGNORE:-einstein,fleury}" python3 "$ROOT/tools/scraper_health.py" /var/www/vagasaudebr/data/scraper-runs.json || true
+HEALTH_IGNORE="${HEALTH_IGNORE:-einstein,fleury,oncoclinicas,trasmontano,saude_da_familia}" python3 "$ROOT/tools/scraper_health.py" /var/www/vagasaudebr/data/scraper-runs.json || true
 
 # Integridade do jobs.json (incidente BR 2026-10-27): slugs desaparecidos, quedas, 404.
 python3 "$ROOT/tools/jobs_integrity.py" /var/www/vagasaudebr/data http://127.0.0.1:3011 /vagas/ || true
