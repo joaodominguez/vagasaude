@@ -78,6 +78,18 @@ Técnico de Nutrição (CEMA Hospital Especializado, São Paulo/SP).
 - Registos: `data/social.log`, pacotes em `data/social/AAAA-MM-DD/` (30 dias), `published.json` por pacote (não publica 2x), `data/social-state.json` (não repete vagas em 7 dias).
 - Site: "Siga-nos" com os 4 canais no rodapé e no menu do telemóvel (`apps/web-br/src/components/social-links.tsx`).
 
+### Outros mercados (mesmo script, `--market pt|es|it`)
+
+| Mercado | Telegram | Facebook / Instagram | WhatsApp | Cron (UTC) |
+|---|---|---|---|---|
+| PT (2026-11-16) | t.me/vagasaudept | facebook.com/vagasaudept · instagram.com/vagasaudept | canal manual | 7:30 deliver · 8:00 publish |
+| ES (2026-11-17) | t.me/vacantessalud | por criar | — | 6:30 deliver · 7:00 publish (8h Madrid) |
+| IT (2026-11-17) | t.me/offertesanita | por criar | — | 6:30 deliver · 7:00 publish (8h Roma) |
+
+- O bot @vagasaudebr_bot é administrador dos 4 canais; credenciais em `social-<mercado>.json` (chmod 600).
+- Textos por língua em `LANG` (pt/es/it); logos VacantesSalud/OfferteSanità em `assets/logo-*-es|it.png`.
+- Sem canal de WhatsApp (ES/IT) o `--deliver` não envia e-mail.
+
 ## Protótipo
 
 - `prototipo/social_pick_br.py`: escolhe as vagas no servidor (só leitura): `ssh root@… 'python3 -' < social_pick_br.py`.
