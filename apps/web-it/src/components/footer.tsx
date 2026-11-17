@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Logo } from "./logo";
+import { SocialLinks } from "./social-links";
 
 export function Footer() {
   return (
@@ -12,23 +13,26 @@ export function Footer() {
             Semplice, aggiornato e facile da usare.
           </p>
         </div>
-        <nav className="flex flex-wrap gap-x-6 gap-y-3 text-sm text-muted">
-          <Link className="hover:text-primary" href="/aziende">
-            Aziende
-          </Link>
-          <Link className="hover:text-primary" href="/dati">
-            Dati
-          </Link>
-          <Link className="hover:text-primary" href="/contatti">
-            Contatti
-          </Link>
-          <Link className="hover:text-primary" href="/privacy">
-            Privacy
-          </Link>
-          <Link className="hover:text-primary" href="/note-legali">
-            Note legali
-          </Link>
-        </nav>
+        <div className="flex flex-col gap-4 sm:items-end">
+          <SocialLinks />
+          <nav className="flex flex-wrap gap-x-6 gap-y-3 text-sm text-muted">
+            <Link className="hover:text-primary" href="/aziende">
+              Aziende
+            </Link>
+            <Link className="hover:text-primary" href="/dati">
+              Dati
+            </Link>
+            <Link className="hover:text-primary" href="/contatti">
+              Contatti
+            </Link>
+            <Link className="hover:text-primary" href="/privacy">
+              Privacy
+            </Link>
+            <Link className="hover:text-primary" href="/note-legali">
+              Note legali
+            </Link>
+          </nav>
+        </div>
       </div>
       <div className="border-t border-border">
         <div className="page-container flex flex-wrap items-center justify-between gap-x-6 gap-y-2 py-4 text-xs text-muted">

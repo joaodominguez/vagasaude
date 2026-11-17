@@ -5,6 +5,7 @@ import { useEffect, useId, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { FavoritesBadge } from "./favorites-badge";
 import { Logo } from "./logo";
+import { SocialLinks } from "./social-links";
 import { ThemeToggle } from "./theme-toggle";
 
 const NAV_ITEMS = [
@@ -93,6 +94,7 @@ export function HeaderClient({ showNews }: { showNews: boolean }) {
               {item.label}
             </Link>
           ))}
+          <SocialLinks className="mt-2 border-t border-border px-0.5 pt-4 pb-1" />
         </nav>
       </div>
     </header>
