@@ -298,3 +298,37 @@ class FleuryScraper(VagasComScraper):
     employer_path = "grupo-fleury"
     sector = "privado"
     referer = "https://carreiras.grupofleury.com.br/"
+
+
+# 2026-11-17 — mesmo bloqueio CF 1005 no VPS: correr off-VPS (run-vagas-com-mac.sh)
+class OncoclinicasScraper(VagasComScraper):
+    """Oncoclínicas&Co — oncologia, nacional (Vagas.com)."""
+
+    slug = "oncoclinicas"
+    name = "Oncoclínicas"
+    company = "Oncoclínicas"
+    employer_path = "oncoclinicas"
+    sector = "privado"
+    referer = "https://www.vagas.com.br/"
+
+
+class TrasmontanoScraper(VagasComScraper):
+    """Trasmontano / IGESP — hospital e operadora, São Paulo (Vagas.com)."""
+
+    slug = "trasmontano"
+    name = "Trasmontano IGESP"
+    company = "Trasmontano IGESP"
+    employer_path = "trasmontano"
+    sector = "privado"
+    referer = "https://www.vagas.com.br/"
+
+
+class SaudeDaFamiliaScraper(VagasComScraper):
+    """Associação Saúde da Família — OSS, São Paulo (Vagas.com)."""
+
+    slug = "saude_da_familia"
+    name = "Associação Saúde da Família"
+    company = "Associação Saúde da Família"
+    employer_path = "saude-da-familia"
+    sector = "ipss"
+    referer = "https://www.vagas.com.br/"

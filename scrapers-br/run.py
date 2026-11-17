@@ -19,7 +19,7 @@ from sources import SCRAPERS
 
 # Fontes bloqueadas no VPS Hetzner (Cloudflare ASN / error 1005).
 # Continuam executáveis com --source <slug> a partir de um host não bloqueado.
-DEFAULT_SKIP_ON_ALL = "einstein,fleury"
+DEFAULT_SKIP_ON_ALL = "einstein,fleury,oncoclinicas,trasmontano,saude_da_familia"
 
 VAGAS_COM_SKIP_MSG = (
     "Skip no VPS: Cloudflare 1005/403 em vagas.com.br (ASN Hetzner). "

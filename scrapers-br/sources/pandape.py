@@ -586,6 +586,11 @@ class PandapeBoardScraper(BaseScraper):
             return bool(title)
         if self.filter_mode == "health":
             return looks_like_health_job(title)
+        if self.filter_mode == "pharmacist":
+            # import local: gupy.py é grande e não depende de pandape.py
+            from sources.gupy import looks_like_pharmacist_job
+
+            return looks_like_pharmacist_job(title)
         return looks_like_hospital_employer_job(title)
 
     # -- fetch -------------------------------------------------------------
@@ -840,4 +845,40 @@ class PandapeHospitaisScraper(PandapeBoardScraper):
         ("hospitalpequenoprincipe", "Hospital Pequeno Príncipe", "ipss"),
         # 2026-11-12: laboratórios (probe: 131 vagas, 129 passam o filtro hospital)
         ("biomega", "Biomega Medicina Diagnóstica", "privado"),
+        # 2026-11-17: mesmo label do board Gupy `sbsc` (cauda_gupy) para o dedupe
+        ("hospitalsaocamilo", "Hospital São Camilo SP", "privado"),  # 48
+        ("hospitalsantaclara", "Hospital Santa Clara", "privado"),  # 20
+    ]
+
+
+class PandapeSaudeScraper(PandapeBoardScraper):
+    """Diagnóstico / operadoras / odontologia em Pandapé (filtro saúde).
+
+    Dasa tem também boards Gupy (`dasa`): mesmo label "Dasa" para o dedupe
+    título+empresa+estado da app. 974 vagas no board, ~536 passam o filtro.
+    """
+
+    slug = "pandape_saude"
+    name = "Diagnóstico e operadoras (Pandapé)"
+    filter_mode = "health"
+    BOARDS = [
+        ("dasa", "Dasa", "privado"),
+        ("unimedcuritiba", "Unimed Curitiba", "privado"),
+        ("unimedcampos", "Unimed de Campos", "privado"),
+        ("careplus", "Care Plus", "privado"),
+        ("odontoprev", "Odontoprev", "privado"),
+    ]
+
+
+class FarmaciasPandapeScraper(PandapeBoardScraper):
+    """Redes de farmácias em Pandapé — só farmacêutico(a) e técnico em farmácia
+    (mesmo filtro de `farmacias_gupy`)."""
+
+    slug = "farmacias_pandape"
+    name = "Farmácias (Pandapé)"
+    filter_mode = "pharmacist"
+    BOARDS = [
+        ("nissei", "Farmácias Nissei", "privado"),  # 203 vagas, ~59 farmacêutico
+        ("farmaciaindiana", "Farmácia Indiana", "privado"),  # 586, ~50
+        ("drogariaaraujo", "Drogaria Araujo", "privado"),  # 672, ~36
     ]

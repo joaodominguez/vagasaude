@@ -21,7 +21,7 @@ source "$ENV_FILE"
 set +a
 : "${SCRAPER_API_TOKEN:?SCRAPER_API_TOKEN em falta em $ENV_FILE}"
 
-echo "[$(date '+%F %T')] vagas.com.br off-VPS (einstein, fleury)"
+echo "[$(date '+%F %T')] vagas.com.br off-VPS (einstein, fleury, oncoclinicas, trasmontano, saude_da_familia)"
 for attempt in 1 2 3; do
   SOCK="$(mktemp -u /tmp/vagasaudebr-tunnel.XXXXXX)"
   if ssh -M -S "$SOCK" -fNT -o ExitOnForwardFailure=yes -o BatchMode=yes \
@@ -29,7 +29,7 @@ for attempt in 1 2 3; do
     -L "127.0.0.1:${PORT}:127.0.0.1:3011" "$VPS"; then
     export INGEST_BASE_URL="http://127.0.0.1:${PORT}"
     rc=0
-    for src in einstein fleury; do
+    for src in einstein fleury oncoclinicas trasmontano saude_da_familia; do
       caffeinate -i "$PY" run.py --source "$src" 2>&1 | grep -E "^\[$src\]" || rc=1
     done
     ssh -S "$SOCK" -O exit "$VPS" >/dev/null 2>&1 || true

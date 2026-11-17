@@ -44,12 +44,22 @@ from sources.gupy import (
     VeraCruzScraper,
 )
 from sources.hcor import HcorScraper
-from sources.pandape import HapvidaPandapeScraper, PandapeHospitaisScraper
+from sources.pandape import (
+    FarmaciasPandapeScraper,
+    HapvidaPandapeScraper,
+    PandapeHospitaisScraper,
+    PandapeSaudeScraper,
+)
 from sources.hsl_sirio import HslSirioScraper
 from sources.inca import IncaScraper
 from sources.mater_dei import MaterDeiScraper
 from sources.pci_concursos import PciConcursosScraper
 from sources.solides import SolidesSaudeScraper
+from sources.vagas_com import (
+    OncoclinicasScraper,
+    SaudeDaFamiliaScraper,
+    TrasmontanoScraper,
+)
 
 SCRAPERS = {
     RedeDorScraper.slug: RedeDorScraper,
@@ -64,10 +74,15 @@ SCRAPERS = {
     BpScraper.slug: BpScraper,
     EinsteinScraper.slug: EinsteinScraper,
     FleuryScraper.slug: FleuryScraper,
+    OncoclinicasScraper.slug: OncoclinicasScraper,
+    TrasmontanoScraper.slug: TrasmontanoScraper,
+    SaudeDaFamiliaScraper.slug: SaudeDaFamiliaScraper,
     HaocScraper.slug: HaocScraper,
     HcorScraper.slug: HcorScraper,
     HapvidaPandapeScraper.slug: HapvidaPandapeScraper,
     PandapeHospitaisScraper.slug: PandapeHospitaisScraper,
+    PandapeSaudeScraper.slug: PandapeSaudeScraper,
+    FarmaciasPandapeScraper.slug: FarmaciasPandapeScraper,
     MaterDeiScraper.slug: MaterDeiScraper,
     HslSirioScraper.slug: HslSirioScraper,
     PciConcursosScraper.slug: PciConcursosScraper,

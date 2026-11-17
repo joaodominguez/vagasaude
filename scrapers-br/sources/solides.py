@@ -6,6 +6,7 @@ API pública (sem auth):
 
 from __future__ import annotations
 
+import re
 from typing import Any
 
 from common.http import HttpClient
@@ -21,6 +22,13 @@ from common.normalize import (
 
 API_BASE = "https://apigw.solides.com.br/jobs/v3"
 PAGE_SIZE = 25
+
+# Vagas duplicadas no painel Solides ficam com " - (Cópia)" repetido no título.
+_COPY_SUFFIX_RE = re.compile(r"(?:\s*-?\s*\(c[óo]pia\))+\s*$", re.IGNORECASE)
+
+
+def clean_title(title: str) -> str:
+    return _COPY_SUFFIX_RE.sub("", title).strip()
 
 
 class SolidesScraper(BaseScraper):
@@ -77,7 +85,7 @@ class SolidesScraper(BaseScraper):
         jobs: list[JobPayload] = []
         for item in listing:
             job_id = item.get("id")
-            title = (item.get("title") or "").strip()
+            title = clean_title(item.get("title") or "")
             if job_id is None or not title:
                 continue
 
@@ -317,6 +325,16 @@ class SolidesSaudeScraper(SolidesScraper):
             "ipss",
             "santacasapc",
         ),
+        # 2026-11-17: lote novo (probe com filtro saúde: vagas que passam)
+        ("grupobringel", "Grupo Bringel", "privado", "bringel"),  # 154
+        ("lacosgrupo", "Laços Saúde", "privado", "lacos"),  # 73
+        ("redehospitalcasa", "Rede Hospital Casa", "privado", "hcasa"),  # 42
+        ("grupohcare", "Grupo HCare", "privado", "hcare"),  # 34
+        ("pionnier", "Pionnier Atendimento Domiciliar", "privado", "pionnier"),  # 37
+        ("hospitalsantarita", "Hospital Santa Rita (AFECC)", "ipss", "santarita"),  # 22
+        ("redesalvatoriana", "Rede Salvatoriana", "ipss", "salvatoriana"),  # 22
+        ("americashealth", "Americas Health (Austa Hospital)", "privado", "amh"),  # 22
+        ("fcv", "Fundação Cristiano Varella", "ipss", "fcv"),  # 18
     ]
 
     def fetch(self) -> list[JobPayload]:

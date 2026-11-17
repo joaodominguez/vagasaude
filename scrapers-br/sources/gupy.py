@@ -1084,6 +1084,12 @@ class CaudaGupyScraper(GupyScraper):
         # 2026-11-12: odontologia (probe: 57 de 150 vagas passam o filtro saúde)
         ("orthodontic", "Orthodontic", "privado", "orthodontic"),
         ("orthodonticdentista", "Orthodontic", "privado", "orthodenti"),
+        # 2026-11-17: odontologia / clínicas / autogestão (probe filtro saúde)
+        ("oralsin", "Oral Sin Implantes", "privado", "oralsin"),  # 15
+        ("vagasodontoprev", "Odontoprev", "privado", "odontoprev"),  # 13
+        ("aberttasaude", "Abertta Saúde", "privado", "abertta"),  # 4
+        ("cassi", "CASSI", "privado", "cassi"),  # 3
+        ("unimedcentralrs", "Unimed Central RS", "privado", "unimedcentralrs"),  # 2
     ]
 
 

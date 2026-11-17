@@ -23,7 +23,7 @@ fi
 
 # Einstein + Fleury / vagas.com.br: CF 1005 no ASN Hetzner — skip em --source all
 # (run.py SKIP_SOURCES=einstein,fleury). Ingest off-VPS: run-vagas-com-off-vps.sh
-export SKIP_SOURCES="${SKIP_SOURCES:-einstein,fleury}"
+export SKIP_SOURCES="${SKIP_SOURCES:-einstein,fleury,oncoclinicas,trasmontano,saude_da_familia}"
 
 # Caches de detalhe (Gupy/Pandapé) na pasta de dados: sobrevivem a deploys dos scrapers.
 export GUPY_DETAIL_CACHE="${GUPY_DETAIL_CACHE:-/var/www/vagasaudebr/data/gupy_details.json}"
