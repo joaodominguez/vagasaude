@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Post diário nas redes sociais — VagaSaúde BR e PT ("as vagas mais procuradas"). Escolher com --market br|pt.
+"""Post diário nas redes sociais — VagaSaúde BR e PT, VacantesSalud ES e OfferteSanità IT ("as vagas mais procuradas"). Escolher com --market br|pt|es|it.
 
 Plano: docs/REDES-SOCIAIS.md. Não mexe na app: só lê dados e escreve em data/social/.
 
@@ -48,17 +48,81 @@ MARKETS = {
                telegram="https://t.me/vagasaudept", whatsapp="https://whatsapp.com/channel/0029VbDxb8A5PO0v9AeTbE32",
                label="VagaSaúde PT", tz="Lisboa", swipe="Deslize para ver →", everywhere="todo o país",
                tags="#emprego #empregosaude #saude #portugal"),
+    "es": dict(root="/var/www/vacantessalud", site="https://vacantessalud.es", config="social-es.json",
+               telegram="https://t.me/vacantessalud", whatsapp="",
+               label="VacantesSalud ES", tz="Madrid", swipe="Desliza para ver →", everywhere="toda España",
+               tags="#empleo #empleosanitario #ofertasdeempleo #sanidad #españa",
+               lang="es", job_prefix="/empleo/", alerts="/alertas", brand="VacantesSalud", logo="es"),
+    "it": dict(root="/var/www/offertesanita", site="https://offertesanita.it", config="social-it.json",
+               telegram="https://t.me/offertesanita", whatsapp="",
+               label="OfferteSanità IT", tz="Roma", swipe="Scorri per vedere →", everywhere="tutta Italia",
+               tags="#lavoro #lavorosanita #offertedilavoro #sanita #italia",
+               lang="it", job_prefix="/offerte/", alerts="/avvisi", brand="OfferteSanità", logo="it"),
 }
 M = MARKETS["br"]
 
+# Textos por língua. "pt" é o original (BR e PT); es/it seguem a mesma estrutura.
+LANG = {
+    "pt": dict(
+        cover="As vagas de saúde mais procuradas", count="{n} oportunidades em {where}", conj=" e ",
+        apply_bio="Candidate-se pelo link na bio", cta="Receba vagas como estas no seu e-mail",
+        cta_sub="Alertas grátis por profissão e cidade. No máximo 2 e-mails por dia.",
+        most="Mais procuradas", links="Links na legenda", badge_weekend="Fim de semana", badge_day="Ontem",
+        when_weekend="no fim de semana", when_day="ontem", area="Saúde", country="Portugal",
+        ig_apply="🔗 Candidate-se pelo link na bio.", ig_alert="🔔 Receba alertas grátis: {url}",
+        fb_head="As vagas de saúde mais procuradas {when} no VagaSaúde 👇",
+        fb_alert="🔔 Receba vagas como estas no seu e-mail: {url}",
+        tg_see="Ver vaga e candidatar-se", tg_alert="Alertas grátis por e-mail",
+        tg_whatsapp="Também no nosso canal de WhatsApp", wa_alert="🔔 Alertas grátis: {url}",
+        wa_telegram="📲 Também no Telegram: {url}",
+        secondary={"Administrativo", "Gestão", "Gestão & suporte", "Outros"},
+        nonclin=r"banco de talentos|cadastro (de )?reserva|banco de curr|aprendiz|estagi|est[aá]gio|"
+                r"cozinh|copeir|porteir|vigilant|eletricist|manuten|motorista|pedreir"),
+    "es": dict(
+        cover="Las ofertas de empleo sanitario más vistas", count="{n} oportunidades en {where}", conj=" y ",
+        apply_bio="Inscríbete con el enlace de la bio", cta="Recibe ofertas como estas en tu email",
+        cta_sub="Alertas gratuitas por profesión y ciudad.",
+        most="Más vistas", links="Enlaces en la descripción", badge_weekend="Fin de semana", badge_day="Ayer",
+        when_weekend="el fin de semana", when_day="ayer", area="Sanidad", country="España",
+        ig_apply="🔗 Inscríbete con el enlace de la bio.", ig_alert="🔔 Alertas gratuitas: {url}",
+        fb_head="Las ofertas de empleo sanitario más vistas {when} en VacantesSalud 👇",
+        fb_alert="🔔 Recibe ofertas como estas en tu email: {url}",
+        tg_see="Ver la oferta e inscribirse", tg_alert="Alertas gratuitas por email",
+        tg_whatsapp="También en nuestro canal de WhatsApp", wa_alert="🔔 Alertas gratuitas: {url}",
+        wa_telegram="📲 También en Telegram: {url}",
+        secondary={"Gestión y apoyo", "Administrativo", "Otros"},
+        nonclin=r"bolsa de (empleo|trabajo)|pr[aá]cticas|becari|limpieza|cocin|celador|conductor|"
+                r"mantenimiento|vigilant|recepcionista|administrativ|comercial|teleoperador"),
+    "it": dict(
+        cover="Le offerte di lavoro in sanità più viste", count="{n} opportunità in {where}", conj=" e ",
+        apply_bio="Candidati dal link in bio", cta="Ricevi offerte come queste via email",
+        cta_sub="Avvisi gratuiti per professione e città.",
+        most="Più viste", links="Link nella didascalia", badge_weekend="Weekend", badge_day="Ieri",
+        when_weekend="nel fine settimana", when_day="ieri", area="Sanità", country="Italia",
+        ig_apply="🔗 Candidati dal link in bio.", ig_alert="🔔 Avvisi gratuiti: {url}",
+        fb_head="Le offerte di lavoro in sanità più viste {when} su OfferteSanità 👇",
+        fb_alert="🔔 Ricevi offerte come queste via email: {url}",
+        tg_see="Vedi l'offerta e candidati", tg_alert="Avvisi gratuiti via email",
+        tg_whatsapp="Anche sul nostro canale WhatsApp", wa_alert="🔔 Avvisi gratuiti: {url}",
+        wa_telegram="📲 Anche su Telegram: {url}",
+        secondary={"Gestione e supporto", "Amministrativo", "Altro"},
+        nonclin=r"tirocin|stage\b|pulizi|cucin|autist|manutenz|portier|vigilan|amministrativ|"
+                r"commercial|receptionist|centralinist"),
+}
+L = LANG["pt"]
+
 
 def configure(market: str) -> None:
-    global M, SITE, DOMAIN, CONFIG, TELEGRAM_CHANNEL, WHATSAPP_CHANNEL
+    global M, L, SITE, DOMAIN, CONFIG, TELEGRAM_CHANNEL, WHATSAPP_CHANNEL, JOB_PREFIX, NONCLIN, SECONDARY
     M = MARKETS[market]
+    L = LANG[M.get("lang", "pt")]
     SITE = M["site"]
     DOMAIN = SITE.split("//", 1)[1]
     CONFIG = Path.home() / ".config" / "vagasaude" / M["config"]
     TELEGRAM_CHANNEL, WHATSAPP_CHANNEL = M["telegram"], M["whatsapp"]
+    JOB_PREFIX = M.get("job_prefix", "/vagas/")
+    NONCLIN = re.compile(L["nonclin"], re.I)
+    SECONDARY = L["secondary"]
 
 NAVY, TEAL, TEAL_LIGHT = "#072f5f", "#16a6aa", "#3fc9c9"
 PILL_BG, PILL_FG = "#e3f4f4", "#0f7e82"
@@ -72,11 +136,16 @@ UF = {
     "rio grande do sul": "RS", "rondônia": "RO", "roraima": "RR", "santa catarina": "SC",
     "são paulo": "SP", "sergipe": "SE", "tocantins": "TO",
 }
-ANON = re.compile(r"confidencial|anunciante|sigilo|an[oô]nim|n[aã]o informad", re.I)
-NONCLIN = re.compile(r"banco de talentos|cadastro (de )?reserva|banco de curr|aprendiz|estagi|est[aá]gio|"
-                     r"cozinh|copeir|porteir|vigilant|eletricist|manuten|motorista|pedreir", re.I)
-SECONDARY = {"Administrativo", "Gestão", "Gestão & suporte", "Outros"}
+ANON = re.compile(r"confidencial|anunciante|sigilo|an[oô]nim|n[aã]o informad|riservat", re.I)
+NONCLIN = re.compile(LANG["pt"]["nonclin"], re.I)
+SECONDARY = LANG["pt"]["secondary"]
 SMALL = {"de", "da", "do", "das", "dos", "e", "em", "para", "com", "a", "o", "na", "no", "ou"}
+SMALL_BY_LANG = {
+    "pt": SMALL,
+    "es": {"de", "del", "y", "e", "o", "u", "la", "el", "los", "las", "en", "con", "para", "por", "a", "al"},
+    "it": {"di", "e", "ed", "o", "a", "da", "in", "con", "per", "il", "lo", "la", "i", "gli", "le",
+           "del", "della", "dei", "delle", "al", "alla", "nel", "nella"},
+}
 ACCENTS = {
     "tecnico": "técnico", "tecnica": "técnica", "farmaceutico": "farmacêutico", "farmaceutica": "farmacêutica",
     "farmacia": "farmácia", "internacao": "internação", "educacao": "educação", "nutricao": "nutrição",
@@ -189,15 +258,18 @@ def smart_case(text: str) -> str:
     """Títulos em maiúsculas → caixa normal, com os acentos mais comuns repostos."""
     if text != text.upper():
         return text
+    lang = M.get("lang", "pt")
+    small = SMALL_BY_LANG[lang]
+    accents = ACCENTS if lang == "pt" else {}
     words = []
     for i, w in enumerate(text.lower().split()):
         core = re.sub(r"[^\wÀ-ÿ]", "", w)
-        if core and len(core) <= 3 and core.isalpha() and core not in SMALL and core not in ACCENTS:
+        if core and len(core) <= 3 and core.isalpha() and core not in small and core not in accents:
             words.append(w.upper())          # siglas: PS, SAE, PL, UTI, CME, SUS…
             continue
         if core:
-            w = w.replace(core, ACCENTS.get(core, core))
-        words.append(w if (i and core in SMALL) else w[:1].upper() + w[1:])
+            w = w.replace(core, accents.get(core, core))
+        words.append(w if (i and core in small) else w[:1].upper() + w[1:])
     return " ".join(words)
 
 
@@ -222,7 +294,7 @@ def clean_company(company: str) -> str:
 def place(j: dict) -> str:
     city = (j.get("locationConcelho") or "").strip()
     if M is not MARKETS["br"]:
-        return city or (j.get("locationDistrict") or "").strip() or "Portugal"
+        return city or (j.get("locationDistrict") or "").strip() or L["country"]
     uf = UF.get((j.get("locationDistrict") or "").strip().lower(), "")
     return f"{city}/{uf}" if city and uf else city or (j.get("locationDistrict") or "Brasil")
 
@@ -270,7 +342,8 @@ def pill(draw, xy, text, fnt, bg, fg, pad=(30, 14)) -> tuple[int, int]:
 
 
 def paste_logo(img: Image.Image, dark: bool, xy, height: int) -> None:
-    logo = Image.open(ASSETS / ("logo-dark.png" if dark else "logo-light.png")).convert("RGBA")
+    suffix = f"-{M['logo']}" if M.get("logo") else ""        # BR/PT: logo VagaSaúde; es/it: a marca local
+    logo = Image.open(ASSETS / f"logo-{'dark' if dark else 'light'}{suffix}.png").convert("RGBA")
     logo = logo.resize((round(logo.width * height / logo.height), height), Image.LANCZOS)
     img.alpha_composite(logo, xy)
 
@@ -299,8 +372,8 @@ def slide_cover(badge: str, states: str, total: int) -> Image.Image:
     d = ImageDraw.Draw(img)
     paste_logo(img, True, (84, 84), 78)
     _, h = pill(d, (84, 400), badge, font("SemiBold", 34), TEAL, "#ffffff")
-    y = text_block(d, (84, 400 + h + 40), "As vagas de saúde mais procuradas", font("Bold", 104), "#ffffff", 912, 108)
-    d.text((84, y + 30), f"{total} oportunidades em {states}", font=font("Regular", 42), fill="#cfe6ef")
+    y = text_block(d, (84, 400 + h + 40), L["cover"], font("Bold", 104), "#ffffff", 912, 108)
+    text_block(d, (84, y + 30), L["count"].format(n=total, where=states), font("Regular", 42), "#cfe6ef", 912, 52)
     d.text((84, 1350 - 84 - 46), M["swipe"], font=font("Regular", 36), fill="#9fd9db")
     return img
 
@@ -317,7 +390,7 @@ def slide_job(i: int, total: int, job: dict) -> Image.Image:
     pin(d, 84, y + 22, 44, TEAL)
     d.text((140, y + 18), job["place"], font=font("Regular", 44), fill=INK3)
     d.rectangle((0, 1150, 1080, 1350), fill=NAVY)
-    d.text((84, 1226), "Candidate-se pelo link na bio", font=font("SemiBold", 40), fill="#ffffff")
+    d.text((84, 1226), L["apply_bio"], font=font("SemiBold", 40), fill="#ffffff")
     f2 = font("Regular", 34)
     d.text((1080 - 84 - d.textlength(DOMAIN, font=f2), 1232), DOMAIN, font=f2, fill=TEAL_LIGHT)
     return img
@@ -328,10 +401,9 @@ def slide_cta() -> Image.Image:
     deco_cross(img)
     d = ImageDraw.Draw(img)
     paste_logo(img, True, (84, 84), 78)
-    y = text_block(d, (84, 420), "Receba vagas como estas no seu e-mail", font("Bold", 96), "#ffffff", 912, 100)
-    text_block(d, (84, y + 40), "Alertas grátis por profissão e cidade. No máximo 2 e-mails por dia.",
-               font("Regular", 44), "#cfe6ef", 912, 56)
-    pill(d, (84, 1350 - 84 - 76), f"{DOMAIN}/alertas", font("SemiBold", 34), TEAL, "#ffffff")
+    y = text_block(d, (84, 420), L["cta"], font("Bold", 96), "#ffffff", 912, 100)
+    text_block(d, (84, y + 40), L["cta_sub"], font("Regular", 44), "#cfe6ef", 912, 56)
+    pill(d, (84, 1350 - 84 - 76), f"{DOMAIN}{M.get('alerts', '/alertas')}", font("SemiBold", 34), TEAL, "#ffffff")
     return img
 
 
@@ -340,13 +412,28 @@ def square(jobs: list[dict], heading: str) -> Image.Image:
     d = ImageDraw.Draw(img)
     paste_logo(img, False, (70, 70), 58)
     fp = font("SemiBold", 28)
-    w = d.textlength("Mais procuradas", font=fp) + 48
-    pill(d, (1080 - 70 - w, 74), "Mais procuradas", fp, TEAL, "#ffffff", pad=(24, 10))
+    w = d.textlength(L["most"], font=fp) + 48
+    pill(d, (1080 - 70 - w, 74), L["most"], fp, TEAL, "#ffffff", pad=(24, 10))
     y = text_block(d, (70, 176), heading, font("Bold", 64), NAVY, 940, 68) + 20
     ft, fs, fn = font("Bold", 42), font("Regular", 31), font("Bold", 38)
+    # Se as vagas com títulos de 2 linhas não couberem acima do rodapé, os títulos passam a 1 linha.
+    max_lines = 2
+    needed = sum(46 * len(wrap(d, j["title"], ft, 820)[:2]) + 44 + 56 for j in jobs)
+    if y + needed + 22 > 1080 - 70 - 40:
+        max_lines = 1
+
+    def title_lines(title: str) -> list[str]:
+        lines = wrap(d, title, ft, 820)
+        if len(lines) <= max_lines:
+            return lines
+        last = lines[max_lines - 1]
+        while last and d.textlength(last + "…", font=ft) > 820:
+            last = last[:-1].rstrip()
+        return lines[:max_lines - 1] + [last + "…"]
+
     for k, j in enumerate(jobs, 1):
         d.line((70, y, 1010, y), fill="#e3e9f0", width=2)
-        lines = wrap(d, j["title"], ft, 820)[:2]
+        lines = wrap(d, j["title"], ft, 820)[:2] if max_lines == 2 else title_lines(j["title"])
         block_h = 46 * len(lines) + 44
         top = y + 28
         d.rounded_rectangle((70, top + block_h / 2 - 35, 140, top + block_h / 2 + 35), radius=18, fill=PILL_BG)
@@ -357,7 +444,7 @@ def square(jobs: list[dict], heading: str) -> Image.Image:
             ty += 46
         d.text((166, ty + 4), f"{j['company']} · {j['place']}", font=fs, fill=INK3)
         y = top + block_h + 28
-    d.text((70, min(y + 22, 1080 - 70 - 40)), f"Links na legenda · {DOMAIN}", font=font("SemiBold", 32), fill=PILL_FG)
+    d.text((70, min(y + 22, 1080 - 70 - 40)), f"{L['links']} · {DOMAIN}", font=font("SemiBold", 32), fill=PILL_FG)
     return img
 
 
@@ -373,17 +460,17 @@ def build_package(root: Path, day: date, dry_run: bool) -> Path | None:
     campaign = f"top-vagas-{day.isoformat()}"
     jobs = [{"slug": j["slug"], "title": clean_title(j.get("title", ""), j.get("company", "")),
              "company": clean_company(j.get("company", "")), "place": place(j),
-             "area": j.get("profession") or "Saúde", "score": j["_score"],
+             "area": j.get("profession") or L["area"], "score": j["_score"],
              "region": (place(j).split("/")[-1] if M is MARKETS["br"] else (j.get("locationDistrict") or "").strip())}
             for j in picked]
-    when = "no fim de semana" if weekend else "ontem"
-    heading = f"As vagas de saúde mais procuradas {when}"
+    when = L["when_weekend"] if weekend else L["when_day"]
+    heading = f"{L['cover']} {when}"
     ufs = sorted({j["region"] for j in jobs if j["region"]})
-    states = (", ".join(ufs[:-1]) + f" e {ufs[-1]}") if len(ufs) > 1 else (ufs[0] if ufs else M["everywhere"])
+    states = (", ".join(ufs[:-1]) + f"{L['conj']}{ufs[-1]}") if len(ufs) > 1 else (ufs[0] if ufs else M["everywhere"])
 
     out = root / "data" / "social" / day.isoformat()
     out.mkdir(parents=True, exist_ok=True)
-    slides = [slide_cover("Fim de semana" if weekend else "Ontem", states, len(jobs))]
+    slides = [slide_cover(L["badge_weekend"] if weekend else L["badge_day"], states, len(jobs))]
     slides += [slide_job(i, len(jobs), j) for i, j in enumerate(jobs, 1)] + [slide_cta()]
     for i, img in enumerate(slides, 1):
         img.convert("RGB").save(out / f"ig-{i}.png", optimize=True)
@@ -391,24 +478,26 @@ def build_package(root: Path, day: date, dry_run: bool) -> Path | None:
 
     lines = "".join(f"{k}. {j['title']} – {j['company']} ({j['place']})\n" for k, j in enumerate(jobs, 1))
     tags = " ".join(sorted({"#" + strip_accents(j["area"]).replace(" ", "") for j in jobs}))
-    alert = f"{SITE}/alertas?utm_medium=social&utm_campaign={campaign}&utm_source="
+    alerts_path = M.get("alerts", "/alertas")
+    alert = f"{SITE}{alerts_path}?utm_medium=social&utm_campaign={campaign}&utm_source="
+    head = f"{L['cover']} {when}"
     texts = {
-        "instagram.txt": f"As vagas de saúde mais procuradas {when} 👇\n\n{lines}\n🔗 Candidate-se pelo link na bio.\n"
-                         f"🔔 Receba alertas grátis: {DOMAIN}/alertas\n\n{M['tags']} {tags}",
-        "facebook.txt": f"As vagas de saúde mais procuradas {when} no VagaSaúde 👇\n\n"
+        "instagram.txt": f"{head} 👇\n\n{lines}\n{L['ig_apply']}\n"
+                         f"{L['ig_alert'].format(url=DOMAIN + alerts_path)}\n\n{M['tags']} {tags}",
+        "facebook.txt": L["fb_head"].format(when=when) + "\n\n"
                         + "".join(f"{k}. {j['title']} – {j['company']} ({j['place']})\n👉 {job_link(j['slug'], 'facebook', campaign)}\n\n"
                                   for k, j in enumerate(jobs, 1))
-                        + f"🔔 Receba vagas como estas no seu e-mail: {alert}facebook",
-        "telegram.html": f"<b>As vagas de saúde mais procuradas {when}</b> 👇\n\n"
+                        + L["fb_alert"].format(url=f"{alert}facebook"),
+        "telegram.html": f"<b>{head}</b> 👇\n\n"
                          + "".join(f"{k}. <b>{html.escape(j['title'])}</b>\n{html.escape(j['company'])} · {html.escape(j['place'])}\n"
-                                   f"<a href=\"{job_link(j['slug'], 'telegram', campaign)}\">Ver vaga e candidatar-se</a>\n\n"
+                                   f"<a href=\"{job_link(j['slug'], 'telegram', campaign)}\">{L['tg_see']}</a>\n\n"
                                    for k, j in enumerate(jobs, 1))
-                         + f"🔔 <a href=\"{alert}telegram\">Alertas grátis por e-mail</a>"
-                         + (f"\n💬 <a href=\"{WHATSAPP_CHANNEL}\">Também no nosso canal de WhatsApp</a>" if WHATSAPP_CHANNEL else ""),
-        "whatsapp.txt": f"*As vagas de saúde mais procuradas {when}* 👇\n\n"
+                         + f"🔔 <a href=\"{alert}telegram\">{L['tg_alert']}</a>"
+                         + (f"\n💬 <a href=\"{WHATSAPP_CHANNEL}\">{L['tg_whatsapp']}</a>" if WHATSAPP_CHANNEL else ""),
+        "whatsapp.txt": f"*{head}* 👇\n\n"
                         + "".join(f"*{j['title']}*\n{j['company']} · {j['place']}\n{job_link(j['slug'], 'whatsapp', campaign)}\n\n" for j in jobs)
-                        + f"🔔 Alertas grátis: {DOMAIN}/alertas\n"
-                        + f"📲 Também no Telegram: {TELEGRAM_CHANNEL}",
+                        + L["wa_alert"].format(url=DOMAIN + alerts_path) + "\n"
+                        + L["wa_telegram"].format(url=TELEGRAM_CHANNEL),
     }
     for name, body in texts.items():
         (out / name).write_text(body, "utf-8")
@@ -436,6 +525,9 @@ def deliver_email(root: Path, out: Path, day: date) -> None:
     import httpx
 
     env = load_env(root / ".env.production")
+    if not WHATSAPP_CHANNEL:
+        print("[social] e-mail: mercado sem canal de WhatsApp — nada a enviar")
+        return
     key, sender, to = env.get("RESEND_API_KEY"), env.get("EMAIL_FROM"), env.get("ALERTS_TO")
     if not (key and sender and to):
         print("[social] e-mail: falta RESEND_API_KEY/EMAIL_FROM/ALERTS_TO — pacote não enviado")
