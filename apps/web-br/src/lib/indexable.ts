@@ -24,7 +24,28 @@ const NON_CLINICAL_RE =
 const HEALTH_HINT_RE =
   /enferm|m[eé]dic|fisioter|farm[aá]c|sa[uú]de|cl[ií]nic|laborat|radiolog|nutri|psic[oó]l|fono|terapeut|biom[eé]dic|odont|socorr|instrumentad|hemodi[aá]l|dentist|cuidador|paciente|assistencial/i;
 
-export function isIndexableJob(job: Pick<Job, "title" | "profession">): boolean {
+/**
+ * Recuperação BR (2026-11-18): vagas com mais de 90 dias saem do Google (continuam no site).
+ *
+ * Diagnóstico: 39% das vagas BR publicadas tinham mais de 60 dias e 15% mais de 6 meses (vagas
+ * "sempre abertas" da Hapvida, hospitais Pandapé, Rede D'Or), contra 19%/6% no PT. O Google for Jobs
+ * dá pouco peso a anúncios antigos e o rastreio BR caiu ~80% (780 → 160 vagas/dia): concentrar o
+ * pouco rastreio nas vagas recentes. Data inválida ou ausente → não exclui.
+ */
+export const MAX_INDEXABLE_AGE_DAYS = 90;
+
+function isTooOld(publishedAt: string | null | undefined, now: number): boolean {
+  if (!publishedAt) return false;
+  const time = Date.parse(publishedAt);
+  if (Number.isNaN(time)) return false;
+  return now - time > MAX_INDEXABLE_AGE_DAYS * 86_400_000;
+}
+
+export function isIndexableJob(
+  job: Pick<Job, "title" | "profession"> & { publishedAt?: string | null },
+  now: number = Date.now(),
+): boolean {
+  if (isTooOld(job.publishedAt, now)) return false;
   const title = job.title || "";
   if (TALENT_POOL_RE.test(title) || ALWAYS_EXCLUDE_RE.test(title)) return false;
   if (NON_CLINICAL_RE.test(title) && !HEALTH_HINT_RE.test(title)) return false;
