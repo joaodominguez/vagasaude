@@ -37,6 +37,10 @@ export type Career = {
   /** Profissão da taxonomia do site (landing de vagas). */
   profession: string;
   intro: string;
+  /** Carreiras não revistas (escalões/índices em vez de posições/níveis TRU). */
+  scale?: "escalao";
+  /** Aviso com fonte (ex.: revisão da carreira anunciada mas ainda sem tabela nova). */
+  notice?: { text: string; label: string; url: string };
 };
 
 function positions(levels: number[], values: number[]): PayPosition[] {
@@ -210,6 +214,76 @@ export const CAREERS: Career[] = [
       },
     ],
   },
+  {
+    slug: "nutricionista",
+    label: "nutricionista",
+    careerName: "Carreira de técnico superior de saúde — ramo de nutrição",
+    regime: "35 horas semanais",
+    profession: "Nutrição",
+    scale: "escalao",
+    intro:
+      "No SNS, os nutricionistas integram a carreira de técnico superior de saúde, ramo de nutrição. A categoria de entrada é a de assistente, que exige o grau de especialista do ramo, obtido no estágio da carreira (estagiário); seguem-se assistente principal, assessor e assessor superior.",
+    notice: {
+      text: "A carreira de técnico superior de saúde ainda não foi revista: os valores são os da tabela de 2026 (escalões e índices). Em novembro de 2025, Governo e sindicatos assinaram um acordo para a rever, com aumentos anuais até 2027 e a futura designação de especialista superior de saúde; atualizamos esta página quando sair a nova tabela.",
+      label: "Comunicado do Governo (21/11/2025)",
+      url: "https://portugal.gov.pt/gc25/comunicacao/comunicados/governo-e-sindicatos-assinam-acordo-para-revisao-de-carreira-e-valorizacao-dos-tecnicos-superiores-de-saude",
+    },
+    categories: [
+      { name: "Estagiário (1.º e 2.º anos)", positions: positions([90], [1462.79]) },
+      { name: "Estagiário (3.º e 4.º anos)", positions: positions([100], [1601.06]) },
+      {
+        name: "Assistente",
+        positions: positions([120, 125, 135, 140, 145], [1877.59, 1947.51, 2089.93, 2161.13, 2232.34]),
+      },
+      {
+        name: "Assistente principal",
+        positions: positions([135, 140, 145, 155, 165], [2089.93, 2161.13, 2232.34, 2374.75, 2517.17]),
+      },
+      {
+        name: "Assessor",
+        positions: positions([160, 175, 185, 195], [2445.96, 2659.58, 2805.7, 2955.68]),
+      },
+      {
+        name: "Assessor superior",
+        positions: positions([195, 205, 215, 230], [2955.68, 3107.24, 3258.81, 3486.18]),
+      },
+    ],
+  },
+  {
+    slug: "psicologo",
+    label: "psicólogo",
+    careerName: "Carreira de técnico superior de saúde — ramo de psicologia clínica",
+    regime: "35 horas semanais",
+    profession: "Psicologia",
+    scale: "escalao",
+    intro:
+      "No SNS, os psicólogos integram a carreira de técnico superior de saúde, ramo de psicologia clínica. A categoria de entrada é a de assistente, que exige o grau de especialista do ramo, obtido no estágio da carreira (estagiário); seguem-se assistente principal, assessor e assessor superior.",
+    notice: {
+      text: "A carreira de técnico superior de saúde ainda não foi revista: os valores são os da tabela de 2026 (escalões e índices). Em novembro de 2025, Governo e sindicatos assinaram um acordo para a rever, com aumentos anuais até 2027 e a futura designação de especialista superior de saúde; atualizamos esta página quando sair a nova tabela.",
+      label: "Comunicado do Governo (21/11/2025)",
+      url: "https://portugal.gov.pt/gc25/comunicacao/comunicados/governo-e-sindicatos-assinam-acordo-para-revisao-de-carreira-e-valorizacao-dos-tecnicos-superiores-de-saude",
+    },
+    categories: [
+      { name: "Estagiário (1.º e 2.º anos)", positions: positions([90], [1462.79]) },
+      { name: "Estagiário (3.º e 4.º anos)", positions: positions([100], [1601.06]) },
+      {
+        name: "Assistente",
+        positions: positions([120, 125, 135, 140, 145], [1877.59, 1947.51, 2089.93, 2161.13, 2232.34]),
+      },
+      {
+        name: "Assistente principal",
+        positions: positions([135, 140, 145, 155, 165], [2089.93, 2161.13, 2232.34, 2374.75, 2517.17]),
+      },
+      {
+        name: "Assessor",
+        positions: positions([160, 175, 185, 195], [2445.96, 2659.58, 2805.7, 2955.68]),
+      },
+      {
+        name: "Assessor superior",
+        positions: positions([195, 205, 215, 230], [2955.68, 3107.24, 3258.81, 3486.18]),
+      },
+    ],
+  },
 ];
 
 export function careerFromSlug(slug: string) {
@@ -227,10 +301,10 @@ export function careerRange(career: Career) {
   return { min: Math.min(...all), max: Math.max(...all) };
 }
 
-/** 1.ª posição da categoria de entrada (não conta internatos/residências). */
+/** 1.ª posição (ou escalão) da categoria de entrada (não conta internatos, residências nem estágios). */
 export function careerEntry(career: Career) {
   const entry =
-    career.categories.find((c) => !/interno|residente/i.test(c.name)) ?? career.categories[0];
+    career.categories.find((c) => !/interno|residente|estagi/i.test(c.name)) ?? career.categories[0];
   return { category: entry.name, gross: entry.positions[0].gross };
 }
 

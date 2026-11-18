@@ -2,6 +2,7 @@
 title: "Emprego para nutricionistas e psicólogos: vagas e salários em Portugal"
 slug: emprego-nutricionistas-psicologos-vagas-salarios
 date: 2026-11-18
+updated: 2026-11-18
 author: "Redação VagaSaúde"
 category: mercado-de-trabalho
 summary:
@@ -18,6 +19,8 @@ sources:
     url: "https://www.ordemdospsicologos.pt/ficheiros/documentos/opp_guiaestudantes.pdf"
   - label: "VagaSaúde: salários e tabelas remuneratórias do SNS"
     url: "https://vagasaude.pt/salarios"
+  - label: "DGAEP — Sistema Remuneratório da Administração Pública 2026 (técnico superior de saúde, p. 77)"
+    url: "https://www.dgaep.gov.pt/upload//catalogo/SRAP_2026.pdf"
 draft: false
 ---
 
@@ -96,7 +99,9 @@ Aqui os dados são pobres, e dizê-lo é já um resultado. **Só 16 das 368 vaga
 
 Sobram valores mensais isolados: **1.260 €/mês** para dietista e nutricionista a tempo inteiro (anúncio via IEFP), **500 €** para um part-time de 12 horas semanais num ginásio, e **1.150 €** para um psicólogo numa IPSS (Santa Casa das Caldas da Rainha). Com n = 2 em nutrição e n = 1 em psicologia, não calculamos intervalos.
 
-Como referência, nas nossas páginas de vagas usamos estimativas indicativas de **cerca de 1.500 € brutos por mês em nutrição** (intervalo típico de 1.350 a 1.850 €) e **cerca de 1.600 € em psicologia** (1.400 a 2.100 €). São estimativas de mercado, não salários anunciados, e não substituem o que o empregador propõe. Para as carreiras do SNS, com tabelas oficiais e cálculo do líquido, vê a página de [salários](/salarios).
+Como referência, nas nossas páginas de vagas usamos estimativas indicativas de **cerca de 1.500 € brutos por mês em nutrição** (intervalo típico de 1.350 a 1.850 €) e **cerca de 1.600 € em psicologia** (1.400 a 2.100 €). São estimativas de mercado, não salários anunciados, e não substituem o que o empregador propõe.
+
+No SNS há tabela oficial: nutricionistas e psicólogos integram a carreira de técnico superior de saúde (ramos de nutrição e de psicologia clínica). Em 2026, a categoria de entrada, **assistente, começa nos 1.877,59 € brutos por mês** (35 horas semanais) e a tabela vai até 3.486,18 € no topo de assessor superior; o estágio da carreira paga 1.462,79 € nos dois primeiros anos. A carreira está em revisão, com um acordo assinado em novembro de 2025. Vê as tabelas completas e o líquido estimado em [salário de nutricionista](/salarios/nutricionista) e [salário de psicólogo](/salarios/psicologo).
 
 ## O que fazer com isto
 

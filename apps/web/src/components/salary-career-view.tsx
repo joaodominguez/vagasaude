@@ -51,14 +51,16 @@ export function SalaryCareerView({
   const entry = careerEntry(career);
   const entryNet = netMonthly(entry.gross);
   const range = careerRange(career);
+  const byStep = career.scale === "escalao";
+  const firstStep = byStep ? "1.º escalão" : "1.ª posição";
   const faq = [
     {
       q: `Quanto ganha um ${career.label} no início da carreira?`,
-      a: `No SNS, a 1.ª posição da categoria de ${entry.category.toLowerCase()} corresponde a ${formatEur(entry.gross)} brutos por mês (${career.regime}), cerca de ${formatEur(entryNet.net)} líquidos para um contribuinte não casado e sem dependentes. Recebe 14 vezes por ano.`,
+      a: `No SNS, o ${firstStep} da categoria de ${entry.category.toLowerCase()} corresponde a ${formatEur(entry.gross)} brutos por mês (${career.regime}), cerca de ${formatEur(entryNet.net)} líquidos para um contribuinte não casado e sem dependentes. Recebe 14 vezes por ano.`,
     },
     {
       q: `Qual é o salário máximo de um ${career.label} no SNS?`,
-      a: `Na tabela de ${SALARY_YEAR}, os valores da carreira vão de ${formatEur(range.min)} a ${formatEur(range.max)} brutos por mês, consoante a categoria e a posição remuneratória.`,
+      a: `Na tabela de ${SALARY_YEAR}, os valores da carreira vão de ${formatEur(range.min)} a ${formatEur(range.max)} brutos por mês, consoante a categoria e ${byStep ? "o escalão" : "a posição remuneratória"}.`,
     },
     ...(privateData
       ? [
@@ -119,6 +121,16 @@ export function SalaryCareerView({
             </div>
           </div>
 
+          {career.notice && (
+            <p className="rounded-xl border border-border bg-surface p-4 text-sm leading-6 text-muted">
+              {career.notice.text}{" "}
+              <a href={career.notice.url} className="underline" rel="noopener" target="_blank">
+                {career.notice.label}
+              </a>
+              .
+            </p>
+          )}
+
           {career.includes && (
             <p className="text-sm leading-6 text-muted">
               Inclui: {career.includes.join(", ")}.
@@ -155,8 +167,8 @@ export function SalaryCareerView({
               <table className="mt-4 w-full min-w-[30rem] text-left text-sm">
                 <thead className="text-xs uppercase tracking-wider text-muted">
                   <tr>
-                    <th className="pb-2 font-extrabold">Posição</th>
-                    <th className="pb-2 font-extrabold">Nível TRU</th>
+                    <th className="pb-2 font-extrabold">{byStep ? "Escalão" : "Posição"}</th>
+                    <th className="pb-2 font-extrabold">{byStep ? "Índice" : "Nível TRU"}</th>
                     <th className="pb-2 text-right font-extrabold">Bruto mensal</th>
                     <th className="pb-2 text-right font-extrabold">Líquido estimado</th>
                     <th className="pb-2 text-right font-extrabold">Bruto anual (14×)</th>
@@ -165,7 +177,7 @@ export function SalaryCareerView({
                 <tbody>
                   {category.positions.map((position) => (
                     <tr key={position.position} className="border-t border-border">
-                      <td className="py-2.5">{category.positions.length > 1 ? `${position.position}.ª` : "—"}</td>
+                      <td className="py-2.5">{category.positions.length > 1 ? `${position.position}.${byStep ? "º" : "ª"}` : "—"}</td>
                       <td className="py-2.5 text-muted">{position.level}</td>
                       <td className="py-2.5 text-right font-semibold">{formatEur(position.gross)}</td>
                       <td className="py-2.5 text-right">{formatEur(netMonthly(position.gross).net)}</td>
