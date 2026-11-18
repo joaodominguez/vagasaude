@@ -182,6 +182,7 @@ const C = {
 // (o Gmail e o Outlook não mostram SVG). Acrescentar aqui quando uma conta nova existir.
 const SOCIAL = [
   { name: "Telegram", icon: "telegram", url: "https://t.me/vacantessalud" },
+  { name: "WhatsApp", icon: "whatsapp", url: "https://whatsapp.com/channel/0029VbE2wId4SpkNer4zlP3s" },
 ];
 const SOCIAL_LABEL = "Síguenos y recibe ofertas cada día";
 
