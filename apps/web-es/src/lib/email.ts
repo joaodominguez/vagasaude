@@ -183,6 +183,8 @@ const C = {
 const SOCIAL = [
   { name: "Telegram", icon: "telegram", url: "https://t.me/vacantessalud" },
   { name: "WhatsApp", icon: "whatsapp", url: "https://whatsapp.com/channel/0029VbE2wId4SpkNer4zlP3s" },
+  { name: "Instagram", icon: "instagram", url: "https://www.instagram.com/vacantessalud/" },
+  { name: "Facebook", icon: "facebook", url: "https://www.facebook.com/1483318444857401" },
 ];
 const SOCIAL_LABEL = "Síguenos y recibe ofertas cada día";
 
