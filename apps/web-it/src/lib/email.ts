@@ -189,6 +189,8 @@ const C = {
 const SOCIAL = [
   { name: "Telegram", icon: "telegram", url: "https://t.me/offertesanita" },
   { name: "WhatsApp", icon: "whatsapp", url: "https://whatsapp.com/channel/0029VbDuqMp9xVJnr0RzZG04" },
+  { name: "Instagram", icon: "instagram", url: "https://www.instagram.com/offertesanita/" },
+  { name: "Facebook", icon: "facebook", url: "https://www.facebook.com/offertesanita" },
 ];
 const SOCIAL_LABEL = "Seguici e ricevi offerte ogni giorno";
 
