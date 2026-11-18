@@ -2,7 +2,7 @@
 // quando un nuovo account è pronto, basta inserire qui l'URL.
 const SOCIAL = [
   { name: "Telegram", url: "https://t.me/offertesanita" },
-  { name: "WhatsApp", url: "" },
+  { name: "WhatsApp", url: "https://whatsapp.com/channel/0029VbDuqMp9xVJnr0RzZG04" },
   { name: "Instagram", url: "" },
   { name: "Facebook", url: "" },
 ] as const;
