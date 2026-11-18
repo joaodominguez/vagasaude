@@ -4,12 +4,16 @@ import { buildCareerSalaryMetadata, SalaryCareerView } from "@/components/salary
 import { categoryPath, listEligibleCategories } from "@/lib/categories";
 import { getJobs } from "@/lib/jobs-data";
 import { getPrivateSalaryData } from "@/lib/salary-observatory";
-import { careerFromSlug } from "@/lib/salary-tables";
+import { CAREERS, careerFromSlug } from "@/lib/salary-tables";
 
 export const dynamic = "force-static";
 export const revalidate = 3600;
 
 type Params = Promise<{ career: string }>;
+
+export function generateStaticParams() {
+  return CAREERS.map((career) => ({ career: career.slug }));
+}
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const career = careerFromSlug((await params).career);

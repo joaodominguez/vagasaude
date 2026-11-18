@@ -1,7 +1,7 @@
 /**
  * Dataset delle retribuzioni di riferimento per professione (Italia).
  *
- * VUOTO PER SCELTA: non inventiamo cifre. Una voce può essere aggiunta solo
+ * NON INVENTIAMO CIFRE. Una voce può essere aggiunta solo
  * con una fonte pubblica primaria citata nella riga stessa (es. tabelle
  * retributive del CCNL Comparto Sanità, CCNL Dirigenza Medica e Sanitaria,
  * CCNL RSA/Sanità privata AIOP-ARIS), con anno e URL. Finché `CAREERS` è vuoto
@@ -32,13 +32,43 @@ export type Career = {
   slug: string;
   /** Nome della professione, minuscolo, per le frasi (es. "infermiere"). */
   label: string;
+  /** Nome con articolo indeterminativo per le frasi (es. "un infermiere", "un'ostetrica"). */
+  indefinite: string;
   /** Etichetta di categoria in lib/taxonomies.ts. */
   profession: string;
   intro: string;
   tables: PayTable[];
 };
 
-export const CAREERS: Career[] = [];
+const ARAN_COMPARTO_SANITA_2022_2024: SalarySource = {
+  label: "ARAN, CCNL Comparto Sanità 2022-2024 (sottoscritto il 27/10/2025), Tabella 2a",
+  url: "https://www.aranagenzia.it/wp-content/uploads/2025/10/2025.10.27-CCNL-comparto-definitivo-3.pdf",
+};
+
+export const CAREERS: Career[] = [
+  {
+    slug: "ostetrica",
+    label: "ostetrica",
+    indefinite: "un'ostetrica",
+    profession: "Ostetricia",
+    intro:
+      "Nel pubblico (aziende sanitarie e ospedaliere) l'ostetrica rientra nell'Area dei professionisti della salute e dei funzionari del CCNL Comparto Sanità 2022-2024. La retribuzione tabellare è lorda e indicata per 12 mensilità più la tredicesima, a cui si aggiungono anzianità e indennità. Nel privato e nelle RSA si applicano altri contratti (per esempio AIOP o ARIS), con importi diversi.",
+    tables: [
+      {
+        name: "Settore pubblico: CCNL Comparto Sanità 2022-2024",
+        rows: [
+          {
+            service: "CCNL Comparto Sanità, Area dei professionisti della salute e dei funzionari (ostetrica)",
+            year: 2024,
+            annual: 26995.51,
+            note: "retribuzione tabellare dal 1/1/2024: 24.918,93 € su 12 mensilità più tredicesima (24.918,93 ÷ 12 × 13)",
+            source: ARAN_COMPARTO_SANITA_2022_2024,
+          },
+        ],
+      },
+    ],
+  },
+];
 
 /** true quando esiste almeno una professione con dati verificati e fonti citate. */
 export function hasSalaryData() {

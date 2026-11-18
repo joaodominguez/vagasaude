@@ -191,8 +191,7 @@ export default async function DataPage() {
                 una retribuzione mensile.
                 {hasSalaryData() ? (
                   <>
-                    {" "}Scopri quanto si guadagna, professione per professione, e il confronto con le
-                    tabelle dei contratti collettivi in{" "}
+                    {" "}Scopri quanto si guadagna secondo le tabelle dei contratti collettivi, con fonte, in{" "}
                     <Link href="/stipendi" className="font-semibold text-primary hover:underline">
                       Stipendi nella sanità
                     </Link>

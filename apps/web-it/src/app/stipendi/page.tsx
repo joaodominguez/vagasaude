@@ -19,7 +19,7 @@ export const revalidate = 3600;
 
 const title = `Stipendi nella sanità nel ${SALARY_YEAR}: tabelle ufficiali e settore privato`;
 const description =
-  "Quanto guadagnano infermieri, medici, OSS, tecnici sanitari e fisioterapisti in Italia: tabelle retributive dei contratti collettivi e retribuzioni indicate negli annunci privati.";
+  "Quanto si guadagna nella sanità in Italia: tabelle retributive ufficiali dei contratti collettivi, con fonte, e retribuzioni indicate negli annunci privati. Per ora: ostetrica.";
 
 // Senza dati verificati la pagina resta raggiungibile ma non indicizzata.
 export const metadata: Metadata = hasSalaryData()
@@ -96,7 +96,7 @@ export default async function SalariesIndexPage() {
             <p className="mt-4 max-w-3xl text-sm leading-7 text-muted sm:text-base">
               Le tabelle retributive ufficiali dei contratti collettivi e le retribuzioni indicate
               negli annunci privati che raccogliamo ogni giorno. Gli importi sono lordi al mese,
-              con il totale annuo diviso 12.
+              con il totale annuo (tredicesima inclusa) diviso 12. Aggiungiamo le professioni man mano che verifichiamo le tabelle alla fonte.
             </p>
           </div>
         </section>
@@ -123,7 +123,9 @@ export default async function SalariesIndexPage() {
                     </td>
                     <td className="py-2.5 pl-3 text-right font-semibold">{formatEurRound(entry.monthlyEquivalent)}</td>
                     <td className="whitespace-nowrap py-2.5 pl-3 text-right text-muted">
-                      {formatEurRound(range.min)} – {formatEurRound(range.max)}
+                      {range.min === range.max
+                        ? formatEurRound(range.min)
+                        : `${formatEurRound(range.min)} – ${formatEurRound(range.max)}`}
                     </td>
                     <td className="py-2.5 pl-3 text-right text-muted">
                       {privateData ? `${formatEurRound(privateData.median)} (${privateData.count})` : "—"}

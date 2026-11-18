@@ -24,7 +24,7 @@ export function buildCareerSalaryMetadata(career: Career): Metadata {
   const entry = careerEntry(career);
   const title = `Stipendio ${career.label} nel ${SALARY_YEAR}: tabelle ufficiali`;
   const description = truncateMeta(
-    `Quanto guadagna un ${career.label} in Italia: a partire da ${formatEurRound(entry.monthlyEquivalent)} lordi al mese secondo le tabelle retributive pubbliche, con fonti e retribuzioni indicate negli annunci del settore privato.`,
+    `Quanto guadagna ${career.indefinite} in Italia: a partire da ${formatEurRound(entry.monthlyEquivalent)} lordi al mese secondo le tabelle retributive pubbliche, con fonti e retribuzioni indicate negli annunci del settore privato.`,
     160,
   );
   const url = `/stipendi/${career.slug}`;
@@ -76,17 +76,17 @@ export function SalaryCareerView({
   ];
   const faq = [
     {
-      q: `Quanto guadagna un ${career.label} nel settore pubblico?`,
-      a: `Secondo le tabelle ufficiali verificate, il lordo annuo equivale a un valore compreso tra ${formatEurRound(range.min)} e ${formatEurRound(range.max)} al mese (totale annuo diviso 12), esclusi indennità, anzianità e turni.`,
+      q: `Quanto guadagna ${career.indefinite} nel settore pubblico?`,
+      a: `Secondo le tabelle ufficiali verificate, il lordo annuo equivale a ${range.min === range.max ? formatEurRound(range.min) : `un valore compreso tra ${formatEurRound(range.min)} e ${formatEurRound(range.max)}`} al mese (totale annuo, tredicesima inclusa, diviso 12), esclusi indennità, anzianità e turni.`,
     },
     {
-      q: `Qual è la retribuzione minima verificata di un ${career.label}?`,
+      q: `Qual è la retribuzione minima verificata di ${career.indefinite}?`,
       a: `La tabella con l'importo più basso tra quelle verificate (${entry.row.service}, ${entry.row.year}) indica ${formatEurRound(entry.annual)} lordi l'anno, cioè ${formatEurRound(entry.monthlyEquivalent)} al mese. Non è un minimo valido per tutta Italia: possono esistere altri contratti non verificati.`,
     },
     ...(privateData
       ? [
           {
-            q: `E nel settore privato, quanto guadagna un ${career.label}?`,
+            q: `E nel settore privato, quanto guadagna ${career.indefinite}?`,
             a: `Negli ${privateData.count} annunci privati con retribuzione analizzati negli ultimi 6 mesi, il valore mediano è ${formatEurRound(privateData.median)} lordi al mese (la metà tra ${formatEurRound(privateData.p25)} e ${formatEurRound(privateData.p75)}). Gli importi annui sono divisi per 12.`,
           },
         ]
@@ -126,7 +126,9 @@ export function SalaryCareerView({
             <div className="content-card p-5">
               <p className="text-xs font-extrabold uppercase tracking-wider text-muted">Tabelle pubbliche</p>
               <p className="mt-2 text-2xl font-extrabold">
-                {formatEurRound(range.min)} – {formatEurRound(range.max)}
+                {range.min === range.max
+                  ? formatEurRound(range.min)
+                  : `${formatEurRound(range.min)} – ${formatEurRound(range.max)}`}
               </p>
               <p className="mt-1 text-sm text-muted">lordi/mese (annuo ÷ 12)</p>
             </div>

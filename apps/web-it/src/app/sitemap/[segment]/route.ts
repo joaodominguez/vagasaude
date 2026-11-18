@@ -153,7 +153,7 @@ ${paths
 }
 
 /** Tabelle stipendi: vuote finche' non ci sono dati con fonte citata (vedi lib/salary-tables.ts). */
-const SALARY_TABLES_UPDATED = new Date("2026-11-12T00:00:00Z");
+const SALARY_TABLES_UPDATED = new Date("2026-11-18T00:00:00Z");
 
 function buildSalariesSitemap() {
   if (!hasSalaryData()) {
