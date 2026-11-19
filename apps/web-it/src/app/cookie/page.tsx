@@ -9,7 +9,8 @@ import { SITE_NAME } from "@/lib/seo";
 const DESCRIPTION = `Cookie policy di ${SITE_NAME}: quali cookie e archiviazione locale usiamo, a cosa servono, quanto durano e come modificare il consenso.`;
 
 const GA_ENABLED = Boolean(process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID);
-const CLARITY_ENABLED = Boolean(process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID);
+// Microsoft Clarity rimosso da tutti i mercati (19/11/2026).
+const CLARITY_ENABLED = false;
 const ANALYTICS_ENABLED = GA_ENABLED || CLARITY_ENABLED;
 
 export const metadata: Metadata = {
