@@ -35,6 +35,17 @@ class MedicinaDentariaTest(unittest.TestCase):
         ):
             self.assertEqual(guess_profession(title), "Administrativo", title)
 
+    def test_mixed_assistant_reception_goes_to_dentaria(self):
+        for title in (
+            "Assistente de medicina dentária / Recepcionista",
+            "Assistente Dentária e Rececionista",
+            "Rececionista / Assistente Dentária",
+        ):
+            self.assertEqual(guess_profession(title), DENTARIA, title)
+
+    def test_training_stays_formacao(self):
+        self.assertEqual(guess_profession("Formação Assistente Dentária"), "Formação")
+
     def test_unrelated_titles_unchanged(self):
         self.assertEqual(guess_profession("Médico de Medicina Geral e Familiar"), "Medicina")
         self.assertEqual(guess_profession("Auxiliar de Ação Médica"), "Auxiliares")

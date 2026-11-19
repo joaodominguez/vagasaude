@@ -153,7 +153,7 @@ export function guessProfession(title: string, fallback = "Outros") {
   if (
     t.includes("dent") &&
     /rececion|recepcion|administrativ|gestor(a| a)? (de )?(clientes|pacientes)/.test(t) &&
-    !/dentista|assistente dent|auxiliar de medicina dent|higienista|protese/.test(t)
+    !/dentista|assistente (de )?(medicina )?dent|auxiliar de medicina dent|higienista|protese/.test(t)
   ) {
     return "Administrativo";
   }
@@ -1268,7 +1268,7 @@ async function reclassifyDentariaUnlocked({ apply }: { apply: boolean }): Promis
     if (job.profession === MEDICINA_DENTARIA) continue;
     if (guessProfession(job.title, "Outros") !== MEDICINA_DENTARIA) continue;
     // OralMED mantém receção/gestão/coordenação fora da dentária (ver scrapers/sources/oralmed.py).
-    if (job.source === "oralmed" && /gestao de unidade|coordenacao|rececao|rececion|gestao de pacientes/.test(normalize(job.title))) continue;
+    if (job.source === "oralmed" && !/assistente (de )?(medicina )?dent/.test(normalize(job.title)) && /gestao de unidade|coordenacao|rececao|rececion|gestao de pacientes/.test(normalize(job.title))) continue;
     const key = `${job.profession} → ${MEDICINA_DENTARIA}`;
     transitions[key] = (transitions[key] ?? 0) + 1;
     const visible = job.status === "published" || job.status === "pending_review";

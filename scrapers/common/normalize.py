@@ -278,11 +278,12 @@ def guess_profession(title: str, fallback: str | None = None) -> str:
     ):
         return "Formação"
     # Receção/administração/gestão de clientes numa clínica dentária continua Administrativo
-    # (só as funções clínicas vão para Medicina Dentária).
+    # (só as funções clínicas vão para Medicina Dentária). Títulos mistos ("Assistente de medicina
+    # dentária / Recepcionista") são Medicina Dentária.
     if (
         "dent" in t
         and re.search(r"rececion|recepcion|administrativ|gestor(?:a| a)? (?:de )?(?:clientes|pacientes)", t)
-        and not re.search(r"dentista|assistente dent|auxiliar de medicina dent|higienista|protese", t)
+        and not re.search(r"dentista|assistente (?:de )?(?:medicina )?dent|auxiliar de medicina dent|higienista|protese", t)
     ):
         return "Administrativo"
     rules = [
