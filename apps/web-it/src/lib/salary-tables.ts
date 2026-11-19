@@ -404,6 +404,7 @@ export function formatEur(value: number) {
     currency: "EUR",
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
+    useGrouping: "always",
   }).format(value);
 }
 
@@ -412,5 +413,6 @@ export function formatEurRound(value: number) {
     style: "currency",
     currency: "EUR",
     maximumFractionDigits: 0,
+    useGrouping: "always",
   }).format(value);
 }
