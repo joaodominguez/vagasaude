@@ -5,11 +5,14 @@ import { FormEvent, useState } from "react";
 import { districts, professions, sectors } from "@/lib/taxonomies";
 
 export function AlertForm({
+  band = false,
   compact = false,
   defaultDistrict = "",
   defaultProfession = "",
   defaultSector = "",
 }: {
+  /** Variante de la banda «Alertas» de la home (sobre fondo oscuro): selectores en fila + email + botón. */
+  band?: boolean;
   compact?: boolean;
   defaultDistrict?: string;
   defaultProfession?: string;
@@ -84,6 +87,59 @@ export function AlertForm({
           {message}
         </p>
       </div>
+    );
+  }
+
+  if (band) {
+    return (
+      <form onSubmit={submit} className="alert-band-form">
+        <div className="alert-band-row">
+          <label>
+            <span className="sr-only">Profesión</span>
+            <select name="profession" defaultValue={defaultProfession}>
+              <option value="">Todas las profesiones</option>
+              {professions.map((profession) => (
+                <option key={profession} value={profession}>
+                  {profession}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
+            <span className="sr-only">Comunidad</span>
+            <select name="district" defaultValue={defaultDistrict}>
+              <option value="">Toda España</option>
+              {districts.map((district) => (
+                <option key={district} value={district}>
+                  {district}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+        <input type="hidden" name="sector" value={defaultSector} />
+        <label>
+          <span className="sr-only">Tu email</span>
+          <input
+            required
+            type="email"
+            name="email"
+            placeholder="nombre@ejemplo.es"
+            autoComplete="email"
+            inputMode="email"
+          />
+        </label>
+        <button className="alert-band-submit" type="submit" disabled={status === "loading"}>
+          {status === "loading" && <LoaderCircle className="animate-spin" size={17} />}
+          Crear alerta gratis
+        </button>
+        {status === "error" && (
+          <p role="alert" className="alert-band-error">
+            No se ha podido crear la alerta. Inténtalo de nuevo.
+          </p>
+        )}
+        <small>Sin spam. Solo ofertas nuevas que encajen con tu elección.</small>
+      </form>
     );
   }
 

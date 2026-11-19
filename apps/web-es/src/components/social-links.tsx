@@ -1,6 +1,6 @@
 // Redes sociales de VacantesSalud (docs/REDES-SOCIAIS.md en wt-br). Solo aparecen las redes con enlace:
 // cuando haya una cuenta nueva, basta con poner aquí la URL.
-const SOCIAL = [
+export const SOCIAL = [
   { name: "Telegram", url: "https://t.me/vacantessalud" },
   { name: "WhatsApp", url: "https://whatsapp.com/channel/0029VbE2wId4SpkNer4zlP3s" },
   { name: "Instagram", url: "https://www.instagram.com/vacantessalud/" },
@@ -17,6 +17,18 @@ const PATHS: Record<(typeof SOCIAL)[number]["name"], string> = {
   Facebook:
     "M13.3 19v-6h2l.3-2.4h-2.3V9.1c0-.7.2-1.2 1.2-1.2h1.2V5.8c-.2 0-1-.1-1.8-.1-1.8 0-3 1.1-3 3.1v1.8H8.9V13h2v6h2.4z",
 };
+
+/** Icono lleno de una red (los mismos del pie de página). */
+export function SocialIcon({ name, className = "h-4 w-4" }: { name: (typeof SOCIAL)[number]["name"]; className?: string }) {
+  return (
+    <svg aria-hidden="true" viewBox="4 4 16 16" className={className} fill="currentColor">
+      <path d={PATHS[name]} fillRule="evenodd" />
+    </svg>
+  );
+}
+
+export const TELEGRAM_URL = SOCIAL[0].url;
+export const WHATSAPP_URL = SOCIAL[1].url;
 
 /** "Síguenos" con los iconos de las redes activas (pie de página y menú móvil). */
 export function SocialLinks({ className = "" }: { className?: string }) {

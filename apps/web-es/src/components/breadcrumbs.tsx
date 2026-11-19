@@ -4,12 +4,8 @@ import { absoluteUrl } from "@/lib/seo";
 
 export type BreadcrumbItem = { label: string; href?: string };
 
-/**
- * Breadcrumbs visibles + JSON-LD BreadcrumbList. El último elemento es la página
- * actual (sin enlace). Dan enlaces internos indexables a las landings de categoría.
- */
-export function Breadcrumbs({ items }: { items: BreadcrumbItem[] }) {
-  const jsonLd = {
+function breadcrumbJsonLd(items: BreadcrumbItem[]) {
+  return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: items.map((item, index) => ({
@@ -19,6 +15,24 @@ export function Breadcrumbs({ items }: { items: BreadcrumbItem[] }) {
       ...(item.href ? { item: absoluteUrl(item.href) } : {}),
     })),
   };
+}
+
+/** Solo JSON-LD BreadcrumbList (cuando el breadcrumb visible se sustituye por un enlace breve). */
+export function BreadcrumbJsonLd({ items }: { items: BreadcrumbItem[] }) {
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd(items)) }}
+    />
+  );
+}
+
+/**
+ * Breadcrumbs visibles + JSON-LD BreadcrumbList. El último elemento es la página
+ * actual (sin enlace). Dan enlaces internos indexables a las landings de categoría.
+ */
+export function Breadcrumbs({ items }: { items: BreadcrumbItem[] }) {
+  const jsonLd = breadcrumbJsonLd(items);
 
   return (
     <nav aria-label="Breadcrumb" className="mb-5 min-w-0 text-sm text-muted">
