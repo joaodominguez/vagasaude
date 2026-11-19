@@ -52,6 +52,15 @@ export function Footer() {
               Itália
             </a>
           </p>
+          <p className="flex basis-full flex-wrap gap-x-2 gap-y-1">
+            <span>Outros projetos:</span>
+            <span>
+              Vagas na educação:{" "}
+              <a className="hover:text-primary" href="https://vagaeducacao.com.br/">
+                VagaEducação
+              </a>
+            </span>
+          </p>
         </div>
       </div>
     </footer>
