@@ -38,8 +38,8 @@ fi
 # sem jobs.json bakeiam seed (3 vagas) no HTML — apagar para a 1ª request
 # no VPS regenerar a partir de /var/www/offertesanita/data.
 # O mesmo para outras páginas estáticas que dependem dos dados (hub de
-# concorsi e índice de stipendi): senão saem vazias/noindex até ao 1º revalidate.
-for page in index concorsi stipendi; do
+# concorsi, índice de stipendi, aziende e dati): senão saem vazias/noindex até ao 1º revalidate.
+for page in index concorsi stipendi aziende dati; do
   rm -f "$STAGE/.next/server/app/$page.html" \
     "$STAGE/.next/server/app/$page.rsc" \
     "$STAGE/.next/server/app/$page.meta"
@@ -47,4 +47,4 @@ for page in index concorsi stipendi; do
 done
 
 tar -C "$STAGE" -czf "$OUT" .
-echo "OK $OUT (css=$CSS_COUNT, data prerenders stripped: index concorsi stipendi)"
+echo "OK $OUT (css=$CSS_COUNT, data prerenders stripped: index concorsi stipendi aziende dati)"
