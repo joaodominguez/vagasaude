@@ -1943,6 +1943,32 @@ select:not([multiple]):not([size]) {
 }
 select:not([multiple]):not([size])::-ms-expand {
   display: none;
+
+/* Riferimento retributivo SSN (scheda offerta): non è la retribuzione dell'offerta. */
+:root {
+  --amber: #92400e;
+  --amber-soft: #fff7e6;
+  --amber-border: #f3d9a4;
+}
+.dark {
+  --amber: #fbbf24;
+  --amber-soft: #2a2110;
+  --amber-border: #5b4519;
+}
+.salary-reference {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.9rem 1rem;
+  border-radius: 1rem;
+  border: 1px solid var(--amber-border);
+  background: var(--amber-soft);
+}
+.salary-reference-kicker {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--amber);
 }
 /* No campo de pesquisa a margem já vem do .search-field (padding-inline): seta junto à borda interior. */
 .search-field select:not([multiple]):not([size]) {

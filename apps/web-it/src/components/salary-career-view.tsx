@@ -5,6 +5,7 @@ import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import type { getPrivateSalaryData } from "@/lib/salary-observatory";
 import {
+  careerBase,
   careerEntry,
   careerRange,
   formatEurRound,
@@ -68,6 +69,7 @@ export function SalaryCareerView({
 }) {
   const entry = careerEntry(career);
   const range = careerRange(career);
+  const base = careerBase(career);
   const hasAds = !!privateData && privateData.recent.length > 0;
   const sources = [
     ...new Map(
@@ -77,11 +79,11 @@ export function SalaryCareerView({
   const faq = [
     {
       q: `Quanto guadagna ${career.indefinite} nel settore pubblico?`,
-      a: `Secondo le tabelle ufficiali verificate, il lordo annuo equivale a ${range.min === range.max ? formatEurRound(range.min) : `un valore compreso tra ${formatEurRound(range.min)} e ${formatEurRound(range.max)}`} al mese (totale annuo, tredicesima inclusa, diviso 12), esclusi indennità, anzianità e turni.`,
+      a: `Secondo le tabelle ufficiali verificate (${career.ssn.contract}), il lordo annuo equivale a ${range.min === range.max ? formatEurRound(range.min) : `un valore compreso tra ${formatEurRound(range.min)} (solo stipendio tabellare) e ${formatEurRound(range.max)} (tabellare più componenti fisse a inizio carriera)`} al mese (totale annuo, tredicesima inclusa, diviso 12), esclusi ${career.excludes}.`,
     },
     {
-      q: `Qual è la retribuzione minima verificata di ${career.indefinite}?`,
-      a: `La tabella con l'importo più basso tra quelle verificate (${entry.row.service}, ${entry.row.year}) indica ${formatEurRound(entry.annual)} lordi l'anno, cioè ${formatEurRound(entry.monthlyEquivalent)} al mese. Non è un minimo valido per tutta Italia: possono esistere altri contratti non verificati.`,
+      q: `Da quale retribuzione parte ${career.indefinite} nel SSN?`,
+      a: `Il punto di partenza verificato (${entry.row.service}, ${entry.row.year}) è ${formatEurRound(entry.annual)} lordi l'anno, cioè ${formatEurRound(entry.monthlyEquivalent)} al mese. È un riferimento del contratto pubblico, non una media né la retribuzione di una specifica offerta: nel privato e nell'accreditato si applicano altri contratti.`,
     },
     ...(privateData
       ? [
@@ -110,7 +112,7 @@ export function SalaryCareerView({
               Stipendio {career.label} nel {SALARY_YEAR}
             </h1>
             <p className="mt-4 max-w-3xl text-sm leading-7 text-muted sm:text-base">
-              {career.intro} La tabella pubblica verificata più bassa equivale a{" "}
+              {career.intro} Il riferimento pubblico verificato di partenza equivale a{" "}
               <strong className="text-foreground">{formatEurRound(entry.monthlyEquivalent)} lordi</strong> al mese.
             </p>
           </div>
@@ -119,18 +121,20 @@ export function SalaryCareerView({
         <div className="page-container space-y-6 py-10">
           <div className="grid gap-4 sm:grid-cols-3">
             <div className="content-card p-5">
-              <p className="text-xs font-extrabold uppercase tracking-wider text-muted">Minimo verificato</p>
+              <p className="text-xs font-extrabold uppercase tracking-wider text-muted">Riferimento SSN di partenza</p>
               <p className="mt-2 text-2xl font-extrabold">{formatEurRound(entry.monthlyEquivalent)}</p>
               <p className="mt-1 text-sm text-muted">lordi/mese (annuo ÷ 12)</p>
             </div>
             <div className="content-card p-5">
-              <p className="text-xs font-extrabold uppercase tracking-wider text-muted">Tabelle pubbliche</p>
-              <p className="mt-2 text-2xl font-extrabold">
-                {range.min === range.max
-                  ? formatEurRound(range.min)
-                  : `${formatEurRound(range.min)} – ${formatEurRound(range.max)}`}
+              <p className="text-xs font-extrabold uppercase tracking-wider text-muted">
+                {base ? "Solo stipendio tabellare" : "Contratto"}
               </p>
-              <p className="mt-1 text-sm text-muted">lordi/mese (annuo ÷ 12)</p>
+              <p className="mt-2 text-2xl font-extrabold">
+                {base ? formatEurRound(base.annual / 12) : career.ssn.contract.replace("CCNL ", "")}
+              </p>
+              <p className="mt-1 text-sm text-muted">
+                {base ? "lordi/mese (annuo ÷ 12)" : "CCNL, tabella ufficiale ARAN"}
+              </p>
             </div>
             <div className="content-card p-5">
               <p className="text-xs font-extrabold uppercase tracking-wider text-muted">Negli annunci privati</p>
@@ -181,7 +185,7 @@ export function SalaryCareerView({
                 </thead>
                 <tbody>
                   {table.rows.map((row) => (
-                    <tr key={`${row.service}-${row.year}-${row.annual}`} className="border-t border-border align-top">
+                    <tr key={`${row.service}-${row.year}-${row.annual}`} className={`border-t border-border align-top ${row.kind === "total" ? "bg-primary-soft/40 font-bold" : ""}`}>
                       <RowCells row={row} />
                     </tr>
                   ))}
@@ -218,7 +222,7 @@ export function SalaryCareerView({
                 </a>
               </span>
             ))}
-            . Importi lordi, esclusi anzianità, indennità, turni e reperibilità.
+            . Importi lordi, esclusi {career.excludes}.
           </p>
         </div>
       </main>

@@ -7,7 +7,6 @@ import { getPrivateSalaryData, SALARY_MIN_SAMPLE } from "@/lib/salary-observator
 import {
   CAREERS,
   careerEntry,
-  careerRange,
   formatEurRound,
   hasSalaryData,
   SALARY_YEAR,
@@ -19,7 +18,7 @@ export const revalidate = 3600;
 
 const title = `Stipendi nella sanità nel ${SALARY_YEAR}: tabelle ufficiali e settore privato`;
 const description =
-  "Quanto si guadagna nella sanità in Italia: tabelle retributive ufficiali dei contratti collettivi, con fonte, e retribuzioni indicate negli annunci privati. Per ora: ostetrica.";
+  "Quanto si guadagna nella sanità in Italia: tabelle retributive ufficiali dei contratti collettivi, con fonte, e retribuzioni indicate negli annunci privati. Una pagina per professione.";
 
 // Senza dati verificati la pagina resta raggiungibile ma non indicizzata.
 export const metadata: Metadata = hasSalaryData()
@@ -78,7 +77,6 @@ export default async function SalariesIndexPage() {
     CAREERS.map(async (career) => ({
       career,
       entry: careerEntry(career),
-      range: careerRange(career),
       privateData: await getPrivateSalaryData(career),
     })),
   );
@@ -96,7 +94,7 @@ export default async function SalariesIndexPage() {
             <p className="mt-4 max-w-3xl text-sm leading-7 text-muted sm:text-base">
               Le tabelle retributive ufficiali dei contratti collettivi e le retribuzioni indicate
               negli annunci privati che raccogliamo ogni giorno. Gli importi sono lordi al mese,
-              con il totale annuo (tredicesima inclusa) diviso 12. Aggiungiamo le professioni man mano che verifichiamo le tabelle alla fonte.
+              con il totale annuo (tredicesima inclusa) diviso 12. Per le professioni della dirigenza il riferimento di partenza include le componenti fisse del contratto (esclusività, specificità, posizione minima), non solo lo stipendio tabellare.
             </p>
           </div>
         </section>
@@ -108,13 +106,13 @@ export default async function SalariesIndexPage() {
               <thead className="text-xs uppercase tracking-wider text-muted">
                 <tr>
                   <th className="pb-2 font-extrabold">Professione</th>
-                  <th className="pb-2 pl-3 text-right font-extrabold">Minimo verificato</th>
-                  <th className="whitespace-nowrap pb-2 pl-3 text-right font-extrabold">Tabelle pubbliche</th>
+                  <th className="pb-2 pl-3 text-right font-extrabold">Partenza SSN</th>
+                  <th className="pb-2 pl-3 font-extrabold">Contratto</th>
                   <th className="pb-2 pl-3 text-right font-extrabold">Privato (mediana)</th>
                 </tr>
               </thead>
               <tbody>
-                {rows.map(({ career, entry, range, privateData }) => (
+                {rows.map(({ career, entry, privateData }) => (
                   <tr key={career.slug} className="border-t border-border">
                     <td className="py-2.5 pr-3">
                       <Link href={`/stipendi/${career.slug}`} className="font-semibold text-primary hover:underline">
@@ -122,11 +120,7 @@ export default async function SalariesIndexPage() {
                       </Link>
                     </td>
                     <td className="py-2.5 pl-3 text-right font-semibold">{formatEurRound(entry.monthlyEquivalent)}</td>
-                    <td className="whitespace-nowrap py-2.5 pl-3 text-right text-muted">
-                      {range.min === range.max
-                        ? formatEurRound(range.min)
-                        : `${formatEurRound(range.min)} – ${formatEurRound(range.max)}`}
-                    </td>
+                    <td className="py-2.5 pl-3 text-xs text-muted">{career.ssn.contract}</td>
                     <td className="py-2.5 pl-3 text-right text-muted">
                       {privateData ? `${formatEurRound(privateData.median)} (${privateData.count})` : "—"}
                     </td>
@@ -137,7 +131,7 @@ export default async function SalariesIndexPage() {
           </section>
 
           <p className="text-sm leading-6 text-muted">
-            Metodologia: mostriamo solo le tabelle ufficiali che abbiamo potuto verificare alla
+            Metodologia: mostriamo solo le tabelle ufficiali (ARAN e Gazzetta Ufficiale) che abbiamo potuto verificare alla
             fonte primaria, con anno e link, e omettiamo i contratti senza tabella verificata. Le
             retribuzioni private sono importi mensili lordi indicati negli ultimi 6 mesi (quelli
             annui sono divisi per 12), con almeno {SALARY_MIN_SAMPLE} annunci per professione; non
