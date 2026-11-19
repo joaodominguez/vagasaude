@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useId, useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Bell, Menu, X } from "lucide-react";
 import { FavoritesBadge } from "./favorites-badge";
 import { Logo } from "./logo";
 import { SocialLinks } from "./social-links";
@@ -19,6 +19,7 @@ const NAV_ITEMS = [
 ] as const;
 
 const NEWS_HREF = "/notizie";
+const ALERT_HREF = "/avvisi";
 
 export function HeaderClient({ showNews }: { showNews: boolean }) {
   const [open, setOpen] = useState(false);
@@ -52,14 +53,20 @@ export function HeaderClient({ showNews }: { showNews: boolean }) {
           aria-label="Navigazione principale"
           className="hidden items-center gap-8 text-sm font-semibold md:flex"
         >
-          {navItems.map((item) => (
-            <Link key={item.href} className="nav-link" href={item.href} prefetch={false}>
-              {item.label}
-            </Link>
-          ))}
+          {navItems
+            .filter((item) => item.href !== ALERT_HREF)
+            .map((item) => (
+              <Link key={item.href} className="nav-link" href={item.href} prefetch={false}>
+                {item.label}
+              </Link>
+            ))}
         </nav>
 
         <div className="flex items-center gap-2">
+          <Link href={ALERT_HREF} prefetch={false} className="header-cta hidden md:inline-flex">
+            <Bell size={16} aria-hidden="true" />
+            Crea avviso
+          </Link>
           <FavoritesBadge />
           <ThemeToggle />
           <button

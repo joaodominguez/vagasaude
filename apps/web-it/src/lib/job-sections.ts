@@ -15,8 +15,49 @@ function isOfferHeading(text: string): boolean {
   return folded.length <= 60 && OFFER_HEADING_RE.test(folded);
 }
 
+/**
+ * Righe di boilerplate legale delle agenzie per il lavoro, rimosse solo quando la riga
+ * è esattamente questo («Aut. Min. 16/12/2004», «Protocollo 1210-SG», «Adecco Italia S.p.A.
+ * Aut. Prot. N. …», frase sugli «ambo i sessi», rimando all'informativa privacy).
+ */
+const BOILERPLATE_RES: RegExp[] = [
+  /^aut\.?\s*(?:min(?:isteriale)?\.?|prot(?:ocollo)?\.?)\s*(?:n\.?\s*)?[\w\/.\-– ]{0,40}$/i,
+  /^prot(?:ocollo|\.)\s*(?:n\.?\s*)?[\w\/.\-– ]{0,25}$/i,
+  /^[\p{L} .&']{3,50}\s*[-–—,]?\s*aut\.?\s*(?:min\.?|prot\.?)[^\n]{0,60}$/iu,
+  /^(?:la presente (?:ricerca|selezione|offerta)|l['’]annuncio|l['’]offerta) [^\n]{0,80}ambo i sessi[^\n]{0,80}$/i,
+  /^(?:i candidati|le candidature)[^\n]{0,60}(?:ambosessi|ambo i sessi)[^\n]{0,80}$/i,
+  /^(?:il|la) candidat[oa] [^\n]{0,40}informativa (?:sulla )?privacy[^\n]{0,120}$/i,
+];
+
+function isBoilerplate(text: string): boolean {
+  const line = text.replace(/\s+/g, " ").trim();
+  return line.length <= 160 && BOILERPLATE_RES.some((re) => re.test(line));
+}
+
+function blockKey(block: JobTextBlock): string {
+  const text = block.type === "list" ? block.items.join("|") : block.text;
+  return `${block.type === "list" ? "l" : "t"}:${foldText(text).replace(/[^a-z0-9|]+/g, " ").trim()}`;
+}
+
+/**
+ * Pulisce i blocchi: toglie il boilerplate delle agenzie e i blocchi ripetuti
+ * (alcune fonti duplicano il testo); resta la prima occorrenza.
+ */
+export function cleanBlocks(blocks: JobTextBlock[]): JobTextBlock[] {
+  const seen = new Set<string>();
+  const out: JobTextBlock[] = [];
+  for (const block of blocks) {
+    if (block.type !== "list" && isBoilerplate(block.text)) continue;
+    const key = blockKey(block);
+    if (key.length > 4 && seen.has(key)) continue;
+    seen.add(key);
+    out.push(block);
+  }
+  return out;
+}
+
 export function splitOffering(raw: string): { blocks: JobTextBlock[]; offering: string[] } {
-  const blocks = formatJobDescriptionText(raw);
+  const blocks = cleanBlocks(formatJobDescriptionText(raw));
   for (let i = 0; i < blocks.length - 1; i++) {
     const block = blocks[i];
     const text = block.type === "heading" || block.type === "paragraph" ? block.text : null;

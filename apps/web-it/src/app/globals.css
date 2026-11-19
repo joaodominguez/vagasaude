@@ -1907,3 +1907,24 @@ select {
   letter-spacing: -0.02em;
   color: var(--foreground);
 }
+
+.header-cta {
+  min-height: 2.5rem;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 0.65rem;
+  padding-inline: 0.9rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #fff;
+  background: var(--primary);
+  transition: background 160ms ease;
+}
+
+.header-cta:hover {
+  background: var(--primary-hover);
+}
+
+.dark .header-cta {
+  color: #07111a;
+}
