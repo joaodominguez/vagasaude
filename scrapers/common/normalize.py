@@ -277,6 +277,14 @@ def guess_profession(title: str, fallback: str | None = None) -> str:
         and "formacao especifica" not in t
     ):
         return "Formação"
+    # Receção/administração/gestão de clientes numa clínica dentária continua Administrativo
+    # (só as funções clínicas vão para Medicina Dentária).
+    if (
+        "dent" in t
+        and re.search(r"rececion|recepcion|administrativ|gestor(?:a| a)? (?:de )?(?:clientes|pacientes)", t)
+        and not re.search(r"dentista|assistente dent|auxiliar de medicina dent|higienista|protese", t)
+    ):
+        return "Administrativo"
     rules = [
         # Formação antes de Enfermagem (ex.: "Formador de Enfermagem").
         (
@@ -324,6 +332,27 @@ def guess_profession(title: str, fallback: str | None = None) -> str:
             ),
             "Comercial / Farma",
         ),
+        # Medicina Dentária: médicos dentistas, assistentes/auxiliares, higienistas orais e
+        # protésicos dentários, todos juntos. Antes de Farmácia/Auxiliares/Medicina.
+        (
+            (
+                "dentari",
+                "dentista",
+                "odontolog",
+                "odontopediatr",
+                "ortodont",
+                "endodont",
+                "periodont",
+                "higienista oral",
+                "higiene oral",
+                "protese dent",
+                "protesico dent",
+                "protesista dent",
+                "tecnico de protese",
+                "tecnica de protese",
+            ),
+            "Medicina Dentária",
+        ),
         (
             (
                 "farmaceut",
@@ -357,20 +386,13 @@ def guess_profession(title: str, fallback: str | None = None) -> str:
             "Auxiliares",
         ),
         (("enfermeir", "enfermagem", "nurse", "nursing"), "Enfermagem"),
-        # Antes de Medicina — "assistente de medicina dentária" não é médico.
-        (
-            ("assistente dent", "assistente de medicina dent"),
-            "Administrativo",
-        ),
         (
             (
                 "medico",
                 "medica ",
                 "medicas",
                 "medicina geral",
-                "medicina dentar",
                 "medicina interna",
-                "dentista",
                 "cirurgi",
                 "internato",
                 "physician",

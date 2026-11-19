@@ -32,9 +32,9 @@ _NOT_CLINICAL = re.compile(
 )
 # Títulos da OralMED → categorias do site (o guess genérico deixava 2/3 em "Outros").
 _PROFESSIONS = [
-    (re.compile(r"m[eé]dic[oa] dentista|dentista|ortodont", re.I), "Medicina"),
-    (re.compile(r"higienista|pr[oó]tese dent", re.I), "Técnico de Saúde"),
-    (re.compile(r"assist[eê]ncia dent|assistente dent", re.I), "Auxiliares"),
+    (re.compile(r"m[eé]dic[oa] dentista|dentista|ortodont", re.I), "Medicina Dentária"),
+    (re.compile(r"higienista|pr[oó]tese dent", re.I), "Medicina Dentária"),
+    (re.compile(r"assist[eê]ncia dent|assistente dent", re.I), "Medicina Dentária"),
     (re.compile(r"gest[aã]o de unidade|coordena[cç][aã]o", re.I), "Gestão & suporte"),
     (re.compile(r"rece[cç][aã]o|rececion|gest[aã]o de pacientes", re.I), "Administrativo"),
 ]

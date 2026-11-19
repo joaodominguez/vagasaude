@@ -66,6 +66,7 @@ RSS_QUERIES = [
 ALLOWED_PROFESSIONS = {
     "Enfermagem",
     "Medicina",
+    "Medicina Dentária",
     "Farmácia",
     "Fisioterapia",
     "Técnico de Saúde",

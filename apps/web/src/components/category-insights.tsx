@@ -148,7 +148,10 @@ export function CategoryInsights({
       : [];
 
   const salary =
-    category.profession && category.profession !== "Outros"
+    category.profession &&
+    category.profession !== "Outros" &&
+    // Mistura médicos dentistas e assistentes: uma faixa única enganaria.
+    category.profession !== "Medicina Dentária"
       ? getSalaryBenchmark(category.profession)
       : null;
   const topEmployers = employers

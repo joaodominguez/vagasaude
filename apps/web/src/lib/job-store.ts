@@ -1,7 +1,10 @@
 import { createHash } from "node:crypto";
+import { copyFile } from "node:fs/promises";
+import path from "node:path";
 import {
   createJobRepository,
   type JobRepository,
+  dataDir,
   type JobsFile as StoredJobsFile,
 } from "@/lib/job-repository";
 import { normalizeInlineLists } from "@/lib/format-job-text";
@@ -145,6 +148,15 @@ export function guessProfession(title: string, fallback = "Outros") {
   ) {
     return "Formação";
   }
+  // Receção/administração/gestão de clientes numa clínica dentária continua Administrativo
+  // (só as funções clínicas vão para Medicina Dentária). Espelha scrapers/common/normalize.py.
+  if (
+    t.includes("dent") &&
+    /rececion|recepcion|administrativ|gestor(a| a)? (de )?(clientes|pacientes)/.test(t) &&
+    !/dentista|assistente dent|auxiliar de medicina dent|higienista|protese/.test(t)
+  ) {
+    return "Administrativo";
+  }
   const rules: Array<[string[], string]> = [
     // Formação antes de Enfermagem (ex.: "Formador de Enfermagem").
     [
@@ -192,6 +204,27 @@ export function guessProfession(title: string, fallback = "Outros") {
       ],
       "Comercial / Farma",
     ],
+    // Medicina Dentária: médicos dentistas, assistentes/auxiliares, higienistas orais e
+    // protésicos dentários, todos juntos. Antes de Farmácia/Auxiliares/Medicina.
+    [
+      [
+        "dentari",
+        "dentista",
+        "odontolog",
+        "odontopediatr",
+        "ortodont",
+        "endodont",
+        "periodont",
+        "higienista oral",
+        "higiene oral",
+        "protese dent",
+        "protesico dent",
+        "protesista dent",
+        "tecnico de protese",
+        "tecnica de protese",
+      ],
+      "Medicina Dentária",
+    ],
     [
       [
         "farmaceut",
@@ -225,17 +258,13 @@ export function guessProfession(title: string, fallback = "Outros") {
       "Auxiliares",
     ],
     [["enfermeir", "enfermagem", "nurse", "nursing"], "Enfermagem"],
-    // Antes de Medicina — "assistente de medicina dentária" não é médico.
-    [["assistente dent", "assistente de medicina dent"], "Administrativo"],
     [
       [
         "medico",
         "medica ",
         "medicas",
         "medicina geral",
-        "medicina dentar",
         "medicina interna",
-        "dentista",
         "cirurgi",
         "internato",
         "physician",
@@ -1207,6 +1236,62 @@ async function reclassifyOutrosProfessionsUnlocked() {
     await writeJobsFile(file);
   }
   return { changed, total: file.jobs.length };
+}
+
+export const MEDICINA_DENTARIA = "Medicina Dentária";
+
+export type DentariaReclassifyResult = {
+  dryRun: boolean;
+  changed: number;
+  total: number;
+  /** "Medicina → Medicina Dentária" → nº de vagas (todos os estados). */
+  transitions: Record<string, number>;
+  /** Só as vagas publicadas / em revisão (as visíveis no site). */
+  transitionsPublished: Record<string, number>;
+  backup: string | null;
+};
+
+/** Reclassifica para "Medicina Dentária" as vagas (qualquer estado) cujo título cai nessa regra.
+ * Só mexe em `profession` (nunca em slug/título/estado); com `apply` grava pelo repositório
+ * (jobs.db e jobs.json espelhados) depois de copiar o jobs.json. Idempotente. */
+export function reclassifyDentaria(...args: Parameters<typeof reclassifyDentariaUnlocked>) {
+  return withJobsFileLock(() => reclassifyDentariaUnlocked(...args));
+}
+
+async function reclassifyDentariaUnlocked({ apply }: { apply: boolean }): Promise<DentariaReclassifyResult> {
+  const file = await readJobsFile();
+  const now = new Date().toISOString();
+  const transitions: Record<string, number> = {};
+  const transitionsPublished: Record<string, number> = {};
+  let changed = 0;
+  for (const job of file.jobs) {
+    if (job.profession === MEDICINA_DENTARIA) continue;
+    if (guessProfession(job.title, "Outros") !== MEDICINA_DENTARIA) continue;
+    // OralMED mantém receção/gestão/coordenação fora da dentária (ver scrapers/sources/oralmed.py).
+    if (job.source === "oralmed" && /gestao de unidade|coordenacao|rececao|rececion|gestao de pacientes/.test(normalize(job.title))) continue;
+    const key = `${job.profession} → ${MEDICINA_DENTARIA}`;
+    transitions[key] = (transitions[key] ?? 0) + 1;
+    const visible = job.status === "published" || job.status === "pending_review";
+    if (visible) transitionsPublished[key] = (transitionsPublished[key] ?? 0) + 1;
+    changed += 1;
+    if (!apply) continue;
+    job.profession = MEDICINA_DENTARIA;
+    if (visible) job.updatedAt = now;
+  }
+  let backup: string | null = null;
+  if (apply && changed > 0) {
+    const stamp = now.replace(/[-:T]/g, "").slice(0, 14);
+    const jsonPath = path.join(dataDir(), "jobs.json");
+    backup = `${jsonPath}.bak-pre-dentaria-${stamp}`;
+    try {
+      await copyFile(jsonPath, backup);
+    } catch {
+      backup = null; // modo sqlite puro: sem jobs.json
+    }
+    file.updatedAt = now;
+    await writeJobsFile(file);
+  }
+  return { dryRun: !apply, changed, total: file.jobs.length, transitions, transitionsPublished, backup };
 }
 
 /** Encurta títulos burocráticos (concursos públicos) para a função. */

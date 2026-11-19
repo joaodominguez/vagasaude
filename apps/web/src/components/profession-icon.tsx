@@ -12,6 +12,7 @@ import {
   PawPrint,
   PersonStanding,
   Pill,
+  Smile,
   Stethoscope,
   Store,
   type LucideIcon,
@@ -20,6 +21,7 @@ import {
 const ICONS: Record<string, LucideIcon> = {
   Enfermagem: HeartPulse,
   Medicina: Stethoscope,
+  "Medicina Dentária": Smile,
   Fisioterapia: PersonStanding,
   Auxiliares: HandHeart,
   "Técnico de Saúde": FlaskConical,

@@ -98,7 +98,12 @@ const TITLE_RULES: BenchmarkRule[] = [
   },
   // Auxiliares / admin (antes de "medicina dentária" médica)
   {
-    needles: ["assistente de medicina dent", "assistente dent"],
+    needles: [
+      "assistente de medicina dent",
+      "assistente dent",
+      "auxiliar de medicina dent",
+      "auxiliar dent",
+    ],
     label: "Assistente de medicina dentária",
     average: 1100,
     low: 950,
@@ -125,9 +130,17 @@ const TITLE_RULES: BenchmarkRule[] = [
     low: 950,
     high: 1350,
   },
+  // O blob inclui a categoria ("Medicina Dentária"), por isso só "dentista" identifica o médico.
+  {
+    needles: ["higienista oral", "higiene oral"],
+    label: "Higienista oral",
+    average: 1550,
+    low: 1400,
+    high: 1900,
+  },
   // Medicina
   {
-    needles: ["dentista", "medicina dentar", "medico dentista"],
+    needles: ["dentista"],
     label: "Médico dentista",
     average: 3500,
     low: 2200,

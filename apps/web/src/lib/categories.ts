@@ -372,6 +372,7 @@ export function buildCategoryIntro(
 const PROFESSION_SEARCH_PHRASE: Record<string, string> = {
   Enfermagem: "Emprego em Enfermagem",
   Medicina: "Emprego em Medicina",
+  "Medicina Dentária": "Emprego em Medicina Dentária",
   Fisioterapia: "Emprego em Fisioterapia",
   Auxiliares: "Emprego para Auxiliar de Saúde",
   "Técnico de Saúde": "Emprego para Técnico de Saúde",

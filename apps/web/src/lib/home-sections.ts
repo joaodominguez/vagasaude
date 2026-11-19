@@ -32,7 +32,7 @@ const AREAS: Array<Omit<HomeArea, "count" | "href">> = [
     label: "Medicina e medicina dentária",
     description: "Médicos de família, especialistas e médicos dentistas.",
     iconProfession: "Medicina",
-    professions: ["Medicina"],
+    professions: ["Medicina", "Medicina Dentária"],
   },
   {
     key: "tecnicos",

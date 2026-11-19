@@ -7,6 +7,7 @@ import { districts as mainlandDistricts } from "@/lib/portugal-map";
 export const professions = [
   "Enfermagem",
   "Medicina",
+  "Medicina Dentária",
   "Fisioterapia",
   "Auxiliares",
   "Técnico de Saúde",
