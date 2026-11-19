@@ -7,6 +7,11 @@ import {
   isKnownProfession,
 } from "@/lib/categories";
 import type { JobCardData } from "@/lib/job-store";
+import { compactBandoTitle, displayTitle } from "@/lib/display-title";
+import { announcedSalaryLabel, contractBesideType, deadlineLabel, relativePublished } from "@/lib/job-display";
+import { extractSchedule, shiftChipLabel, specialtyFromTitle } from "@/lib/job-facts";
+import { isConcursoJob } from "@/lib/concursos";
+import { classifyJob, isPublicJob, JOB_TYPE_LABEL } from "@/lib/job-type";
 
 export type SendEmailInput = {
   to: string | string[];
@@ -278,12 +283,6 @@ function textFooter(alert: StoredAlert) {
 // ---------------------------------------------------------------------------
 // Cartão de vaga
 
-function jobMeta(job: JobCardData) {
-  return [job.contract, job.sector].filter(
-    (value) => value && !/^a definir$/i.test(value),
-  );
-}
-
 /** "Campinas, São Paulo"; sem repetir o estado nem o país ("São Paulo, Brasil"). */
 function jobPlace(job: JobCardData) {
   const city = (job.city || "").replace(/,\s*(Brasil|Brazil)$/i, "").trim();
@@ -291,27 +290,59 @@ function jobPlace(job: JobCardData) {
   return city.includes(job.district) ? city : `${city}, ${job.district}`;
 }
 
-function chip(value: string, highlight = false) {
-  return highlight
-    ? `<span style="display:inline-block;margin:0 6px 6px 0;padding:3px 9px;background:${C.primarySoft};border-radius:999px;font-size:12px;font-weight:700;color:${C.primary};">${escapeHtml(value)}</span>`
-    : `<span style="display:inline-block;margin:0 6px 6px 0;padding:3px 9px;border:1px solid ${C.border};border-radius:999px;font-size:12px;color:${C.muted};">${escapeHtml(value)}</span>`;
+const SALARY_GREEN = { bg: "#ecfdf5", fg: "#047857", border: "#a7f3d0" };
+
+type ChipTone = "primary" | "salary" | "plain";
+
+function chipHtml(value: string, tone: ChipTone = "plain") {
+  const base = "display:inline-block;margin:0 6px 6px 0;padding:3px 9px;border-radius:999px;font-size:12px;line-height:1.4;";
+  if (tone === "primary") {
+    return `<span style="${base}background:${C.primarySoft};font-weight:700;color:${C.primary};">${escapeHtml(value)}</span>`;
+  }
+  if (tone === "salary") {
+    return `<span style="${base}background:${SALARY_GREEN.bg};border:1px solid ${SALARY_GREEN.border};font-weight:700;color:${SALARY_GREEN.fg};">${escapeHtml(value)}</span>`;
+  }
+  return `<span style="${base}border:1px solid ${C.border};color:${C.muted};">${escapeHtml(value)}</span>`;
+}
+
+/** Dados de apresentação do cartão: os mesmos do JobCard do site (título limpo, «Entidade · Cidade · quando», etiquetas). */
+function jobView(job: JobCardData) {
+  const type = classifyJob(job);
+  const isBando = type !== "oferta";
+  const cleaned = displayTitle(job.title, job);
+  const compact = isBando ? compactBandoTitle(cleaned) : { title: cleaned, posts: null };
+  const contract = contractBesideType(job);
+  const salary = isConcursoJob(job) ? null : announcedSalaryLabel(job.salary);
+  const published = relativePublished(job.publishedAt);
+  const deadline = deadlineLabel(job.expiresAt);
+  const shift = (isBando ? null : shiftChipLabel(extractSchedule(`${job.title}\n${job.description}`, job.contract)));
+  const specialty = specialtyFromTitle(job.title);
+  const meta = [job.company, jobPlace(job), published].filter(Boolean) as string[];
+  const chips: Array<[string, ChipTone]> = [];
+  if (shift) chips.push([shift, "primary"]);
+  else if (specialty) chips.push([specialty, "primary"]);
+  chips.push([isPublicJob(job) ? "Público" : job.sector === "Filantrópico" ? "Filantrópico" : "Privado", "plain"]);
+  if (isBando) chips.push([JOB_TYPE_LABEL[type], "plain"]);
+  if (compact.posts) chips.push([compact.posts === 1 ? "1 vaga" : `${compact.posts} vagas`, "plain"]);
+  if (contract) chips.push([contract, "plain"]);
+  if (deadline) chips.push([deadline, "plain"]);
+  if (salary) chips.push([salary, "salary"]);
+  return { title: compact.title, meta, chips, salary };
 }
 
 function jobCard(job: JobCardData, campaign: Campaign) {
   const href = trackedUrl(`/vagas/${job.slug}`, campaign);
-  const chips = [
-    ...(job.salary ? [chip(job.salary, true)] : []),
-    ...jobMeta(job).map((value) => chip(value)),
-  ].join("");
+  const view = jobView(job);
+  const chips = view.chips.map(([value, tone]) => chipHtml(value, tone)).join("");
   return `<tr><td style="padding:0 0 12px;">
   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border:1px solid ${C.border};border-radius:12px;">
-    <tr><td style="padding:16px 16px 10px;font-family:${FONT};">
-      <a href="${href}" style="font-size:16px;line-height:1.35;font-weight:700;color:${C.text};text-decoration:none;">${escapeHtml(job.title)}</a>
-      <div style="margin:4px 0 10px;font-size:14px;line-height:1.5;color:${C.muted};">
-        <strong style="color:${C.text};font-weight:600;">${escapeHtml(job.company)}</strong> · ${escapeHtml(jobPlace(job))}${job.publishedLabel ? ` · ${escapeHtml(job.publishedLabel)}` : ""}
-      </div>
-      ${chips ? `<div>${chips}</div>` : ""}
-      <a href="${href}" style="display:inline-block;margin:4px 0 6px;font-size:14px;font-weight:700;color:${C.primary};text-decoration:none;">Ver vaga e se candidatar →</a>
+    <tr><td style="padding:16px 16px 12px;font-family:${FONT};">
+      <a href="${href}" style="font-size:16px;line-height:1.35;font-weight:700;color:${C.text};text-decoration:none;">${escapeHtml(view.title)}</a>
+      <div style="margin:4px 0 10px;font-size:14px;line-height:1.5;color:${C.muted};">${escapeHtml(view.meta.join(" · "))}</div>
+      ${chips ? `<div style="margin:0 0 6px;">${chips}</div>` : ""}
+      <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:6px 0 0;"><tr><td bgcolor="${C.primary}" style="border-radius:8px;">
+        <a href="${href}" style="display:inline-block;padding:9px 18px;font-family:${FONT};font-size:14px;font-weight:700;color:#ffffff;text-decoration:none;border-radius:8px;">Ver vaga</a>
+      </td></tr></table>
     </td></tr>
   </table>
 </td></tr>`;
@@ -324,10 +355,9 @@ ${jobs.map((job) => jobCard(job, campaign)).join("\n")}
 }
 
 function jobText(job: JobCardData, campaign: Campaign) {
-  const meta = [job.company, jobPlace(job), job.salary, ...jobMeta(job)]
-    .filter(Boolean)
-    .join(" · ");
-  return `• ${job.title}\n  ${meta}\n  ${trackedUrl(`/vagas/${job.slug}`, campaign)}`;
+  const view = jobView(job);
+  const meta = [...view.meta, ...view.chips.map(([value]) => value)].join(" · ");
+  return `• ${view.title}\n  ${meta}\n  ${trackedUrl(`/vagas/${job.slug}`, campaign)}`;
 }
 
 // ---------------------------------------------------------------------------

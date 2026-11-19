@@ -273,15 +273,33 @@ def smart_case(text: str) -> str:
     return " ".join(words)
 
 
-def clean_title(title: str, company: str) -> str:
+GENDER_RE = re.compile(r"\s*\(?\b(?:m\s*/\s*f|f\s*/\s*m|h\s*/\s*m|m\s*/\s*h)\b\.?\)?", re.I)   # «(m/f)»: o «/a» já cobre o género
+LEAD_CODE_RE = re.compile(r"^\d{4,}\s*[-–—:]\s*")                                                   # «2298255 – Técnico…»
+LEAD_VERB_RE = re.compile(r"^(?:recrutamos|recruta|precisamos de|procuramos|contratamos|buscamos|"
+                          r"seleccionamos|selecionamos|cerchiamo|ricerchiamo|selezioniamo)\s+(?:um[a]?\s+|un[a]?\s+)?", re.I)
+
+
+def clean_title(title: str, company: str, city: str = "", district: str = "") -> str:
     t = re.sub(r"^\(\w{1,4}\)\s*", "", title or "").strip()       # "(DC) Farmacêutico…"
+    t = GENDER_RE.sub("", t)
+    t = LEAD_CODE_RE.sub("", t)
+    t = LEAD_VERB_RE.sub("", t).strip()
     t = t.split("|")[0].strip()                                     # "… | Blumenau/SC"
     t = smart_case(t)
+    t = re.sub(r"\b[A-ZÀ-Ý]{5,}\b", lambda m: m.group(0).capitalize(), t)   # «ENFERMEIRO» a meio de um título normal
     parts = re.split(r"\s+[-–]\s+", t)
     comp = strip_accents(company or "")
-    parts = [p for k, p in enumerate(parts) if k == 0 or strip_accents(p)[:12] not in comp]  # tira "- Empresa"
-    t = " – ".join(parts)
-    return t if len(t) <= 70 else t[:67].rstrip() + "…"
+    where = {strip_accents(x) for x in (city, district) if x}
+    parts = [p for k, p in enumerate(parts)
+             if k == 0 or (strip_accents(p)[:12] not in comp                                                  # tira "- Empresa"
+                           and strip_accents(re.sub(r"\s*[/(]\s*[A-Za-z]{2}\)?$", "", p)).strip() not in where)]  # e "- Cidade"
+    t = " – ".join(parts).strip()
+    t = t[:1].upper() + t[1:]
+    if len(t) <= 70:
+        return t
+    cut = t[:68]
+    cut = cut.rsplit(" ", 1)[0] if " " in cut[40:] or cut[68:69] != " " and " " in cut[30:] else cut
+    return re.sub(r"[\s\-–—:,;(]+$", "", cut) + "…"
 
 
 def clean_company(company: str) -> str:
@@ -378,21 +396,150 @@ def slide_cover(badge: str, states: str, total: int) -> Image.Image:
     return img
 
 
-def slide_job(i: int, total: int, job: dict) -> Image.Image:
-    img = Image.new("RGBA", (1080, 1350), "#ffffff")
+# Cartão de vaga (como o JobCard do site): fundo claro, ícone, título, «Empresa · Local» e etiquetas.
+BG, LINE, INK, PRIMARY = "#f8fafc", "#e2e8f0", "#0f172a", "#0f766e"
+SLATE, SURFACE2, OK, OK_SOFT = "#475569", "#f1f5f9", "#11744a", "#e7f6ee"
+CHIP_STYLE = {"primary": (PILL_BG, PRIMARY), "plain": (SURFACE2, SLATE), "salary": (OK_SOFT, OK)}
+SECTOR_LABELS = {
+    "pt": {"publico": "Público", "privado": "Privado", "ipss": "Social (IPSS)"},
+    "br": {"publico": "Público", "privado": "Privado", "ipss": "Filantrópico"},
+    "es": {"publico": "Público", "privado": "Privado", "concertado": "Concertado"},
+    "it": {"pubblico": "Pubblico", "privato": "Privato", "accreditato": "Accreditato"},
+}
+NO_VALUE = re.compile(r"a definir|a combinar|n[aã]o (informad|indicad)|no indicad|sin especificar|"
+                      r"non (indicat|specificat)|da definire|convenio|convenzione|n/?d\b|^\W*$|^contrat[oa]?$|^contract$", re.I)
+
+
+def real_salary(value) -> str:
+    """Salário só se tiver valor numérico (sem «A combinar», «Según convenio»…)."""
+    v = re.sub(r"\s+", " ", str(value or "")).strip()
+    return v if v and re.search(r"\d", v) and not NO_VALUE.search(v) else ""
+
+
+def job_chips(j: dict) -> list[tuple[str, str]]:
+    """[(tipo, texto)]: área profissional, contrato (ou, sem contrato, o setor) e salário real (a verde)."""
+    market = next(k for k, v in MARKETS.items() if v is M)
+    chips = []
+    area = (j.get("profession") or "").strip()
+    if area:
+        chips.append(("primary", area))
+    contract = re.sub(r"\s+", " ", str(j.get("contractType") or "")).strip()
+    if contract and len(contract) <= 30 and not NO_VALUE.search(contract):
+        chips.append(("plain", contract))
+    else:
+        sector = SECTOR_LABELS[market].get((j.get("sector") or "").strip().lower())
+        if sector:
+            chips.append(("plain", sector))
+    sal = real_salary(j.get("salary"))
+    if sal:
+        chips.append(("salary", sal if len(sal) <= 34 else sal[:33].rstrip() + "…"))
+    return chips
+
+
+def fit_text(draw, text: str, fnt, width: int) -> str:
+    if draw.textlength(text, font=fnt) <= width:
+        return text
+    while text and draw.textlength(text + "…", font=fnt) > width:
+        text = text[:-1]
+    if " " in text.strip():                                  # corta em palavra inteira, nunca a meio
+        text = text.rsplit(" ", 1)[0]
+    return re.sub(r"[\s\-–—:,;(/]+$", "", text) + "…"
+
+
+def title_lines(draw, title: str, fnt, width: int, max_lines: int) -> list[str]:
+    """Quebra o título; só os muito longos passam de `max_lines` e ficam com «…» (sem cortes a meio da palavra)."""
+    lines = wrap(draw, title, fnt, width)
+    if len(lines) <= max_lines:
+        return lines
+    return lines[:max_lines - 1] + [fit_text(draw, " ".join(lines[max_lines - 1:]), fnt, width)]
+
+
+def cross_icon(img: Image.Image, x: int, y: int, size: int) -> None:
+    """Ícone do cartão: cruz verde-azulada num quadrado arredondado suave (como .job-ico do site)."""
     d = ImageDraw.Draw(img)
-    paste_logo(img, False, (84, 84), 60)
-    f = font("Regular", 34)
-    d.text((1080 - 84 - d.textlength(f"{i}/{total}", font=f), 96), f"{i}/{total}", font=f, fill=MUTED)
-    _, h = pill(d, (84, 330), job["area"], font("SemiBold", 34), PILL_BG, PILL_FG)
-    y = text_block(d, (84, 330 + h + 44), job["title"], font("Bold", 88), NAVY, 912, 94)
-    y = text_block(d, (84, y + 40), job["company"], font("Medium", 48), INK2, 912, 58)
-    pin(d, 84, y + 22, 44, TEAL)
-    d.text((140, y + 18), job["place"], font=font("Regular", 44), fill=INK3)
+    d.rounded_rectangle((x, y, x + size, y + size), radius=round(size * 0.26), fill=PILL_BG)
+    c, arm, thick = size / 2, size * 0.56, size * 0.22
+    r = round(thick * 0.28)
+    d.rounded_rectangle((x + c - arm / 2 - 0, y + c - thick / 2, x + c + arm / 2, y + c + thick / 2), radius=r, fill=PRIMARY)
+    d.rounded_rectangle((x + c - thick / 2, y + c - arm / 2, x + c + thick / 2, y + c + arm / 2), radius=r, fill=PRIMARY)
+
+
+def draw_chips(draw, x: int, y: int, width: int, chips, size: int, max_rows: int = 1, gap: int = 10) -> int:
+    """Chips arredondados em linha(s); o que não couber nas `max_rows` linhas é omitido. Devolve a altura usada."""
+    fnt = font("SemiBold", size)
+    pad = (round(size * 0.55), round(size * 0.3))
+    asc, desc = fnt.getmetrics()
+    h = asc + desc + 2 * pad[1]
+    cx, row = x, 0
+    for kind, text in chips:
+        text = fit_text(draw, text, fnt, width - 2 * pad[0])
+        w = round(draw.textlength(text, font=fnt)) + 2 * pad[0]
+        if cx > x and cx + w > x + width:
+            row += 1
+            cx = x
+            if row >= max_rows:
+                break
+        bg, fg = CHIP_STYLE[kind]
+        draw.rounded_rectangle((cx, y + row * (h + gap), cx + w, y + row * (h + gap) + h), radius=h / 2, fill=bg)
+        draw.text((cx + pad[0], y + row * (h + gap) + pad[1]), text, font=fnt, fill=fg)
+        cx += w + gap
+    return (row + 1) * h + row * gap if chips else 0
+
+
+def chips_height(size: int) -> int:
+    asc, desc = font("SemiBold", size).getmetrics()
+    return asc + desc + 2 * round(size * 0.3)
+
+
+def header(img: Image.Image, logo_h: int, x0: int, y0: int, size: int = 28) -> None:
+    """Cabeçalho comum: logótipo à esquerda e selo «Mais procuradas» à direita."""
+    d = ImageDraw.Draw(img)
+    paste_logo(img, False, (x0, y0), logo_h)
+    fp = font("SemiBold", size)
+    w = d.textlength(L["most"], font=fp) + 2 * round(size * 0.85)
+    asc, desc = fp.getmetrics()
+    h = asc + desc + 2 * round(size * 0.4)
+    pill(d, (round(img.width - x0 - w), y0 + (logo_h - h) // 2), L["most"], fp, PRIMARY, "#ffffff",
+         pad=(round(size * 0.85), round(size * 0.4)))
+
+
+def slide_job(i: int, total: int, job: dict) -> Image.Image:
+    img = Image.new("RGBA", (1080, 1350), BG)
+    d = ImageDraw.Draw(img)
+    header(img, 60, 84, 84, 30)
+    cx0, cx1, pad = 70, 1010, 56                     # cartão (como .job-card, em ponto grande)
+    inner = cx1 - cx0 - 2 * pad
+    ft, fs = font("Bold", 68), font("Regular", 42)
+    t_lines = title_lines(d, job["title"], ft, inner, 3)
+    sub_all = wrap(d, f"{job['company']} · {job['place']}", fs, inner)
+    sub_lines = sub_all[:2]
+    if len(sub_all) > 2:
+        sub_lines[1] = fit_text(d, " ".join(sub_all[1:]), fs, inner)
+    ico, chip_sz, rows = 150, 34, 2
+    rows = 1 if sum(round(d.textlength(t, font=font("SemiBold", chip_sz))) + 40 + 12 for _, t in job["chips"]) <= inner else 2
+    body_h = ico + 44 + 78 * len(t_lines) + 14 + 54 * len(sub_lines) + 30
+    chips_h = (chips_height(chip_sz) + 12) * rows - 12
+    card_h = pad + body_h + chips_h + pad
+    top = 230 + max(0, (1120 - 230 - card_h) // 2)
+    d.rounded_rectangle((cx0, top, cx1, top + card_h), radius=40, fill="#ffffff", outline=LINE, width=3)
+    x, y = cx0 + pad, top + pad
+    cross_icon(img, x, y, ico)
+    cnt = f"{i}/{total}"
+    fc = font("Regular", 36)
+    d.text((cx1 - pad - d.textlength(cnt, font=fc), y + 8), cnt, font=fc, fill=MUTED)
+    y += ico + 44
+    for line in t_lines:
+        d.text((x, y), line, font=ft, fill=INK)
+        y += 78
+    y += 14
+    for line in sub_lines:
+        d.text((x, y), line, font=fs, fill=SLATE)
+        y += 54
+    y += 30
+    draw_chips(d, x, y, inner, job["chips"], chip_sz, max_rows=rows, gap=12)
     d.rectangle((0, 1150, 1080, 1350), fill=NAVY)
-    d.text((84, 1226), L["apply_bio"], font=font("SemiBold", 40), fill="#ffffff")
-    f2 = font("Regular", 34)
-    d.text((1080 - 84 - d.textlength(DOMAIN, font=f2), 1232), DOMAIN, font=f2, fill=TEAL_LIGHT)
+    d.text((84, 1186), L["apply_bio"], font=font("SemiBold", 40), fill="#ffffff")
+    d.text((84, 1254), DOMAIN, font=font("Regular", 34), fill=TEAL_LIGHT)
     return img
 
 
@@ -408,43 +555,39 @@ def slide_cta() -> Image.Image:
 
 
 def square(jobs: list[dict], heading: str) -> Image.Image:
-    img = Image.new("RGBA", (1080, 1080), "#ffffff")
+    img = Image.new("RGBA", (1080, 1080), BG)
     d = ImageDraw.Draw(img)
-    paste_logo(img, False, (70, 70), 58)
-    fp = font("SemiBold", 28)
-    w = d.textlength(L["most"], font=fp) + 48
-    pill(d, (1080 - 70 - w, 74), L["most"], fp, TEAL, "#ffffff", pad=(24, 10))
-    y = text_block(d, (70, 176), heading, font("Bold", 64), NAVY, 940, 68) + 20
-    ft, fs, fn = font("Bold", 42), font("Regular", 31), font("Bold", 38)
-    # Se as vagas com títulos de 2 linhas não couberem acima do rodapé, os títulos passam a 1 linha.
-    max_lines = 2
-    needed = sum(46 * len(wrap(d, j["title"], ft, 820)[:2]) + 44 + 56 for j in jobs)
-    if y + needed + 22 > 1080 - 70 - 40:
-        max_lines = 1
-
-    def title_lines(title: str) -> list[str]:
-        lines = wrap(d, title, ft, 820)
-        if len(lines) <= max_lines:
-            return lines
-        last = lines[max_lines - 1]
-        while last and d.textlength(last + "…", font=ft) > 820:
-            last = last[:-1].rstrip()
-        return lines[:max_lines - 1] + [last + "…"]
-
-    for k, j in enumerate(jobs, 1):
-        d.line((70, y, 1010, y), fill="#e3e9f0", width=2)
-        lines = wrap(d, j["title"], ft, 820)[:2] if max_lines == 2 else title_lines(j["title"])
-        block_h = 46 * len(lines) + 44
-        top = y + 28
-        d.rounded_rectangle((70, top + block_h / 2 - 35, 140, top + block_h / 2 + 35), radius=18, fill=PILL_BG)
-        d.text((105 - d.textlength(str(k), font=fn) / 2, top + block_h / 2 - 25), str(k), font=fn, fill=PILL_FG)
-        ty = top
+    header(img, 56, 60, 44, 26)
+    fh = font("Bold", 52)
+    y = text_block(d, (60, 128), heading, fh, INK, 960, 58) + 14
+    ft, fs, cs = font("Bold", 36), font("Regular", 28), 22
+    x_ico, ico, pad_x, pad_y, gap = 60, 84, 20, 16, 12
+    tx = x_ico + pad_x + ico + 20
+    tw = 1020 - 20 - tx
+    t_h, s_h, c_h = 42, 36, chips_height(cs)
+    base = pad_y + t_h + 2 + s_h + 8 + c_h + pad_y
+    # Cada título começa com 1 linha; os mais longos ganham a 2.ª enquanto houver espaço acima do rodapé.
+    footer_top = 1080 - 56
+    spare = footer_top - 14 - (y + len(jobs) * base + (len(jobs) - 1) * gap)
+    full = [wrap(d, j["title"], ft, tw) for j in jobs]
+    n_lines = [1] * len(jobs)
+    for k, ln in enumerate(full):
+        if len(ln) > 1 and spare >= t_h:
+            n_lines[k], spare = 2, spare - t_h
+    for k, j in enumerate(jobs):
+        lines = title_lines(d, j["title"], ft, tw, n_lines[k])
+        h = base + t_h * (len(lines) - 1)
+        d.rounded_rectangle((60, y, 1020, y + h), radius=24, fill="#ffffff", outline=LINE, width=2)
+        cross_icon(img, x_ico + pad_x, y + (h - ico) // 2, ico)
+        ty = y + pad_y
         for line in lines:
-            d.text((166, ty), line, font=ft, fill=NAVY)
-            ty += 46
-        d.text((166, ty + 4), f"{j['company']} · {j['place']}", font=fs, fill=INK3)
-        y = top + block_h + 28
-    d.text((70, min(y + 22, 1080 - 70 - 40)), f"{L['links']} · {DOMAIN}", font=font("SemiBold", 32), fill=PILL_FG)
+            d.text((tx, ty), line, font=ft, fill=INK)
+            ty += t_h
+        d.text((tx, ty + 2), fit_text(d, f"{j['company']} · {j['place']}", fs, tw), font=fs, fill=SLATE)
+        draw_chips(d, tx, ty + 2 + s_h + 8, tw, j["chips"], cs, max_rows=1, gap=8)
+        y += h + gap
+    fd = font("SemiBold", 28)
+    d.text((540 - d.textlength(DOMAIN, font=fd) / 2, 1080 - 50), DOMAIN, font=fd, fill=PRIMARY)
     return img
 
 
@@ -458,8 +601,10 @@ def build_package(root: Path, day: date, dry_run: bool) -> Path | None:
         print(f"[social] {day}: só {len(picked)} vagas elegíveis — sem post hoje")
         return None
     campaign = f"top-vagas-{day.isoformat()}"
-    jobs = [{"slug": j["slug"], "title": clean_title(j.get("title", ""), j.get("company", "")),
+    jobs = [{"slug": j["slug"], "title": clean_title(j.get("title", ""), j.get("company", ""), j.get("locationConcelho") or "",
+                                  j.get("locationDistrict") or ""),
              "company": clean_company(j.get("company", "")), "place": place(j),
+             "chips": job_chips(j), "chips_text": [t for _, t in job_chips(j)],
              "area": j.get("profession") or L["area"], "score": j["_score"],
              "region": (place(j).split("/")[-1] if M is MARKETS["br"] else (j.get("locationDistrict") or "").strip())}
             for j in picked]
@@ -490,12 +635,13 @@ def build_package(root: Path, day: date, dry_run: bool) -> Path | None:
                         + L["fb_alert"].format(url=f"{alert}facebook"),
         "telegram.html": f"<b>{head}</b> 👇\n\n"
                          + "".join(f"{k}. <b>{html.escape(j['title'])}</b>\n{html.escape(j['company'])} · {html.escape(j['place'])}\n"
-                                   f"<a href=\"{job_link(j['slug'], 'telegram', campaign)}\">{L['tg_see']}</a>\n\n"
+                                   + (html.escape(" · ".join(j["chips_text"])) + "\n" if j["chips_text"] else "")
+                                   + f"<a href=\"{job_link(j['slug'], 'telegram', campaign)}\">{L['tg_see']}</a>\n\n"
                                    for k, j in enumerate(jobs, 1))
                          + f"🔔 <a href=\"{alert}telegram\">{L['tg_alert']}</a>"
                          + (f"\n💬 <a href=\"{WHATSAPP_CHANNEL}\">{L['tg_whatsapp']}</a>" if WHATSAPP_CHANNEL else ""),
         "whatsapp.txt": f"*{head}* 👇\n\n"
-                        + "".join(f"*{j['title']}*\n{j['company']} · {j['place']}\n{job_link(j['slug'], 'whatsapp', campaign)}\n\n" for j in jobs)
+                        + "".join(f"*{j['title']}*\n{j['company']} · {j['place']}\n" + (" · ".join(j["chips_text"]) + "\n" if j["chips_text"] else "") + f"{job_link(j['slug'], 'whatsapp', campaign)}\n\n" for j in jobs)
                         + L["wa_alert"].format(url=DOMAIN + alerts_path) + "\n"
                         + L["wa_telegram"].format(url=TELEGRAM_CHANNEL),
     }
