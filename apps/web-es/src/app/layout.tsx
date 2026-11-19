@@ -5,7 +5,6 @@ import {
   ConsentModeDefaults,
   GoogleAnalytics,
 } from "@/components/google-analytics";
-import { MicrosoftClarity } from "@/components/microsoft-clarity";
 import { CardIconSprite } from "@/components/card-icons";
 import { SiteStatsTracker } from "@/components/site-stats-tracker";
 import {
@@ -113,7 +112,6 @@ export default function RootLayout({
         <CardIconSprite />
         {children}
         <GoogleAnalytics />
-        <MicrosoftClarity />
         <SiteStatsTracker />
         <CookieConsent />
       </body>

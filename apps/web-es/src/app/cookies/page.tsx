@@ -109,7 +109,7 @@ export default function CookiesPage() {
             Nos permiten medir el uso del Sitio y mejorarlo. Google Analytics
             está activo por defecto; si lo rechazas en «Configurar cookies»
             (sección 6), dejamos de cargarlo y eliminamos sus cookies. No usamos
-            cookies publicitarias. Microsoft Clarity no está activo.
+            cookies publicitarias.
           </p>
           <div className="table-wrap">
             <table>
@@ -134,27 +134,6 @@ export default function CookiesPage() {
                   <td>Mantiene el estado de la sesión.</td>
                   <td>2 años</td>
                 </tr>
-                <tr>
-                  <td>_clck</td>
-                  <td>Microsoft Clarity (Microsoft Corp.)</td>
-                  <td>Guarda el identificador de usuario y sesión de Clarity.</td>
-                  <td>1 año</td>
-                </tr>
-                <tr>
-                  <td>_clsk</td>
-                  <td>Microsoft Clarity</td>
-                  <td>Agrupa las páginas vistas en una sola sesión.</td>
-                  <td>1 día</td>
-                </tr>
-                <tr>
-                  <td>CLID, ANONCHK, MR, SM</td>
-                  <td>Microsoft Clarity / Bing</td>
-                  <td>
-                    Identificación de cliente, comprobación de anonimato,
-                    renovación y sincronización.
-                  </td>
-                  <td>De sesión a 1 año</td>
-                </tr>
               </tbody>
             </table>
           </div>
@@ -167,13 +146,13 @@ export default function CookiesPage() {
 
           <h2>5. Terceros y transferencias internacionales</h2>
           <p>
-            Google (Google Analytics) y Microsoft (Clarity) pueden tratar datos
+            Google (Google Analytics) puede tratar datos
             en Estados Unidos u otros países fuera del Espacio Económico
             Europeo. Dichas transferencias se amparan en la decisión de
             adecuación del Marco de Privacidad de Datos UE-EE. UU. (si el
             proveedor está certificado) y/o en cláusulas contractuales tipo de
             la Comisión Europea. Al aceptar las cookies analíticas consientes
-            también estas transferencias. Más información en las políticas de
+            también estas transferencias. Más información en la política de
             privacidad de{" "}
             <a
               href="https://policies.google.com/privacy"
@@ -181,14 +160,6 @@ export default function CookiesPage() {
               rel="noopener noreferrer"
             >
               Google
-            </a>{" "}
-            y de{" "}
-            <a
-              href="https://privacy.microsoft.com/es-es/privacystatement"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Microsoft
             </a>
             .
           </p>

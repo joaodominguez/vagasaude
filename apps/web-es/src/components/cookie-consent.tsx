@@ -113,8 +113,7 @@ export function CookieConsent() {
               <span>
                 <span className="block font-bold">Analíticas</span>
                 <span className="mt-1 block text-muted">
-                  Google Analytics y Microsoft Clarity: medición de visitas y
-                  grabación anonimizada de interacciones.
+                  Google Analytics: medición de visitas.
                 </span>
               </span>
               <input

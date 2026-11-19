@@ -11,10 +11,6 @@ export default async function AdminSystemPage() {
     ["DATA_DIR", process.env.DATA_DIR || "(default)"],
     ["GA4", process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "G-FDWQFVL4J1"],
     [
-      "Clarity",
-      process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID || "(sin configurar)",
-    ],
-    [
       "AdSense",
       process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || "(sin configurar)",
     ],

@@ -74,7 +74,7 @@ export default function PrivacyPage() {
                 <tr>
                   <td>
                     Analítica web: medir el uso del Sitio y mejorarlo (Google
-                    Analytics, Microsoft Clarity).
+                    Analytics).
                   </td>
                   <td>
                     Identificadores en cookies, páginas visitadas, interacciones,
@@ -149,11 +149,6 @@ export default function PrivacyPage() {
               Unidos bajo el Marco de Privacidad de Datos UE-EE. UU. y/o
               cláusulas contractuales tipo.
             </li>
-            <li>
-              <strong>Microsoft (Clarity):</strong> mapas de calor y grabación
-              de sesiones, solo con tu consentimiento. Puede implicar
-              transferencias a Estados Unidos con las mismas garantías.
-            </li>
           </ul>
           <p>
             Más detalle sobre cookies y terceros en la{" "}
@@ -173,8 +168,7 @@ export default function PrivacyPage() {
             <li>
               <strong>Analítica:</strong> hasta que la rechaces o
               expiren las cookies (ver política de cookies); los datos de Google
-              Analytics y Clarity se conservan según la configuración de
-              retención de cada herramienta.
+              Analytics se conservan según su configuración de retención.
             </li>
             <li>
               <strong>Registros del servidor:</strong> {LOG_RETENTION}.
