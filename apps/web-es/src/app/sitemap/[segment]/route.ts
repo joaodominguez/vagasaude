@@ -74,7 +74,14 @@ ${entries.join("\n")}
 async function buildJobsSitemap() {
   const now = new Date();
   // getJobs() devolve só vagas publicadas (activas) — expiradas ficam fora do sitemap.
-  const jobs = await getJobs();
+  const allJobs = await getJobs();
+  // Fora do sitemap as ofertas com prazo (expiresAt) nas próximas 72 h: o Google lê o sitemap até 1 dia depois
+  // e encontraria a página já expirada (noindex) — o GSC reporta-o como "noindex num mapa do site".
+  const cutoff = Date.now() + 72 * 3600 * 1000;
+  const jobs = allJobs.filter((job) => {
+    const deadline = job.expiresAt ? Date.parse(job.expiresAt) : NaN;
+    return Number.isNaN(deadline) || deadline > cutoff;
+  });
   const entries = jobs.map((job) => {
     const published = Date.parse(job.publishedAt);
     const lastmod = Number.isNaN(published)
