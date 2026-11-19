@@ -50,7 +50,7 @@ import {
   publishedSentence,
   trimTruncatedExcerpt,
 } from "@/lib/job-display";
-import { extractSchedule, jobFullText, specialtyFromTitle } from "@/lib/job-facts";
+import { extractSchedule, isHealthBody, jobFullText, specialtyFromTitle } from "@/lib/job-facts";
 import { splitOffering } from "@/lib/job-sections";
 import { findEmployer } from "@/lib/employers";
 import { SOURCE_META } from "@/lib/sources";
@@ -289,8 +289,8 @@ function ActiveJobView({
               )}
             </article>
 
-            <aside className="space-y-4 lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:overscroll-contain">
-              <div className="content-card apply-card space-y-3 p-5">
+            <aside className="min-w-0 space-y-4">
+              <div className="content-card apply-card space-y-3 p-5 lg:sticky lg:top-24 lg:z-10">
                 <div className="hidden lg:block">
                   <a
                     href={job.applicationUrl}
@@ -316,7 +316,7 @@ function ActiveJobView({
                 </p>
               </div>
 
-              <SalaryInsight job={job} />
+              <SalaryInsight job={job} showReference={!isBando || isHealthBody(job.company)} />
 
               <div className="alert-card">
                 <h2 className="font-extrabold">Recibe ofertas como esta</h2>

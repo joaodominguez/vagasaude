@@ -14,9 +14,11 @@ type Props = {
   job: Pick<Job, "title" | "profession" | "sector" | "salary">;
   /** compact = línea corta (cards); full = bloque en la ficha */
   variant?: "full" | "compact";
+  /** false: solo la retribución anunciada, sin la caja de referencia salarial. */
+  showReference?: boolean;
 };
 
-export function SalaryInsight({ job, variant = "full" }: Props) {
+export function SalaryInsight({ job, variant = "full", showReference = true }: Props) {
   const benchmark = getSalaryBenchmark(job.profession, job.title, job.sector);
   const announced = announcedSalaryLabel(job.salary) ?? (job.salary?.trim() || null);
   const isFloor = benchmark?.kind === "floor";
@@ -47,7 +49,7 @@ export function SalaryInsight({ job, variant = "full" }: Props) {
           <span className="salary-announced-value">{announced}</span>
         </div>
       )}
-      {benchmark && (
+      {benchmark && showReference && (
         <div className="salary-ref">
           <span className="salary-ref-kicker">Referencia salarial · no es de esta oferta</span>
           <span className="salary-ref-value">

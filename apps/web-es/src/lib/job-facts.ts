@@ -223,3 +223,11 @@ export function locationLabel(job: { city?: string | null; district?: string | n
   if (city && district && foldText(city) !== foldText(district)) return `${city}, ${district}`;
   return city ?? district;
 }
+
+const HEALTH_BODY_RE =
+  /servicio\s+(?:andaluz|madrileno|gallego|canario|murciano|extremeno|aragones|navarro|vasco|catalan|cantabro|riojano|balear|de\s+salud|asturiano)|\b(?:sas|sermas|scs|ics|sms|sescam|sacyl|sergas|sespa|salud|osakidetza|ingesa|ib-?salut|aragonsalud)\b|osakidetza|ib-?salut|gestion\s+sanitaria|hospital\w*|consorci\w*\s+sanitari\w*|consorcio\s+sanitari\w*|instituto\s+catalan\s+de\s+la\s+salud|institut\s+catala\s+de\s+la\s+salut|area\s+(?:de\s+)?salud|gerencia\s+(?:regional|de\s+atencion)|consejeria\s+de\s+(?:sanidad|salud)/;
+
+/** ¿El organismo es un servicio de salud / hospital / consorcio sanitario? (para la referencia salarial en convocatorias) */
+export function isHealthBody(company: string | null | undefined): boolean {
+  return HEALTH_BODY_RE.test(foldText(company ?? ""));
+}
