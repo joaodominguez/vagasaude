@@ -347,8 +347,8 @@ function ActiveJobView({
               )}
             </article>
 
-            <aside className="min-w-0 space-y-4">
-              <div className="content-card apply-card space-y-3 p-5">
+            <aside className="min-w-0 space-y-4 lg:self-stretch">
+              <div className="content-card apply-card z-10 space-y-3 p-5 lg:sticky lg:top-24">
                 <div className="hidden lg:block">
                   <a
                     href={job.applicationUrl}
