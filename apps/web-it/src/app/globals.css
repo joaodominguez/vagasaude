@@ -1943,7 +1943,8 @@ select:not([multiple]):not([size]) {
 }
 select:not([multiple]):not([size])::-ms-expand {
   display: none;
-
+  display: none;
+}
 /* Riferimento retributivo SSN (scheda offerta): non è la retribuzione dell'offerta. */
 :root {
   --amber: #92400e;
