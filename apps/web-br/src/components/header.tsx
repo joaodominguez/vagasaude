@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useId, useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Bell, Menu, X } from "lucide-react";
 import { FavoritesBadge } from "./favorites-badge";
 import { Logo } from "./logo";
 import { ThemeToggle } from "./theme-toggle";
@@ -11,11 +11,16 @@ import { SocialLinks } from "./social-links";
 const NAV_ITEMS = [
   { href: "/vagas", label: "Buscar vagas" },
   { href: "/concursos", label: "Concursos" },
+  { href: "/salarios", label: "Salários" },
   { href: "/noticias", label: "Notícias" },
   { href: "/favoritos", label: "Favoritos" },
   { href: "/alertas", label: "Criar alerta" },
   { href: "/como-funciona", label: "Como funciona" },
 ] as const;
+
+const ALERT_HREF = "/alertas";
+/** Itens do menu que, em tela média, cedem lugar ao botão «Criar alerta» (continuam no menu mobile). */
+const SECONDARY_HREFS = new Set<string>(["/favoritos", "/como-funciona"]);
 
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -40,21 +45,30 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/80 shadow-[0_2px_12px_rgb(15_23_42/0.05)] dark:shadow-[0_2px_12px_rgb(0_0_0/0.35)] bg-background/90 backdrop-blur-lg">
-      <div className="page-container flex h-16 items-center justify-between">
+      <div className="page-container header-bar">
         <Logo />
 
         <nav
           aria-label="Navegação principal"
-          className="hidden items-center gap-8 text-sm font-semibold md:flex"
+          className="hidden items-center justify-center gap-6 text-sm font-semibold md:flex lg:gap-8"
         >
-          {NAV_ITEMS.map((item) => (
-            <Link key={item.href} className="nav-link" href={item.href} prefetch={false}>
+          {NAV_ITEMS.filter((item) => item.href !== ALERT_HREF).map((item) => (
+            <Link
+              key={item.href}
+              className={SECONDARY_HREFS.has(item.href) ? "nav-link hidden lg:inline" : "nav-link"}
+              href={item.href}
+              prefetch={false}
+            >
               {item.label}
             </Link>
           ))}
         </nav>
 
-        <div className="flex items-center gap-2">
+        <div className="header-actions">
+          <Link href={ALERT_HREF} prefetch={false} className="header-cta hidden md:inline-flex">
+            <Bell size={16} aria-hidden="true" />
+            Criar alerta
+          </Link>
           <FavoritesBadge />
           <ThemeToggle />
           <button

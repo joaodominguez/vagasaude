@@ -5,11 +5,13 @@ import {
 } from "@/lib/format-job-text";
 
 type Props = {
-  text: string;
+  text?: string;
+  /** Blocos já formatados (quando a página separou uma parte). */
+  blocks?: JobTextBlock[];
 };
 
-export function JobDescription({ text }: Props) {
-  const blocks = formatJobDescriptionText(text);
+export function JobDescription({ text = "", blocks: given }: Props) {
+  const blocks = given ?? formatJobDescriptionText(text);
   if (blocks.length === 0) return null;
 
   return (

@@ -153,6 +153,11 @@ export function parseMonthlySalary(raw: string | null | undefined) {
   return pair.reduce((sum, v) => sum + v, 0) / pair.length;
 }
 
+/** Função do observatório a que o título pertence (para ligar a vaga à sua página de salário). */
+export function salaryRoleForTitle(title: string) {
+  return roleFor(title);
+}
+
 function roleFor(title: string) {
   const t = normalize(title);
   return SALARY_ROLES.find((role) => role.pattern.test(t)) ?? null;

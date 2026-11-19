@@ -1,61 +1,66 @@
 import Link from "next/link";
-import { CardIcon, type CardIconName } from "@/components/card-icons";
 import type { Job } from "@/lib/jobs";
-import { JobTypeBadge } from "@/components/job-type-badge";
 import { FavoriteButton } from "@/components/favorite-button";
-import { SalaryInsight } from "@/components/salary-insight";
+import { JobIcon } from "@/components/profession-icon";
+import { compactBandoTitle, displayTitle } from "@/lib/display-title";
+import {
+  announcedSalaryLabel,
+  contractBesideType,
+  deadlineLabel,
+  relativePublished,
+} from "@/lib/job-display";
+import { extractSchedule, shiftChipLabel, specialtyFromTitle } from "@/lib/job-facts";
+import { isConcursoJob } from "@/lib/concursos";
+import { classifyJob, isPublicJob, JOB_TYPE_LABEL } from "@/lib/job-type";
 
-function JobIcon({ profession }: { profession: string }) {
-  const icon: CardIconName =
-    profession === "Medicina"
-      ? "stethoscope"
-      : profession === "Enfermagem"
-        ? "building-2"
-        : "shield-plus";
-
-  return (
-    <span className="job-card-icon flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary sm:h-12 sm:w-12">
-      <CardIcon name={icon} size={22} strokeWidth={1.8} />
-    </span>
-  );
-}
-
+/** Cartão da vaga: título limpo, «Entidade · Cidade · quando», etiquetas e (se houver) remuneração. */
 export function JobCard({ job }: { job: Job }) {
+  const type = classifyJob(job);
+  const isEdital = type !== "oferta";
+  const cleaned = displayTitle(job.title, job);
+  const compact = isEdital ? compactBandoTitle(cleaned) : { title: cleaned, posts: null };
+  const contract = contractBesideType(job);
+  // Em editais agregados (PCI/INCA) o valor pode ser de outro cargo ou taxa de inscrição.
+  const salary = isConcursoJob(job) ? null : announcedSalaryLabel(job.salary);
+  const published = relativePublished(job.publishedAt);
+  const deadline = deadlineLabel(job.expiresAt);
+  const isPublic = isPublicJob(job);
+  // A lista em memória não traz a descrição: a escala só aparece quando o título a diz.
+  const shift = isEdital
+    ? null
+    : shiftChipLabel(extractSchedule(`${job.title}\n${job.description}`, job.contract));
+  const specialty = specialtyFromTitle(job.title);
+  const meta = [job.company, job.city, published].filter(Boolean).join(" · ");
+
   return (
     <Link href={`/vagas/${job.slug}`} className="job-card group">
-      <span className="job-card-body flex min-w-0 items-start gap-3">
-        <JobIcon profession={job.profession} />
-        <span className="job-card-main min-w-0 flex-1">
-          <span className="job-card-header">
-            <span className="job-card-title-block min-w-0">
+      <span className="flex min-w-0 items-start gap-3">
+        <JobIcon profession={job.profession} concorso={isEdital} />
+        <span className="min-w-0 flex-1">
+          <span className="flex items-start justify-between gap-2">
+            <span className="min-w-0">
               <span className="block break-words font-bold leading-snug tracking-[-0.02em] text-foreground group-hover:text-primary">
-                {job.title}
+                {compact.title}
               </span>
-              <span className="mt-0.5 block truncate text-sm text-muted">
-                {job.company}
-              </span>
+              <span className="mt-0.5 block break-words text-sm leading-snug text-muted">{meta}</span>
             </span>
-            <span className="job-card-aside flex shrink-0 items-center gap-2 text-xs text-muted">
-              <span className="whitespace-nowrap">{job.publishedLabel}</span>
-              <FavoriteButton slug={job.slug} size={15} />
-              <CardIcon
-                name="arrow-up-right"
-                size={17}
-                className="text-muted transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary"
-              />
-            </span>
+            <FavoriteButton slug={job.slug} size={18} />
           </span>
-          <span className="job-card-meta mt-2.5 flex flex-wrap items-center gap-1.5 text-xs text-muted">
-            <span className="inline-flex min-w-0 max-w-full items-center gap-1">
-              <CardIcon name="map-pin" size={13} className="shrink-0" />
-              <span className="truncate">{job.city}</span>
-            </span>
-            <span className="tag tag-primary">{job.sector}</span>
-            <span className="tag">{job.contract}</span>
-            <JobTypeBadge job={job} />
-            <span className="job-card-salary min-w-0 max-w-full">
-              <SalaryInsight job={job} variant="compact" />
-            </span>
+          <span className="mt-2.5 flex flex-wrap items-center gap-1.5 text-xs text-muted">
+            {isPublic ? (
+              <span className="tag tag-public">Público</span>
+            ) : (
+              <span className="tag">{job.sector === "Filantrópico" ? "Filantrópico" : "Privado"}</span>
+            )}
+            {isEdital && <span className="tag">{JOB_TYPE_LABEL[type]}</span>}
+            {compact.posts && (
+              <span className="tag">{compact.posts === 1 ? "1 vaga" : `${compact.posts} vagas`}</span>
+            )}
+            {shift && <span className="tag tag-primary">{shift}</span>}
+            {!shift && specialty && <span className="tag tag-primary">{specialty}</span>}
+            {contract && <span className="tag">{contract}</span>}
+            {deadline && <span className="tag tag-deadline">{deadline}</span>}
+            {salary && <span className="tag tag-salary">{salary}</span>}
           </span>
         </span>
       </span>
