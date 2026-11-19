@@ -22,7 +22,10 @@ function LogoCard({ source, hidden }: { source: JobSourceMeta; hidden?: boolean 
         <img
           src={source.logo}
           alt={hidden ? "" : source.shortName}
-          loading="lazy"
+          // Sem lazy: dentro da pista animada (overflow oculto) o carregamento diferido não dispara de
+          // forma fiável e o quadro ficava vazio. São poucas imagens.
+          loading="eager"
+          fetchPriority="low"
           decoding="async"
         />
       ) : (

@@ -7,9 +7,11 @@ type Props = {
   slug: string;
   size?: number;
   className?: string;
+  /** Mostra texto junto ao coração («Guardar» / «Guardada»). */
+  withLabel?: boolean;
 };
 
-export function FavoriteButton({ slug, size = 18, className = "" }: Props) {
+export function FavoriteButton({ slug, size = 18, className = "", withLabel = false }: Props) {
   const { toggle, isFavorite } = useFavorites();
   const active = isFavorite(slug);
 
@@ -29,7 +31,9 @@ export function FavoriteButton({ slug, size = 18, className = "" }: Props) {
         size={size}
         strokeWidth={active ? 0 : 1.8}
         fill={active ? "currentColor" : "none"}
+        aria-hidden="true"
       />
+      {withLabel && <span>{active ? "Guardada" : "Guardar"}</span>}
     </button>
   );
 }

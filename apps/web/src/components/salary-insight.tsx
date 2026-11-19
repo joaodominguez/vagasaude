@@ -1,6 +1,9 @@
-import { CircleHelp, Wallet } from "lucide-react";
+import Link from "next/link";
+import { CircleHelp } from "lucide-react";
 import { CardIcon } from "@/components/card-icons";
 import type { Job } from "@/lib/jobs";
+import { announcedSalaryLabel } from "@/lib/job-display";
+import { careerEntry, careerForProfession } from "@/lib/salary-tables";
 import {
   formatEuro,
   formatEuroRange,
@@ -9,13 +12,26 @@ import {
 
 type Props = {
   job: Pick<Job, "title" | "profession" | "sector" | "salary">;
-  /** compact = linha curta (cards); full = bloco na ficha */
+  /** compact = linha curta (cartões); full = bloco na ficha */
   variant?: "full" | "compact";
+  /** false: só a remuneração indicada, sem a caixa de referência salarial. */
+  showReference?: boolean;
 };
 
-export function SalaryInsight({ job, variant = "full" }: Props) {
+/** «1 750 €» (espaço inseparável nos milhares, também com 4 dígitos). */
+function eur(value: number) {
+  return `${Math.round(value).toString().replace(/\B(?=(\d{3})+(?!\d))/g, "\u00a0")}\u00a0€`;
+}
+
+/** «35 horas semanais» → «35 h». */
+function shortRegime(regime: string) {
+  return regime.replace(/\s*horas?\s+semanais/i, " h");
+}
+
+export function SalaryInsight({ job, variant = "full", showReference = true }: Props) {
   const benchmark = getSalaryBenchmark(job.profession, job.title, job.sector);
-  const announced = job.salary?.trim() || null;
+  const announced = announcedSalaryLabel(job.salary) ?? (job.salary?.trim() || null);
+  const career = careerForProfession(job.profession);
 
   if (variant === "compact") {
     return (
@@ -32,38 +48,44 @@ export function SalaryInsight({ job, variant = "full" }: Props) {
     );
   }
 
+  const entry = career ? careerEntry(career) : null;
+
   return (
-    <div className="rounded-xl border border-border bg-primary-soft/40 px-3 py-3">
-      <div className="flex items-start gap-2.5">
-        <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-surface text-primary">
-          <Wallet size={16} strokeWidth={1.8} aria-hidden="true" />
-        </span>
-        <div className="min-w-0 flex-1">
-          <p className="text-xs font-bold uppercase tracking-wide text-muted">
-            Vencimento médio em Portugal
-          </p>
-          <p className="mt-1 text-lg font-extrabold tracking-[-0.03em] text-foreground">
-            {formatEuro(benchmark.average)}
-            <span className="ml-1 text-sm font-semibold text-muted">
-              brutos/mês
-            </span>
-          </p>
-          <p className="mt-0.5 text-xs text-muted">
-            {benchmark.label} · tipicamente{" "}
-            {formatEuroRange(benchmark.low, benchmark.high)}
-          </p>
-          {announced ? (
-            <p className="mt-2 text-xs leading-5 text-foreground">
-              <span className="font-semibold">Nesta vaga: </span>
-              <span className="text-muted">{announced}</span>
-            </p>
-          ) : null}
+    <>
+      {announced && (
+        <div className="salary-announced">
+          <span className="salary-announced-kicker">Remuneração indicada na vaga</span>
+          <span className="salary-announced-value">{announced}</span>
         </div>
-      </div>
-      <p className="mt-2.5 flex items-start gap-1.5 text-[11px] leading-4 text-muted">
-        <CircleHelp size={12} className="mt-0.5 shrink-0" aria-hidden="true" />
-        <span>{benchmark.source}</span>
-      </p>
-    </div>
+      )}
+      {showReference && (
+        <div className="salary-ref">
+          <span className="salary-ref-kicker">Referência salarial · não é desta vaga</span>
+          <span className="salary-ref-value">
+            ≈ {eur(benchmark.average)} <small>brutos/mês</small>
+          </span>
+          <p>
+            {benchmark.label} · valor médio de mercado em Portugal (tipicamente{" "}
+            {eur(benchmark.low)} – {eur(benchmark.high)}).
+            {career && entry && (
+              <>
+                {" "}
+                No SNS, a carreira de {career.label} começa nos {eur(entry.gross)}{" "}
+                ({shortRegime(career.regime)}).
+              </>
+            )}
+          </p>
+          <p className="salary-ref-source">
+            <CircleHelp size={12} className="mt-0.5 shrink-0" aria-hidden="true" />
+            <span>{benchmark.source}</span>
+          </p>
+          {career && (
+            <Link href={`/salarios/${career.slug}`} prefetch={false}>
+              Ver tabela salarial completa
+            </Link>
+          )}
+        </div>
+      )}
+    </>
   );
 }

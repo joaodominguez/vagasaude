@@ -1,6 +1,6 @@
 // Redes sociais do VagaSaúde PT (docs/REDES-SOCIAIS.md). Só aparecem as redes com link preenchido:
 // quando uma conta nova estiver pronta, basta pôr o URL aqui.
-const SOCIAL = [
+export const SOCIAL = [
   { name: "Telegram", url: "https://t.me/vagasaudept" },
   { name: "WhatsApp", url: "https://whatsapp.com/channel/0029VbDxb8A5PO0v9AeTbE32" },
   { name: "Instagram", url: "https://www.instagram.com/vagasaudept" },
@@ -17,6 +17,18 @@ const PATHS: Record<(typeof SOCIAL)[number]["name"], string> = {
   Facebook:
     "M13.3 19v-6h2l.3-2.4h-2.3V9.1c0-.7.2-1.2 1.2-1.2h1.2V5.8c-.2 0-1-.1-1.8-.1-1.8 0-3 1.1-3 3.1v1.8H8.9V13h2v6h2.4z",
 };
+
+/** Ícone cheio de uma rede (os mesmos do rodapé). */
+export function SocialIcon({ name, className = "h-4 w-4" }: { name: (typeof SOCIAL)[number]["name"]; className?: string }) {
+  return (
+    <svg aria-hidden="true" viewBox="4 4 16 16" className={className} fill="currentColor">
+      <path d={PATHS[name]} fillRule="evenodd" />
+    </svg>
+  );
+}
+
+export const TELEGRAM_URL = SOCIAL[0].url;
+export const WHATSAPP_URL = SOCIAL[1].url;
 
 /** Linha "Siga-nos" com os ícones das redes que já existem (rodapé e menu do telemóvel). */
 export function SocialLinks({ className = "" }: { className?: string }) {

@@ -55,7 +55,9 @@ export function isPublicJob(job: Pick<Job, "sector" | "source">) {
 // Padrões sobre texto normalizado (sem acentos, minúsculas).
 /** Avisos de resultado (lista final, homologação, anulação, contratação de pessoa concreta): não são concursos abertos. */
 const OUTCOME_RE =
-  /\blistas? (unitaria )?de (classificacao|ordenacao)|\bhomologa|\banulacao\b|\bdeserto\b|^contratacao de [^,]{3,60} em regime de|^(designacao|nomeacao|cessacao|exoneracao)\b|\bprovimento de\b/;
+  /\blistas? (unitaria )?de (classificacao|ordenacao)|\bhomologa|\banulacao\b|\bdeserto\b|^contratacao de [^,]{3,80},? em regime de|^(designacao|nomeacao|cessacao|exoneracao)\b|\bprovimento de\b/;
+/** Comunicados do júri (só no título): «Nota informativa», «Lista de candidatos admitidos/excluídos». */
+const NOTICE_TITLE_RE = /^nota informativa\b|\blistas? (?:provisoria |definitiva )?de candidatos (?:admitidos|excluidos)/;
 const MOBILIDADE_RE =
   /\bmobilidade (interna|intercarreiras|intercategorias|na categoria|na carreira|geral)|\bcedencia de interesse publico/;
 const MANIFESTACAO_RE =
@@ -97,7 +99,7 @@ function classifyUncached(
   const lead = norm(job.description ?? "").slice(0, 400);
   const text = `${title} | ${lead}`;
 
-  if (OUTCOME_RE.test(title) || OUTCOME_RE.test(lead.slice(0, 220))) return "oferta";
+  if (OUTCOME_RE.test(title) || NOTICE_TITLE_RE.test(title) || OUTCOME_RE.test(lead.slice(0, 220))) return "oferta";
   if (MOBILIDADE_RE.test(text)) return "mobilidade";
   if (MANIFESTACAO_RE.test(text)) return "manifestacao";
   if (BOLSA_RE.test(text)) return "bolsa";

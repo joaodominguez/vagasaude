@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useId, useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Bell, Menu, X } from "lucide-react";
 import { FavoritesBadge } from "./favorites-badge";
 import { Logo } from "./logo";
 import { ThemeToggle } from "./theme-toggle";
@@ -11,11 +11,16 @@ import { SocialLinks } from "./social-links";
 const NAV_ITEMS = [
   { href: "/vagas", label: "Procurar vagas" },
   { href: "/concursos", label: "Concursos" },
-  { href: "/favoritos", label: "Favoritos" },
+  { href: "/salarios", label: "Salários" },
   { href: "/noticias", label: "Notícias" },
+  { href: "/favoritos", label: "Favoritos" },
   { href: "/alertas", label: "Criar alerta" },
   { href: "/como-funciona", label: "Como funciona" },
 ] as const;
+
+const ALERT_HREF = "/alertas";
+/** Fora do menu de texto no ecrã grande (o alerta é o botão; favoritos é o coração). Ficam no menu móvel. */
+const DESKTOP_HIDDEN = new Set<string>([ALERT_HREF, "/favoritos", "/como-funciona"]);
 
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -47,7 +52,7 @@ export function Header() {
           aria-label="Navegação principal"
           className="hidden items-center gap-8 text-sm font-semibold md:flex"
         >
-          {NAV_ITEMS.map((item) => (
+          {NAV_ITEMS.filter((item) => !DESKTOP_HIDDEN.has(item.href)).map((item) => (
             <Link key={item.href} className="nav-link" href={item.href} prefetch={false}>
               {item.label}
             </Link>
@@ -55,6 +60,10 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <Link href={ALERT_HREF} prefetch={false} className="header-cta hidden md:inline-flex">
+            <Bell size={16} aria-hidden="true" />
+            Criar alerta
+          </Link>
           <FavoritesBadge />
           <ThemeToggle />
           <button
