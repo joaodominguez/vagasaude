@@ -215,13 +215,27 @@ export async function unsubscribeAlert(token: string) {
   return alert;
 }
 
+// Transição Medicina Dentária (19/11/2026): os médicos dentistas saíram de "Medicina".
+// Alertas antigos de Medicina continuam a recebê-los durante uns meses (rever em março de 2027).
+const MEDICO_DENTISTA = /m[eé]dic[oa]s?(?:\(a\)|\/a)?\s+dentista|\bdentista\b|medicina\s+dent[aá]ria\s*\(m[eé]dic/i;
+
+function professionMatches(alertProfession: string, job: { profession: string; title?: string }) {
+  if (alertProfession === job.profession) return true;
+  return (
+    alertProfession === "Medicina" &&
+    job.profession === "Medicina Dentária" &&
+    MEDICO_DENTISTA.test(job.title ?? "") &&
+    !/assistente|auxiliar|higienista|prot[eé]sico|rece[cç][aã]o|recepcionista/i.test(job.title ?? "")
+  );
+}
+
 export function alertMatchesJob(
   alert: StoredAlert,
-  job: { district: string; profession: string; sector: string },
+  job: { district: string; profession: string; sector: string; title?: string },
 ) {
   const { filters } = alert;
   if (filters.district && filters.district !== job.district) return false;
-  if (filters.profession && filters.profession !== job.profession) return false;
+  if (filters.profession && !professionMatches(filters.profession, job)) return false;
   if (filters.sector && filters.sector !== job.sector) return false;
   return true;
 }
