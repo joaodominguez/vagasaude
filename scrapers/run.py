@@ -141,9 +141,16 @@ def main() -> int:
     )
     args = parser.parse_args()
 
+    # SKIP_SOURCES=a,b: fontes que o VPS não corre no --source all (correm fora do VPS,
+    # ex. run-pt-bloqueadas-mac.sh). Um --source <slug> explícito corre sempre.
+    skip = {part.strip() for part in os.environ.get("SKIP_SOURCES", "").split(",") if part.strip()}
     sources = sorted(SCRAPERS.keys()) if args.source == "all" else [args.source]
     summaries = []
     for slug in sources:
+        if args.source == "all" and slug in skip:
+            print(f"[{slug}] SKIP — listado em SKIP_SOURCES (corre fora do VPS).")
+            summaries.append({"source": slug, "status": "skipped"})
+            continue
         summaries.append(run_source(slug, dry_run=args.dry_run))
 
     print(json.dumps({"ok": True, "results": summaries}, ensure_ascii=False, indent=2))

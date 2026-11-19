@@ -7,6 +7,9 @@ set -a
 source /var/www/vagasaude/.env.production
 set +a
 export INGEST_BASE_URL=http://127.0.0.1:3010
+# Fontes que dão 403 ao IP do VPS (blacklist de 17/11) correm no Mac do utilizador
+# (scrapers/run-pt-bloqueadas-mac.sh, LaunchAgent pt.vagasaude.pt-bloqueadas). Temporário: rever 21/11.
+export SKIP_SOURCES="${SKIP_SOURCES:-apdp,cruz_vermelha,irmas_hospitaleiras,unisana}"
 cd /var/www/vagasaude/scrapers
 
 # Chrome headful (IPO Porto / PHARMABSC / Net-Empregos) precisa de X.
@@ -27,7 +30,7 @@ if [[ "$scrape_rc" -ne 0 ]]; then
 fi
 
 # Fontes avariadas (últimas 4 execuções com 0 vagas ou erro): log + email se ALERTS_TO.
-HEALTH_ALLOW_EMPTY="${HEALTH_ALLOW_EMPTY:-uls_sao_joao}" python3 "/var/www/vagasaude/scrapers/tools/scraper_health.py" /var/www/vagasaude/data/scraper-runs.json || true
+HEALTH_IGNORE="${HEALTH_IGNORE:-$SKIP_SOURCES}" HEALTH_ALLOW_EMPTY="${HEALTH_ALLOW_EMPTY:-uls_sao_joao}" python3 "/var/www/vagasaude/scrapers/tools/scraper_health.py" /var/www/vagasaude/data/scraper-runs.json || true
 
 # Integridade do jobs.json (incidente BR 2026-10-27): slugs desaparecidos, quedas, 404.
 python3 "/var/www/vagasaude/scrapers/tools/jobs_integrity.py" /var/www/vagasaude/data http://127.0.0.1:3010 /vagas/ || true
