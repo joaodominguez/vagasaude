@@ -39,7 +39,7 @@ fi
 # no VPS regenerar a partir de /var/www/vacantessalud/data.
 # O mesmo para outras páginas estáticas que dependem dos dados (hub de
 # oposiciones e índice de salários): senão saem vazias/noindex até ao 1º revalidate.
-for page in index oposiciones salarios; do
+for page in index oposiciones salarios datos; do
   rm -f "$STAGE/.next/server/app/$page.html" \
     "$STAGE/.next/server/app/$page.rsc" \
     "$STAGE/.next/server/app/$page.meta"
@@ -47,4 +47,4 @@ for page in index oposiciones salarios; do
 done
 
 tar -C "$STAGE" -czf "$OUT" .
-echo "OK $OUT (css=$CSS_COUNT, data prerenders stripped: index oposiciones salarios)"
+echo "OK $OUT (css=$CSS_COUNT, data prerenders stripped: index oposiciones salarios datos)"
