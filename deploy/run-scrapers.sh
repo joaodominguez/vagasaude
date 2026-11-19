@@ -7,9 +7,23 @@ set -a
 source /var/www/vagasaude/.env.production
 set +a
 export INGEST_BASE_URL=http://127.0.0.1:3010
-# Fontes que dão 403 ao IP do VPS (blacklist de 17/11) correm no Mac do utilizador
-# (scrapers/run-pt-bloqueadas-mac.sh, LaunchAgent pt.vagasaude.pt-bloqueadas). Temporário: rever 21/11.
-export SKIP_SOURCES="${SKIP_SOURCES:-apdp,cruz_vermelha,irmas_hospitaleiras,unisana}"
+# Servidor primeiro, Mac como reserva (19-11-2026). Estas fontes davam 403 ao VagaSaudeBot vindo do
+# IP do VPS (blacklist de 17/11; com outro user-agent o servidor responde 200, por isso o bloqueio é
+# ao robô a partir deste IP). Antes de cada corrida testa-se o host com os MESMOS cabeçalhos do scraper (UA + Accept)
+# (12 s): se responder, recolhem-se aqui; se não (000/403/429), saltam-se nesta corrida e o Mac
+# recolhe-as (scrapers/run-pt-bloqueadas-mac.sh, que só corre o que o VPS não recolheu nas últimas 2 h).
+PROBE_UA="VagaSaudeBot/1.0 (+https://vagasaude.pt/bot)"
+PROBE_SOURCES="apdp=https://apdp.pt/apdp/recrutamento/ cruz_vermelha=https://www.cruzvermelha.pt/cruz-vermelha-portuguesa/trabalhar-na-cruz-vermelha-portuguesa/ irmas_hospitaleiras=https://irmashospitaleiras.pt/trabalhe-connosco/ unisana=https://unisanahospitais.pt/recrutamento/"
+blocked=""
+for pair in $PROBE_SOURCES; do
+  src="${pair%%=*}"; url="${pair#*=}"
+  code="$(curl -s -o /dev/null -m 12 -A "$PROBE_UA" -H "Accept: application/json, text/html, */*" -w '%{http_code}' "$url" || true)"
+  if [[ "$code" == 000 || "$code" == 403 || "$code" == 429 ]]; then
+    blocked="$blocked,$src"
+    echo "[run-scrapers] $src: o VPS não chega à fonte (HTTP $code) — fica para o Mac"
+  fi
+done
+export SKIP_SOURCES="${SKIP_SOURCES:-${blocked#,}}"
 cd /var/www/vagasaude/scrapers
 
 # Chrome headful (IPO Porto / PHARMABSC / Net-Empregos) precisa de X.
