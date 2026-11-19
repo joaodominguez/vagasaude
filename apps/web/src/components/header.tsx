@@ -20,7 +20,9 @@ const NAV_ITEMS = [
 
 const ALERT_HREF = "/alertas";
 /** Fora do menu de texto no ecrã grande (o alerta é o botão; favoritos é o coração). Ficam no menu móvel. */
-const DESKTOP_HIDDEN = new Set<string>([ALERT_HREF, "/favoritos", "/como-funciona"]);
+const DESKTOP_HIDDEN = new Set<string>([ALERT_HREF]);
+// Favoritos e Como funciona: no menu de desktop a partir de 1024 px (abaixo ficam no menu móvel).
+const SECONDARY_HREFS = new Set<string>(["/favoritos", "/como-funciona"]);
 
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -53,7 +55,12 @@ export function Header() {
           className="hidden items-center gap-8 text-sm font-semibold md:flex"
         >
           {NAV_ITEMS.filter((item) => !DESKTOP_HIDDEN.has(item.href)).map((item) => (
-            <Link key={item.href} className="nav-link" href={item.href} prefetch={false}>
+            <Link
+              key={item.href}
+              className={SECONDARY_HREFS.has(item.href) ? "nav-link hidden lg:inline" : "nav-link"}
+              href={item.href}
+              prefetch={false}
+            >
               {item.label}
             </Link>
           ))}
