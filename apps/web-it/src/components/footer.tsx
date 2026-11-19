@@ -52,6 +52,15 @@ export function Footer() {
               Spagna
             </a>
           </p>
+          <p className="flex basis-full flex-wrap gap-x-2 gap-y-1">
+            <span>Altri progetti:</span>
+            <span>
+              Lavoro nella scuola:{" "}
+              <a className="hover:text-primary" href="https://offertescuola.it/">
+                OfferteScuola
+              </a>
+            </span>
+          </p>
         </div>
       </div>
     </footer>
