@@ -5,11 +5,14 @@ import { FormEvent, useState } from "react";
 import { districts, professions, sectors } from "@/lib/taxonomies";
 
 export function AlertForm({
+  band = false,
   compact = false,
   defaultDistrict = "",
   defaultProfession = "",
   defaultSector = "",
 }: {
+  /** Variante della faccia «Avvisi» in home (su fondo scuro): selezioni in riga + email + bottone. */
+  band?: boolean;
   compact?: boolean;
   defaultDistrict?: string;
   defaultProfession?: string;
@@ -84,6 +87,59 @@ export function AlertForm({
           {message}
         </p>
       </div>
+    );
+  }
+
+  if (band) {
+    return (
+      <form onSubmit={submit} className="alert-band-form">
+        <div className="alert-band-row">
+          <label>
+            <span className="sr-only">Professione</span>
+            <select name="profession" defaultValue={defaultProfession}>
+              <option value="">Tutte le professioni</option>
+              {professions.map((profession) => (
+                <option key={profession} value={profession}>
+                  {profession}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
+            <span className="sr-only">Regione</span>
+            <select name="district" defaultValue={defaultDistrict}>
+              <option value="">Tutta Italia</option>
+              {districts.map((district) => (
+                <option key={district} value={district}>
+                  {district}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+        <input type="hidden" name="sector" value={defaultSector} />
+        <label>
+          <span className="sr-only">La tua email</span>
+          <input
+            required
+            type="email"
+            name="email"
+            placeholder="nome@esempio.it"
+            autoComplete="email"
+            inputMode="email"
+          />
+        </label>
+        <button className="alert-band-submit" type="submit" disabled={status === "loading"}>
+          {status === "loading" && <LoaderCircle className="animate-spin" size={17} />}
+          Crea avviso gratuito
+        </button>
+        {status === "error" && (
+          <p role="alert" className="alert-band-error">
+            Non è stato possibile creare l’avviso. Riprova.
+          </p>
+        )}
+        <small>Niente spam. Solo offerte nuove in linea con la tua scelta.</small>
+      </form>
     );
   }
 

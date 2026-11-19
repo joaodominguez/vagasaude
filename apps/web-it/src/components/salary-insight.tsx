@@ -23,11 +23,9 @@ export function SalaryInsight({ job, variant = "full" }: Props) {
   if (!benchmark) {
     if (variant === "compact" || !announced) return null;
     return (
-      <div className="rounded-xl border border-border bg-primary-soft/40 px-3 py-3">
-        <p className="text-xs leading-5 text-foreground">
-          <span className="font-semibold">In questa offerta: </span>
-          <span className="text-muted">{announced}</span>
-        </p>
+      <div className="salary-announced">
+        <span className="salary-announced-kicker">Retribuzione indicata nell&apos;offerta</span>
+        <span className="salary-announced-value">{announced}</span>
       </div>
     );
   }
