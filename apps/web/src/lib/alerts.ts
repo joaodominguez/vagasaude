@@ -4,6 +4,13 @@ import path from "node:path";
 
 export type AlertStatus = "pending_confirm" | "active" | "unsubscribed";
 
+/** Problema de entrega do email (marcado por scrapers/tools/alerts_email_issues.py a partir da Resend). */
+export type EmailIssue = {
+  type: "bounce" | "complaint" | "invalid_domain";
+  at: string;
+  detail?: string | null;
+};
+
 export type AlertFilters = {
   district: string | null;
   profession: string | null;
@@ -20,6 +27,7 @@ export type StoredAlert = {
   updatedAt: string;
   confirmedAt: string | null;
   unsubscribedAt: string | null;
+  emailIssue?: EmailIssue | null;
 };
 
 type LegacyAlert = {
@@ -32,6 +40,7 @@ type LegacyAlert = {
   updatedAt?: string;
   confirmedAt?: string | null;
   unsubscribedAt?: string | null;
+  emailIssue?: EmailIssue | null;
 };
 
 function dataDir() {
@@ -74,6 +83,7 @@ function normalizeAlert(raw: LegacyAlert): StoredAlert | null {
     confirmedAt:
       raw.confirmedAt ?? (status === "active" ? createdAt : null),
     unsubscribedAt: raw.unsubscribedAt ?? null,
+    emailIssue: raw.emailIssue ?? null,
   };
 }
 
@@ -147,6 +157,7 @@ export async function upsertAlertSubscription(input: {
       existing.status = "pending_confirm";
       existing.token = createAlertToken();
       existing.confirmedAt = null;
+      existing.emailIssue = null;
       existing.unsubscribedAt = null;
     }
     await writeAlertsFile(alerts);
@@ -182,6 +193,7 @@ export async function confirmAlert(token: string) {
   const now = new Date().toISOString();
   alert.status = "active";
   alert.confirmedAt = now;
+  alert.emailIssue = null;
   alert.updatedAt = now;
   await writeAlertsFile(alerts);
   return alert;

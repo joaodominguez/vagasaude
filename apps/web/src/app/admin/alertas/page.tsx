@@ -2,6 +2,12 @@ import { describeAlertFilters, listAlerts } from "@/lib/alerts";
 
 export const dynamic = "force-dynamic";
 
+const ISSUE_LABEL: Record<string, string> = {
+  bounce: "Email devolvido (bounce)",
+  complaint: "Marcado como spam",
+  invalid_domain: "Domínio do email inválido",
+};
+
 const STATUS_LABEL: Record<string, string> = {
   active: "Activo",
   pending_confirm: "Por confirmar",
@@ -72,6 +78,12 @@ export default async function AdminAlertsPage() {
                   >
                     {STATUS_LABEL[alert.status] || alert.status}
                   </p>
+                  {alert.emailIssue && (
+                    <p className="mt-1 font-semibold text-red-600 dark:text-red-400" title={alert.emailIssue.detail ?? undefined}>
+                      ⚠ {ISSUE_LABEL[alert.emailIssue.type] || alert.emailIssue.type} ·{" "}
+                      {new Date(alert.emailIssue.at).toLocaleDateString("pt-PT")}
+                    </p>
+                  )}
                   <p className="mt-1">
                     {new Date(alert.createdAt).toLocaleString("pt-PT")}
                   </p>
