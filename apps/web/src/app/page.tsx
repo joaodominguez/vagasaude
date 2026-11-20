@@ -21,6 +21,7 @@ import { formatNewsDate, listArticles, newsCategoryLabel, newsPath } from "@/lib
 import { buildHomeMetadata } from "@/lib/seo";
 import { freshnessLabel, homePaths, listHomeAreas } from "@/lib/home-sections";
 import { employerPath } from "@/lib/employers";
+import { listRecentJobs, RECENT_PATH } from "@/lib/recent-jobs";
 
 // Soft-expire alinhado ao Data Cache de jobs (ingest ≤2 min).
 export const revalidate = 120;
@@ -39,6 +40,7 @@ export default async function Home() {
       return a.title.localeCompare(b.title, "pt");
     })
     .slice(0, 6);
+  const todaySet = listRecentJobs(jobs);
   const concursos = listConcursos(jobs);
   const latestNews = listArticles().slice(0, 3);
   const districtCounts = jobs.reduce<Record<string, number>>((acc, job) => {
@@ -142,8 +144,11 @@ export default async function Home() {
               <span className="section-kicker">Atualizado diariamente</span>
               <h2 className="section-title">Vagas mais recentes</h2>
             </div>
-            <Link href="/vagas" className="home-more">
-              Ver todas as {nf.format(jobs.length)} vagas <ArrowRight size={16} aria-hidden="true" />
+            <Link href={RECENT_PATH} className="home-more">
+              {todaySet.hours <= 48
+                ? `Ver as ${nf.format(todaySet.jobs.length)} vagas de hoje`
+                : `Ver as ${nf.format(todaySet.jobs.length)} vagas mais recentes`}{" "}
+              <ArrowRight size={16} aria-hidden="true" />
             </Link>
           </div>
 
@@ -165,6 +170,11 @@ export default async function Home() {
               </Link>
             </div>
           )}
+          <p className="mt-5 text-sm">
+            <Link href="/vagas" className="home-more">
+              Ver todas as {nf.format(jobs.length)} vagas <ArrowRight size={16} aria-hidden="true" />
+            </Link>
+          </p>
         </section>
 
         <section id="alertas" className="page-container pb-14 sm:pb-16">

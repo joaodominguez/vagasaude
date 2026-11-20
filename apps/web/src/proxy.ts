@@ -6,6 +6,12 @@ export function proxy(request: NextRequest) {
   // URLs antigas do BEP partiam o slug com OE202607/0939.
   // Reescreve /vagas/...-OE202607/0939 → /vagas/...-oe202607-0939
   if (pathname.startsWith("/vagas/")) {
+    // «pagina-1» de /vagas/hoje → URL base (308 aqui: o permanentRedirect() de páginas ISR pode duplicar o Location).
+    if (/^\/vagas\/hoje\/pagina-0*1\/?$/.test(pathname)) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/vagas/hoje";
+      return NextResponse.redirect(url, 308);
+    }
     const repaired = repairBepJobPath(pathname);
     if (repaired && repaired !== pathname) {
       const url = request.nextUrl.clone();

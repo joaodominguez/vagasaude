@@ -34,5 +34,12 @@ if [[ "$CSS_COUNT" -lt 1 ]]; then
   exit 1
 fi
 
-tar -C "$STAGE" -czf "$OUT" .
+# Página nova com dados (2026-11-20): /vagas/hoje e paginação. O prerender do build traz os dados do
+# jobs.json do Mac; apagar para a 1ª request no VPS gerar com os dados reais.
+rm -f "$STAGE/.next/server/app/vagas/hoje.html" \
+  "$STAGE/.next/server/app/vagas/hoje.rsc" \
+  "$STAGE/.next/server/app/vagas/hoje.meta"
+rm -rf "$STAGE/.next/server/app/vagas/hoje.segments" 2>/dev/null || true
+
+COPYFILE_DISABLE=1 tar -C "$STAGE" -czf "$OUT" .
 echo "OK $OUT (css=$CSS_COUNT)"

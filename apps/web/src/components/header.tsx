@@ -10,6 +10,7 @@ import { SocialLinks } from "./social-links";
 
 const NAV_ITEMS = [
   { href: "/vagas", label: "Procurar vagas" },
+  { href: "/vagas/hoje", label: "Vagas de hoje" },
   { href: "/concursos", label: "Concursos" },
   { href: "/salarios", label: "Salários" },
   { href: "/noticias", label: "Notícias" },
@@ -22,7 +23,7 @@ const ALERT_HREF = "/alertas";
 /** Fora do menu de texto no ecrã grande (o alerta é o botão; favoritos é o coração). Ficam no menu móvel. */
 const DESKTOP_HIDDEN = new Set<string>([ALERT_HREF]);
 // Favoritos e Como funciona: no menu de desktop a partir de 1024 px (abaixo ficam no menu móvel).
-const SECONDARY_HREFS = new Set<string>(["/favoritos", "/como-funciona"]);
+const SECONDARY_HREFS = new Set<string>(["/favoritos", "/como-funciona", "/vagas/hoje"]);
 
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -52,7 +53,7 @@ export function Header() {
 
         <nav
           aria-label="Navegação principal"
-          className="hidden items-center gap-8 text-sm font-semibold md:flex"
+          className="hidden items-center gap-8 whitespace-nowrap text-sm font-semibold md:flex lg:gap-4 lg:text-[13px] xl:gap-8 xl:text-sm"
         >
           {NAV_ITEMS.filter((item) => !DESKTOP_HIDDEN.has(item.href)).map((item) => (
             <Link
