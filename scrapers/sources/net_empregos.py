@@ -117,6 +117,7 @@ DETAIL_CACHE_ENV = "NET_EMPREGOS_DETAIL_CACHE"
 DETAIL_MAX_FETCHES = int(os.environ.get("NET_EMPREGOS_MAX_DETAILS", "200"))
 DETAIL_MIN_INTERVAL = 2.5
 DETAIL_MIN_CHARS = 300
+EXCERPT_HOLD_REASON = "Aguarda o anúncio completo (só excerto do Net-Empregos)"
 DETAIL_CACHE_TTL_DAYS = 60
 DETAIL_MAX_CONSECUTIVE_FAILURES = 3
 # O site limita as páginas de detalhe por IP sem sessão (depois mostra o login).
@@ -168,8 +169,10 @@ class NetEmpregosScraper(BaseScraper):
         # completa. Soft-expire só quando temos um lote suficientemente grande.
         self.last_listings_complete = len(jobs) >= MIN_JOBS_FOR_SOFT_EXPIRE
         cache_path = os.environ.get(DETAIL_CACHE_ENV)
+        detailed: set[str] = set()
         if cache_path:
-            _enrich_with_details(jobs, cache_path)
+            detailed = _enrich_with_details(jobs, cache_path)
+        _hold_excerpt_only(jobs, detailed)
         return jobs
 
     def _fetch_html_listings(self) -> list[dict]:
@@ -503,10 +506,31 @@ def _strip_detail_footer(text: str) -> str:
     return "\n".join(lines).strip()
 
 
-def _enrich_with_details(jobs: list[JobPayload], cache_path: str) -> None:
+def _hold_excerpt_only(jobs: list[JobPayload], detailed: set[str]) -> None:
+    """Vagas só com o excerto cortado do RSS ("...") ficam em espera (pending_review).
+
+    Não aparecem no site, sitemap nem Indexing API; publicam-se quando o Mac
+    trouxer o anúncio completo. A app (job-store) não despublica vagas que já
+    estavam publicadas: só afeta vagas novas.
+    """
+    held = 0
+    for job in jobs:
+        if job.status != "published" or job.source_id in detailed:
+            continue
+        if (job.description or "").rstrip().endswith(("...", "…")):
+            job.status = "pending_review"
+            job.review_reason = EXCERPT_HOLD_REASON
+            held += 1
+    print(f"[net_empregos] {held} vagas só com excerto (em espera até haver o anúncio completo)")
+
+
+def _enrich_with_details(jobs: list[JobPayload], cache_path: str) -> set[str]:
     """Troca o excerto do RSS pela descrição completa (cache + pedidos novos espaçados)."""
     cache = _load_detail_cache(cache_path)
     fetched = failures = enriched = 0
+    detailed: set[str] = set()
+    pending = 0  # sem cache e sem pedido nesta corrida
+    stop_reason = ""
     last_request = 0.0
     blocked = False
     # Mais recentes primeiro: com o limite do site, os pedidos vão para as vagas novas.
@@ -519,11 +543,22 @@ def _enrich_with_details(jobs: list[JobPayload], cache_path: str) -> None:
         for job in ordered:
             entry = cache.get(job.source_id)
             if not entry:
-                if (
-                    blocked
-                    or fetched >= DETAIL_MAX_FETCHES
-                    or failures >= DETAIL_MAX_CONSECUTIVE_FAILURES
-                ):
+                if blocked:
+                    pending += 1
+                    continue
+                if fetched >= DETAIL_MAX_FETCHES:
+                    stop_reason = stop_reason or (
+                        f"tope de {DETAIL_MAX_FETCHES} pedidos"
+                        if DETAIL_MAX_FETCHES
+                        else "pedidos desligados (fase de ingestão)"
+                    )
+                    pending += 1
+                    continue
+                if failures >= DETAIL_MAX_CONSECUTIVE_FAILURES:
+                    stop_reason = stop_reason or (
+                        f"{failures} páginas seguidas sem descrição"
+                    )
+                    pending += 1
                     continue
                 wait = DETAIL_MIN_INTERVAL - (time.monotonic() - last_request)
                 if wait > 0:
@@ -539,11 +574,14 @@ def _enrich_with_details(jobs: list[JobPayload], cache_path: str) -> None:
                     html = ""
                 if html and _is_login_wall(html):
                     blocked = True
+                    stop_reason = "login wall do site"
+                    pending += 1
                     continue
                 text = _parse_detail_description(html) if html else None
                 if not text:
                     # Página sem descrição: tenta-se noutra execução.
                     failures += 1
+                    pending += 1
                     continue
                 failures = 0
                 # Anúncios curtos também ficam em cache (não voltar a pedir).
@@ -552,6 +590,7 @@ def _enrich_with_details(jobs: list[JobPayload], cache_path: str) -> None:
                     "fetched_at": datetime.now(timezone.utc).isoformat(),
                 }
                 cache[job.source_id] = entry
+            detailed.add(job.source_id)
             if len(entry["description"]) <= len(job.description or ""):
                 continue
             job.description = entry["description"]
@@ -561,11 +600,16 @@ def _enrich_with_details(jobs: list[JobPayload], cache_path: str) -> None:
             )
             enriched += 1
     _save_detail_cache(cache_path, cache)
+    short = sum(1 for job in jobs if len(job.description or "") < DETAIL_MIN_CHARS)
+    if not stop_reason:
+        stop_reason = "sem pedidos pendentes" if not pending else "terminou"
     print(
         f"[net_empregos] detalhe: {enriched}/{len(jobs)} com descrição completa "
-        f"({fetched} pedidos novos, cache {len(cache)}"
-        f"{', parou no login do site' if blocked else ''})"
+        f"({fetched} pedidos novos, cache {len(cache)}) | motivo: {stop_reason} | "
+        f"{pending} sem detalhe por pedir/falhadas, {short} vagas ainda com "
+        f"descrição < {DETAIL_MIN_CHARS} caracteres"
     )
+    return detailed
 
 
 def _fallback_description(title: str, company: str, place: str) -> str:

@@ -1037,6 +1037,8 @@ function keepFullerDescription(existing: StoredJob | undefined, incoming: string
   return sameText || existing?.source === "net_empregos" ? current : incoming;
 }
 
+const EXCERPT_HOLD_PREFIX = "Aguarda o anúncio completo";
+
 /** Agregadores: perdem para a mesma vaga publicada pelo próprio empregador. */
 const AGGREGATOR_SOURCES = new Set(["net_empregos", "sapo_emprego", "iefp"]);
 
@@ -1109,6 +1111,17 @@ async function ingestJobsUnlocked(
     let status: StoredJob["status"] =
       item.status || (incomplete ? "pending_review" : "published");
     let reviewReason = item.review_reason || null;
+
+    // Net-Empregos só com excerto: vaga nova fica em espera, mas uma vaga que já
+    // estava publicada nunca é despublicada por causa disto.
+    if (
+      status === "pending_review" &&
+      reviewReason?.startsWith(EXCERPT_HOLD_PREFIX) &&
+      existingSameSource?.status === "published"
+    ) {
+      status = "published";
+      reviewReason = null;
+    }
 
     if (!existingSameSource && existingHash) {
       const hashIsLive =
