@@ -16,17 +16,11 @@ export function Footer() {
         <div className="flex flex-col gap-4 sm:items-end">
           <SocialLinks />
           <nav className="flex flex-wrap gap-x-6 gap-y-3 text-sm text-muted">
-            <Link className="hover:text-primary" href="/vagas/hoje">
-              Vagas de hoje
-            </Link>
             <Link className="hover:text-primary" href="/empresas">
               Empresas
             </Link>
             <Link className="hover:text-primary" href="/dados">
               Dados
-            </Link>
-            <Link className="hover:text-primary" href="/salarios">
-              Salários
             </Link>
             <Link className="hover:text-primary" href="/contato">
               Contato
