@@ -28,10 +28,57 @@ export function employerPath(slug: string) {
 
 const cache = new WeakMap<Job[], Employer[]>();
 
+/**
+ * Isteresi (20-11-2026): un ente con EMPLOYER_MIN_JOBS offerte negli ultimi
+ * EMPLOYER_HISTORY_DAYS giorni (attive + scadute viste in quel periodo) mantiene la pagina
+ * finché ha almeno 1 offerta attiva. Prima, scendendo da 5 a 4 offerte la pagina veniva
+ * reindirizzata e Google perdeva pagine che già mostrava.
+ * Lo storico è registrato da jobs-data per ogni lista di offerte (stesso riferimento).
+ */
+export const EMPLOYER_HISTORY_DAYS = 30;
+
+type HistoryJob = {
+  company: string | null;
+  status: string;
+  lastSeenAt?: string | null;
+  updatedAt?: string | null;
+};
+
+const historyByJobs = new WeakMap<Job[], Map<string, number>>();
+
+export function hasEmployerHistory(jobs: Job[]) {
+  return historyByJobs.has(jobs);
+}
+
+export function setEmployerHistory(jobs: Job[], history: Map<string, number>) {
+  historyByJobs.set(jobs, history);
+}
+
+/** Offerte per ente (slug): attive + scadute viste negli ultimi EMPLOYER_HISTORY_DAYS giorni. */
+export function countEmployerHistory(stored: HistoryJob[], now = Date.now()) {
+  const cutoff = now - EMPLOYER_HISTORY_DAYS * 86_400_000;
+  const counts = new Map<string, number>();
+  for (const job of stored) {
+    if (job.status === "expired") {
+      const seen = Date.parse(job.lastSeenAt || job.updatedAt || "");
+      if (Number.isNaN(seen) || seen < cutoff) continue;
+    } else if (job.status !== "published") {
+      continue;
+    }
+    const name = (job.company || "").trim();
+    if (!name || ANONYMOUS_RE.test(name)) continue;
+    const slug = toCategorySlug(name);
+    if (!slug) continue;
+    counts.set(slug, (counts.get(slug) ?? 0) + 1);
+  }
+  return counts;
+}
+
 /** Datori di lavoro idonei, per numero di offerte (decrescente). */
 export function listEmployers(jobs: Job[]): Employer[] {
   const cached = cache.get(jobs);
   if (cached) return cached;
+  const history = historyByJobs.get(jobs);
   const groups = new Map<string, { names: Map<string, number>; jobs: Job[] }>();
   for (const job of jobs) {
     const name = (job.company || "").trim();
@@ -45,7 +92,7 @@ export function listEmployers(jobs: Job[]): Employer[] {
   }
   const list: Employer[] = [];
   for (const [slug, group] of groups) {
-    if (group.jobs.length < EMPLOYER_MIN_JOBS) continue;
+    if (group.jobs.length < EMPLOYER_MIN_JOBS && (history?.get(slug) ?? 0) < EMPLOYER_MIN_JOBS) continue;
     const name = [...group.names.entries()].sort((a, b) => b[1] - a[1])[0][0];
     list.push({ slug, name, path: employerPath(slug), jobs: group.jobs });
   }

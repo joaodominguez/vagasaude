@@ -1,6 +1,7 @@
 import { cache } from "react";
 import { jobs as seedJobs, type Job } from "@/lib/jobs";
-import { getJobCard, listJobCards } from "@/lib/job-store";
+import { decodeHtmlEntities, getJobCard, listAllStoredJobs, listJobCards } from "@/lib/job-store";
+import { countEmployerHistory, hasEmployerHistory, setEmployerHistory } from "@/lib/employers";
 
 export type { Job };
 
@@ -23,9 +24,28 @@ function resolveJobs(stored: Job[]): Job[] {
   return seedJobs;
 }
 
+/** Registra lo storico delle offerte per ente (pagine ente con isteresi, vedi employers.ts). */
+async function withEmployerHistory(jobs: Job[]): Promise<Job[]> {
+  if (!hasEmployerHistory(jobs)) {
+    const stored = await listAllStoredJobs();
+    setEmployerHistory(
+      jobs,
+      countEmployerHistory(
+        stored.map((job) => ({
+          company: decodeHtmlEntities(job.company),
+          status: job.status,
+          lastSeenAt: job.lastSeenAt,
+          updatedAt: job.updatedAt,
+        })),
+      ),
+    );
+  }
+  return jobs;
+}
+
 export const getJobs = cache(async (): Promise<Job[]> => {
   const stored = await listJobCards();
-  return resolveJobs(stored);
+  return withEmployerHistory(resolveJobs(stored));
 });
 
 export const getJob = cache(
