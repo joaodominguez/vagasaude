@@ -3,6 +3,10 @@ title: "Bolsas de empleo de sanidad por comunidad autónoma: dónde y cómo insc
 slug: bolsas-empleo-sanidad-comunidades
 date: 2026-11-07
 category: guias
+image: /noticias/bolsas-empleo-sanidad-comunidades.webp
+imageAlt: "Fachada de un hospital con galerías y jardín"
+imageCredit: "Juan Moccagatta / Pexels"
+imageCreditUrl: "https://www.pexels.com/photo/historic-building-exterior-with-columns-and-greenery-38087624/"
 draft: false
 description: "Dónde inscribirse en las bolsas de empleo temporal de sanidad de cada comunidad autónoma e INGESA: servicio de salud, enlace oficial y cómo funcionan el autobaremo, los cortes y los llamamientos."
 summary:

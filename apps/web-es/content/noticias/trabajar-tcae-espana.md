@@ -3,6 +3,10 @@ title: "Cómo trabajar de TCAE en España: título, funciones y dónde encontrar
 slug: trabajar-tcae-espana
 date: 2026-11-07
 category: guias
+image: /noticias/trabajar-tcae-espana.webp
+imageAlt: "Sanitaria toma la tensión a una paciente en la consulta"
+imageCredit: "RDNE Stock project / Pexels"
+imageCreditUrl: "https://www.pexels.com/photo/a-nurse-checking-a-woman-s-blood-pressure-6129678/"
 draft: false
 description: "Guía para trabajar de TCAE en España: título oficial y duración, funciones, dónde trabajan los técnicos en cuidados auxiliares de enfermería, cómo acceder a bolsas y oposiciones y consejos para el sector privado."
 summary:

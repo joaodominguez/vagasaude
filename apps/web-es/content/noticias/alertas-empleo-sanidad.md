@@ -3,6 +3,10 @@ title: "Cómo usar las alertas de empleo de VacantesSalud"
 slug: alertas-empleo-sanidad
 date: 2026-11-04
 category: guias
+image: /noticias/alertas-empleo-sanidad.webp
+imageAlt: "Médica sonriente con bata y estetoscopio consulta el móvil"
+imageCredit: "Tessy Agbonome / Pexels"
+imageCreditUrl: "https://www.pexels.com/photo/smiling-doctor-texting-19963176/"
 draft: false
 description: "Paso a paso para crear una alerta de empleo sanitario en VacantesSalud: elige comunidad, profesión y sector, confirma tu email y gestiona la suscripción."
 summary:
