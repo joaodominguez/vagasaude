@@ -48,12 +48,11 @@ WATCH = {
         "known": ["fb18d94306ab49f3abc460a835531692", "4c88022364dd4db384bc14ceefe8d625"],
     },
     "lombardia": {
-        "url": "https://omceomi.it/medicina-generale-continuita-assistenziale-e-118/",
-        "pattern": r'href="https://omceomi\.it/wp-content/uploads/(2026/\d\d/[^"]*(?:incarichi-vacanti|ambiti)[^"]*\.pdf)"',
-        "known": [
-            "2026/10/Pubblicazione-incarichi-vacanti-per-medici-ruolo-unico-assistenza-primaria-e-pls-DIREZIONE-GENERALE-WELFARE-BURL-28.10.2026-1.pdf",
-            "2026/04/Pubblicazione-incarichi-vacanti-per-medici-di-ruolo-unico-di-assistenza-primaria-e-per-pls-COMUNICATO-GIUNTA-REGIONALE-24.3.2026.pdf",
-        ],
+        # A pagina ufficiale elenca solo allegati 2024; il segnale e' la data «Ultimo aggiornamento» (04 Novembre 2026 = dataset).
+        # (omceomi.it, da dove si leggono i PDF, non risponde dal VPS: non si insiste.)
+        "url": "https://www.regione.lombardia.it/sanita/personale-sanitario-e-sociosanitario/concorsi-e-avvisi-presso-enti-sanitari/pubblicazione-ambiti-carenti-di-assistenza-primaria-a-ciclo-di-scelta-e-pediatria-e-ore-vacanti-di-assistenza-primaria-ad-attivit--oraria-e-di-emergenza-territoriale",
+        "pattern": r'Ultimo aggiornamento:\s*<span[^>]*>([^<]+)</span>',
+        "known": ["04 Novembre 2026"],
     },
     "lazio": {
         "url": "https://www.regione.lazio.it/notizie/salute/Assegnazione-incarichi-vacanti-medico-ruolo-unico-assistenza-primaria",
