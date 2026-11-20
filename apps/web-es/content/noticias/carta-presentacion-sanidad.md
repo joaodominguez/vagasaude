@@ -3,6 +3,10 @@ title: "Carta de presentación breve para hospitales, residencias y clínicas"
 slug: carta-presentacion-sanidad
 date: 2026-11-04
 category: guias
+image: /noticias/carta-presentacion-sanidad.webp
+imageAlt: "Cuidadora conversa con una mujer mayor en su casa"
+imageCredit: "Antoni Shkraba / Pexels"
+imageCreditUrl: "https://www.pexels.com/photo/woman-in-yellow-long-sleeve-shirt-holding-a-bottle-of-juice-7345443/"
 draft: false
 description: "Cómo escribir una carta de presentación corta y útil para candidaturas sanitarias en España: estructura, ejemplo adaptable y errores que conviene evitar."
 summary:

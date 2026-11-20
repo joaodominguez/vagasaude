@@ -3,6 +3,10 @@ title: "Colegiación en las profesiones sanitarias: qué es y cómo colegiarse"
 slug: colegiacion-sanitaria-espana
 date: 2026-11-07
 category: guias
+image: /noticias/colegiacion-sanitaria-espana.webp
+imageAlt: "Profesional sanitaria con bata blanca sostiene un estetoscopio"
+imageCredit: "Polina Tankilevitch / Pexels"
+imageCreditUrl: "https://www.pexels.com/photo/person-holding-a-blue-and-silver-stethoscope-5234501/"
 draft: false
 description: "Qué es la colegiación en las profesiones sanitarias en España, cuándo es obligatoria, base legal (Ley 2/1974 y Ley 44/2003), pasos generales para colegiarte y qué es la ventanilla única de los colegios."
 summary:

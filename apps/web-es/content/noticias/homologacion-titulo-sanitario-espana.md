@@ -3,6 +3,10 @@ title: "Homologación y reconocimiento de títulos sanitarios para trabajar en E
 slug: homologacion-titulo-sanitario-espana
 date: 2026-11-07
 category: guias
+image: /noticias/homologacion-titulo-sanitario-espana.webp
+imageAlt: "Pila de diplomas enmarcados"
+imageCredit: "Nacho Gomez / Pexels"
+imageCreditUrl: "https://www.pexels.com/photo/stack-of-framed-diplomas-ready-for-ceremony-37012315/"
 draft: false
 description: "Guía para profesionales sanitarios con título extranjero: diferencia entre reconocimiento (títulos de la UE/EEE) y homologación (títulos de fuera de la UE), organismos competentes, documentación general, idioma y colegiación posterior."
 summary:

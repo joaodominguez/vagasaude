@@ -3,6 +3,10 @@ title: "Cómo hacer un currículum para enfermería, TCAE y otras profesiones sa
 slug: curriculum-sanidad
 date: 2026-11-04
 category: guias
+image: /noticias/curriculum-sanidad.webp
+imageAlt: "Entrevista de trabajo en una oficina, con un portátil sobre la mesa"
+imageCredit: "Tima Miroshnichenko / Pexels"
+imageCreditUrl: "https://www.pexels.com/photo/candidate-having-an-interview-5439143/"
 draft: false
 description: "Guía práctica para preparar un currículum sanitario en España: qué datos incluir, cómo presentar colegiación, formación, experiencia e idiomas y cómo evitar errores con los filtros automáticos."
 summary:

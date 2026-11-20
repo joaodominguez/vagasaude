@@ -3,6 +3,10 @@ title: "Refuerzo de invierno en sanidad: dónde hay contratos temporales"
 slug: contratos-refuerzo-invierno-sanidad
 date: 2026-11-18
 category: mercado-laboral
+image: /noticias/contratos-refuerzo-invierno-sanidad.webp
+imageAlt: "Sanitaria con guantes pone una vacuna en el brazo de una paciente"
+imageCredit: "kaboompics / Pexels"
+imageCreditUrl: "https://www.pexels.com/photo/a-person-injecting-vaccine-5207032/"
 draft: false
 description: "Datos de VacantesSalud a 18 de noviembre de 2026: dónde hay ofertas activas de enfermería y TCAE, cuántas son temporales o de sustitución y quién las publica, con el contexto de los planes de invierno."
 summary:
