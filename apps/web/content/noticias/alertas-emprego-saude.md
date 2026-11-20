@@ -4,6 +4,10 @@ slug: alertas-emprego-saude
 date: 2026-11-05
 author: "Redação VagaSaúde"
 category: guias
+image: /noticias/alertas-emprego-saude.webp
+imageAlt: "Enfermeira de farda verde consulta o telemóvel, com um café na mão"
+imageCredit: "Laura James / Pexels"
+imageCreditUrl: "https://www.pexels.com/photo/crop-faceless-black-nurse-with-takeaway-coffee-using-smartphone-6097957/"
 draft: false
 summary:
   - "Um alerta bem filtrado poupa-te de visitar vários sites; um alerta demasiado amplo enche-te a caixa de entrada."

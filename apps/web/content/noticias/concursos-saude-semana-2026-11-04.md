@@ -4,6 +4,10 @@ slug: concursos-saude-semana-2026-11-04
 date: 2026-11-05
 author: "Redação VagaSaúde"
 category: concursos
+image: /noticias/concursos-saude-semana-2026-11-04.webp
+imageAlt: "Corredor de hospital iluminado, com profissionais de saúde ao fundo"
+imageCredit: "Oles kanebckuu / Pexels"
+imageCreditUrl: "https://www.pexels.com/photo/woman-in-white-shirt-standing-near-glass-window-inside-room-127873/"
 summary:
   - "47 concursos públicos na saúde publicados entre 29 de outubro e 4 de novembro de 2026, na BEP, no Diário da República e nos sites das entidades."
   - "A medicina domina (33 procedimentos, sobretudo assistentes graduados seniores); há ainda concursos para enfermeiros, técnicos auxiliares de saúde, TSDT e farmacêuticos."

@@ -4,6 +4,10 @@ slug: carta-apresentacao-saude
 date: 2026-11-05
 author: "Redação VagaSaúde"
 category: guias
+image: /noticias/carta-apresentacao-saude.webp
+imageAlt: "Mão a escrever uma carta numa secretária, ao lado de uma chávena"
+imageCredit: "cottonbro studio / Pexels"
+imageCreditUrl: "https://www.pexels.com/photo/a-man-writing-a-letter-6830863/"
 draft: false
 summary:
   - "Meia página chega: quem és, porque te candidatas àquele serviço e o que podes dar nas primeiras semanas."

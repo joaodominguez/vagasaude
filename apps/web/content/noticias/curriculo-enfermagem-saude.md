@@ -4,6 +4,10 @@ slug: curriculo-enfermagem-saude
 date: 2026-11-05
 author: "Redação VagaSaúde"
 category: guias
+image: /noticias/curriculo-enfermagem-saude.webp
+imageAlt: "Enfermeira de farda azul sorri num corredor de hospital"
+imageCredit: "Mix and Match Studio / Pexels"
+imageCreditUrl: "https://www.pexels.com/photo/a-young-woman-in-blue-scrubs-holding-a-stethoscope-4930705/"
 draft: false
 summary:
   - "Um currículo de saúde lê-se em segundos: título claro, cédula ou inscrição profissional, experiência recente e o que o anúncio pede."

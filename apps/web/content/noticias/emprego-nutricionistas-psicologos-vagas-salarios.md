@@ -5,6 +5,10 @@ date: 2026-11-18
 updated: 2026-11-18
 author: "Redação VagaSaúde"
 category: mercado-de-trabalho
+image: /noticias/emprego-nutricionistas-psicologos-vagas-salarios.webp
+imageAlt: "Nutricionista no consultório, com fruta e legumes sobre a secretária"
+imageCredit: "beyzahzah / Pexels"
+imageCreditUrl: "https://www.pexels.com/photo/nutritionist-holding-broccoli-in-office-15319047/"
 summary:
   - "Desde 24 de agosto o VagaSaúde recolheu 368 vagas para nutricionistas e 193 para psicólogos; hoje estão ativas 68 e 44."
   - "Em nutrição, 25% das vagas são de ginásios e 26% de agências; em psicologia, 80% são de clínicas e gabinetes e 62% pedem prestação de serviços (recibos verdes)."

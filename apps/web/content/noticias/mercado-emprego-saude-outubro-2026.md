@@ -4,6 +4,10 @@ slug: mercado-emprego-saude-outubro-2026
 date: 2026-11-05
 author: "Redação VagaSaúde"
 category: mercado-de-trabalho
+image: /noticias/mercado-emprego-saude-outubro-2026.webp
+imageAlt: "Equipa de médicos e enfermeiros num corredor de hospital"
+imageCredit: "RDNE Stock project / Pexels"
+imageCreditUrl: "https://www.pexels.com/photo/full-shot-of-doctors-and-nurses-6129499/"
 summary:
   - "Em outubro foram publicadas 4.679 vagas de saúde em Portugal; enfermagem (1.022) e medicina (916) lideram."
   - "Lisboa concentra 37% das ofertas e quatro em cada dez vagas foram anunciadas por agências de recrutamento."

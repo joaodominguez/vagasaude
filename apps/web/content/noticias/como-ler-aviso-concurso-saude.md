@@ -4,6 +4,10 @@ slug: como-ler-aviso-concurso-saude
 date: 2026-11-05
 author: "Redação VagaSaúde"
 category: guias
+image: /noticias/como-ler-aviso-concurso-saude.webp
+imageAlt: "Óculos pousados sobre um livro aberto"
+imageCredit: "Pixabay / Pexels"
+imageCreditUrl: "https://www.pexels.com/photo/black-framed-eyeglasses-on-book-267642/"
 draft: false
 summary:
   - "Num procedimento concursal, o aviso de abertura manda: requisitos, prazo, local de candidatura e métodos de seleção estão todos lá."
