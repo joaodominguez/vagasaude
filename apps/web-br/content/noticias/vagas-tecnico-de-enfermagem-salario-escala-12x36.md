@@ -4,6 +4,10 @@ slug: vagas-tecnico-de-enfermagem-salario-escala-12x36
 date: 2026-11-18
 author: "Redação VagaSaúde"
 category: mercado-de-trabalho
+image: /noticias/vagas-tecnico-de-enfermagem-salario-escala-12x36.webp
+imageAlt: "Profissional de enfermagem descansa em um sofá durante o plantão"
+imageCredit: "Cedric Fauntleroy / Pexels"
+imageCreditUrl: "https://www.pexels.com/photo/photo-of-woman-resting-on-the-couch-4270365/"
 summary:
   - "Há 1.519 vagas ativas de técnico de enfermagem no VagaSaúde (18/11/2026); 642 foram publicadas nos últimos 30 dias e 37% estão no estado de São Paulo."
   - "Só 4,9% dos anúncios informam o salário: a mediana é de R$ 2.500 por mês (faixa típica de R$ 2.040 a R$ 2.802, 54 anúncios distintos), abaixo dos R$ 3.325 do piso da Lei 14.434/2022."

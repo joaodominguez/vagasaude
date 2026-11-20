@@ -4,6 +4,10 @@ slug: cv-enfermagem-saude
 date: 2026-10-01
 author: "Redação VagaSaúde"
 category: guias
+image: /noticias/cv-enfermagem-saude.webp
+imageAlt: "Enfermeira de uniforme azul sorri ao abrir a porta da clínica"
+imageCredit: "Los Muertos Crew / Pexels"
+imageCreditUrl: "https://www.pexels.com/photo/woman-in-blue-scrub-suit-smiling-8460373/"
 summary:
   - "O currículo de saúde é lido em segundos: título claro, experiência recente e aderência ao que o anúncio pede, em uma página (duas no máximo)."
   - "Ordem recomendada: cabeçalho, título profissional, resumo, experiência, formação e registro (COREN, CRM etc.) e competências."

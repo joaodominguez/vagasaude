@@ -4,6 +4,10 @@ slug: carta-apresentacao-hospital
 date: 2026-10-01
 author: "Redação VagaSaúde"
 category: guias
+image: /noticias/carta-apresentacao-hospital.webp
+imageAlt: "Recepção de uma clínica, com atendente e paciente no balcão"
+imageCredit: "Pavel Danilyuk / Pexels"
+imageCreditUrl: "https://www.pexels.com/photo/couple-looking-at-documents-in-reception-of-medical-center-7108325/"
 summary:
   - "Meia página basta: quem você é, por que aquele serviço e o que pode entregar nas primeiras semanas."
   - "Estrutura em 4 parágrafos: função e disponibilidade, experiência relevante, contribuição concreta e fechamento com contato."

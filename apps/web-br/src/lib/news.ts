@@ -195,7 +195,7 @@ export const listArticles = cache((): NewsArticle[] => {
   if (!fs.existsSync(dir)) return [];
   const articles = fs
     .readdirSync(dir)
-    .filter((file) => file.endsWith(".md"))
+    .filter((file) => file.endsWith(".md") && file !== "IMAGENS.md") // IMAGENS.md = registo de licenças, não é artigo
     .map((file) => parseArticle(file, fs.readFileSync(path.join(dir, file), "utf8")))
     .filter((article) => draftsAllowed() || !article.draft);
   return articles.sort(

@@ -4,6 +4,10 @@ slug: alertas-emprego-saude
 date: 2026-10-01
 author: "Redação VagaSaúde"
 category: guias
+image: /noticias/alertas-emprego-saude.webp
+imageAlt: "Médico de jaleco consulta o celular"
+imageCredit: "Ivan S / Pexels"
+imageCreditUrl: "https://www.pexels.com/photo/man-texting-on-his-phone-4989191/"
 summary:
   - "Comece por profissão + estado (UF) e só acrescente setor se for mesmo um critério de decisão."
   - "Na primeira semana, confirme o e-mail, avalie as vagas do digest e ajuste os filtros."

@@ -4,6 +4,10 @@ slug: ler-edital-concurso-saude
 date: 2026-10-01
 author: "Redação VagaSaúde"
 category: guias
+image: /noticias/ler-edital-concurso-saude.webp
+imageAlt: "Documentos, lupa, celular e café sobre uma mesa"
+imageCredit: "Pavel Danilyuk / Pexels"
+imageCreditUrl: "https://www.pexels.com/photo/documents-beside-a-laptop-8112204/"
 summary:
   - "Confira primeiro prazo de inscrição, cargo, número de vagas, vínculo, local de lotação e onde se inscrever."
   - "Escolaridade, registro no conselho e experiência costumam ser eliminatórios: não assuma equivalências."
