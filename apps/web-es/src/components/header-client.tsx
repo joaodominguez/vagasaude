@@ -15,7 +15,6 @@ const NAV_ITEMS = [
   { href: "/noticias", label: "Noticias" },
   { href: "/favoritos", label: "Favoritos" },
   { href: "/alertas", label: "Crear alerta" },
-  { href: "/como-funciona", label: "Cómo funciona" },
 ] as const;
 
 const NEWS_HREF = "/noticias";
