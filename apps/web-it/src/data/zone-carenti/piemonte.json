@@ -1,0 +1,706 @@
+{
+ "slug": "piemonte",
+ "nome": "Piemonte",
+ "ente": "Regione Piemonte - Sanità, Sistemi organizzativi e risorse umane del SSR",
+ "paginaUfficiale": "https://www.regione.piemonte.it/web/temi/sanita/organizzazione-strutture-sanitarie/incarichi-vacanti-ruolo-unico-assistenza-primaria",
+ "bollettinoNome": "BUR Piemonte",
+ "ultimoAggiornamentoFonte": "2026-10-15",
+ "note": [
+  "In Piemonte la pubblicazione ordinaria avviene di norma a marzo e le carenze possono essere ripubblicate durante l'anno (nel 2026 il BU n. 23 è del 11 giugno). La domanda si invia solo con l'applicativo regionale GRMED (SPID, CIE o CNS)."
+ ],
+ "esclusi": [
+  "Graduatorie provvisoria e definitiva e assegnazioni 2026 (BU n. 38 e n. 41): nominative, non pubblicate qui.",
+  "Pediatria di libera scelta ed emergenza territoriale: non trovata una pubblicazione 2026 equivalente sulle pagine regionali verificate."
+ ],
+ "pubblicazioni": [
+  {
+   "id": "pie-ru-2026-06",
+   "tipo": "ruolo-unico",
+   "titolo": "Incarichi vacanti 2026 del ruolo unico di assistenza primaria",
+   "edizione": "pubblicazione 2026",
+   "anno": 2026,
+   "pubblicatoIl": "2026-06-11",
+   "bollettino": "BUR Piemonte n. 23 dell'11/06/2026, D.D. n. 349 del 04/06/2026",
+   "scadenza": "2026-07-01",
+   "scadenzaCalcolata": true,
+   "paginaUrl": "https://www.regione.piemonte.it/web/temi/sanita/organizzazione-strutture-sanitarie/incarichi-vacanti-ruolo-unico-assistenza-primaria",
+   "pdfUrl": "https://www.regione.piemonte.it/governo/bollettino/abbonati/2026/23/attach/dda1400000349_11200.pdf",
+   "bollettinoUrl": "https://www.regione.piemonte.it/governo/bollettino/abbonati/2026/23/siste/00000035.htm",
+   "totalePosti": 685,
+   "totaleUfficiale": null,
+   "nota": "Domande per 20 giorni dal giorno successivo alla pubblicazione (scadenza calcolata).",
+   "corrente": true,
+   "perAsl": [
+    {
+     "asl": "ASL Città di Torino",
+     "posti": 76,
+     "ambiti": 1
+    },
+    {
+     "asl": "ASL TO3",
+     "posti": 65,
+     "ambiti": 21
+    },
+    {
+     "asl": "ASL TO4",
+     "posti": 82,
+     "ambiti": 16
+    },
+    {
+     "asl": "ASL TO5",
+     "posti": 32,
+     "ambiti": 7
+    },
+    {
+     "asl": "ASL BI (Biella)",
+     "posti": 40,
+     "ambiti": 6
+    },
+    {
+     "asl": "ASL NO (Novara)",
+     "posti": 80,
+     "ambiti": 2
+    },
+    {
+     "asl": "ASL VC (Vercelli)",
+     "posti": 33,
+     "ambiti": 4
+    },
+    {
+     "asl": "ASL VCO (Verbano-Cusio-Ossola)",
+     "posti": 58,
+     "ambiti": 3
+    },
+    {
+     "asl": "ASL CN1 (Cuneo)",
+     "posti": 71,
+     "ambiti": 14
+    },
+    {
+     "asl": "ASL CN2 (Alba-Bra)",
+     "posti": 30,
+     "ambiti": 2
+    },
+    {
+     "asl": "ASL AT (Asti)",
+     "posti": 29,
+     "ambiti": 5
+    },
+    {
+     "asl": "ASL AL (Alessandria)",
+     "posti": 89,
+     "ambiti": 20
+    }
+   ],
+   "voci": [
+    {
+     "asl": "ASL Città di Torino",
+     "ambito": "TORINO",
+     "posti": 76,
+     "note": "Posti ripartiti per distretto e AFT (vedi allegato A ufficiale)."
+    },
+    {
+     "asl": "ASL TO3",
+     "ambito": "COLLEGNO, GRUGLIASCO",
+     "posti": 9,
+     "note": ""
+    },
+    {
+     "asl": "ASL TO3",
+     "ambito": "ROSTA, RIVOLI, VILLARBASSE",
+     "posti": 4,
+     "note": "1 a priorità assoluta: Cascine Vica 3 libere"
+    },
+    {
+     "asl": "ASL TO3",
+     "ambito": "ORBASSANO",
+     "posti": 6,
+     "note": ""
+    },
+    {
+     "asl": "ASL TO3",
+     "ambito": "RIVALTA DI TORINO, BRUINO",
+     "posti": 5,
+     "note": ""
+    },
+    {
+     "asl": "ASL TO3",
+     "ambito": "PIOSSASCO, VOLVERA",
+     "posti": 5,
+     "note": "1 a priorità assoluta: Volvera 4 libere"
+    },
+    {
+     "asl": "ASL TO3",
+     "ambito": "BEINASCO",
+     "posti": 2,
+     "note": ""
+    },
+    {
+     "asl": "ASL TO3",
+     "ambito": "GIAVENO, VALGIOIE, TRANA, SANGANO, REANO, COAZZE",
+     "posti": 2,
+     "note": "1 a priorità relativa: Giaveno 1 a priorità relativa: Sangano"
+    },
+    {
+     "asl": "ASL TO3",
+     "ambito": "CHIOMONTE, EXILLES, GIAGLIONE, GRAVERE, MEANA DI SUSA, MOMPANTERO, MONCENISIO, NOVALESA, SUSA, VENAUS, BRUZOLO, BUSSOLENO, CHIANOCCO, MATTIE, SAN GIORIO DI SUSA",
+     "posti": 3,
+     "note": ""
+    },
+    {
+     "asl": "ASL TO3",
+     "ambito": "ALMESE, CASELETTE, RUBIANA, VILLARDORA",
+     "posti": 1,
+     "note": ""
+    },
+    {
+     "asl": "ASL TO3",
+     "ambito": "AVIGLIANA, BUTTIGLIERA ALTA, SANT'AMBROGIO DI TORINO",
+     "posti": 1,
+     "note": "Priorità assoluta: Sant’Ambrogio di Torino"
+    },
+    {
+     "asl": "ASL TO3",
+     "ambito": "CAPRIE, CHIUSA DI SAN MICHELE, CONDOVE, BORGONE DI SUSA, SAN DIDERO, SANT'ANTONINO DI SUSA, VAIE, VILLAR FOCCHIARDO",
+     "posti": 2,
+     "note": ""
+    },
+    {
+     "asl": "ASL TO3",
+     "ambito": "BARDONECCHIA, CESANA T.SE, CLAVIERE, OULX, SALBERTRAND, SAUZE DI CESANA, SAUZE D'OULX",
+     "posti": 2,
+     "note": "1 a priorità assoluta: Bardonecchia 1 libera"
+    },
+    {
+     "asl": "ASL TO3",
+     "ambito": "VENARIA REALE",
+     "posti": 4,
+     "note": ""
+    },
+    {
+     "asl": "ASL TO3",
+     "ambito": "DRUENTO, SAN GILLIO, GIVOLETTO, LA CASSA",
+     "posti": 2,
+     "note": ""
+    },
+    {
+     "asl": "ASL TO3",
+     "ambito": "PIANEZZA",
+     "posti": 1,
+     "note": ""
+    },
+    {
+     "asl": "ASL TO3",
+     "ambito": "ALPIGNANO, VALDELLATORRE",
+     "posti": 3,
+     "note": ""
+    },
+    {
+     "asl": "ASL TO3",
+     "ambito": "PINEROLO, PRAROSTINO, SAN PIETRO VALLEMINA, SAN SECONDO DI PINEROLO",
+     "posti": 6,
+     "note": ""
+    },
+    {
+     "asl": "ASL TO3",
+     "ambito": "AIRASCA, CANTALUPA, CUMIANA, FROSSASCO, PISCINA, SCALENGHE, ROLETTO",
+     "posti": 2,
+     "note": ""
+    },
+    {
+     "asl": "ASL TO3",
+     "ambito": "BURIASCO, CAMPIGLIONE FENILE, CAVOUR, CERCENASCO, GARZIGLIANA, VIGONE, OSASCO, MACELLO, VILLAFRANCA PIEMONTE, VIRLE PIEMONTE",
+     "posti": 1,
+     "note": ""
+    },
+    {
+     "asl": "ASL TO3",
+     "ambito": "FENESTRELLE, INVERSO PINASCA, MASSELLO, PEROSA ARGENTINA, PERRERO, PINASCA, POMARETTO, PORTE, PRAGELATO, PRALI, PRAMOLLO, ROURE, SAN GERMANO, SESTRIERE, SALZA DI PINEROLO, USSEAUX, VILLAR PEROSA",
+     "posti": 2,
+     "note": ""
+    },
+    {
+     "asl": "ASL TO3",
+     "ambito": "ANGROGNA, BIBIANA, BOBBIO PELLICE, BRICHERASIO, LUSERNA SAN GIOVANNI, LUSERNETTA, RORA', TORRE PELLICE, VILLAR PELLICE",
+     "posti": 2,
+     "note": "1 a priorità assoluta: Bricherasio 1 libera"
+    },
+    {
+     "asl": "ASL TO4",
+     "ambito": "CASELLE T.SE, BORGARO T.SE, MAPPANO",
+     "posti": 4,
+     "note": ""
+    },
+    {
+     "asl": "ASL TO4",
+     "ambito": "NOLE, FIANO, GROSSO, MATHI, ROBASSOMERO, VILLANOVA C.SE",
+     "posti": 3,
+     "note": "1 a Fiano e/o Robassomero (priorità assoluta ma senza precedenza tra i due comuni)"
+    },
+    {
+     "asl": "ASL TO4",
+     "ambito": "FRONT, BARBANIA, LEVONE, ROCCA C.SE, SAN FRANCESCO AL CAMPO, SAN MAURIZIO C.SE, VAUDA C.SE",
+     "posti": 5,
+     "note": "1 a Front e/o Levone e/o Rocca 1 a San Francesco al Campo e/o San Maurizio C.se (entrambe a priorità assoluta ma senza precedenza tra le due)"
+    },
+    {
+     "asl": "ASL TO4",
+     "ambito": "CIRIE', SAN CARLO",
+     "posti": 1,
+     "note": ""
+    },
+    {
+     "asl": "ASL TO4",
+     "ambito": "LANZO, ALA DI STURA, BALANGERO, BALME, CAFASSE, CANTOIRA, CERES, CHIALAMBERTO, COASSOLO, CORIO, GERMAGNANO, GROSCAVALLO, LEMIE, MEZZENILE, MONASTERO DI LANZO, PESSINETTO, TRAVES, USSEGLIO, VALLO T.SE, VARISELLA, VIU'",
+     "posti": 6,
+     "note": "1 a Corio e/o Coassolo 1 a Cafasse e/o Vallo e/o Varisella (entrambe a priorità assoluta ma senza precedenza tra le due)"
+    },
+    {
+     "asl": "ASL TO4",
+     "ambito": "IVREA, PAVONE C.SE",
+     "posti": 8,
+     "note": "1 a Ivrea – Quartiere Bellavista (priorità relativa)"
+    },
+    {
+     "asl": "ASL TO4",
+     "ambito": "BANCHETTE, BROSSO, COLLERETTO GIACOSA, FIORANO C.SE, ISSIGLIO, LESSOLO, LORANZE’, PARELLA, QUAGLIUZZO, RUEGLIO, SALERANO C.SE, SAMONE, STRAMBINELLO, TRAVERSELLA, VAL DI CHY, VALCHIUSA, VIDRACCO, VISTRORIO",
+     "posti": 3,
+     "note": ""
+    },
+    {
+     "asl": "ASL TO4",
+     "ambito": "BOLLENGO, ALBIANO D’IVREA, AZEGLIO, BORGOMASINO, BUROLO, CARAVINO, CASCINETTE, CHIAVERANO, COSSANO, MAGLIONE, PALAZZO, PIVERONE, SETTIMO ROTTARO, VESTIGNE'",
+     "posti": 2,
+     "note": ""
+    },
+    {
+     "asl": "ASL TO4",
+     "ambito": "BORGOFRANCO D’IVREA, ANDRATE, CAREMA, MONTALTO DORA, NOMAGLIO, QUASSOLO, QUINCINETTO, SETTIMO VITTONE, TAVAGNASCO",
+     "posti": 3,
+     "note": ""
+    },
+    {
+     "asl": "ASL TO4",
+     "ambito": "CALUSO, BARONE, CANDIA, CUCEGLIO, MAZZE', MERCENASCO, MONTALENGHE, ORIO, PEROSA, ROMANO, SAN GIORGIO, SAN GIUSTO, SAN MARTINO, SCARMAGNO, STRAMBINO, VIALFRE', VILLAREGGIA, VISCHE",
+     "posti": 7,
+     "note": "1 a AFT Caluso con priorità relativa a Caluso"
+    },
+    {
+     "asl": "ASL TO4",
+     "ambito": "CUORGNE', ALPETTE, CANISCHIO, CHIESANUOVA, FORNO, PERTUSIO, PRASCORSANO, PRATIGLIONE, RIVARA, SALASSA, SAN COLOMBANO BELMONTE, SAN PONSO, VALPERGA, PONT, CERESOLE REALE, FRASSINETTO, INGRIA, LOCANA, NOASCA, RIBORDONE, RONCO, SPARONE, VALPRATO SOANA",
+     "posti": 2,
+     "note": ""
+    },
+    {
+     "asl": "ASL TO4",
+     "ambito": "RIVAROLO, AGLIE', BAIRO, BALDISSERO C.SE, BORGIALLO, BOSCONERO, BUSANO, CASTELLAMONTE, CASTELNUOVO NIGRA, CICONIO, CINTANO, COLLERETTO CASTELNUOVO, FAVRIA, FELETTO, LOMBARDORE, LUSIGLIE', OGLIANICO, OZEGNA, RIVAROSSA, TORRE C.SE",
+     "posti": 10,
+     "note": ""
+    },
+    {
+     "asl": "ASL TO4",
+     "ambito": "SETTIMO T.SE",
+     "posti": 6,
+     "note": ""
+    },
+    {
+     "asl": "ASL TO4",
+     "ambito": "LEINI', VOLPIANO, SAN BENIGNO C.SE",
+     "posti": 1,
+     "note": ""
+    },
+    {
+     "asl": "ASL TO4",
+     "ambito": "SAN MAURO, GASSINO, CASTIGLIONE, CINZANO, RIVALBA, SAN RAFFAELE CIMENA, SCIOLZE",
+     "posti": 7,
+     "note": "1 a San Mauro 1 a Gassino (entrambe a priorità relativa)"
+    },
+    {
+     "asl": "ASL TO4",
+     "ambito": "CHIVASSO, BRANDIZZO, BROZOLO, BRUSASCO, CASALBORGONE, CASTAGNETO PO, CAVAGNOLO, CRESCENTINO, FOGLIZZO, FONTANETTO PO, LAMPORO, LAURIANO PO, MONTANARO, MONTEU DA PO, RONDISSONE, SALUGGIA, SAN SEBASTIANO DA PO, TORRAZZA PIEMONTE, VERRUA SAVOIA, VEROLENGO",
+     "posti": 14,
+     "note": "1 a Saluggia 1 a San Sebastiano Po (entrambe a priorità relativa)"
+    },
+    {
+     "asl": "ASL TO5",
+     "ambito": "CAMBIANO, SANTENA, POIRINO, ISOLABELLA, PRALORMO",
+     "posti": 1,
+     "note": ""
+    },
+    {
+     "asl": "ASL TO5",
+     "ambito": "RIVA c/o CHIERI, PAVAROLO, ANDEZENO, MONTALDO T.SE, MONCUCCO, MOMBELLO, MORIONDO, BERZANO S.P., ALBUGNANO, PASSERANO M.TO, PINO D’ASTI, CERRETO D’ASTI, ARIGNANO, CASTELNUOVO DON BOSCO, BUTTIGLIERA D’ASTI, MARENTINO",
+     "posti": 3,
+     "note": ""
+    },
+    {
+     "asl": "ASL TO5",
+     "ambito": "CARMAGNOLA",
+     "posti": 1,
+     "note": ""
+    },
+    {
+     "asl": "ASL TO5",
+     "ambito": "CARIGNANO, PIOBESI, PANCALIERI, LOMBRIASCO, OSASIO, CASTAGNOLE, VILLASTELLONE",
+     "posti": 5,
+     "note": ""
+    },
+    {
+     "asl": "ASL TO5",
+     "ambito": "MONCALIERI, TROFARELLO, LA LOGGIA",
+     "posti": 9,
+     "note": ""
+    },
+    {
+     "asl": "ASL TO5",
+     "ambito": "NICHELINO",
+     "posti": 9,
+     "note": ""
+    },
+    {
+     "asl": "ASL TO5",
+     "ambito": "VINOVO, NONE CANDIOLO",
+     "posti": 4,
+     "note": "1 a None (priorità assoluta 1) 1 a None e 2 a Candiolo (priorità assoluta 2) (se l’assegnatario è 1, sicuramente dovrà aprire lo studio a None)"
+    },
+    {
+     "asl": "ASL BI (Biella)",
+     "ambito": "ANDORNO MICCA, CAMPIGLIA CERVO, MIAGLIANO, PIEDICAVALLO, ROSAZZA, SAGLIANO MICCA, TAVIGLIANO, PETTINENGO, PRALUNGO, RONCO BIELLESE, TERNENGO, TOLLEGNO, ZUMAGLIA",
+     "posti": 10,
+     "note": ""
+    },
+    {
+     "asl": "ASL BI (Biella)",
+     "ambito": "BIELLA",
+     "posti": 4,
+     "note": ""
+    },
+    {
+     "asl": "ASL BI (Biella)",
+     "ambito": "CAMBURZANO, OCCHIEPPO INF.,OCCHIEPPO SUP., POLLONE, DONATO, GRAGLIA, MUZZANO, NETRO, SORDEVOLO, MAGNANO, MONGRANDO, SALA BIELLESE, TORRAZZO, ZUBIENA",
+     "posti": 8,
+     "note": ""
+    },
+    {
+     "asl": "ASL BI (Biella)",
+     "ambito": "BENNA, CANDELO, MASSAZZA, VERRONE, VILLANOVA, BORRIANA, CERRIONE, GAGLIANICO, PONDERANO, SANDIGLIANO, CAVAGLIA', DORZANO, ROPPOLO, SALUSSOLA, ZIMONE, VIVERONE",
+     "posti": 11,
+     "note": ""
+    },
+    {
+     "asl": "ASL BI (Biella)",
+     "ambito": "VALDILANA, CALLABIANA, CAMANDONA, VEGLIO, VALLANZENGO, VALLE SAN NICOLAO, CASAPINTA, MEZZANA MORTIGLIENGO, STRONA",
+     "posti": 1,
+     "note": ""
+    },
+    {
+     "asl": "ASL BI (Biella)",
+     "ambito": "COSSATO, BIOGLIO, BRUSNENGO, CASTELLETTO CERVO, CURINO, GIFFLENGA, LESSONA, QUAREGNA, MASSERANO, MOTTALCIATA, PIATTO, QUAREGNA, VALDENGO, VIGLIANO, VILLA DEL BOSCO",
+     "posti": 6,
+     "note": "1 a priorità assoluta: Brusnengo"
+    },
+    {
+     "asl": "ASL NO (Novara)",
+     "ambito": "NOVARA, CALTIGNAGA, CAMERI, GALLIATE, ROMENTINO, CERANO, SOZZAGO, TRECATE, BORGOLAVEZZARO, BIANDRATE, BRIONA, CARPIGNANO SESIA, CASALBELTRAME, CASALEGGIO NOVARA, CASALINO, CASALVOLONE, CASTELLAZZO N.SE, FARA N.SE, GARBAGNA N.SE, GRANOZZO CON MONTICELLO, LANDIONA, MANDELLO VITTA, NIBBIOLA, RECETTO, SAN NAZZARO SESIA, SAN PIETRO MOSEZZO, SILLAVENGO, TERDOBBIATE, TORNACO, VESPOLATE, VICOLUNGO",
+     "posti": 39,
+     "note": "10 in AFT DAS 1 (Galliate) 6 in AFT DAS 2 (Trecate) 9 in AFT DAS 3 (Biandrate) 3 in AFT DUN 1 (Novara) 10 in AFT DUN 2 (Novara) 1 in AFT DUN 3 (Novara PRIORITA’: 1 in AFT DAS 3 (Biandrate) e 1 in AFT DAS 1 (Galliate): hanno pari priorità assoluta 1; 1 in AFT DUN 2 (Novara) è la priorità assoluta 3"
+    },
+    {
+     "asl": "ASL NO (Novara)",
+     "ambito": "ARONA, COLAZZA, DORMELLETTO, LESA, MASSINO VISCONTI, MEINA, NEBBIUNO, OLEGGIO CASTELLO, PARUZZARO, PISANO, CASTELLETTO TICINO, BORGOTICINO, COMIGNAGO, DIVIGNANO, POMBIA, VARALLO POMBIA, OLEGGIO, BELLINZAGO N.SE, MEZZOMERICO, MARANO TICINO, BORGOMANERO, AGRATE CONTURBIA, BOCA, BOGOGNO, CAVALLIRIO, CUREGGIO, GATTICO- VERUNO, MAGGIORA, GOZZANO, BOLZANO N.SE, BRIGA N.SE, GARGALLO, INVORIO, POGNO, SORISO, GHEMME, BARENGO, CAVAGLIETTO, CAVAGLIO D'AGOGNA, CRESSA, FONTANETO D'AGOGNA, MOMO, SUNO, VAPRIO D'AGOGNA, SIZZANO",
+     "posti": 41,
+     "note": "5 in AFT DAN 1 (Arona) 7 in AFT DAN 2 (Castelletto Ticino) 7 in AFT DAN 3 (Oleggio) 8 in AFT DAN 4 (Borgomanero) 7 in AFT DAN 5 (Gozzano) 7 in AFT DAN 5 (Ghemme) NESSUNA PRIORITA’"
+    },
+    {
+     "asl": "ASL VC (Vercelli)",
+     "ambito": "ALBANO V.SE, ARBORIO, ASIGLIANO, BORGOVERCELLI, CARESANA, CARESANABLOT, CASANOVA ELVO, COLLOBIANO, COSTANZANA, DESANA, FORMIGLIANA, GREGGIO, LIGNANA, MOTTA DEI CONTI, OLCENENGO, OLDENICO, PERTENGO, PEZZANA, PRAROLO, QUINTO V.SE, RIVE V.SE, RONSECCO, SALI V.SE, SAN GIACOMO V.SE, STROPPIANA, TRICERRO, VERCELLI, VILLARBOIT, VILLATA, VINZAGLIO",
+     "posti": 7,
+     "note": ""
+    },
+    {
+     "asl": "ASL VC (Vercelli)",
+     "ambito": "ALICE CASTELLO, BALOCCO, BIANZE', BORGO D'ALE, BURONZO, CARISIO, CIGLIANO, CROVA, LIVORNO F.IS, MONCRIVELLO, SALASCO, SAN GERMANO, SANTHIA', TRONZANO",
+     "posti": 4,
+     "note": ""
+    },
+    {
+     "asl": "ASL VC (Vercelli)",
+     "ambito": "GATTINARA, GHISLARENGO, GRIGNASCO, LENTA, LOZZOLO, PRATO SESIA, ROMAGNANO SESIA, ROASIO, ROVASENDA, SERRAVALLE SESIA, SOSTEGNO",
+     "posti": 10,
+     "note": ""
+    },
+    {
+     "asl": "ASL VC (Vercelli)",
+     "ambito": "AILOCHE, ALAGNA, ALTO SERMENZA, BALMUCCIA, BOCCIOLETO, BORGOSESIA, CAMPERTOGNO, CAPRILE, CARCOFORO, CELLIO CON BREIA, CERVATTO, CIVIASCO, COGGIOLA, CRAVAGLIANA, CREVACUORE, FOBELLO, GUARDABOSONE, MOLLIA, PILA, PIODE, PORTULA, POSTUA, PRAY, QUARONA, RASSA, RIMELLA, ROSSA, SCOPA, SCOPELLO, VALDUGGIA, VARALLO SESIA, VOCCA",
+     "posti": 12,
+     "note": ""
+    },
+    {
+     "asl": "ASL VCO (Verbano-Cusio-Ossola)",
+     "ambito": "ARIZZANO, AURANO, BAVENO, BEE, BELGIRATE, BROVELLO CARPUGNINO, CAMBIASCA, CANNERO RIVIERA, CANNOBIO, CAPREZZO, COSSOGNO, GHIFFA, GIGNESE, GURRO, INTRAGNA, MERGOZZO, MIAZZINA, OGGEBBIO, PREMENO, SAN BERNARDINO VERBANO, STRESA, TRAREGO VIGGIONA, VALLE CANNOBINA, VERBANIA, VIGNONE",
+     "posti": 22,
+     "note": ""
+    },
+    {
+     "asl": "ASL VCO (Verbano-Cusio-Ossola)",
+     "ambito": "ANTRONA SCHIERANCO, ANZOLA D'OSSOLA, BACENO, BANNIO ANZINO, BEURA CARDEZZA, BOGNANCO, BORGOMEZZAVALLE, CALASCA CASTIGLIONE, CEPPO MORELLI, CRAVEGGIA, CREVOLADOSSOLA, CRODO, DOMODOSSOLA, DRUOGNO, FORMAZZA, MACUGNAGA, MALESCO, MASERA, MONTECRESTESE, MONTESCHENO, ORNAVASSO, PALLANZENO, PIEDIMULERA, PIEVE VERGONTE, PREMIA, PREMOSELLO CHIOVENDA, RE, SANTA MARIA MAGGIORE, TOCENO, TRASQUERA, TRONTANO, VANZONE CON SAN CARLO, VARZO, VILLADOSSOLA, VILLETTE, VOGOGNA",
+     "posti": 23,
+     "note": ""
+    },
+    {
+     "asl": "ASL VCO (Verbano-Cusio-Ossola)",
+     "ambito": "AMENO, ARMENO, AROLA, CASALE CORTE CERRO, CESARA, GERMAGNO, GRAVELLONA TOCE, LOREGLIA, MADONNA DEL SASSO, MASSIOLA, MIASINO, NONIO, OMEGNA, ORTA SAN GIULIO, PELLA, PETTENASCO, QUARNA SOPRA, QUARNA SOTTO, SAN MAURIZIO D'OPAGLIO, VALSTRONA",
+     "posti": 13,
+     "note": ""
+    },
+    {
+     "asl": "ASL CN1 (Cuneo)",
+     "ambito": "CEVA, ALTO, BAGNASCO, BATTIFOLLO, BRIGA ALTA, CAMERANA, CAPRAUNA, CASTELLINO TANARO, CASTELNUOVO DI CEVA, GARESSIO, GOTTASECCA, IGLIANO, LESEGNO, LISIO, MARSAGLIA, MOMBARCARO, MOMBASIGLIO, MONESIGLIO, MONTEZEMOLO, MURAZZANO, NUCETTO, ORMEA, PAROLDO, PERLO, PRIERO, PRIOLA, PRUNETTO, ROASCIO, SALE DELLE LANGHE, SALE SAN GIOVANNI, SALICETO, SCAGNELLO, TORRESINA, VIOLA",
+     "posti": 7,
+     "note": "2 a Ceva 1 a Priero 1 a Monesiglio (Tutte con priorità assoluta)"
+    },
+    {
+     "asl": "ASL CN1 (Cuneo)",
+     "ambito": "DOGLIANI, CARRU’, BELVEDERE LANGHE, BONVICINO, CLAVESANA, FARIGLIANO, LEQUIO TANARO, MAGLIANO ALPI, PIOZZO, ROCCA DE’ BALDI, SOMANO",
+     "posti": 3,
+     "note": "1 a Dogliani (priorità assoluta)"
+    },
+    {
+     "asl": "ASL CN1 (Cuneo)",
+     "ambito": "CUNEO",
+     "posti": 10,
+     "note": ""
+    },
+    {
+     "asl": "ASL CN1 (Cuneo)",
+     "ambito": "MONDOVI’, SAN MICHELE M.VI’, VILLANOVA M.VI’, BASTIA M.VI’, BRIAGLIA, CICLIE’, FRABOSA SOPRANA, FRABOSA SOTTANA, MONASTERO DI VASCO, MONASTEROLO CASOTTO, MONTALDO M.VI’, NIELLA TANARO, PAMPARATO, PIANFEI, ROBURENT, ROCCAFORTE M.VI’, ROCCA CIGLIE’, TORRE M.VI’, VICOFORTE",
+     "posti": 6,
+     "note": "2 a Mondovì (priorità assoluta)"
+    },
+    {
+     "asl": "ASL CN1 (Cuneo)",
+     "ambito": "SAVIGLIANO, MARENE, VILLAFALLETTO, VOTTIGNASCO",
+     "posti": 4,
+     "note": ""
+    },
+    {
+     "asl": "ASL CN1 (Cuneo)",
+     "ambito": "ACCEGLIO, BUSCA, CANOSIO, CARTIGNANO, CELLE DI MACRA, CENTALLO, DRONERO, ELVA, MACRA, MARMORA, PRAZZO, ROCCABRUNA, SAN DAMIANO MACRA, STROPPO, TARANTASCA, VILLAR SAN COSTANZO",
+     "posti": 5,
+     "note": "2 a Busca (priorità relativa)"
+    },
+    {
+     "asl": "ASL CN1 (Cuneo)",
+     "ambito": "BERNEZZO, CARAGLIO, CASTELMAGNO, CERVASCA, MONTEMALE DI CUNEO, MONTEROSSO GRANA, PRADLEVES, VALGRANA, VIGNOLO",
+     "posti": 1,
+     "note": ""
+    },
+    {
+     "asl": "ASL CN1 (Cuneo)",
+     "ambito": "RACCONIGI, CARAMAGNA PIEMONTE, CAVALLERMAGGIORE, CAVALLERLEONE, MONASTEROLO DI SAVIGLIANO, MURELLO, RUFFIA, VILLANOVA SOLARO",
+     "posti": 6,
+     "note": ""
+    },
+    {
+     "asl": "ASL CN1 (Cuneo)",
+     "ambito": "FOSSANO, GENOLA, CERVERE, SALMOUR, BENE VAGIENNA, SANT’ALBANO STURA, TRINITA’",
+     "posti": 8,
+     "note": ""
+    },
+    {
+     "asl": "ASL CN1 (Cuneo)",
+     "ambito": "BRONDELLO, CARDE’, CASALGRASSO, FAULE, LAGNASCO, MORETTA, PAGNO, POLONGHERA, SALUZZO, SCARNAFIGI, TORRE SAN GIORGIO",
+     "posti": 5,
+     "note": "1 a Saluzzo 1 a Moretta (entrambe a priorità relativa)"
+    },
+    {
+     "asl": "ASL CN1 (Cuneo)",
+     "ambito": "BELLINO, BROSSASCO, CASTELDELFINO, COSTIGLIOLE SALUZZO, FRASSINO, ISASCA, MANTA, MELLE, PIASCO, PONTECHIANALE, ROSSANA, SAMPEYRE, VENASCA, VERZUOLO",
+     "posti": 3,
+     "note": "1 a Brossasco (priorità relativa)"
+    },
+    {
+     "asl": "ASL CN1 (Cuneo)",
+     "ambito": "BAGNOLO, BARGE, CRISSOLO, ENVIE, GAMBASCA, MARTINIANA PO, ONCINO, OSTANA-PAESANA, REVELLO, RIFREDDO, SANFRONT",
+     "posti": 7,
+     "note": "2 a Barge 1 a Bagnolo 1 a Sanfront Tutte a priorità assoluta"
+    },
+    {
+     "asl": "ASL CN1 (Cuneo)",
+     "ambito": "AISONE, ARGENTERA, BORGO SAN DALMAZZO, DEMONTE, ENTRACQUE, GAIOLA, LIMONE PIEMONTE, MOIOLA, PIETRAPORZIO, RITTANA, ROASCHIA, ROBILANTE, ROCCASPARVERA, ROCCAVIONE, SAMBUCO, VALDIERI, VALLORIATE, VERNANTE, VINADIO",
+     "posti": 2,
+     "note": "1 a Vernante (priorità relativa)"
+    },
+    {
+     "asl": "ASL CN1 (Cuneo)",
+     "ambito": "BEINETTE, BOVES, CASTELLETTO STURA, CHIUSA DI PESIO, MARGARITA, MONTANERA, MOROZZO, PEVERAGNO",
+     "posti": 4,
+     "note": "1 a Chiusa di Pesio (priorità relativa)"
+    },
+    {
+     "asl": "ASL CN2 (Alba-Bra)",
+     "ambito": "ALBA, ALBARETTO TORRE, ARGUELLO, BALDISSERO D’ALBA, BARBARESCO, BAROLO, BENEVELLO, BERGOLO, BORGOMALE, BOSIA, BOSSOLASCO, CAMO, CANALE, CASTAGNITO, CASTELLETTO UZZONE, CASTELLINALDO, CASTIGLIONE FALLETTO, CASTIGLIONE TINELLA, CASTINO, CERRETTO DELLE LANGHE, CISSONE, CORNELIANO, CORTEMILIA, COSSANO BELBO, CRAVANZANA, DIANO D’ALBA, FEISOGLIO, GORZEGNO, GOVONE, GRINZANE CAVOUR, GUARENE, LEQUIO BERRIA, LEVICE, MAGLIANO ALFIERI, MANGO, MONCHIERO, MONFORTE, MONTÀ, MONTALDO ROERO, MONTELUPO, MONTEU ROERO, MONTICELLO, NEIVE, NEVIGLIE, NIELLA BELBO, NOVELLO, PERLETTO, PEZZOLO VALLE UZZONE, PIOBESI, PRIOCCA, ROCCHETTA BELBO, RODDI, RODDINO, RODELLO, SAN BENEDETTO BELBO, SAN GIORGIO SCARAMPI, SANTO STEFANO BELBO, SANTO STEFANO ROERO, SERRALUNGA, SERRAVALLE LANGHE, SINIO, TORRE BORMIDA, TREISO, TREZZO TINELLA, VEZZA D’ALBA",
+     "posti": 17,
+     "note": ""
+    },
+    {
+     "asl": "ASL CN2 (Alba-Bra)",
+     "ambito": "BRA, CERESOLE D'ALBA, CHERASCO, LA MORRA, NARZOLE, POCAPAGLIA, SANFRE', S. VITTORIA D'ALBA, SOMMARIVA BOSCO, SOMMARIVA PERNO, VERDUNO",
+     "posti": 13,
+     "note": ""
+    },
+    {
+     "asl": "ASL AT (Asti)",
+     "ambito": "ASTI, ISOLA D'ASTI, MONGARDINO",
+     "posti": 9,
+     "note": ""
+    },
+    {
+     "asl": "ASL AT (Asti)",
+     "ambito": "BUBBIO, CALOSSO, CANELLI, CASSINASCO, CASTAGNOLE DELLE LANZE, CESSOLE COAZZOLO, COSTIGLIOLE d'ASTI, LOAZZOLO, MONASTERO BORMIDA, OLMO GENTILE, ROCCAVERANO, ROCCHETTA PALAFEA, SEROLE, SESSAME, VESIME",
+     "posti": 6,
+     "note": "1 a priorità assoluta: Canelli 5 libere"
+    },
+    {
+     "asl": "ASL AT (Asti)",
+     "ambito": "AGLIANO TERME, BELVEGLIO, BRUNO, CALAMANDRANA, CASTEL BOGLIONE, CASTEL ROCCHERO, CASTELLETTO MOLINA, CASTELNUOVO BELBO, CASTELNUOVO CALCEA, CORTIGLIONE, FONTANILE, INCISA SCAPACCINO, MOASCA, MOMBARUZZO, MONBERCELLI, MONTABONE, MONTALDO, SCARAMPI, MONTEGROSSO D’ASTI, NIZZA MONFERRATO, QUARANTI, SAN MARZANO OLIVETO, VAGLIO SERRA, VIGLIANO D’ASTI, VINCHIO",
+     "posti": 4,
+     "note": ""
+    },
+    {
+     "asl": "ASL AT (Asti)",
+     "ambito": "ARAMENGO, AZZANO D’ASTI, CALLIANO, CAMERANO CASASCO, CASORZO, CASTAGNOLE MONFERRATO, CASTELL’ALFERO, CASTELLO DI ANNONE, CERRO TANARO, CHIUSANO D’ASTI, CINAGLIO, COCCONATO, CORSIONE, CORTANZE, CORTAZZONE, COSSOMBRATO, CUNICO, FRINCO, GRANA, GRAZZANO BADOGLIO, MONTECHIARO D’ASTI, MONTEMAGNO, MONTIGLIO MONFERRATO, MORASENGO- TONENGO, PENANGO, PIEA, PIOVA’ MASSAIA, PORTACOMARO, REFRANCORE, ROBELLA, ROCCA D’ARAZZO, ROCCHETTA TANARO, SCURZOLENGO, SETTIME, SOGLIO, TONCO, VIALE, VIARIGI, VILLA SAN SECONDO",
+     "posti": 4,
+     "note": ""
+    },
+    {
+     "asl": "ASL AT (Asti)",
+     "ambito": "ANTIGNANO, BALDICHIERI D’ASTI, CANTARANA, CAPRIGLIO, CASTELLERO, CELLARENGO, CELLE ENOMONDO, CISTERNA D’ASTI, CORTANDONE, DUSINO SAN MICHELE, FERRERE, MARETTO, MONALE, MONTAFIA, REVIGLIASCO D’ASTI, ROATTO, SAN DAMIANO D’ASTI, SAN MARTINO ALFIERI, SAN PAOLO SOLBRITO, TIGLIOLE, VALFENERA, VILLAFRANCA D’ASTI, VILLANOVA D’ASTI",
+     "posti": 6,
+     "note": "1 a priorità assoluta: Antignano 1 a priorità assoluta: Villafranca d’Asti (tra le due la precedenza è ad Antignano) 4 libere"
+    },
+    {
+     "asl": "ASL AL (Alessandria)",
+     "ambito": "ALESSANDRIA, PIETRA MARAZZI, RIVARONE, MONTECASTELLO",
+     "posti": 22,
+     "note": "1 a priorità assoluta: AFT n. 6 “Alessandria Centro Est” 21 libere"
+    },
+    {
+     "asl": "ASL AL (Alessandria)",
+     "ambito": "BERGAMASCO, CARENTINO, CASTELLETTO MONFERRATO, FELIZZANO, FUBINE, MASIO, OVIGLIO, QUARGNENTO, QUATTORDIO, SOLERO",
+     "posti": 3,
+     "note": "1 a priorità assoluta: Fubine 2 libere"
+    },
+    {
+     "asl": "ASL AL (Alessandria)",
+     "ambito": "BORGORATTO, BOSCO MARENGO, CASAL CERMELLI, CASTELLAZZO BORMIDA, CASTELSPINA, FRASCARO, FRUGAROLO, GAMALERO, PREDOSA, SEZZADIO",
+     "posti": 5,
+     "note": "3 a priorità assoluta: Bosco Marengo, Frugarolo, Predosa (a scelta) 2 libere"
+    },
+    {
+     "asl": "ASL AL (Alessandria)",
+     "ambito": "BASSIGNANA, LU E CUCCARO M.TO, PECETTO DI VALENZA, SAN SALVATORE M.TO, VALENZA",
+     "posti": 3,
+     "note": ""
+    },
+    {
+     "asl": "ASL AL (Alessandria)",
+     "ambito": "ALFIANO NATTA, CASTELLETTO MERLI, CERESETO, CERRINA M.TO, GABIANO, MOMBELLO M.TO, MONCALVO, MONCESTINO, MURISENGO, ODALENGO GRANDE, ODALENGO PICCOLO, PONZANO M.TO, SERRALUNGA DI CREA, SOLONGHELLO, VILLADEATI, VILLAMIROGLIO,",
+     "posti": 2,
+     "note": ""
+    },
+    {
+     "asl": "ASL AL (Alessandria)",
+     "ambito": "ALTAVILLA, CAMAGNA, CELLA MONTE, CONZANO, FRASSINELLO, OLIVOLA, OTTIGLIO, OZZANO, ROSIGNANO, SALA, SAN GIORGIO, TERRUGGIA, TREVILLE, VIGNALE",
+     "posti": 1,
+     "note": ""
+    },
+    {
+     "asl": "ASL AL (Alessandria)",
+     "ambito": "PALAZZOLO V.SE, TRINO, CAMINO, MORANO SUL PO, PONTESTURA",
+     "posti": 3,
+     "note": "1 a priorità assoluta: Pontestura e Palazzolo V.se (entrambe) 2 libere"
+    },
+    {
+     "asl": "ASL AL (Alessandria)",
+     "ambito": "BORGO SAN MARTINO, BOZZOLE, FRASSINETO PO, GIAROLE, MIRABELLO M.TO, OCCIMIANO, POMARO M.TO, TICINETO, VALMACCA",
+     "posti": 1,
+     "note": ""
+    },
+    {
+     "asl": "ASL AL (Alessandria)",
+     "ambito": "BALZOLA, CASALE M.TO, CONIOLO, VILLANOVA M.TO",
+     "posti": 8,
+     "note": "1 a priorità assoluta: AFT n. 12 “Casale Sud” 7 libere"
+    },
+    {
+     "asl": "ASL AL (Alessandria)",
+     "ambito": "BERZANO DI TORTONA, BRIGNANO-FRASCATA, CASALNOCETO, CASASCO, CASTELLAR GUIDOBONO, DERNICE, FABBRICA CURONE, GARBAGNA, GREMIASCO, MOMPERONE, MONLEALE, MONTACUTO, MONTEGIOCO, MONTEMARZINO, POZZOL GROPPO, SAN SEBASTIANO CURONE, VIGUZZOLO, VOLPEDO, VOLPEGLINO",
+     "posti": 3,
+     "note": ""
+    },
+    {
+     "asl": "ASL AL (Alessandria)",
+     "ambito": "ALLUVIONI PIOVERA, ALZANO SCRIVIA, CASTELNUOVO SCRIVIA, GUAZZORA, ISOLA SANT'ANTONIO, MOLINO DEI TORTI, PONTECURONE, SALE",
+     "posti": 7,
+     "note": ""
+    },
+    {
+     "asl": "ASL AL (Alessandria)",
+     "ambito": "AVOLASCA, CARBONARA SCRIVIA, CAREZZANO, CASTELLANIA COPPI, CERRETO GRUE, COSTA VESCOVATO, PADERNA, SAN'AGATA FOSSILI, SAREZZANO, SPINETO SCRIVIA, TORTONA, VILLALVERNIA, VILLAROMAGNANO",
+     "posti": 9,
+     "note": ""
+    },
+    {
+     "asl": "ASL AL (Alessandria)",
+     "ambito": "BASALUZZO, CAPRIATA D'ORBA, FRANCAVILLA BISIO, FRESONARA, NOVI LIGURE, PASTURANA, POZZOLO FORMIGARO, TASSAROLO",
+     "posti": 6,
+     "note": ""
+    },
+    {
+     "asl": "ASL AL (Alessandria)",
+     "ambito": "CASSANO SPINOLA, SARDIGLIANO, SERRAVALLE SCRIVIA, STAZZANO",
+     "posti": 3,
+     "note": ""
+    },
+    {
+     "asl": "ASL AL (Alessandria)",
+     "ambito": "BOSIO, CARROSIO, FRACONALTO, GAVI, PARODI LIGURE, SAN CRISTOFORO, VOLTAGGIO",
+     "posti": 1,
+     "note": ""
+    },
+    {
+     "asl": "ASL AL (Alessandria)",
+     "ambito": "ALBERA LIGURE, ARQUATA SCRIVIA, BORGHETTO DI BORBERA, CABELLA LIGURE, CANTALUPO LIGURE, CARREGA LIGURE, GRONDONA, MONGIARDINO LIGURE, ROCCAFORTE LIGURE, ROCCHETTA LIGURE, VIGNOLE BORBERA",
+     "posti": 4,
+     "note": ""
+    },
+    {
+     "asl": "ASL AL (Alessandria)",
+     "ambito": "BELFORTE, OVADA, TAGLIOLO M.TO",
+     "posti": 2,
+     "note": ""
+    },
+    {
+     "asl": "ASL AL (Alessandria)",
+     "ambito": "CARPENETO, CASALEGGIO BOIRO, CASSINELLE, CASTELLETTO D’ORBA, CREMOLINO, LERMA, MOLARE, MONTALDEO, MONTALDO BORMIDA, MORNESE, ROCCA GRIMALDA, SILVANO D’ORBA, TRISOBBIO",
+     "posti": 1,
+     "note": ""
+    },
+    {
+     "asl": "ASL AL (Alessandria)",
+     "ambito": "ALICE BEL COLLE, BISTAGNO, CARTOSIO, CASSINE, CASTELLETTO D'ERRO, CASTELNUOVO BORMIDA, CAVATORE, DENICE, GROGNARDO, MALVICINO, MARANZANA, MELAZZO, MERANA, MOMBALDONE, MONTECHIARO D'ACQUI, MORBELLO, MORSASCO, ORSARA BORMIDA, PARETO, PONTI, PONZONE, PRASCO, RICALDONE, RIVALTA BORMIDA, SPIGNO M.TO, STREVI, TERZO, VISONE,",
+     "posti": 4,
+     "note": ""
+    },
+    {
+     "asl": "ASL AL (Alessandria)",
+     "ambito": "ACQUI TERME",
+     "posti": 1,
+     "note": ""
+    }
+   ]
+  }
+ ],
+ "generatoIl": "2026-11-20"
+}

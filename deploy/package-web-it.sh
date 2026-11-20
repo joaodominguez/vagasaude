@@ -68,5 +68,14 @@ for page in concorsi/in-scadenza concorsi/tipo/concorsi-pubblici concorsi/tipo/a
   rm -rf "$STAGE/.next/server/app/$page.segments" 2>/dev/null || true
 done
 
+# Zone carenti (2026-11-20): lo stato «aperta/scaduta» dipende dalla data odierna. Il prerender del build porta la data del Mac:
+# togliere HTML/RSC/meta/segments di /zone-carenti e /zone-carenti/<regione> (non la cartella di codice).
+for page in zone-carenti zone-carenti/lombardia zone-carenti/piemonte zone-carenti/toscana zone-carenti/emilia-romagna; do
+  rm -f "$STAGE/.next/server/app/$page.html" \
+    "$STAGE/.next/server/app/$page.rsc" \
+    "$STAGE/.next/server/app/$page.meta"
+  rm -rf "$STAGE/.next/server/app/$page.segments" 2>/dev/null || true
+done
+
 COPYFILE_DISABLE=1 tar -C "$STAGE" -czf "$OUT" .
-echo "OK $OUT (css=$CSS_COUNT, data prerenders stripped: index concorsi stipendi aziende dati offerte/oggi concorsi-infermieri-2026 concorsi-oss-2026 concorsi/in-scadenza concorsi/tipo/*)"
+echo "OK $OUT (css=$CSS_COUNT, data prerenders stripped: index concorsi stipendi aziende dati offerte/oggi concorsi-infermieri-2026 concorsi-oss-2026 concorsi/in-scadenza concorsi/tipo/* zone-carenti zone-carenti/<regione>)"

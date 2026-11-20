@@ -28,6 +28,9 @@ export function Footer() {
             <Link className="hover:text-primary" href="/concorsi-oss-2026">
               Concorsi OSS
             </Link>
+            <Link className="hover:text-primary" href="/zone-carenti">
+              Zone carenti
+            </Link>
             <Link className="hover:text-primary" href="/stipendi">
               Stipendi
             </Link>

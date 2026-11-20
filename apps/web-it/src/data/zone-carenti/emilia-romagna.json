@@ -1,0 +1,1367 @@
+{
+ "slug": "emilia-romagna",
+ "nome": "Emilia-Romagna",
+ "ente": "Regione Emilia-Romagna - Area Medicina convenzionata",
+ "paginaUfficiale": "https://salute.regione.emilia-romagna.it/ssr/carriera-e-formazione/medicina-convenzionata/incarichi-vacanti/avvisi-e-moduli",
+ "bollettinoNome": "BURERT",
+ "ultimoAggiornamentoFonte": "2026-10-23",
+ "note": [
+  "Le Aziende USL dell'Emilia-Romagna sono 8 (Piacenza, Parma, Reggio Emilia, Modena, Bologna, Imola, Ferrara, Romagna). Le domande si presentano online tramite il portale regionale indicato nell'avviso."
+ ],
+ "esclusi": [
+  "Graduatorie regionali e punteggi dei medici: non pubblicati (dati personali)."
+ ],
+ "pubblicazioni": [
+  {
+   "id": "er-ru-2026-03",
+   "tipo": "ruolo-unico",
+   "titolo": "Incarichi vacanti di medici del ruolo unico di assistenza primaria 2026",
+   "edizione": "prima pubblicazione 2026",
+   "anno": 2026,
+   "pubblicatoIl": "2026-03-31",
+   "bollettino": "BURERT n. 73 del 31/03/2026 (parte terza), determinazione n. 5841 del 25/03/2026",
+   "scadenza": "2026-04-20",
+   "scadenzaCalcolata": true,
+   "paginaUrl": "https://bur.regione.emilia-romagna.it/area-bollettini/medici-ambiti-territoriali-31.03",
+   "pdfUrl": "https://bur.regione.emilia-romagna.it/area-bollettini/medici-ambiti-territoriali-31.03/bollettino_view/++widget++form.widgets.pdf_firmato/@@download/",
+   "bollettinoUrl": "https://bur.regione.emilia-romagna.it/area-bollettini/medici-ambiti-territoriali-31.03",
+   "totalePosti": 1445,
+   "totaleUfficiale": null,
+   "nota": "Scadenza: 20 giorni dalla pubblicazione sul BURERT (calcolata).",
+   "corrente": true,
+   "perAsl": [
+    {
+     "asl": "AUSL Piacenza",
+     "posti": 127,
+     "ambiti": 8
+    },
+    {
+     "asl": "AUSL Parma",
+     "posti": 151,
+     "ambiti": 23
+    },
+    {
+     "asl": "AUSL Reggio Emilia",
+     "posti": 207,
+     "ambiti": 23
+    },
+    {
+     "asl": "AUSL Modena",
+     "posti": 290,
+     "ambiti": 24
+    },
+    {
+     "asl": "AUSL Bologna",
+     "posti": 164,
+     "ambiti": 30
+    },
+    {
+     "asl": "AUSL Imola",
+     "posti": 38,
+     "ambiti": 4
+    },
+    {
+     "asl": "AUSL Ferrara",
+     "posti": 110,
+     "ambiti": 10
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Ravenna",
+     "posti": 123,
+     "ambiti": 14
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Forli'-Cesena",
+     "posti": 140,
+     "ambiti": 16
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Rimini",
+     "posti": 95,
+     "ambiti": 9
+    }
+   ],
+   "voci": [
+    {
+     "asl": "AUSL Piacenza",
+     "ambito": "Distretto di Città di Piacenza - Comuni di Piacenza e Gossolengo",
+     "posti": 54,
+     "note": "con obbligo di apertura di 1° studio medico nel Comune di Piacenza | con obbligo di apertura di 1° studio medico nel Comune di Gossolengo | il Medico sceglierà in quale Comune dell'Ambito aprire il 1° studio medico"
+    },
+    {
+     "asl": "AUSL Piacenza",
+     "ambito": "Distretto di Levante - Ambito n.3 : Comuni di Alseno, Cadeo, Fiorenzuola d'Arda, Pontenure",
+     "posti": 18,
+     "note": "con obbligo di apertura di 1° studio medico nel Comune di Fiorenzuola d'Arda | con obbligo di apertura di 1° studio medico nel Comune di Alseno | con obbligo di apertura di 1° studio medico nel Comune di Cadeo | con obbligo di apertura di 1° studio medico nel Comune di Pontenure | il Medico sceglier"
+    },
+    {
+     "asl": "AUSL Piacenza",
+     "ambito": "Distretto di Levante - Ambito n. 4 : Comuni di Besenzone, Caorso, Castelvetro Piacentino, Cortemaggiore, Monticelli d'Ongina, San Pietro in Cerro, Villanova sull'Arda",
+     "posti": 11,
+     "note": "con obbligo di apertura di 1° studio medico nel Comune di Monticelli d'Ongina | con obbligo di apertura di 1° studio medico nel Comune di Villanova sull'Arda | il Medico sceglierà in quale Comune dell'Ambito n. 4 aprire il 1° studio medico | con obbligo di apertura di 1° studio medico nel Comune di "
+    },
+    {
+     "asl": "AUSL Piacenza",
+     "ambito": "Distretto di Levante - Ambito n. 1: Carpaneto Piacentino, Castell¿Arquato, Gropparello, Podenzano, Lugagnano Val d¿Arda, Morfasso, San Giorgio Piacentino, Vernasca.",
+     "posti": 14,
+     "note": "il Medico sceglierà in quale Comune dell'Ambito n. 1 aprire il 1° studio medico | con obbligo di apertura di 1° studio medico nel Comune di Castell'Arquato | con obbligo di apertura di 1° studio medico nel Comune di Podenzano | con obbligo di apertura di 1° studio medico nel Comune di Vernasca | con"
+    },
+    {
+     "asl": "AUSL Piacenza",
+     "ambito": "Distretto di Levante - Ambito n. 2: Bettola, Farini, Ferriere, Ponte dell'Olio, Vigolzone",
+     "posti": 4,
+     "note": "con obbligo di apertura di 1° studio medico nel Comune di Bettola | il Medico sceglierà in quale Comune dell'Ambito n. 2 aprire il 1° studio medico | con obbligo di apertura di 1° studio medico nel Comune di Ponte dell'Olio"
+    },
+    {
+     "asl": "AUSL Piacenza",
+     "ambito": "Distretto di Ponente - Ambito Territoriale n. 2: Comuni di Agazzano, Calendasco, Gazzola, Gragnano Trebbiense, Piozzano, Rottofreno",
+     "posti": 9,
+     "note": "il Medico sceglierà in quale Comune dell'Ambito n. 2 aprire il 1° studio medico | con obbligo di apertura di 1° studio medico nel Comune di Rottofreno"
+    },
+    {
+     "asl": "AUSL Piacenza",
+     "ambito": "Distretto di Ponente - Ambito Territoriale n. 1: Comuni di Alta Val Tidone, Borgonovo Val Tidone, Castel San Giovanni, Pianello Val Tidone, Ziano Piacentino, Sarmato",
+     "posti": 13,
+     "note": "con obbligo di apertura di 1° studio medico nel Comune di Alta Val Tidone | il Medico sceglierà in quale Comune dell'Ambito n. 1 aprire il 1° studio medico | con obbligo di apertura di 1° studio medico nel Comune di Castel San Giovanni | con obbligo di apertura di 1° studio medico nel Comune di Zian"
+    },
+    {
+     "asl": "AUSL Piacenza",
+     "ambito": "Distretto di Ponente - Ambito Territoriale n.3: Comuni di Bobbio, Cerignale, Coli, Corte Brugnatella, Ottone, Rivergaro, Travo, Zerba",
+     "posti": 4,
+     "note": "con obbligo di apertura di 1° studio medico nel Comune di Coli | il Medico sceglierà in quale Comune dell'Ambito n. 3 aprire il 1° studio medico | con obbligo di apertura di 1° studio medico nel Comune di Travo"
+    },
+    {
+     "asl": "AUSL Parma",
+     "ambito": "Distretto di Parma - Comune di Colorno",
+     "posti": 4,
+     "note": "con obbligo di apertura 1° studio medico nell'ambito"
+    },
+    {
+     "asl": "AUSL Parma",
+     "ambito": "Distretto di Parma - Comune di Parma",
+     "posti": 66,
+     "note": "con obbligo di apertura 1° studio medico nel NCP Cittadella Montanara | con obbligo di apertura 1° studio medico nel NCP Parma Centro | con obbligo di apertura studio medico nell'ambito | con obbligo di apertura 1° studio medico nel NCP Pablo_frazione Baganzola | con obbligo di apertura 1° studio me"
+    },
+    {
+     "asl": "AUSL Parma",
+     "ambito": "Distretto di Parma - Comuni di Sorbolo e Mezzani",
+     "posti": 3,
+     "note": "con obbligo di apertura 1° studio medico nel comune di Sorbolo Mezzani"
+    },
+    {
+     "asl": "AUSL Parma",
+     "ambito": "Distretto di Parma - Comune di Torrile",
+     "posti": 2,
+     "note": "con obbligo di apertura 1° studio medico nel comune di Torrile"
+    },
+    {
+     "asl": "AUSL Parma",
+     "ambito": "Distretto di Fidenza - Comuni di Soragna e Fontanellato",
+     "posti": 1,
+     "note": "con obbligo di apertura 1° studio medico nel comune di Soragna"
+    },
+    {
+     "asl": "AUSL Parma",
+     "ambito": "Distretto di Fidenza - Comune di Fidenza",
+     "posti": 4,
+     "note": "con obbligo di apertura 1° studio medico nel Comune di Fidenza"
+    },
+    {
+     "asl": "AUSL Parma",
+     "ambito": "Distretto di Fidenza - Comuni di Fontevivo e Noceto",
+     "posti": 6,
+     "note": "con obbligo di apertura 1° studio medico nel comune di Fontevivo | con obbligo di apertura 1° studio medico nel comune di Noceto"
+    },
+    {
+     "asl": "AUSL Parma",
+     "ambito": "Distretto di Fidenza - Comuni di San Secondo Parmense, Roccabianca, Sissa Trecasali",
+     "posti": 5,
+     "note": "con obbligo di apertura 1° studio medico nel comune di San Secondo P.se | con obbligo di apertura 1° studio medico nel comune di Roccabianca | con obbligo di apertura 1° studio medico nel comune di Sissa Trecasali"
+    },
+    {
+     "asl": "AUSL Parma",
+     "ambito": "Distretto di Fidenza - Comuni di Busseto, Polesine, Zibello",
+     "posti": 1,
+     "note": "con obbligo di apertura 1° studio medico nel comune di Zibello"
+    },
+    {
+     "asl": "AUSL Parma",
+     "ambito": "Distretto di Fidenza - Comune di Salsomaggiore Terme",
+     "posti": 4,
+     "note": "con 1° studio medico nel Comune di Salsomaggiore Terme"
+    },
+    {
+     "asl": "AUSL Parma",
+     "ambito": "Distretto di Valli Taro e Ceno - Comune di Medesano",
+     "posti": 3,
+     "note": "con obbligo di apertura 1° studio medico nell'ambito | con 1° studio medico nel comune di Medesano, 2° studio medico in frazione Ramiola e 3° studio medico in frazione Felegara | con obbligo di apertura 1° studio medico in località S. Andrea Bagni e 2° studio medico in località Felegara"
+    },
+    {
+     "asl": "AUSL Parma",
+     "ambito": "Distretto di Valli Taro e Ceno - Comuni di Pellegrino Parmense, Varano de' Melegari e Bore",
+     "posti": 3,
+     "note": "con 1° studio medico nel comune di Varano de Melegari e 2° studio medico nel comune di Varsi | con obbligo di apertura 1° studio medico nell'ambito"
+    },
+    {
+     "asl": "AUSL Parma",
+     "ambito": "Distretto di Valli Taro e Ceno - Comuni di Fornovo di Taro e Terenzo",
+     "posti": 6,
+     "note": "con obbligo di apertura 1° studio medico nel comune di Fornovo di Taro e 2° studio medico nel comune di Terenzo | con obbligo di apertura di 1° studio medico nell'ambito"
+    },
+    {
+     "asl": "AUSL Parma",
+     "ambito": "Distretto di Valli Taro e Ceno - Comuni di Solignano, Valmozzola e Berceto",
+     "posti": 2,
+     "note": "con 1° studio medico nel comune di Solignano e 2° studio medico nel comune di Valmozzola | con 1° studio medico nell¿ambito"
+    },
+    {
+     "asl": "AUSL Parma",
+     "ambito": "Distretto di Valli Taro e Ceno - Comuni di Varsi e Bardi",
+     "posti": 2,
+     "note": "con 1° studio medico nel comune di Bardi e 2° studio medico nel comune di Varsi | con 1° studio medico nell'ambito"
+    },
+    {
+     "asl": "AUSL Parma",
+     "ambito": "Distretto di Valli Taro e Ceno - Comuni di Bedonia, Tornolo e Compiano",
+     "posti": 3,
+     "note": "con 1° studio medico nel comune di Bedonia e 2° studio medico nel comune di Compiano | con 1° studio medico nel comune di Bedonia e 2° studio medico nel comune di Tornolo | con obbligo di apertura studio medico nell'ambito"
+    },
+    {
+     "asl": "AUSL Parma",
+     "ambito": "Distretto di Valli Taro e Ceno - Comuni di Borgo Val di Taro e Albareto",
+     "posti": 2,
+     "note": "con obbligo di apertura 1° studio medico nel comune di Borgotaro | con 1° studio medico nell'ambito"
+    },
+    {
+     "asl": "AUSL Parma",
+     "ambito": "Distretto di Sud Est - Comuni di Langhirano e Lesignano Bagni",
+     "posti": 5,
+     "note": "con obbligo apertura 1° studio medico nell'ambito | con 1° studio medico nel comune di Langhirano | con 1° studio medico nel comune di Lesignano dè Bagni"
+    },
+    {
+     "asl": "AUSL Parma",
+     "ambito": "Distretto di Sud Est - Comune di Collecchio",
+     "posti": 7,
+     "note": "con 1° studio medico nel comune di Collecchio"
+    },
+    {
+     "asl": "AUSL Parma",
+     "ambito": "Distretto di Sud Est - Comuni di Calestano, Felino, Sala Baganza",
+     "posti": 7,
+     "note": "con obbligo apertura 1° studio medico nell'ambito | con 1° studio medico nel comune di Sala Baganza | con obbligo di apertura 1° studio medico nel comune di Felino | con obbligo di apertura 1° studio medico nel comune di Sala Baganza e 2° studio medico nel comune di Calestano"
+    },
+    {
+     "asl": "AUSL Parma",
+     "ambito": "Distretto di Sud Est - Comune di Montechiarugolo",
+     "posti": 5,
+     "note": "con 1° studio medico nel comune di Montechiarugolo"
+    },
+    {
+     "asl": "AUSL Parma",
+     "ambito": "Distretto di Sud Est - Comune di Traversetolo",
+     "posti": 3,
+     "note": "con 1° studio medico nel comune di Traversetolo"
+    },
+    {
+     "asl": "AUSL Parma",
+     "ambito": "Distretto di Sud Est - Comuni di Corniglio, Monchio delle Corti, Neviano degli Arduini, Palanzano, Tizzano Val Parma",
+     "posti": 7,
+     "note": "con 1° studio medico nel comune di Palanzano | con 1° studio medico nell'ambito | con 1° studio medico nel comune di Corniglio | con 1° studio medico nel comune di Monchio delle Corti"
+    },
+    {
+     "asl": "AUSL Reggio Emilia",
+     "ambito": "Distretto di Montecchio - Nucleo Cure Primarie n.1 (Comuni di Cavriago e Montecchio)",
+     "posti": 7,
+     "note": "Obbligo di apertura di primo ambulatorio nel Comune di Montecchio"
+    },
+    {
+     "asl": "AUSL Reggio Emilia",
+     "ambito": "Distretto di Montecchio - Nucleo Cure Primarie n.2 (Comuni di Sant'Ilario d'Enza, Campegine, Gattatico)",
+     "posti": 7,
+     "note": ""
+    },
+    {
+     "asl": "AUSL Reggio Emilia",
+     "ambito": "Distretto di Montecchio - Nucleo Cure Primarie n.3 (Comuni di Canossa, San Polo d'Enza, Bibbiano)",
+     "posti": 8,
+     "note": "Obbligo di apertura di primo ambulatorio nel Comune di Bibbiano | Obbligo di apertura di primo ambulatorio nel Comune di San Polo d'Enza"
+    },
+    {
+     "asl": "AUSL Reggio Emilia",
+     "ambito": "Distretto di Reggio Emilia - Nucleo Cure Primarie 1: Comune di Reggio Emilia",
+     "posti": 12,
+     "note": "Obbligo di apertura di primo ambulatorio nella frazione di Bagno nel Comune di Reggio Emilia"
+    },
+    {
+     "asl": "AUSL Reggio Emilia",
+     "ambito": "Distretto di Reggio Emilia - Nucleo Cure Primarie 2: Comune di Reggio Emilia",
+     "posti": 16,
+     "note": "Obbligo di apertura di primo ambulatorio nella frazione di Codemondo"
+    },
+    {
+     "asl": "AUSL Reggio Emilia",
+     "ambito": "Distretto di Reggio Emilia - Nucleo Cure Primarie 3: Comune di Reggio Emilia",
+     "posti": 16,
+     "note": "Obbligo di apertura di primo ambulatorio nella frazione di Rivalta nel Comune di Reggio Emilia"
+    },
+    {
+     "asl": "AUSL Reggio Emilia",
+     "ambito": "Distretto di Reggio Emilia - Nucleo Cure Primarie 4: Comune di Reggio Emilia",
+     "posti": 12,
+     "note": ""
+    },
+    {
+     "asl": "AUSL Reggio Emilia",
+     "ambito": "Distretto di Reggio Emilia - Nucleo Cure Primarie 5: Comuni di Reggio E. e Bagnolo in Piano",
+     "posti": 12,
+     "note": "Obbligo di apertura di primo ambulatorio nel Comune di Bagnolo | Obbligo di apertura di primo ambulatorio nella frazione di Massenzatico nel Comune di Reggio Emilia | Obbligo di apertura di primo ambulatorio nella frazione di Roncocesi Comune di Reggio Emilia"
+    },
+    {
+     "asl": "AUSL Reggio Emilia",
+     "ambito": "Distretto di Reggio Emilia - Nucleo Cure Primarie 6: Comuni di Cadelbosco di Sopra, Castelnovo di Sotto",
+     "posti": 10,
+     "note": "Obbligo di apertura di primo ambulatorio nella frazione di Cadelbosco di Sotto nel Comune di Cadelbosco Sopra"
+    },
+    {
+     "asl": "AUSL Reggio Emilia",
+     "ambito": "Distretto di Reggio Emilia - Nucleo Cure Primarie 7: Comuni di Albinea,Vezzano sul Crostolo,Quattro Castella",
+     "posti": 10,
+     "note": "Obbligo di apertura di primo ambulatorio nel Comune di Albinea | Obbligo di apertura di primo ambulatorio nella frazione di Puianello Comune di Quattro Castella | Obbligo di apertura di primo ambulatorio nel Comune di Vezzano sul Crostolo"
+    },
+    {
+     "asl": "AUSL Reggio Emilia",
+     "ambito": "Distretto di Guastalla - Nucleo di Cure Primarie n. 1 (Comuni di Guastalla, Gualtieri, Luzzara)",
+     "posti": 11,
+     "note": "Obbligo di apertura di primo ambulatorio nel Comune di Guastalla | Obbligo di apertura di primo ambulatorio nella frazione di Santa Vittoria Comune di Gualtieri"
+    },
+    {
+     "asl": "AUSL Reggio Emilia",
+     "ambito": "Distretto di Guastalla - Nucleo di Cure Primarie n. 2 (Comuni di Boretto, Brescello ,Poviglio)",
+     "posti": 8,
+     "note": "Obbligo di apertura di primo ambulatorio nel Comune di Boretto | Obbligo di apertura di primo ambulatorio nel Comune di Brescello"
+    },
+    {
+     "asl": "AUSL Reggio Emilia",
+     "ambito": "Distretto di Guastalla - Nucleo di Cure Primarie n. 3 (Comuni di Novellara e Reggiolo)",
+     "posti": 14,
+     "note": "Obbligo di apertura di primo ambulatorio nel Comune di Reggiolo | Obbligo di apertura di primo ambulatorio nel Comune di Novellara"
+    },
+    {
+     "asl": "AUSL Reggio Emilia",
+     "ambito": "Distretto di Correggio - Nucleo di cure Primarie n.1 (Comuni di Correggio, San Martino in Rio)",
+     "posti": 15,
+     "note": "Obbligo di apertura di primo ambulatorio nel Comune di San Martino in Rio | Obbligo di apertura di primo ambulatorio nel Comune di Correggio | Obbligo di apertura di primo ambulatorio frazione di Prato nel Comune di Correggio"
+    },
+    {
+     "asl": "AUSL Reggio Emilia",
+     "ambito": "Distretto di Correggio - Nucleo di Cure Primarie n.2 (Campagnola Emilia, Fabbrico, Rio Saliceto, Rolo)",
+     "posti": 11,
+     "note": "Obbligo di apertura di primo ambulatorio nel Comune di Rio Saliceto Obbligo di apertura di primo ambulatorio nel Comune di Rio Saliceto | Obbligo di apertura di primo ambulatorio nel Comune Campagnola Emilia | Obbligo di apertura di primo ambulatorio nel Comune di Fabbrico | Obbligo di apertura di p"
+    },
+    {
+     "asl": "AUSL Reggio Emilia",
+     "ambito": "Distretto di SCANDIANO - Nucleo di Cure Primarie n.1 (Comuni di Scandiano e Viano),",
+     "posti": 10,
+     "note": "Obbligo di apertura di primo ambulatorio nel Comune Scandiano"
+    },
+    {
+     "asl": "AUSL Reggio Emilia",
+     "ambito": "Distretto di SCANDIANO - Nucleo di Cure Primarie n.2 (Comuni di Castellarano e Baiso)",
+     "posti": 6,
+     "note": ""
+    },
+    {
+     "asl": "AUSL Reggio Emilia",
+     "ambito": "Distretto di SCANDIANO - Nucleo di Cure Primarie n.3 (Comune di Casalgrande)",
+     "posti": 6,
+     "note": "Obbligo di apertura di primo ambulatorio nella frazione di Sant'Antonino nel Comune di Casalgrande | Obbligo di apertura di primo ambulatorio nel Comune Casalgrande"
+    },
+    {
+     "asl": "AUSL Reggio Emilia",
+     "ambito": "Distretto di SCANDIANO - Nucleo di Cure Primarie n.4 (Comune di Rubiera)",
+     "posti": 4,
+     "note": ""
+    },
+    {
+     "asl": "AUSL Reggio Emilia",
+     "ambito": "Distretto di Castelnuovo ne' Monti - Nucleo di Cure Primarie n.1 (Comuni di Castelnovo ne' Monti, Vetto)",
+     "posti": 4,
+     "note": "Obbligo di apertura di primo ambulatorio nel Comune di Castelnovo ne' Monti"
+    },
+    {
+     "asl": "AUSL Reggio Emilia",
+     "ambito": "Distretto di Castelnuovo ne' Monti - Nucleo di Cure Primarie n.2 (Comuni di Villa Minozzo, Toano)",
+     "posti": 3,
+     "note": "Obbligo di apertura di primo ambulatorio frazione di Cavola nel Comune di Toano e secondo ambulatorio nel Comune di Toano | Obbligo di apertura di primo ambulatorio in località Val d'Asta nel Comune di Villa Minozzo e secondo ambulatorio nel Comune di Villa Minozzo"
+    },
+    {
+     "asl": "AUSL Reggio Emilia",
+     "ambito": "Distretto di Castelnuovo ne' Monti - Nucleo di Cure Primarie n.3 (Comuni di Casina e Carpineti)",
+     "posti": 3,
+     "note": "Obbligo di apertura di primo ambulatorio nel Comune di Carpineti"
+    },
+    {
+     "asl": "AUSL Reggio Emilia",
+     "ambito": "Distretto di Castelnuovo ne' Monti - Nucleo di Cure Primarie n.4 (Comune di Ventasso)",
+     "posti": 2,
+     "note": "Obbligo di apertura di primo ambulatorio in località di Ligonchio nel Comune di Ventasso | Obbligo di apertura di primo ambulatorio località Busana nel Comune di Ventasso"
+    },
+    {
+     "asl": "AUSL Modena",
+     "ambito": "Distretto di Carpi - Comune di Carpi",
+     "posti": 31,
+     "note": ""
+    },
+    {
+     "asl": "AUSL Modena",
+     "ambito": "Distretto di Carpi - Comune di Campogalliano",
+     "posti": 1,
+     "note": ""
+    },
+    {
+     "asl": "AUSL Modena",
+     "ambito": "Distretto di Carpi - Comune di Novi di Modena",
+     "posti": 6,
+     "note": ""
+    },
+    {
+     "asl": "AUSL Modena",
+     "ambito": "Distretto di Carpi - Comune di Soliera",
+     "posti": 5,
+     "note": ""
+    },
+    {
+     "asl": "AUSL Modena",
+     "ambito": "Distretto di Mirandola - Comuni di Concordia sulla Secchia, San Possidonio",
+     "posti": 4,
+     "note": "con obbligo di apertura di studio medico nel Comune di San Possidonio"
+    },
+    {
+     "asl": "AUSL Modena",
+     "ambito": "Distretto di Mirandola - Comuni di Cavezzo, Medolla, San Prospero",
+     "posti": 10,
+     "note": "con obbligo di apertura di studio medico nel Comune di Medolla | con obbligo di apertura di studio medico nel Comune di San Prospero"
+    },
+    {
+     "asl": "AUSL Modena",
+     "ambito": "Distretto di Mirandola - Comuni di Camposanto, San Felice sul Panaro",
+     "posti": 7,
+     "note": "con obbligo di apertura di studio medico nel Comune di Camposanto"
+    },
+    {
+     "asl": "AUSL Modena",
+     "ambito": "Distretto di Mirandola - Comune di Mirandola",
+     "posti": 11,
+     "note": ""
+    },
+    {
+     "asl": "AUSL Modena",
+     "ambito": "Distretto di Mirandola - Comune di Finale Emilia",
+     "posti": 11,
+     "note": "con obbligo di apertura di studio medico nella Frazione di Massa Finalese"
+    },
+    {
+     "asl": "AUSL Modena",
+     "ambito": "Distretto di Modena - Comune di Modena",
+     "posti": 63,
+     "note": ""
+    },
+    {
+     "asl": "AUSL Modena",
+     "ambito": "Distretto di Sassuolo - Comune di Sassuolo",
+     "posti": 21,
+     "note": "con obbligo di apertura di studio medico nella frazione di San Michele dei Mucchietti"
+    },
+    {
+     "asl": "AUSL Modena",
+     "ambito": "Distretto di Sassuolo - Comune di Formigine",
+     "posti": 11,
+     "note": "con obbligo di apertura di studio medico nella frazione di Casinalbo"
+    },
+    {
+     "asl": "AUSL Modena",
+     "ambito": "Distretto di Sassuolo - Comuni di Fiorano Modenese, Maranello",
+     "posti": 16,
+     "note": "con obbligo di apertura di studio medico nel Comune di Maranello | con obbligo di apertura di studio medico nel Comune di Fiorano Modenese"
+    },
+    {
+     "asl": "AUSL Modena",
+     "ambito": "Distretto di Sassuolo - Comuni di Frassinoro, Montefiorino, Palagano, Prignano sulla Secchia",
+     "posti": 6,
+     "note": "con obbligo di apertura di studio medico nel Comune di Palagano | con obbligo di apertura di studio medico nel Comune di Montefiorino | con obbligo di apertura di studio medico nel Comune di Prignano sulla Secchia"
+    },
+    {
+     "asl": "AUSL Modena",
+     "ambito": "Distretto di Pavullo - Comuni di Pavullo nel Frignano, Serramazzoni",
+     "posti": 9,
+     "note": "con obbligo di apertura di studio medico nel Comune di Serramazzoni | con obbligo di apertura di studio medico nel Comune di Pavullo nel Frignano"
+    },
+    {
+     "asl": "AUSL Modena",
+     "ambito": "Distretto di Pavullo - Comuni di Lama Mocogno, Polinago",
+     "posti": 1,
+     "note": ""
+    },
+    {
+     "asl": "AUSL Modena",
+     "ambito": "Distretto di Pavullo - Comuni di Riolunato, Pievepelago, Fiumalbo",
+     "posti": 3,
+     "note": "con obbligo di apertura di studio medico nel Comune di Pievepelago"
+    },
+    {
+     "asl": "AUSL Modena",
+     "ambito": "Distretto di Pavullo - Comuni di Fanano, Sestola, Montecreto",
+     "posti": 4,
+     "note": "con obbligo di apertura di studio medico nel Comune di Sestola | con obbligo di apertura di studio medico nel Comune di Fanano"
+    },
+    {
+     "asl": "AUSL Modena",
+     "ambito": "Distretto di Vignola - Comune di Vignola",
+     "posti": 11,
+     "note": ""
+    },
+    {
+     "asl": "AUSL Modena",
+     "ambito": "Distretto di Vignola - Comuni di Castelnuovo Rangone, Spilamberto",
+     "posti": 10,
+     "note": "con obbligo di apertura di studio medico nel Comune di Spilamberto | con obbligo di apertura di studio medico nel Comune di Castelnuovo Rangone"
+    },
+    {
+     "asl": "AUSL Modena",
+     "ambito": "Distretto di Vignola - Comuni di Castelvetro di Modena, Marano sul Panaro, Savignano sul Panaro",
+     "posti": 11,
+     "note": "con obbligo di apertura di studio medico nel Comune di Savignano sul Panaro | con obbligo di apertura di studio medico nel Comune di Marano sul Panaro"
+    },
+    {
+     "asl": "AUSL Modena",
+     "ambito": "Distretto di Vignola - Comuni di Guiglia, Zocca, Montese",
+     "posti": 5,
+     "note": "con obbligo di apertura di studio medico nel Comune di Guiglia | con obbligo di apertura di studio medico nel Comune di Zocca"
+    },
+    {
+     "asl": "AUSL Modena",
+     "ambito": "Distretto di Castefranco Emilia - Comuni di Nonantola, Ravarino, Bastiglia, Bomporto",
+     "posti": 13,
+     "note": "con obbligo di apertura di studio medico nel Comune di Ravarino"
+    },
+    {
+     "asl": "AUSL Modena",
+     "ambito": "Distretto di Castefranco Emilia - Comuni di Castelfranco Emilia, San Cesario sul Panaro",
+     "posti": 20,
+     "note": "con obbligo di apertura di studio medico nella frazione di Cavazzona del Comune di Castelfranco Emilia"
+    },
+    {
+     "asl": "AUSL Bologna",
+     "ambito": "Distretto di Reno-Lavino-Samoggia - Casalecchio di Reno",
+     "posti": 5,
+     "note": ""
+    },
+    {
+     "asl": "AUSL Bologna",
+     "ambito": "Distretto di Reno-Lavino-Samoggia - Comune di Valsamoggia",
+     "posti": 8,
+     "note": "Obbligo apertura studio medico principale in Località Calcara di Crespellano | Obbligo apertura studio medico principale in Località Bazzano"
+    },
+    {
+     "asl": "AUSL Bologna",
+     "ambito": "Distretto di Reno-Lavino-Samoggia - Comuni di Monte S.Pietro , Zola Predosa",
+     "posti": 2,
+     "note": "Obbligo apertura studio medico principale in Località Riale"
+    },
+    {
+     "asl": "AUSL Bologna",
+     "ambito": "Distretto di Reno-Lavino-Samoggia - Comune di Sasso Marconi",
+     "posti": 4,
+     "note": ""
+    },
+    {
+     "asl": "AUSL Bologna",
+     "ambito": "Distretto di APPENNINO BOLOGNESE - Comuni di Alto Reno, Caste di Casio, Lizzano in Belvedere, Gaggio Montano",
+     "posti": 9,
+     "note": "Obbligo apertura studio medico principale nel Comune di Lizzano in Belvedere | Obbligo apertura studio medico principale nel Comune di Alto Reno Terme"
+    },
+    {
+     "asl": "AUSL Bologna",
+     "ambito": "Distretto di APPENNINO BOLOGNESE - Comuni di Vergato, Grizzana Morandi, Castel d'Aiano",
+     "posti": 5,
+     "note": "Obbligo apertura studio medico principale nel Comune di Grizzana Morandi | Obbligo apertura studio medico principale nel Comune di Castel d'Aiano | Obbligo apertura studio medico principale in Località Riola di Vergato"
+    },
+    {
+     "asl": "AUSL Bologna",
+     "ambito": "Distretto di APPENNINO BOLOGNESE - Comuni di S.Benedetto Val di Sambro, Monzuno, Castiglione dei Pepoli, Camugnano",
+     "posti": 6,
+     "note": "Obbligo apertura studio medico principale nel Comune di Monzuno | (da assegnare solo in caso di mancata conclusione delle procedure d'incarico precedentemente avviate) | Obbligo apertura studio medico principale nel Comune di San Benedetto Val di Sambro"
+    },
+    {
+     "asl": "AUSL Bologna",
+     "ambito": "Distretto di APPENNINO BOLOGNESE - Comune di Marzabotto",
+     "posti": 4,
+     "note": ""
+    },
+    {
+     "asl": "AUSL Bologna",
+     "ambito": "Distretto di San Lazzaro di Savena - Comune di Ozzano dell'Emilia",
+     "posti": 4,
+     "note": "(da assegnare solo in caso di mancata conclusione delle procedure d'incarico precedentemente avviate)"
+    },
+    {
+     "asl": "AUSL Bologna",
+     "ambito": "Distretto di San Lazzaro di Savena - Comune di Pianoro",
+     "posti": 2,
+     "note": "(da assegnare solo in caso di mancata conclusione delle procedure d'incarico precedentemente avviate)"
+    },
+    {
+     "asl": "AUSL Bologna",
+     "ambito": "Distretto di Pianura Est - Comune di Argelato",
+     "posti": 3,
+     "note": "Obbligo apertura studio medico principale in Località Funo di Argelato"
+    },
+    {
+     "asl": "AUSL Bologna",
+     "ambito": "Distretto di Pianura Est - Comuni di Bentivoglio , S.Giorgio di Piano",
+     "posti": 7,
+     "note": "Obbligo apertura secondo studio medico in Località San Marino di Bentivoglio"
+    },
+    {
+     "asl": "AUSL Bologna",
+     "ambito": "Distretto di Pianura Est - Comune di Budrio",
+     "posti": 4,
+     "note": ""
+    },
+    {
+     "asl": "AUSL Bologna",
+     "ambito": "Distretto di Pianura Est - Comune di Castello d'Argile",
+     "posti": 2,
+     "note": "Obbligo apertura secondo studio medico in Località Mascarino-Venezzano"
+    },
+    {
+     "asl": "AUSL Bologna",
+     "ambito": "Distretto di Pianura Est - Comune di Castelmaggiore",
+     "posti": 6,
+     "note": ""
+    },
+    {
+     "asl": "AUSL Bologna",
+     "ambito": "Distretto di Pianura Est - Comune di Castenaso",
+     "posti": 4,
+     "note": "Obbligo apertura secondo studio medico in Località Marano"
+    },
+    {
+     "asl": "AUSL Bologna",
+     "ambito": "Distretto di Pianura Est - Comuni di Galliera,S. Pietro in Casale",
+     "posti": 7,
+     "note": "Obbligo apertura secondo studio medico in Località Galliera Antica"
+    },
+    {
+     "asl": "AUSL Bologna",
+     "ambito": "Distretto di Pianura Est - Comune di Granarolo dell'Emilia",
+     "posti": 3,
+     "note": "Obbligo apertura studio medico principale in Località Cadriano | Obbligo apertura secondo studio medico in Località Lovoleto"
+    },
+    {
+     "asl": "AUSL Bologna",
+     "ambito": "Distretto di Pianura Est - Comuni di Malalbergo e Baricella",
+     "posti": 4,
+     "note": "Obbligo apertura studio medico principale in Località Altedo e di secondo studio medico a Malalbergo Capoluogo"
+    },
+    {
+     "asl": "AUSL Bologna",
+     "ambito": "Distretto di Pianura Est - Comune di Minerbio",
+     "posti": 2,
+     "note": ""
+    },
+    {
+     "asl": "AUSL Bologna",
+     "ambito": "Distretto di Pianura Est - Comune di Molinella",
+     "posti": 5,
+     "note": "Obbligo apertura secondo studio medico in Località San Martino in Argine | Obbligo apertura secondo studio medico in Località San Pietro Capofiume"
+    },
+    {
+     "asl": "AUSL Bologna",
+     "ambito": "Distretto di Pianura Est - Comune di Pieve di Cento",
+     "posti": 3,
+     "note": ""
+    },
+    {
+     "asl": "AUSL Bologna",
+     "ambito": "Distretto di Pianura Ovest - Comune di Crevalcore",
+     "posti": 6,
+     "note": "Obbligo apertura studio medico principale in Località Bevilacqua | Obbligo apertura studio medico principale in Località Palata Pepoli"
+    },
+    {
+     "asl": "AUSL Bologna",
+     "ambito": "Distretto di Pianura Ovest - Comune di Sala Bolognese",
+     "posti": 2,
+     "note": ""
+    },
+    {
+     "asl": "AUSL Bologna",
+     "ambito": "Distretto di Pianura Ovest - Comune di S. Giovanni in Persiceto",
+     "posti": 9,
+     "note": "(da assegnare solo in caso di effettivo trasferimento del medico)"
+    },
+    {
+     "asl": "AUSL Bologna",
+     "ambito": "Distretto di Pianura Ovest - Comune di S. Agata Bolognese",
+     "posti": 1,
+     "note": ""
+    },
+    {
+     "asl": "AUSL Bologna",
+     "ambito": "Distretto di Pianura Ovest - Comune di Anzola Emilia",
+     "posti": 1,
+     "note": "Obbligo apertura studio medico principale in Località Lavino di Mezzo"
+    },
+    {
+     "asl": "AUSL Bologna",
+     "ambito": "Distretto di Pianura Ovest - Comune di Calderara di Reno",
+     "posti": 2,
+     "note": "Obbligo apertura studio medico principale in Località Lippo"
+    },
+    {
+     "asl": "AUSL Bologna",
+     "ambito": "Distretto di Bologna - Zona Bologna Ovest (Navile / Borgo-Reno / Porto-Saragozza)",
+     "posti": 25,
+     "note": ""
+    },
+    {
+     "asl": "AUSL Bologna",
+     "ambito": "Distretto di Bologna - Zona Bologna Est (Savena / S.Stefano - San Donato / San Vitale)",
+     "posti": 19,
+     "note": ""
+    },
+    {
+     "asl": "AUSL Imola",
+     "ambito": "Distretto di Imola - Comuni della Vallata del Santerno (Casalfiumanese, Borgo Tossignano, Fontanelice, Castel del Rio)",
+     "posti": 5,
+     "note": "con obbligo di apertura dello studio medico nel Comune di Casalfiumanese | con obbligo di apertura del primo studio medico nel Comune di Borgo Tossignano e del secondo studio medico nella frazione di Tossignano del Comune di Borgo Tossignano"
+    },
+    {
+     "asl": "AUSL Imola",
+     "ambito": "Distretto di Imola - Comuni di Imola, Mordano",
+     "posti": 24,
+     "note": "con obbligo di apertura di studio medico nella frazione di Ponticelli del Comune di Imola"
+    },
+    {
+     "asl": "AUSL Imola",
+     "ambito": "Distretto di Imola - Comuni di Castel San Pietro, Dozza",
+     "posti": 6,
+     "note": "con obbligo di apertura del primo studio medico nella frazione di Toscanella del Comune di Dozza"
+    },
+    {
+     "asl": "AUSL Imola",
+     "ambito": "Distretto di Imola - Comuni di Medicina, Castelguelfo",
+     "posti": 3,
+     "note": "con obbligo di apertura di studio medico nella frazione di Portonovo del Comune di Medicina"
+    },
+    {
+     "asl": "AUSL Ferrara",
+     "ambito": "Distretto di Ovest - Comuni di Terre del Reno, Poggio Renatico, Vigarano Mainarda",
+     "posti": 11,
+     "note": "con obbligo di apertura studio medico nel Comune di Poggio Renatico in località Gallo | con obbligo di apertura studio medico nel Comune di Vigarano Mainarda in località Vigarano Pieve | con obbligo di apertura studio medico nel Comune di Terre del Reno in località Dosso | Con obbligo apertura studi"
+    },
+    {
+     "asl": "AUSL Ferrara",
+     "ambito": "Distretto di Ovest - Comune di Cento",
+     "posti": 12,
+     "note": ""
+    },
+    {
+     "asl": "AUSL Ferrara",
+     "ambito": "Distretto di Ovest - Comune di Bondeno",
+     "posti": 4,
+     "note": ""
+    },
+    {
+     "asl": "AUSL Ferrara",
+     "ambito": "Distretto di Centro Nord - Comuni di Copparo, Riva del Po, Tresignana, Jolanda di Savoia",
+     "posti": 11,
+     "note": "Con obbligo di apertura dello Studio Medico nel Comune di Tresignana | con obbligo di apertura studio medico nel Comune di Riva del Po | Con obbligo di apertura Studio Medico nel Comune di Jolanda di Savoia"
+    },
+    {
+     "asl": "AUSL Ferrara",
+     "ambito": "Distretto di Centro Nord - Comuni di Ferrara, Masi Torello, Voghiera",
+     "posti": 43,
+     "note": ""
+    },
+    {
+     "asl": "AUSL Ferrara",
+     "ambito": "Distretto di Sud Est - Comune di Argenta",
+     "posti": 7,
+     "note": ""
+    },
+    {
+     "asl": "AUSL Ferrara",
+     "ambito": "Distretto di Sud Est - Comuni di Codigoro, Lagosanto, Fiscaglia",
+     "posti": 5,
+     "note": ""
+    },
+    {
+     "asl": "AUSL Ferrara",
+     "ambito": "Distretto di Sud Est - Comune di Comacchio",
+     "posti": 8,
+     "note": "con obbligo di apertura studio medico in località S. Giuseppe di Comacchio"
+    },
+    {
+     "asl": "AUSL Ferrara",
+     "ambito": "Distretto di Sud Est - Comuni di Mesola e Goro",
+     "posti": 3,
+     "note": "Con obbligo di apertura Studio Medico nel Comune di Goro | con obbligo di apertura studio medico nel Comune di Mesola"
+    },
+    {
+     "asl": "AUSL Ferrara",
+     "ambito": "Distretto di Sud Est - Comuni di Portomaggiore e Ostellato",
+     "posti": 6,
+     "note": ""
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Ravenna",
+     "ambito": "Distretto di Ravenna - Comune di Ravenna",
+     "posti": 52,
+     "note": "con vincolo di apertura studio medico in fraz. Fornace Zarattini | con vincolo di apertura studio medico in fraz. Savarna | con vincolo di apertura studio medico in quartiere Classe | con vincolo di apertura studio medico in fraz. Mezzano | con vincolo di apertura studio medico in fraz. Castiglione "
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Ravenna",
+     "ambito": "Distretto di Ravenna - Comune di Cervia",
+     "posti": 14,
+     "note": ""
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Ravenna",
+     "ambito": "Distretto di Ravenna - Comune di Russi",
+     "posti": 4,
+     "note": ""
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Ravenna",
+     "ambito": "Distretto di Lugo - Comune di Alfonsine",
+     "posti": 3,
+     "note": ""
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Ravenna",
+     "ambito": "Distretto di Lugo - Comune di Bagnacavallo",
+     "posti": 6,
+     "note": "con vincolo di apertura studio medico in fraz. Villanova di Bagnacavallo"
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Ravenna",
+     "ambito": "Distretto di Lugo - Comuni di Bagnara d Romagna, Cotignola",
+     "posti": 5,
+     "note": "con vincolo di apertura studio medico Comune Bagnara di Romagna"
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Ravenna",
+     "ambito": "Distretto di Lugo - Comune di Conselice",
+     "posti": 4,
+     "note": ""
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Ravenna",
+     "ambito": "Distretto di Lugo - Comune di Fusignano",
+     "posti": 3,
+     "note": ""
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Ravenna",
+     "ambito": "Distretto di Lugo - Comune di Lugo",
+     "posti": 6,
+     "note": "con vincolo di apertura studio medico in fraz. San Bernardino | con vincolo di apertura studio medico in fraz. Voltana | con vincolo di apertura studio medico in fraz. San Lorenzo"
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Ravenna",
+     "ambito": "Distretto di Lugo - Comuni di Massa Lombarda, Sant'Agata sul Santerno",
+     "posti": 5,
+     "note": ""
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Ravenna",
+     "ambito": "Distretto di Faenza - Comune di Faenza",
+     "posti": 12,
+     "note": ""
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Ravenna",
+     "ambito": "Distretto di Faenza - Comune di Brisighella",
+     "posti": 2,
+     "note": ""
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Ravenna",
+     "ambito": "Distretto di Faenza - Comuni di Casola Valsenio, Riolo Terme",
+     "posti": 2,
+     "note": "con vincolo di apertura studio medico Comune Casola Valsenio | con vincolo di apertura studio medico Comune di Riolo Terme"
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Ravenna",
+     "ambito": "Distretto di Faenza - Comuni di Castelbolognese, Solarolo",
+     "posti": 5,
+     "note": ""
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Forli'-Cesena",
+     "ambito": "Distretto di FORLI' - Comune di Forlì",
+     "posti": 41,
+     "note": "con vincolo di apertura studio medico in fraz. San Lorenzo in Noceto | con vincolo di apertura studio medico in fraz. Barisano | con vincolo di apertura studio medico in loc. La Cava | con vincolo di apertura studio medico in fraz. Carpinello"
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Forli'-Cesena",
+     "ambito": "Distretto di FORLI' - Basso Bidente (comprendente i Comuni di Bertinoro, Forlimpopoli)",
+     "posti": 8,
+     "note": "con vincolo di apertura studio medico Comune di Bertinoro fraz. Santa Maria Nuova"
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Forli'-Cesena",
+     "ambito": "Distretto di FORLI' - Comune di Meldola",
+     "posti": 3,
+     "note": ""
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Forli'-Cesena",
+     "ambito": "Distretto di FORLI' - Alto Bidente (comprendente i Comuni di Santa Sofia, Civitella di Romagna, Galeata)",
+     "posti": 5,
+     "note": "con vincolo di apertura studio medico Comune di Galeata | con vincolo di apertura studio medico Comune di Civitella di Romagna fraz. Cusercoli"
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Forli'-Cesena",
+     "ambito": "Distretto di FORLI' - Comuni di Predappio, Premilcuore",
+     "posti": 5,
+     "note": "con vincolo di apertura studio medico in Comune di Premilcuore"
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Forli'-Cesena",
+     "ambito": "Distretto di FORLI' - Montone (comprendente i Comuni di Castrocaro Terme, Dovadola, Rocca San Casciano, Portico)",
+     "posti": 5,
+     "note": "con vincolo di apertura studio medico Comune di Rocca San Casciano | con vincolo di apertura studio medico Comune Portico - San Benedetto"
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Forli'-Cesena",
+     "ambito": "Distretto di FORLI' - Tramazzo (comprendente i Comuni di Modigliana e Tredozio)",
+     "posti": 1,
+     "note": ""
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Forli'-Cesena",
+     "ambito": "Distretto di CESENA - VALLE DEL SAVIO - Comuni di Cesena, Montiano",
+     "posti": 31,
+     "note": "con vincolo di apertura studio medico in quartiere Dismano | con vincolo di apertura studio medico Comune di Montiano | con vincolo di apertura studio medico in fraz. San Vittore | con vincolo di apertura studio medico in fraz. San Carlo | con vincolo di apertura studio medico in fraz. San Giorgio c"
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Forli'-Cesena",
+     "ambito": "Distretto di CESENA - VALLE DEL SAVIO - Comuni di Mercato Saraceno, Sarsina",
+     "posti": 3,
+     "note": ""
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Forli'-Cesena",
+     "ambito": "Distretto di CESENA - VALLE DEL SAVIO - Comuni di Bagno di Romagna, Verghereto",
+     "posti": 1,
+     "note": ""
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Forli'-Cesena",
+     "ambito": "Distretto di Rubicone - Comuni di Borghi, Savignano sul.Rubicone, Sogliano al Rubicone",
+     "posti": 9,
+     "note": "con vincolo di apertura studio medico Comune di Borghi | con vincolo di apertura studio medico Comune di Sogliano al Rubicone loc. Sogliano Capoluogo"
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Forli'-Cesena",
+     "ambito": "Distretto di Rubicone - Comune di Cesenatico",
+     "posti": 11,
+     "note": ""
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Forli'-Cesena",
+     "ambito": "Distretto di Rubicone - Comune di Gambettola",
+     "posti": 2,
+     "note": ""
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Forli'-Cesena",
+     "ambito": "Distretto di Rubicone - Comune di Gatteo",
+     "posti": 4,
+     "note": ""
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Forli'-Cesena",
+     "ambito": "Distretto di Rubicone - Comuni di Longiano, Roncofreddo",
+     "posti": 6,
+     "note": "con vincolo di apertura studio medico Comune di Longiano"
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Forli'-Cesena",
+     "ambito": "Distretto di Rubicone - Comune di San Mauro Pascoli",
+     "posti": 5,
+     "note": ""
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Rimini",
+     "ambito": "Distretto di Rimini - Comune di Bellaria-Igea Marina",
+     "posti": 8,
+     "note": ""
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Rimini",
+     "ambito": "Distretto di Rimini - Comuni di Poggio Torriana e Sant'Arcangelo di Romagna",
+     "posti": 6,
+     "note": ""
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Rimini",
+     "ambito": "Distretto di Rimini - Comune di Rimini",
+     "posti": 39,
+     "note": ""
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Rimini",
+     "ambito": "Distretto di Rimini - Comune di Verrucchio",
+     "posti": 3,
+     "note": "con vincolo di apertura studio medico in loc. Verucchio Capoluogo"
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Rimini",
+     "ambito": "Distretto di Rimini - Valmarecchia (comprendente i Comuni di Casteldelci, Maiolo, Novafeltria, Pennabilli, San Leo, Sant'Agata Feltria,Talamello)",
+     "posti": 8,
+     "note": "con vincolo di apertura studio medico Comune di Montecopiolo | con vincolo di apertura studio medico Comune di Casteldelci"
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Rimini",
+     "ambito": "Distretto di Riccione - Comuni di Cattolica, San Giovanni in Marignano",
+     "posti": 8,
+     "note": "con vincolo di apertura studio medico Comune di San Giovanni in Marignano"
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Rimini",
+     "ambito": "Distretto di Riccione - Comuni di Coriano, Montescudo-Montecolombo",
+     "posti": 7,
+     "note": "con vincolo di apertura studio medico Comune di Coriano fraz. Mulazzano | con vincolo di apertura studio medico Comune di Montescudo - Monte Colombo, loc. Montescudo"
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Rimini",
+     "ambito": "Distretto di Riccione - Comuni di Morciano, Montefiore Conca, Gemmano, Saludecio, San Clemente, Montegridolfo, Mondaino",
+     "posti": 9,
+     "note": "con vincolo di apertura studio medico Comune di San Clemente | con vincolo di apertura studio medico Comune di Saludecio | con vincolo di apertura studio medico Comune di Sassofeltrio"
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Rimini",
+     "ambito": "Distretto di Riccione - Comuni di Riccione e Misano Adriatico",
+     "posti": 7,
+     "note": "con vincolo di apertura studio medico Comune di Misano Adriatico"
+    }
+   ]
+  },
+  {
+   "id": "er-pls-2026-10",
+   "tipo": "pls",
+   "titolo": "Ulteriori ambiti territoriali carenti di pediatria di libera scelta 2026",
+   "edizione": "ulteriori ambiti, ottobre 2026",
+   "anno": 2026,
+   "pubblicatoIl": "2026-10-22",
+   "bollettino": "BURERT n. 275 del 22/10/2026 (parte terza), determinazione n. 20083 del 16/10/2026",
+   "scadenza": "2026-11-11",
+   "scadenzaCalcolata": false,
+   "paginaUrl": "https://salute.regione.emilia-romagna.it/ssr/carriera-e-formazione/medicina-convenzionata/incarichi-vacanti/avvisi-e-moduli",
+   "pdfUrl": "https://bur.regione.emilia-romagna.it/area-bollettini/n-275-del-22-10-2026-parte-terza/bollettino_view/++widget++form.widgets.pdf_firmato/@@download/",
+   "bollettinoUrl": "https://bur.regione.emilia-romagna.it/dettaglio-inserzione?i=fb18d94306ab49f3abc460a835531692",
+   "totalePosti": 16,
+   "totaleUfficiale": null,
+   "nota": "",
+   "corrente": true,
+   "perAsl": [
+    {
+     "asl": "AUSL Piacenza",
+     "posti": 2,
+     "ambiti": 1
+    },
+    {
+     "asl": "AUSL Parma",
+     "posti": 3,
+     "ambiti": 3
+    },
+    {
+     "asl": "AUSL Reggio Emilia",
+     "posti": 2,
+     "ambiti": 2
+    },
+    {
+     "asl": "AUSL Bologna",
+     "posti": 4,
+     "ambiti": 4
+    },
+    {
+     "asl": "AUSL Imola",
+     "posti": 3,
+     "ambiti": 2
+    },
+    {
+     "asl": "AUSL Ferrara",
+     "posti": 1,
+     "ambiti": 1
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Rimini",
+     "posti": 1,
+     "ambiti": 1
+    }
+   ],
+   "voci": [
+    {
+     "asl": "AUSL Piacenza",
+     "ambito": "Distretto di Città di Piacenza - Comune di Piacenza",
+     "posti": 2,
+     "note": "con obbligo di apertura di primo studio medico nel Comune di Piacenza"
+    },
+    {
+     "asl": "AUSL Parma",
+     "ambito": "Distretto di Fidenza - Comuni di Busseto, Polesine, Zibello, Roccabianca, San Secondo, Sissa Trecasali",
+     "posti": 1,
+     "note": "1° studio medico nel Comune di San Secondo Parmense e 2° studio medico nel Comune di Roccabianca"
+    },
+    {
+     "asl": "AUSL Parma",
+     "ambito": "Distretto di Valli Taro e Ceno - Comuni di Medesano, Pellegrino Parmense, Varano de' Melegari, Bore, Fornovo di Taro, Terenzo, Solignano, Varsi, Bardi",
+     "posti": 1,
+     "note": "con 1° studio medico nella Casa della Comunità di Varsi"
+    },
+    {
+     "asl": "AUSL Parma",
+     "ambito": "Distretto di Sud Est - Comuni di Traversetolo, Montechiarugolo",
+     "posti": 1,
+     "note": "con 1° studio medico nel Comune di Traversetolo"
+    },
+    {
+     "asl": "AUSL Reggio Emilia",
+     "ambito": "Distretto di Correggio - Comuni di Correggio, San Martino in Rio, Campagnola Emilia, Fabbrico, Rio Saliceto, Rolo",
+     "posti": 1,
+     "note": "Obbligo di apertura di primo ambulatorio nel Comune di Campagnola Emilia"
+    },
+    {
+     "asl": "AUSL Reggio Emilia",
+     "ambito": "Distretto di Castelnuovo ne' Monti - Comuni di Castelnuovo ne' Monti, Ventasso, Casina, Carpineti, Vetto, Villa Minozzo, Toano",
+     "posti": 1,
+     "note": "Obbligo di apertura di primo ambulatorio nel Comune di Castelnovo ne Monti e secondo ambulatorio nel Comune di Toano"
+    },
+    {
+     "asl": "AUSL Bologna",
+     "ambito": "Distretto di Reno-Lavino-Samoggia - Comuni di Casalecchio di Reno e Sasso Marconi",
+     "posti": 1,
+     "note": "obbligo apertura studio medico principale nel territorio del Comune di Casalecchio di Reno (da assegnare solo in caso di mancata conclusione delle procedure d'incarico precedentemente avviate)"
+    },
+    {
+     "asl": "AUSL Bologna",
+     "ambito": "Distretto di Pianura Est - Comuni di Castelmaggiore, Granarolo",
+     "posti": 1,
+     "note": "obbligo apertura studio medico principale nel territorio del Comune di Granarolo (da assegnare solo in caso di mancata conclusione delle procedure d'incarico precedentemente avviate)"
+    },
+    {
+     "asl": "AUSL Bologna",
+     "ambito": "Distretto di Pianura Ovest - Comune di Anzola dell'Emilia - Calderara di Reno - Sala Bolognese",
+     "posti": 1,
+     "note": "obbligo apertura studio medico principale nel territorio del Comune di Calderara di Reno"
+    },
+    {
+     "asl": "AUSL Bologna",
+     "ambito": "Distretto di Pianura Ovest - Comune di S. Giovanni in Persiceto",
+     "posti": 1,
+     "note": "(da assegnare solo in caso di effettivo trasferimento del medico)"
+    },
+    {
+     "asl": "AUSL Imola",
+     "ambito": "Distretto di Imola - Comuni di Imola, Mordano e Vallata del Santerno (Comuni di Casalfiumanese, Borgo Tossignano, Fontanelice, Castel del Rio)",
+     "posti": 1,
+     "note": "con obbligo di apertura dello studio medico per almeno due giorni settimanali nel Comune di Borgo Tossignano"
+    },
+    {
+     "asl": "AUSL Imola",
+     "ambito": "Distretto di Imola - Comuni di Castel San Pietro, Castelguelfo, Dozza, Medicina",
+     "posti": 2,
+     "note": "con obbligo di apertura dello studio medico principale nel Comune di Castel San Pietro -zona capoluogo e dello studio medico secondario nel Comune di Castel San Pietro -zona frazione di Osteria Grande"
+    },
+    {
+     "asl": "AUSL Ferrara",
+     "ambito": "Distretto di Sud Est - Comuni di Argenta, Portomaggiore",
+     "posti": 1,
+     "note": "Con obbligo di apertura dello Studio Medico nel Comune di Argenta"
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Rimini",
+     "ambito": "Distretto di Rimini - Comune di Bellaria-Igea Marina",
+     "posti": 1,
+     "note": ""
+    }
+   ]
+  },
+  {
+   "id": "er-pls-2026-03",
+   "tipo": "pls",
+   "titolo": "Ambiti territoriali carenti di pediatria di libera scelta 2026",
+   "edizione": "prima pubblicazione 2026",
+   "anno": 2026,
+   "pubblicatoIl": "2026-03-31",
+   "bollettino": "BURERT n. 73 del 31/03/2026 (parte terza), determinazione n. 5847 del 25/03/2026",
+   "scadenza": "2026-04-20",
+   "scadenzaCalcolata": true,
+   "paginaUrl": "https://bur.regione.emilia-romagna.it/area-bollettini/medici-ambiti-territoriali-31.03",
+   "pdfUrl": "https://bur.regione.emilia-romagna.it/area-bollettini/medici-ambiti-territoriali-31.03/bollettino_view/++widget++form.widgets.pdf_firmato/@@download/",
+   "bollettinoUrl": "https://bur.regione.emilia-romagna.it/area-bollettini/medici-ambiti-territoriali-31.03",
+   "totalePosti": 13,
+   "totaleUfficiale": null,
+   "nota": "",
+   "corrente": false,
+   "perAsl": [
+    {
+     "asl": "AUSL Piacenza",
+     "posti": 1,
+     "ambiti": 1
+    },
+    {
+     "asl": "AUSL Parma",
+     "posti": 2,
+     "ambiti": 2
+    },
+    {
+     "asl": "AUSL Reggio Emilia",
+     "posti": 1,
+     "ambiti": 1
+    },
+    {
+     "asl": "AUSL Modena",
+     "posti": 3,
+     "ambiti": 3
+    },
+    {
+     "asl": "AUSL Ferrara",
+     "posti": 2,
+     "ambiti": 2
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Ravenna",
+     "posti": 2,
+     "ambiti": 2
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Forli'-Cesena",
+     "posti": 1,
+     "ambiti": 1
+    },
+    {
+     "asl": "AUSL della Romagna - Dipartimento di Rimini",
+     "posti": 1,
+     "ambiti": 1
+    }
+   ]
+  },
+  {
+   "id": "er-es-2026-10",
+   "tipo": "emergenza-territoriale",
+   "titolo": "Incarichi vacanti di emergenza sanitaria territoriale, 2° semestre 2026",
+   "edizione": "2° semestre 2026",
+   "anno": 2026,
+   "pubblicatoIl": "2026-10-22",
+   "bollettino": "BURERT n. 275 del 22/10/2026 (parte terza), determinazione n. 20082 del 16/10/2026",
+   "scadenza": "2026-11-11",
+   "scadenzaCalcolata": false,
+   "paginaUrl": "https://salute.regione.emilia-romagna.it/ssr/carriera-e-formazione/medicina-convenzionata/incarichi-vacanti/avvisi-e-moduli",
+   "pdfUrl": "https://bur.regione.emilia-romagna.it/area-bollettini/n-275-del-22-10-2026-parte-terza/bollettino_view/++widget++form.widgets.pdf_firmato/@@download/",
+   "bollettinoUrl": "https://bur.regione.emilia-romagna.it/dettaglio-inserzione?i=4c88022364dd4db384bc14ceefe8d625",
+   "totalePosti": 21,
+   "totaleUfficiale": null,
+   "nota": "",
+   "corrente": true,
+   "perAsl": [
+    {
+     "asl": "AUSL Modena",
+     "posti": 6,
+     "ambiti": 2
+    },
+    {
+     "asl": "AUSL Bologna",
+     "posti": 15,
+     "ambiti": 2
+    }
+   ],
+   "voci": [
+    {
+     "asl": "AUSL Modena",
+     "ambito": "Area di territoriale prevalente NORD",
+     "posti": 2,
+     "note": "118 CARPI - MIRANDOLA"
+    },
+    {
+     "asl": "AUSL Modena",
+     "ambito": "Area di territoriale prevalente SUD",
+     "posti": 4,
+     "note": "118 VIGNOLA | 118 PAVULLO"
+    },
+    {
+     "asl": "AUSL Bologna",
+     "ambito": "Area di Nord/Città",
+     "posti": 4,
+     "note": "si precisa che trattasi - per tutti gli incarichi - di postazioni che vengono assegnate prioritariamente, ma con necessità di rotazione su tutte le postazioni territoriali e strutture dell'Area Spoke dell'AUSL di Bologna."
+    },
+    {
+     "asl": "AUSL Bologna",
+     "ambito": "Area di Sud/Città",
+     "posti": 11,
+     "note": "si precisa che trattasi - per tutti gli incarichi - di postazioni che vengono assegnate prioritariamente, ma con necessità di rotazione su tutte le postazioni territoriali e strutture dell'Area Spoke dell'AUSL di Bologna."
+    }
+   ]
+  },
+  {
+   "id": "er-es-2026-03",
+   "tipo": "emergenza-territoriale",
+   "titolo": "Incarichi vacanti di emergenza sanitaria territoriale, 1° semestre 2026",
+   "edizione": "1° semestre 2026",
+   "anno": 2026,
+   "pubblicatoIl": "2026-03-31",
+   "bollettino": "BURERT n. 73 del 31/03/2026 (parte terza), determinazione n. 5842 del 25/03/2026",
+   "scadenza": "2026-04-20",
+   "scadenzaCalcolata": true,
+   "paginaUrl": "https://bur.regione.emilia-romagna.it/area-bollettini/medici-ambiti-territoriali-31.03",
+   "pdfUrl": "https://bur.regione.emilia-romagna.it/area-bollettini/medici-ambiti-territoriali-31.03/bollettino_view/++widget++form.widgets.pdf_firmato/@@download/",
+   "bollettinoUrl": "https://bur.regione.emilia-romagna.it/area-bollettini/medici-ambiti-territoriali-31.03",
+   "totalePosti": 97,
+   "totaleUfficiale": null,
+   "nota": "",
+   "corrente": false,
+   "perAsl": [
+    {
+     "asl": "AUSL Piacenza",
+     "posti": 6,
+     "ambiti": 1
+    },
+    {
+     "asl": "AUSL Parma",
+     "posti": 2,
+     "ambiti": 1
+    },
+    {
+     "asl": "AUSL Reggio Emilia",
+     "posti": 10,
+     "ambiti": 1
+    },
+    {
+     "asl": "AUSL Modena",
+     "posti": 14,
+     "ambiti": 2
+    },
+    {
+     "asl": "AUSL Bologna",
+     "posti": 20,
+     "ambiti": 2
+    },
+    {
+     "asl": "AUSL Ferrara",
+     "posti": 21,
+     "ambiti": 3
+    },
+    {
+     "asl": "AUSL della Romagna",
+     "posti": 24,
+     "ambiti": 4
+    }
+   ]
+  }
+ ],
+ "generatoIl": "2026-11-20"
+}

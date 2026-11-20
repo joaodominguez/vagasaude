@@ -1,0 +1,727 @@
+{
+ "slug": "toscana",
+ "nome": "Toscana",
+ "ente": "Regione Toscana - Settore Risorse umane SSR, Formazione, Relazioni sindacali",
+ "paginaUfficiale": "https://www.regione.toscana.it/it/sst/procedure/opportunita-e-scadenze",
+ "bollettinoNome": "BURT",
+ "ultimoAggiornamentoFonte": "2026-11-04",
+ "note": [
+  "In Toscana gli avvisi sono 3 aziende USL (Toscana Centro, Nord Ovest, Sud Est). Per l'emergenza territoriale l'avviso pubblica il totale per azienda, senza ambiti. Le domande in bollo si inviano via PEC."
+ ],
+ "esclusi": [
+  "Graduatorie regionali, punteggi e assegnazioni: non pubblicati (dati personali)."
+ ],
+ "pubblicazioni": [
+  {
+   "id": "tos-pls-2026-11",
+   "tipo": "pls",
+   "titolo": "Avviso per l'assistenza pediatrica 2026 - seconda pubblicazione",
+   "edizione": "seconda pubblicazione 2026",
+   "anno": 2026,
+   "pubblicatoIl": "2026-11-04",
+   "bollettino": "BURT n. 44 del 04/11/2026 (parte terza)",
+   "scadenza": "2026-11-24",
+   "scadenzaCalcolata": false,
+   "paginaUrl": "https://www.regione.toscana.it/-/avviso-per-assistenza-pediatrica-2026-seconda-pubblicazione",
+   "pdfUrl": "https://www.regione.toscana.it/documents/d/guest/avviso-seconda-pubblicazione-2026-ambiti-territoriali-carenti-pediatria",
+   "bollettinoUrl": null,
+   "totalePosti": 9,
+   "totaleUfficiale": null,
+   "nota": "",
+   "corrente": true,
+   "perAsl": [
+    {
+     "asl": "AUSL Toscana Centro",
+     "posti": 5,
+     "ambiti": 4
+    },
+    {
+     "asl": "AUSL Toscana Nord Ovest",
+     "posti": 4,
+     "ambiti": 4
+    }
+   ],
+   "voci": [
+    {
+     "asl": "AUSL Toscana Centro",
+     "ambito": "Mugello: Comuni di Borgo S.Lorenzo, Barberino Mugello, Scarperia e S.Piero, Vicchio, Dicomano, Londa, S.Godenzo, Marradi, Firenzuola, Palazzuolo sul Senio",
+     "posti": 1,
+     "note": "Con vincolo di apertura ambulatorio 2 giorni a settimana a Scarperia e San Piero e 1 giorno al mese a Londa."
+    },
+    {
+     "asl": "AUSL Toscana Centro",
+     "ambito": "Cantagallo, Vaiano, Vernio",
+     "posti": 2,
+     "note": "A) 1 posto senza vincolo B) 1 posto con vincolo di apertura ambulatorio 1 giorno a settimana a Vernio"
+    },
+    {
+     "asl": "AUSL Toscana Centro",
+     "ambito": "Castelfranco di Sotto, S. Croce sull’Arno, Montopoli Valdarno",
+     "posti": 1,
+     "note": "Con vincolo di apertura ambulatorio 2 giorni a settimana a Montopoli Valdarno."
+    },
+    {
+     "asl": "AUSL Toscana Centro",
+     "ambito": "Cerreto Guidi, Vinci",
+     "posti": 1,
+     "note": "Con vincolo di apertura ambulatorio 1 giorno a settimana a Cerreto Guidi."
+    },
+    {
+     "asl": "AUSL Toscana Nord Ovest",
+     "ambito": "Versilia Nord: Comuni di Pietrasanta, Forte dei Marmi, Seravezza, Stazzema",
+     "posti": 1,
+     "note": "Con vincolo di ambulatorio principale a Pietrasanta e un giorno a settimana a Ponte Stazzemese."
+    },
+    {
+     "asl": "AUSL Toscana Nord Ovest",
+     "ambito": "Versilia Sud: Comune di Viareggio",
+     "posti": 1,
+     "note": ""
+    },
+    {
+     "asl": "AUSL Toscana Nord Ovest",
+     "ambito": "Valle del Serchio: Comuni di, Camporgiano, Careggine, Castelnuovo Garfagnana, Castiglione Garfagnana,, Fosciandora, Gallicano, Giuncugnano e Sillano, Minucciano, Molazzana, Piazza al Serchio, Pieve Fosciana, S.Romano Garfagnana, Vagli di Sotto, Villa Collemandina, Barga, Bagni di Lucca, Borgo a Mozzano, Fabbriche di Vergemoli, Coreglia Antelminelli",
+     "posti": 1,
+     "note": "Con vincolo di ambulatorio principale nel Comune di Barga."
+    },
+    {
+     "asl": "AUSL Toscana Nord Ovest",
+     "ambito": "Piombino San Vincenzo: Comuni di Piombino, Campiglia Marittima, Monteverdi Marittimo, Sassetta, Suvereto, San Vincenzo",
+     "posti": 1,
+     "note": "Con vincolo di ambulatorio principale a Venturina (frazione di Campiglia Marittima)."
+    }
+   ]
+  },
+  {
+   "id": "tos-ru-2026-09",
+   "tipo": "ruolo-unico",
+   "titolo": "Avviso per medici del ruolo unico di assistenza primaria - anno 2026",
+   "edizione": "pubblicazione 2026",
+   "anno": 2026,
+   "pubblicatoIl": "2026-09-23",
+   "bollettino": "BURT n. 38 del 23/09/2026 (parte terza)",
+   "scadenza": "2026-10-13",
+   "scadenzaCalcolata": false,
+   "paginaUrl": "https://www.regione.toscana.it/-/avviso-per-medici-del-ruolo-unico-di-assistenza-primaria-anno-2026",
+   "pdfUrl": "https://www.regione.toscana.it/documents/d/guest/avviso-incarichi-vacanti-ruolo-unico-assistenza-primaria_-2026",
+   "bollettinoUrl": null,
+   "totalePosti": 531,
+   "totaleUfficiale": null,
+   "nota": "",
+   "corrente": true,
+   "perAsl": [
+    {
+     "asl": "AUSL Toscana Centro",
+     "posti": 149,
+     "ambiti": 25
+    },
+    {
+     "asl": "AUSL Toscana Nord Ovest",
+     "posti": 212,
+     "ambiti": 27
+    },
+    {
+     "asl": "AUSL Toscana Sud Est",
+     "posti": 170,
+     "ambiti": 26
+    }
+   ],
+   "voci": [
+    {
+     "asl": "AUSL Toscana Centro",
+     "ambito": "Comune di Empoli",
+     "posti": 1,
+     "note": "A) 1 posto con vincolo 2 giorni a settimana a Fontanella (Comune di Empoli)."
+    },
+    {
+     "asl": "AUSL Toscana Centro",
+     "ambito": "Comuni di Castelfiorentino, Montespertoli",
+     "posti": 6,
+     "note": "A) 2 posti con vincolo di ambulatorio secondario 2 giorni a settimana a Castelfiorentino. B) 4 posti con vincolo 5 giorni a settimana a Castelfiorentino."
+    },
+    {
+     "asl": "AUSL Toscana Centro",
+     "ambito": "Comuni di Castelfranco di Sotto, Santa Croce sull'Arno",
+     "posti": 4,
+     "note": "A) 1 posto con vincolo 2 giorni a settimana a Staffoli (Comune di S.Croce sull'Arno). B) 2 posti con vincolo a S.Croce sull'Arno . C) 1 posto con vincolo 3 giorni a settimana a Galleno (Comune di Castelfranco di Sotto)."
+    },
+    {
+     "asl": "AUSL Toscana Centro",
+     "ambito": "Comuni di Cerreto Guidi, Fucecchio",
+     "posti": 6,
+     "note": "A) 6 posti con vincolo su Fucecchio."
+    },
+    {
+     "asl": "AUSL Toscana Centro",
+     "ambito": "Comuni di Montopoli, San Miniato",
+     "posti": 6,
+     "note": "A) 5 posti con vincolo su S.Miniato. B) 1 posto con vincolo su Montopoli."
+    },
+    {
+     "asl": "AUSL Toscana Centro",
+     "ambito": "Comuni di Abetone Cutigliano, Marliana, S.Marcello Piteglio",
+     "posti": 3,
+     "note": "A) 1 posto senza vincoli. B) 1 posto con vincolo 3 giorni a settimana a Marliana *e***. C) 1 posto con vincolo 1 giorno a settimana a Piteglio, 1 giorno a settimana a Prunetta e 1 giorno a settimana a Crespole (frazioni del Comune di San Marcello Piteglio) *e***."
+    },
+    {
+     "asl": "AUSL Toscana Centro",
+     "ambito": "Comuni di Pistoia, Sambuca Pistoiese",
+     "posti": 8,
+     "note": "A) 3 posti con vincolo di ambulatorio nella AFT 34- Pistoia 1-Mura Urbane. B) 3 posti con vincolo di ambulatorio nella AFT 35- Pistoia 2-Extramuraria. C) 1 posto con vincolo 3 giorni a settimana a Bottegone (Comune di Pistoia). D) 1 posto con vincolo 2 giorni a settimana a Sambuca Pistoiese *e***."
+    },
+    {
+     "asl": "AUSL Toscana Centro",
+     "ambito": "Comuni di Agliana, Montale",
+     "posti": 4,
+     "note": "A) 1 posto senza vincoli. B) 3 posti con vincolo 5 giorni a settimana a Montale."
+    },
+    {
+     "asl": "AUSL Toscana Centro",
+     "ambito": "Comuni di Quarrata, Serravalle Pistoiese",
+     "posti": 12,
+     "note": "A) 10 posti senza vincoli. B) 2 posti con vincolo 5 giorni a settimana a Masotti (Comune di Serravalle Pistoiese) ***."
+    },
+    {
+     "asl": "AUSL Toscana Centro",
+     "ambito": "Comuni di Buggiano, Chiesina Uzzanese, Pescia, Massa e Cozzile, Uzzano",
+     "posti": 9,
+     "note": "A) 1 posto senza vincoli. B) 3 posti con vincolo di ambulatorio principale a Pescia. C) 2 posti con vincolo 2 giorni a settimana a Massa e Cozzile. D) 1 posto con vincolo 1 giorno a settimana nel Comune di Pescia frazione di Vellano ***. E) 1 posto con vincolo 1 giorno a settimana nel Comune di Pesc"
+    },
+    {
+     "asl": "AUSL Toscana Centro",
+     "ambito": "Comuni di Montecatini Terme, Pieve a Nievole, Ponte Buggianese",
+     "posti": 5,
+     "note": "A) 2 posti senza vincoli. B) 2 posti con vincolo a Pieve a Nievole. C) 1 posto con vincolo a Ponte Buggianese."
+    },
+    {
+     "asl": "AUSL Toscana Centro",
+     "ambito": "Comuni di Lamporecchio, Larciano,Monsummano Terme",
+     "posti": 4,
+     "note": "A) 1 posto con vincolo a Larciano/Lamporecchio. B) 3 posti con vincolo nel Comune di Monsummano Terme."
+    },
+    {
+     "asl": "AUSL Toscana Centro",
+     "ambito": "Val Bisenzio: Comuni di Cantagallo, Vernio, Vaiano",
+     "posti": 3,
+     "note": "A) 1 posto senza vincoli. B) 1 posto con vincolo 2 giorni a settimana a Vaiano. C) 1 posto con vincolo 2 giorni a settimana a Vernio."
+    },
+    {
+     "asl": "AUSL Toscana Centro",
+     "ambito": "Comuni Medicei: Comuni di Carmignano, Poggio a Caiano",
+     "posti": 2,
+     "note": "A) 1 posto con vincolo 2 giorni a settimana a Carmignano ***. B) 1 posto con vincolo 2 giorni a settimana a Comeana (Comune di Carmignano). ***"
+    },
+    {
+     "asl": "AUSL Toscana Centro",
+     "ambito": "Comune di Montemurlo",
+     "posti": 2,
+     "note": ""
+    },
+    {
+     "asl": "AUSL Toscana Centro",
+     "ambito": "Comune di Prato",
+     "posti": 21,
+     "note": "A) 4 posti con vincolo di ambulatorio nell'AFT 38 B Prato. B) 3 posti con vincolo di ambulatorio nell'AFT 40 C1 Prato. C) 5 posti con vincolo di ambulatorio nell'AFT 41 C2 Prato. D) 4 posti con vincolo di ambulatorio nell'AFT 42 A2 Prato. E) 5 posti con vincolo di ambulatorio nell'AFT 44 E Prato."
+    },
+    {
+     "asl": "AUSL Toscana Centro",
+     "ambito": "Comune di Firenze",
+     "posti": 13,
+     "note": "A) 2 posti con vincolo di ambulatorio nell'AFT 9 Firenze Centro. B) 3 posti con vincolo di ambulatorio nell'AFT 10 Gavinana. C) 3 posti con vincolo di ambulatorio nell'AFT 13 Oltrarno-Galluzzo D) 1 posto con vincolo di ambulatorio nell'AFT 16 Statuto Vittoria. E) 4 posti con vincolo di ambulatorio n"
+    },
+    {
+     "asl": "AUSL Toscana Centro",
+     "ambito": "Comune di Scandicci",
+     "posti": 2,
+     "note": "A) 1 posto csenza vincoli. B) 1 posto con vincolo 1 giorno a settimana nella frazione Badia a Settimo/Via della Pace Mondiale (Comune di Scandicci)."
+    },
+    {
+     "asl": "AUSL Toscana Centro",
+     "ambito": "Comuni di Fiesole, Vaglia, Calenzano",
+     "posti": 1,
+     "note": ""
+    },
+    {
+     "asl": "AUSL Toscana Centro",
+     "ambito": "Campi Bisenzio",
+     "posti": 9,
+     "note": ""
+    },
+    {
+     "asl": "AUSL Toscana Centro",
+     "ambito": "Comuni di Lastra a Signa, Signa",
+     "posti": 4,
+     "note": "A) 1 posto senza vincoli. B) 1 posto con vincolo 2 giorni a settimana nella frazione di San Mauro a Signa (Comune di Signa). C) 1 posto con vincolo 1 giorno a settimana nella frazione di SantAngelo a Lecore (Comune di Signa). D) 1 posto con vincolo 2 giorni a settimana nella frazione di Malmantile ("
+    },
+    {
+     "asl": "AUSL Toscana Centro",
+     "ambito": "Mugello Ovest: Comuni di Firenzuola, Scarperia e S.Piero, Barberino di Mugello",
+     "posti": 6,
+     "note": "A) 1 posto senza vincoli. B) 1 posto con vincolo 5 giorni a settimana a Firenzuola *e***. C) 2 posti con vincolo 2 giorni a settimana a Scarperia e S.Piero. D) 2 posti con vincolo 2 giorni a settimana a Barberino di Mugello."
+    },
+    {
+     "asl": "AUSL Toscana Centro",
+     "ambito": "Mugello Est: Comuni di Borgo San Lorenzo, Dicomano, Londa, Marradi, Palazzuolo Sul Senio, San Godenzo, Vicchio",
+     "posti": 10,
+     "note": "A) 2 posti senza vincolo. B) 2 posti con vincolo 1 giorno a settimana a Dicomano. C) 2 posti con vincolo 2 giorni a settimana a Marradi *e***. D) 1 posto con vincolo 1 giorno a settimana a Marradi *e***. E) 1 posto con vincolo 2 giorni a settimana a Palazuolo sul Senio *e***. F) 1 posto con vincolo "
+    },
+    {
+     "asl": "AUSL Toscana Centro",
+     "ambito": "Valdarno: Comuni di Figline Incisa Valdarno, Reggello, Rignano sull'Arno",
+     "posti": 7,
+     "note": "A) 3 posti senza vincolo. B) 1 posto con vincolo 1 giorno a settimana a Vaggio (frazione di Reggello). C) 1 posto con vincolo su Reggello con ambulatorio principale a Matassino. D) 1 posto con vincolo su Figline con ambulatorio 2 giorni a settimana a Incisa. E) 1 posto con vincolo ambulatorio princi"
+    },
+    {
+     "asl": "AUSL Toscana Centro",
+     "ambito": "Comuni di Barberino Tavarnelle, San Casciano Val di Pesa",
+     "posti": 1,
+     "note": "Con vincolo di ambulatorio principale in località Barberino (Comune di Barberino Tavarnelle)."
+    },
+    {
+     "asl": "AUSL Toscana Nord Ovest",
+     "ambito": "Comune di Carrara",
+     "posti": 13,
+     "note": "A) 5 posti nella AFT Carrara. B) 8 posti nella AFT Marina di Carrara."
+    },
+    {
+     "asl": "AUSL Toscana Nord Ovest",
+     "ambito": "Comuni di Massa, Montignoso",
+     "posti": 21,
+     "note": "A) 14 posti nella AFT Massa Montignoso. B) 7 posti nella AFT Marina di Massa."
+    },
+    {
+     "asl": "AUSL Toscana Nord Ovest",
+     "ambito": "Alta Lunigiana: Comuni di Bagnone, Filattiera, Mulazzo, Pontremoli, Villafranca, Zeri",
+     "posti": 3,
+     "note": ""
+    },
+    {
+     "asl": "AUSL Toscana Nord Ovest",
+     "ambito": "Bassa Lunigiana: Comuni di Aulla, Fivizzano, Licciana Nardi, Comano, Casola, Podenzana, Tresana, Fosdinovo",
+     "posti": 11,
+     "note": "A) 9 posti senza vincolo. B) 1 posto con vincolo di ambulatorio principale a Comano ***. C) 1 posto con vincolo di ambulatorio principale a Fivizzano."
+    },
+    {
+     "asl": "AUSL Toscana Nord Ovest",
+     "ambito": "Lucca 1: Comuni di Lucca, Pescaglia",
+     "posti": 8,
+     "note": "A) 2 posti nella AFT Lucca Sud. B) 5 posti nella AFT Lucca Ovest (Pescaglia). C) 1 posto nella AFT Lucca Nord (Lucca, Pescaglia)."
+    },
+    {
+     "asl": "AUSL Toscana Nord Ovest",
+     "ambito": "Lucca 2: Comuni di Capannori, Altopascio, Porcari, Montecarlo, Villa Basilica",
+     "posti": 8,
+     "note": "A) 2 posti nella AFT Capannori di cui 1 posto con vincolo di ambulatorio secondario a San Leonardo di Treponzio (frazione di Capannori). B) 2 posti nella AFT La Francigena. C) 2 posti nella AFT La Francigena con vincolo di ambulatorio principale ad Altopascio. D) 1 posto nella AFT La Francigena con "
+    },
+    {
+     "asl": "AUSL Toscana Nord Ovest",
+     "ambito": "Valle del Serchio: AFT Garfagnana: Comuni di Barga, Camporgiano, Careggine, Castelnuovo Garfagnana, Castiglione Garfagnana, Fosciandora, Giuncugnano-Sillano, Minucciano, Piazza al Serchio, Pieve Fosciana, S.Romano Garfagnana, Vagli di Sotto, Villa Collemandina AFT Mediavalle: Comuni di Gallicano, Molazzana, Coreglia Antelminelli, Fabbriche di Vergemoli, Bagni di Lucca, Borgo a Mozzano.",
+     "posti": 11,
+     "note": "A) 1 posto con vincolo di ambulatorio principale a Barga capoluogo (AFT Garfagnana). B) 2 posti con vincolo di ambulatorio principale nel Comune di Castelnuovo di Garfagnana (AFT Garfagnana). C) 1 posto con vincolo di ambulatorio principale a Piazza al Serchio e ambulatorio secondario a Minucciano *"
+    },
+    {
+     "asl": "AUSL Toscana Nord Ovest",
+     "ambito": "Versilia Sud: Comuni di Viareggio, Massarosa, Camaiore",
+     "posti": 13,
+     "note": "A) 3 posti nella AFT Viareggio-Tabarracci. B) 3 posti nella AFT Viareggio-Terminetto. C) 4 posti nella AFT Massarosa. D) 3 posti nella AFT Camaiore."
+    },
+    {
+     "asl": "AUSL Toscana Nord Ovest",
+     "ambito": "Versilia Nord: Comuni di Pietrasanta, Forte dei Marmi, Serravezza, Stazzema",
+     "posti": 11,
+     "note": "A) 5 posti nella AFT Pietrasanta. B) 6 posti nella AFT Forte dei Marmi Serravezza Stazzema."
+    },
+    {
+     "asl": "AUSL Toscana Nord Ovest",
+     "ambito": "Comuni di Montecatini Val di Cecina, Volterra",
+     "posti": 2,
+     "note": "A) 1 posto nella AFT Alta Val di Cecina con vincolo di ambulatorio secondario a La Sassa (frazione di Montecatini Val di Cecina) *. B) 1 posto nella AFT Alta Val di Cecina."
+    },
+    {
+     "asl": "AUSL Toscana Nord Ovest",
+     "ambito": "Comuni di Castelnuovo Val di Cecina, Pomarance",
+     "posti": 2,
+     "note": "A) 1 posto nella AFT Alta Val di Cecina con vincolo di ambulatorio secondario a Sasso Pisano (frazione di Castelnuovo Val di Cecina). B) 1 posto nella AFT Alta Val di Cecina."
+    },
+    {
+     "asl": "AUSL Toscana Nord Ovest",
+     "ambito": "Comuni di Bientina, Buti, Calcinaia, Santa Maria a Monte",
+     "posti": 6,
+     "note": ""
+    },
+    {
+     "asl": "AUSL Toscana Nord Ovest",
+     "ambito": "Comuni di Palaia, Peccioli, Capannoli, Terricciola, Chianni, Lajatico",
+     "posti": 2,
+     "note": "A) 1 posto con vincolo di ambulatorio principale a Peccioli"
+    },
+    {
+     "asl": "AUSL Toscana Nord Ovest",
+     "ambito": "Comune di Ponsacco",
+     "posti": 1,
+     "note": "Nella AFT Alta Valdera"
+    },
+    {
+     "asl": "AUSL Toscana Nord Ovest",
+     "ambito": "Comune di Casciana Terme Lari",
+     "posti": 3,
+     "note": "A) 2 posti nella AFT Alta Valdera. B) 1 posto nella AFT Alta Valdera con vincolo di ambulatorio principale nella frazione di Lari."
+    },
+    {
+     "asl": "AUSL Toscana Nord Ovest",
+     "ambito": "Comune di Pontedera",
+     "posti": 6,
+     "note": ""
+    },
+    {
+     "asl": "AUSL Toscana Nord Ovest",
+     "ambito": "Comuni di Cascina, Crespina Lorenzana, Fauglia, Orciano Pisano",
+     "posti": 5,
+     "note": "A) 1 posto nella AFT Cascina Nord. B) 2 posti nella AFT Cascina Sud con vincolo di ambulatorio principale a Crespina Lorenzana. C) 1 posto nella AFT Cascina Sud con vincolo di ambulatorio principale a Fauglia. D) 1 posto nella AFT Cascina Sud."
+    },
+    {
+     "asl": "AUSL Toscana Nord Ovest",
+     "ambito": "Comune di Vicopisano",
+     "posti": 1,
+     "note": "Nella AFT Cascina Sud"
+    },
+    {
+     "asl": "AUSL Toscana Nord Ovest",
+     "ambito": "Comune di Pisa",
+     "posti": 11,
+     "note": "A) 5 posti nella AFT Pisa Nord. B) 6 posti nella AFT Pisa Sud."
+    },
+    {
+     "asl": "AUSL Toscana Nord Ovest",
+     "ambito": "Comuni di San Giuliano Terme, Vecchiano",
+     "posti": 6,
+     "note": ""
+    },
+    {
+     "asl": "AUSL Toscana Nord Ovest",
+     "ambito": "Rosignano: Comuni di Castellina Marittima, Rosignano Marittimo, Santa Luce",
+     "posti": 8,
+     "note": "A) 1 posto con vincolo di ambulatorio secondario a Nibbiaia (frazione di Rosignano Marittimo). B) 1 posto con vincolo di ambulatorio principale a Castellina Marittima capoluogo *. C) 6 posti senza vincolo."
+    },
+    {
+     "asl": "AUSL Toscana Nord Ovest",
+     "ambito": "Cecina Castagneto: Comuni di Cecina, Castagneto Carducci, Bibbona, Riparbella, Casale Marittimo, Guardistallo, Montescudaio",
+     "posti": 7,
+     "note": "A) 1 posto con con vincolo di ambulatorio secondario a Casale Marittimo. B) 2 posti con vincolo di ambulatorio principale a Donoratico (frazione di Castagneto Carducci). C) 4 posti senza vincolo."
+    },
+    {
+     "asl": "AUSL Toscana Nord Ovest",
+     "ambito": "Comune di Piombino",
+     "posti": 10,
+     "note": "A) 1 posto con vincolo di ambulatorio principale a Riotorto (frazione di Piombino) ***. B) 1 posto con vincolo di ambulatorio secondario a Riotorto (frazione di Piombino). C) 8 posti senza vincoli."
+    },
+    {
+     "asl": "AUSL Toscana Nord Ovest",
+     "ambito": "San Vincenzo: Comuni di San Vincenzo, Suvereto, Sassetta, Campiglia Marittima, Monteverdi Marittimo",
+     "posti": 9,
+     "note": "A) 2 posti con vincolo di ambulatorio principale a Venturina (frazione di Campiglia Marittima) B) 2 posti con vincolo di aambulatorio principale a San Vincenzo. C) 5 posti senza vincoli."
+    },
+    {
+     "asl": "AUSL Toscana Nord Ovest",
+     "ambito": "Elba: Comuni di Marciana Marina, Marciana, Capoliveri, Campo nell’Elba, Portoferraio, Rio, Porto Azzurro",
+     "posti": 6,
+     "note": "A) 1 posto con vincolo di ambulatorio 3 volte a settimana a Marciana ***. B) 5 posti senza vincoli."
+    },
+    {
+     "asl": "AUSL Toscana Nord Ovest",
+     "ambito": "Comuni di Livorno, Capraia Isola",
+     "posti": 26,
+     "note": "A) 6 posti nella AFT Livorno Nord. B) 8 posti nella AFT Livorno Centro. C) 6 Posti nella AFT Livorno Sud. D) 6 posti nella AFT Livorno Est."
+    },
+    {
+     "asl": "AUSL Toscana Nord Ovest",
+     "ambito": "Comune di Collesalvetti",
+     "posti": 2,
+     "note": ""
+    },
+    {
+     "asl": "AUSL Toscana Sud Est",
+     "ambito": "Comune di Arezzo",
+     "posti": 8,
+     "note": "A) 2 posti con vincolo di ambulatorio nella AFT AR 1- Arezzo Centro Ovest. B) 3 posti con vincolo di ambulatorio nella AFT AR 2-"
+    },
+    {
+     "asl": "AUSL Toscana Sud Est",
+     "ambito": "Comuni di Civitella Val di Chiana, Monte S.Savino",
+     "posti": 2,
+     "note": ""
+    },
+    {
+     "asl": "AUSL Toscana Sud Est",
+     "ambito": "Comuni di Capolona, Castiglion Fibocchi, Subbiano",
+     "posti": 2,
+     "note": ""
+    },
+    {
+     "asl": "AUSL Toscana Sud Est",
+     "ambito": "Comuni di Bibbiena, Castel Focognano, Castel S.Niccolò, Chitignano, Chiusi della Verna, Montemignaio, Ortignano Raggiolo, Poppi, Pratovecchio Stia, Talla",
+     "posti": 8,
+     "note": "A) 1 posto con vincolo di ambulatorio principale a Stia e accessi a Strada (Comune di Castel San Niccolò). B) 1 posto con vincolo di ambulatorio principale a Poppi. C) 1 posto con vincolo di ambulatorio principale a Poppi e accessi a Cetica (Comune di Castel S.Niccolò). D) 1 posto con vincolo di amb"
+    },
+    {
+     "asl": "AUSL Toscana Sud Est",
+     "ambito": "Comuni di Bucine, Laterina Pergine Valdarno,",
+     "posti": 4,
+     "note": "A) 2 posti senza vincoli. B) 1 posto con vincolo di ambulatorio principale a Levane . C) 1 posto con vincolo di ambulatorio a Bucine."
+    },
+    {
+     "asl": "AUSL Toscana Sud Est",
+     "ambito": "Comuni di Castelfranco Piandiscò, Loro Ciuffenna, Terranuova Bracciolini",
+     "posti": 6,
+     "note": "A) 2 posti con vincolo di ambulatorio a Terranuova Bracciolini. B) 1 posto con vincolo di ambulatorio principale a Loro Ciuffenna. C) 3 posti senza vincoli."
+    },
+    {
+     "asl": "AUSL Toscana Sud Est",
+     "ambito": "Comuni di Cavriglia, S. Giovanni Valdarno",
+     "posti": 5,
+     "note": "A) 2 posti con vincolo di ambulatorio principale a Cavriglia. B) 3 posti senza vincoli."
+    },
+    {
+     "asl": "AUSL Toscana Sud Est",
+     "ambito": "Comune di Montevarchi",
+     "posti": 5,
+     "note": ""
+    },
+    {
+     "asl": "AUSL Toscana Sud Est",
+     "ambito": "Comuni di Castiglion Fiorentino, Foiano della Chiana, Lucignano, Marciano della Chiana",
+     "posti": 2,
+     "note": ""
+    },
+    {
+     "asl": "AUSL Toscana Sud Est",
+     "ambito": "Comune di Cortona",
+     "posti": 3,
+     "note": ""
+    },
+    {
+     "asl": "AUSL Toscana Sud Est",
+     "ambito": "Comuni di Anghiari, Badia Tedalda, Caprese Michelangelo, Monterchi, Pieve S.Stefano, Sansepolcro, Sestino",
+     "posti": 8,
+     "note": "A) 1 posto con vincolo di ambulatorio principale a Sestino *e***. B) 1 posto con vincolo di ambulatorio principale a Badia Tedalda *e***. C) 1 posto con vincolo di ambulatorio principale ad Anghiari. D) 5 posti senza vincoli."
+    },
+    {
+     "asl": "AUSL Toscana Sud Est",
+     "ambito": "Comuni di Arcidosso, Castel del Piano, Castell'Azzara, Cinigiano, Roccalbegna, Santa Fiora, Seggiano, Semproniano",
+     "posti": 9,
+     "note": "A) 1 posto con vincolo di ambulatorio principale a Castel del Piano *. B) 1 posto con vincolo di ambulatorio principale a Arcidosso *. C) 1 posto con vincolo di ambulatorio principale a Cinigiano*. D) 1 posto con vincolo di ambulatorio principale a"
+    },
+    {
+     "asl": "AUSL Toscana Sud Est",
+     "ambito": "Comuni di Follonica, Gavorrano, Scarlino",
+     "posti": 14,
+     "note": "A) 2 posti con vincolo di ambulatorio principale a Scarlino. B) 2 posti con vincolo di ambulatorio principale a Gavorrano. C) 2 posti con vincolo di ambulatorio principale a Follonica e accessi a Scarlino. D) 2 posti con vincolo di ambulatorio a Follonica e accessi a Gavorrano. E) 6 posti senza vinc"
+    },
+    {
+     "asl": "AUSL Toscana Sud Est",
+     "ambito": "Comuni di Massa Marittima, Monterotondo, Montieri",
+     "posti": 5,
+     "note": "A) 1 posto senza vincoli. B) 1 posto con vincolo di ambulatorio principale a Massa Marittima *. C) 1 posto con vincolo di ambulatorio principale a Massa Marittima e accessi a Monterotondo Marittimo *. D) 1 posto con vincolo di ambulatorio a Massa Marittima e accessi in località Prata eTatti (frazion"
+    },
+    {
+     "asl": "AUSL Toscana Sud Est",
+     "ambito": "Comune di Grosseto",
+     "posti": 18,
+     "note": "A) 1 posto nella AFT GR 18 - Grosseto Centro Nord. B) 2 posti nella AFT GR 18 - Grosseto Centro Nord e accessi a Braccagni (frazione di Grosseto). C) 5 posti nella AFT 19-Grosseto Centro Sud. D) 2 posti nella AFT 19-Grosseto Centro Sud e accessi a Marina di Grosseto (frazione di Grosseto). E) 6 post"
+    },
+    {
+     "asl": "AUSL Toscana Sud Est",
+     "ambito": "Comuni di Campagnatico, Castiglione della Pescaia, Civitella Paganico, Roccastrada, Scansano",
+     "posti": 4,
+     "note": "A) 2 posti con vincolo di ambulatorio principale a Roccastrada *. B) 1 posto con vincolo di ambulatorio principale a Roccastrada e accessi a Roccatederighi (frazione di Roccastrada) *. C) 1 posto con vincolo di ambulatorio principale a Roccastrada e accessi a Civitella Paganico *."
+    },
+    {
+     "asl": "AUSL Toscana Sud Est",
+     "ambito": "Comuni di Capalbio, Isola del Giglio, Magliano, Monte Argentario, Orbetello, Pitigliano, Sorano",
+     "posti": 8,
+     "note": "A) 1 posto con vincolo di ambulatorio principale a Giglio Porto e secondario a Giglio Castello (Isola del Giglio) **. B) 1 posto con vincolo di ambulatorio principale in loc. Fonteblanda e accesso settimanale in loc. Talamone (Comune di Orbetello). C) 3 posti con vincolo di ambulatorio principale in"
+    },
+    {
+     "asl": "AUSL Toscana Sud Est",
+     "ambito": "Comuni di Manciano, Pitigliano, Sorano",
+     "posti": 6,
+     "note": "A) 1 posto con vincolo di ambulatorio principale a Pitigliano. B) 1 posto con vincolo di ambulatorio principale a Sorano e accesso settimanale in località"
+    },
+    {
+     "asl": "AUSL Toscana Sud Est",
+     "ambito": "Comuni di Casole d'Elsa, Colle Val d'Elsa, Radicondoli, San Gimignano",
+     "posti": 6,
+     "note": "A) 1 posto con vincolo di ambulatorio a Radicondoli almeno tre volte a settimana *. B) 1 postocon vincolo di ambulatorio a San Gimignano almeno tre volte a settimana . C) 4 posti senza vincoli."
+    },
+    {
+     "asl": "AUSL Toscana Sud Est",
+     "ambito": "Comune di Poggibonsi",
+     "posti": 4,
+     "note": "A) 1 posto con vincolo di ambulatorio due volte a settimana nella frazione Bellavista (Comune di Poggibonsi). B) 3 posti senza vincoli."
+    },
+    {
+     "asl": "AUSL Toscana Sud Est",
+     "ambito": "Comuni di Abbadia San Salvatore, Castiglione d'Orcia, Piancastagnaio, Radicofani, San Quirico d'Orcia",
+     "posti": 4,
+     "note": "A) 1 posto con vincolo di ambulatorio principale a Radicofani e accessi in località Contignano (frazione di Radicofani) *e***. B) 2 posti con vincolo di ambulatorio principale ad Abbadia San Salvatore. C) 1 posto senza vincoli."
+    },
+    {
+     "asl": "AUSL Toscana Sud Est",
+     "ambito": "Comuni di Cetona, Chianciano Terme, Chiusi, San Casciano dei Bagni, Sarteano",
+     "posti": 8,
+     "note": "A) 3 posti con vincolo di ambulatorio principale a Chianciano Terme. B) 2 posti con vincolo di ambulatorio principale a Cetona e accessi a Le Piazze (frazione di Cetona). C) 1 posto con vincolo di ambulatorio a San Casciano dei Bagni e accessi in località Palazzone (frazione di San Casciano dei Bagn"
+    },
+    {
+     "asl": "AUSL Toscana Sud Est",
+     "ambito": "Comuni di Montepulciano, Pienza, Sinalunga, Torrita di Siena,Trequanda",
+     "posti": 13,
+     "note": "A) 2 posti con vincolo di ambulatorio principale in località Bettolle (frazione di Sinalunga). B) 1 posto con vincolo di ambulatorio principale a Sinalunga e accessi a Farnetella (frazione di Sinalunga). C) 1 posto con vincolo di ambulatorio principale a Sinalunga. D) 1 posto con vincolo di ambulato"
+    },
+    {
+     "asl": "AUSL Toscana Sud Est",
+     "ambito": "Comuni di Asciano, Rapolano Terme Castelnuovo Berardenga, Castellina in Chianti, Gaiole in Chianti, Radda in Chianti",
+     "posti": 3,
+     "note": "A) 1 posto con vincolo di ambulatorio principale ad Asciano. B) 1 posto con vincolo di ambulatorio principale a Radda in Chianti*. C) 1 postoon vincolo di ambulatorio principale a Castelnuovo Berardenga."
+    },
+    {
+     "asl": "AUSL Toscana Sud Est",
+     "ambito": "Comuni di Buonvonvento, Montalcino, Monteroni d'Arbia, Murlo Chiusdino, Monticiano, Sovicille",
+     "posti": 6,
+     "note": "A) 1 posto senza vincolo. B) 1 posto con vincolo di ambulatorio a Sovicille. C) 1 posto con vincolo di ambulatorio a Chiusdino. D) 1 posto con obbligo di ambulatorio principale a Buonconvento. E) 1 posto con obbligo di ambulatorio principale a San Rocco (frazione di Sovicille). F) 1 posto con vincol"
+    },
+    {
+     "asl": "AUSL Toscana Sud Est",
+     "ambito": "Comuni di Siena, Monteriggioni",
+     "posti": 9,
+     "note": "A) 1 posto con obbligo di ambulatorio a Monteriggioni. B) 4 posti con vincolo di ambulatorio principale nel territorio della AFT SI29- Siena Monteriggioni. C) 4 posti con vincolo di ambulatorio principale nel territorio della AFT SI 30- Siena Centro."
+    }
+   ]
+  },
+  {
+   "id": "tos-es-2026-10",
+   "tipo": "emergenza-territoriale",
+   "titolo": "Incarichi vacanti di emergenza sanitaria territoriale - secondo semestre 2026",
+   "edizione": "2° semestre 2026",
+   "anno": 2026,
+   "pubblicatoIl": "2026-10-28",
+   "bollettino": "BURT n. 43 del 28/10/2026 (parte terza)",
+   "scadenza": "2026-11-17",
+   "scadenzaCalcolata": false,
+   "paginaUrl": "https://www.regione.toscana.it/-/incarichi-vacanti-di-emergenza-sanitaria-territoriale-secondo-semestre-2026",
+   "pdfUrl": "https://www.regione.toscana.it/documents/d/guest/avviso-incarichi-est-secondo-semestre-2026",
+   "bollettinoUrl": null,
+   "totalePosti": 95,
+   "totaleUfficiale": null,
+   "nota": "",
+   "corrente": true,
+   "perAsl": [
+    {
+     "asl": "AUSL Toscana Nord Ovest",
+     "posti": 43,
+     "ambiti": 1
+    },
+    {
+     "asl": "AUSL Toscana Centro",
+     "posti": 24,
+     "ambiti": 1
+    },
+    {
+     "asl": "AUSL Toscana Sud Est",
+     "posti": 28,
+     "ambiti": 1
+    }
+   ],
+   "voci": [
+    {
+     "asl": "AUSL Toscana Nord Ovest",
+     "ambito": "Intero territorio aziendale",
+     "posti": 43,
+     "note": ""
+    },
+    {
+     "asl": "AUSL Toscana Centro",
+     "ambito": "Intero territorio aziendale",
+     "posti": 24,
+     "note": ""
+    },
+    {
+     "asl": "AUSL Toscana Sud Est",
+     "ambito": "Intero territorio aziendale",
+     "posti": 28,
+     "note": ""
+    }
+   ]
+  },
+  {
+   "id": "tos-pls-2026-04",
+   "tipo": "pls",
+   "titolo": "Pubblicazione ambiti territoriali carenti assistenza pediatrica 2026",
+   "edizione": "prima pubblicazione 2026",
+   "anno": 2026,
+   "pubblicatoIl": "2026-04-29",
+   "bollettino": "BURT n. 17 del 29/04/2026 (parte terza)",
+   "scadenza": "2026-05-19",
+   "scadenzaCalcolata": false,
+   "paginaUrl": "https://www.regione.toscana.it/-/pubblicazione-ambiti-territoriali-carenti-assistenza-pediatrica-2026",
+   "pdfUrl": "https://www.regione.toscana.it/documents/d/guest/avviso-ambiti-territoriali-carenti-pls_2026",
+   "bollettinoUrl": null,
+   "totalePosti": 31,
+   "totaleUfficiale": null,
+   "nota": "",
+   "corrente": false,
+   "perAsl": [
+    {
+     "asl": "AUSL Toscana Centro",
+     "posti": 12,
+     "ambiti": 10
+    },
+    {
+     "asl": "AUSL Toscana Nord Ovest",
+     "posti": 10,
+     "ambiti": 7
+    },
+    {
+     "asl": "AUSL Toscana Sud Est",
+     "posti": 9,
+     "ambiti": 8
+    }
+   ]
+  },
+  {
+   "id": "tos-es-2026-04",
+   "tipo": "emergenza-territoriale",
+   "titolo": "Incarichi vacanti di emergenza sanitaria territoriale - primo semestre 2026",
+   "edizione": "1° semestre 2026",
+   "anno": 2026,
+   "pubblicatoIl": "2026-04-22",
+   "bollettino": "BURT n. 16 del 22/04/2026 (parte terza)",
+   "scadenza": "2026-05-12",
+   "scadenzaCalcolata": false,
+   "paginaUrl": "https://www.regione.toscana.it/-/incarichi-vacanti-di-emergenza-sanitaria-territoriale-primo-semestre-2026",
+   "pdfUrl": "https://www.regione.toscana.it/documents/d/guest/avviso-incarichi-est-primo-semestre-2026",
+   "bollettinoUrl": null,
+   "totalePosti": 93,
+   "totaleUfficiale": null,
+   "nota": "",
+   "corrente": false,
+   "perAsl": [
+    {
+     "asl": "AUSL Toscana Nord Ovest",
+     "posti": 41,
+     "ambiti": 1
+    },
+    {
+     "asl": "AUSL Toscana Centro",
+     "posti": 24,
+     "ambiti": 1
+    },
+    {
+     "asl": "AUSL Toscana Sud Est",
+     "posti": 28,
+     "ambiti": 1
+    }
+   ]
+  }
+ ],
+ "generatoIl": "2026-11-20"
+}

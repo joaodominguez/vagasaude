@@ -3,6 +3,7 @@ import { Bell, ChevronLeft, ChevronRight } from "lucide-react";
 import { AlertForm } from "@/components/alert-form";
 import { GuideCta } from "@/components/guide-cta";
 import { EduCrosslink } from "@/components/edu-crosslink";
+import { ZoneCarentiCrosslink } from "@/components/zone-carenti-view";
 import { Breadcrumbs, type BreadcrumbItem } from "@/components/breadcrumbs";
 import { CategoryInsights } from "@/components/category-insights";
 import { ComboNarrative } from "@/components/combo-narrative";
@@ -215,6 +216,7 @@ export function CategoryPageView({
             {category.kind === "profession" && page === 1 && (
               <EduCrosslink profession={category.profession} />
             )}
+            {category.kind === "profession" && page === 1 && category.profession === "Medicina" && <ZoneCarentiCrosslink />}
 
             {(siblings.length > 0 || related.length > 0) && (
               <div className="content-card p-5">

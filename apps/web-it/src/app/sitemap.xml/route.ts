@@ -4,6 +4,7 @@ import { getJobs } from "@/lib/jobs-data";
 import { listArticles } from "@/lib/news";
 import { employerLastmod, listEmployers } from "@/lib/employers";
 import { listConcorsi } from "@/lib/concorsi";
+import { hubLastmod } from "@/lib/zone-carenti";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +16,7 @@ const CHILD_SITEMAPS = [
   "stipendi",
   "notizie",
   "aziende",
+  "zone-carenti",
 ] as const;
 
 /** Stesse date di riserva di sitemap/[segment]/route.ts. */
@@ -44,6 +46,7 @@ export async function GET() {
     concorsi: newest(listConcorsi(jobs).map((item) => item.job.publishedAt), STATIC_PAGES_UPDATED),
     stipendi: SALARY_TABLES_UPDATED,
     notizie: newest(articles.map((a) => `${a.updated ?? a.date}T00:00:00Z`), STATIC_PAGES_UPDATED),
+    "zone-carenti": hubLastmod(),
     aziende: newest(
       employers.map((employer) => employerLastmod(employer, STATIC_PAGES_UPDATED).toISOString()),
       STATIC_PAGES_UPDATED,

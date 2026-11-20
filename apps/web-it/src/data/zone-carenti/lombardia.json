@@ -1,0 +1,2620 @@
+{
+ "slug": "lombardia",
+ "nome": "Lombardia",
+ "ente": "Regione Lombardia - Direzione Generale Welfare",
+ "paginaUfficiale": "https://www.regione.lombardia.it/sanita/personale-sanitario-e-sociosanitario/concorsi-e-avvisi-presso-enti-sanitari/pubblicazione-ambiti-carenti-di-assistenza-primaria-a-ciclo-di-scelta-e-pediatria-e-ore-vacanti-di-assistenza-primaria-ad-attivit--oraria-e-di-emergenza-territoriale",
+ "bollettinoNome": "BURL",
+ "ultimoAggiornamentoFonte": "2026-10-28",
+ "note": [
+  "In Lombardia gli incarichi sono ripartiti per ASST e le domande si presentano sulla piattaforma regionale Bandi e Servizi. Dal 2026 il ruolo unico comprende l'attività a ciclo di scelta e quella oraria (ex continuità assistenziale)."
+ ],
+ "esclusi": [
+  "Incarichi vacanti di emergenza sanitaria territoriale (118) 2026: la pagina regionale elenca solo i comunicati 2024; non trovato il comunicato 2026, quindi nessun dato.",
+  "Graduatorie regionali e punteggi dei medici: non pubblicati (dati personali)."
+ ],
+ "pubblicazioni": [
+  {
+   "id": "lom-ru-2026-10",
+   "tipo": "ruolo-unico",
+   "titolo": "Incarichi vacanti per i medici del ruolo unico di assistenza primaria - ottobre 2026",
+   "edizione": "ottobre 2026",
+   "anno": 2026,
+   "pubblicatoIl": "2026-10-28",
+   "bollettino": "BURL Serie Avvisi e Concorsi n. 44 del 28/10/2026, comunicato regionale n. 77 del 22/10/2026",
+   "scadenza": "2026-11-17",
+   "scadenzaCalcolata": false,
+   "paginaUrl": "https://www.regione.lombardia.it/sanita/personale-sanitario-e-sociosanitario/concorsi-e-avvisi-presso-enti-sanitari/pubblicazione-ambiti-carenti-di-assistenza-primaria-a-ciclo-di-scelta-e-pediatria-e-ore-vacanti-di-assistenza-primaria-ad-attivit--oraria-e-di-emergenza-territoriale",
+   "pdfUrl": "https://omceomi.it/wp-content/uploads/2026/10/Pubblicazione-incarichi-vacanti-per-medici-ruolo-unico-assistenza-primaria-e-pls-DIREZIONE-GENERALE-WELFARE-BURL-28.10.2026-1.pdf",
+   "bollettinoUrl": "https://www.regione.lombardia.it/burl-bollettino-ufficiale-regione-lombardia",
+   "totalePosti": 4090,
+   "totaleUfficiale": 4089,
+   "nota": "Il PDF è la copia del comunicato pubblicata dall'OMCeO di Milano; l'atto ufficiale è nel BURL. Nel documento la somma delle righe di ASST Brianza supera di 1 il totale dichiarato.",
+   "corrente": true,
+   "perAsl": [
+    {
+     "asl": "ASST Bergamo Est",
+     "posti": 178,
+     "ambiti": 22
+    },
+    {
+     "asl": "ASST Bergamo Ovest",
+     "posti": 230,
+     "ambiti": 23
+    },
+    {
+     "asl": "ASST Brianza",
+     "posti": 406,
+     "ambiti": 33
+    },
+    {
+     "asl": "ASST Crema",
+     "posti": 77,
+     "ambiti": 3
+    },
+    {
+     "asl": "ASST Cremona",
+     "posti": 78,
+     "ambiti": 4
+    },
+    {
+     "asl": "ASST Franciacorta",
+     "posti": 102,
+     "ambiti": 14
+    },
+    {
+     "asl": "ASST Garda",
+     "posti": 140,
+     "ambiti": 25
+    },
+    {
+     "asl": "ASST Lariana",
+     "posti": 26,
+     "ambiti": 15
+    },
+    {
+     "asl": "ASST Lecco",
+     "posti": 140,
+     "ambiti": 16
+    },
+    {
+     "asl": "ASST Lodi",
+     "posti": 110,
+     "ambiti": 5
+    },
+    {
+     "asl": "ASST Mantova",
+     "posti": 207,
+     "ambiti": 9
+    },
+    {
+     "asl": "ASST Melegnano e della Martesana",
+     "posti": 287,
+     "ambiti": 14
+    },
+    {
+     "asl": "ASST Fatebenefratelli-Sacco",
+     "posti": 323,
+     "ambiti": 5
+    },
+    {
+     "asl": "ASST Niguarda",
+     "posti": 82,
+     "ambiti": 1
+    },
+    {
+     "asl": "ASST Santi Paolo e Carlo",
+     "posti": 223,
+     "ambiti": 3
+    },
+    {
+     "asl": "ASST Nord Milano",
+     "posti": 104,
+     "ambiti": 2
+    },
+    {
+     "asl": "ASST Ovest Milanese",
+     "posti": 196,
+     "ambiti": 9
+    },
+    {
+     "asl": "ASST Papa Giovanni XXIII",
+     "posti": 99,
+     "ambiti": 8
+    },
+    {
+     "asl": "ASST Pavia",
+     "posti": 221,
+     "ambiti": 36
+    },
+    {
+     "asl": "ASST Rhodense",
+     "posti": 210,
+     "ambiti": 8
+    },
+    {
+     "asl": "ASST Sette Laghi",
+     "posti": 167,
+     "ambiti": 27
+    },
+    {
+     "asl": "ASST Spedali Civili di Brescia",
+     "posti": 154,
+     "ambiti": 14
+    },
+    {
+     "asl": "ASST Valcamonica",
+     "posti": 44,
+     "ambiti": 3
+    },
+    {
+     "asl": "ASST Valle Olona",
+     "posti": 201,
+     "ambiti": 17
+    },
+    {
+     "asl": "ASST Valtellina e Alto Lario",
+     "posti": 85,
+     "ambiti": 7
+    }
+   ],
+   "voci": [
+    {
+     "asl": "ASST Bergamo Est",
+     "ambito": "Albano Sant’Alessandro, Pedrengo, Torre De Roveri, Scanzorosciate",
+     "posti": 12,
+     "note": ""
+    },
+    {
+     "asl": "ASST Bergamo Est",
+     "ambito": "Albino, Pradalunga",
+     "posti": 9,
+     "note": ""
+    },
+    {
+     "asl": "ASST Bergamo Est",
+     "ambito": "Alzano Lombardo, Ranica, Villa di Serio",
+     "posti": 11,
+     "note": ""
+    },
+    {
+     "asl": "ASST Bergamo Est",
+     "ambito": "Ardesio, Oltressenda Alta, Parre, Piario, Villa d'Ogna",
+     "posti": 5,
+     "note": ""
+    },
+    {
+     "asl": "ASST Bergamo Est",
+     "ambito": "Bagnatica, Brusaporto, Costa Mezzate, Montello",
+     "posti": 7,
+     "note": ""
+    },
+    {
+     "asl": "ASST Bergamo Est",
+     "ambito": "Berzo San Fermo, Borgo di Terzo, Grone, Vigano S. Martino, Bianzano, Casazza, Gaverina, Monasterolo al Castello, Spinone al Lago, Endine Gaiano, Ranzanico",
+     "posti": 7,
+     "note": ""
+    },
+    {
+     "asl": "ASST Bergamo Est",
+     "ambito": "Bolgare, Calcinate, Mornico al Serio, Palosco, Cavernago",
+     "posti": 12,
+     "note": ""
+    },
+    {
+     "asl": "ASST Bergamo Est",
+     "ambito": "Bossico, Fonteno, Riva di Solto, Solto Collina, Sovere",
+     "posti": 6,
+     "note": ""
+    },
+    {
+     "asl": "ASST Bergamo Est",
+     "ambito": "Castione della Presolana, Rovetta, Cerete, Onore, Fino del Monte, Songavazzo",
+     "posti": 6,
+     "note": ""
+    },
+    {
+     "asl": "ASST Bergamo Est",
+     "ambito": "Castro, Lovere, Pianico",
+     "posti": 4,
+     "note": ""
+    },
+    {
+     "asl": "ASST Bergamo Est",
+     "ambito": "Clusone",
+     "posti": 4,
+     "note": ""
+    },
+    {
+     "asl": "ASST Bergamo Est",
+     "ambito": "Costa Volpino, Rogno",
+     "posti": 7,
+     "note": ""
+    },
+    {
+     "asl": "ASST Bergamo Est",
+     "ambito": "Gandino, Leffe, Peia, Cazzano Sant'Andrea, Casnigo",
+     "posti": 8,
+     "note": ""
+    },
+    {
+     "asl": "ASST Bergamo Est",
+     "ambito": "Gazzaniga, Cene, Colzate, Vertova, Fiorano al Serio",
+     "posti": 8,
+     "note": ""
+    },
+    {
+     "asl": "ASST Bergamo Est",
+     "ambito": "Gorno, Oneta, Ponte Nossa, Premolo",
+     "posti": 2,
+     "note": ""
+    },
+    {
+     "asl": "ASST Bergamo Est",
+     "ambito": "Grumello del Monte, Chiuduno, Telgate, Castelli Calepio",
+     "posti": 12,
+     "note": ""
+    },
+    {
+     "asl": "ASST Bergamo Est",
+     "ambito": "Nembro, Selvino, Aviatico",
+     "posti": 7,
+     "note": ""
+    },
+    {
+     "asl": "ASST Bergamo Est",
+     "ambito": "Sarnico, Adrara S. Martino, Adrara S. Rocco, Viadanica, Predore, Tavernola Bergamasca, Villongo, Gandosso, Foresto Sparso, Credaro, Vigolo, Parzanica",
+     "posti": 15,
+     "note": ""
+    },
+    {
+     "asl": "ASST Bergamo Est",
+     "ambito": "Seriate e Grassobbio",
+     "posti": 15,
+     "note": ""
+    },
+    {
+     "asl": "ASST Bergamo Est",
+     "ambito": "Trescore Balneario, Cenate Sopra, Cenate Sotto, San Paolo D'Argon, Entratico, Luzzana, Zandobbio, Carobbio degli Angeli, Gorlago",
+     "posti": 18,
+     "note": ""
+    },
+    {
+     "asl": "ASST Bergamo Est",
+     "ambito": "Valbondione, Gandellino, Valgoglio, Gromo",
+     "posti": 2,
+     "note": ""
+    },
+    {
+     "asl": "ASST Bergamo Est",
+     "ambito": "Vilminore di Scalve, Colere, Schilpario, Azzone",
+     "posti": 1,
+     "note": ""
+    },
+    {
+     "asl": "ASST Bergamo Ovest",
+     "ambito": "Arzago d’Adda, Casirate d’Adda, Treviglio",
+     "posti": 15,
+     "note": ""
+    },
+    {
+     "asl": "ASST Bergamo Ovest",
+     "ambito": "Arcene, Brignano Gera d’Adda, Castel Rozzone, Lurano, Pagazzano",
+     "posti": 11,
+     "note": ""
+    },
+    {
+     "asl": "ASST Bergamo Ovest",
+     "ambito": "Calvenzano, Caravaggio, Misano Gera d’Adda",
+     "posti": 16,
+     "note": ""
+    },
+    {
+     "asl": "ASST Bergamo Ovest",
+     "ambito": "Fornovo San Giovanni, Mozzanica",
+     "posti": 4,
+     "note": ""
+    },
+    {
+     "asl": "ASST Bergamo Ovest",
+     "ambito": "Canonica d’Adda, Pontirolo Nuovo, Fara Gera D’Adda",
+     "posti": 9,
+     "note": ""
+    },
+    {
+     "asl": "ASST Bergamo Ovest",
+     "ambito": "Pognano, Spirano",
+     "posti": 3,
+     "note": ""
+    },
+    {
+     "asl": "ASST Bergamo Ovest",
+     "ambito": "Martinengo, Cividate al Piano, Cortenuova",
+     "posti": 9,
+     "note": ""
+    },
+    {
+     "asl": "ASST Bergamo Ovest",
+     "ambito": "Cologno al Serio, Ghisalba",
+     "posti": 10,
+     "note": ""
+    },
+    {
+     "asl": "ASST Bergamo Ovest",
+     "ambito": "Romano di Lombardia, Bariano, Morengo",
+     "posti": 18,
+     "note": ""
+    },
+    {
+     "asl": "ASST Bergamo Ovest",
+     "ambito": "Covo, Fara Olivana con Sola, Antegnate, Isso, Barbata, Fontanella",
+     "posti": 10,
+     "note": ""
+    },
+    {
+     "asl": "ASST Bergamo Ovest",
+     "ambito": "Calcio, Pumenengo, Torre Pallavicina",
+     "posti": 5,
+     "note": ""
+    },
+    {
+     "asl": "ASST Bergamo Ovest",
+     "ambito": "Dalmine, Lallio, Levate, Osio Sopra",
+     "posti": 16,
+     "note": ""
+    },
+    {
+     "asl": "ASST Bergamo Ovest",
+     "ambito": "Curno, Mozzo, Treviolo",
+     "posti": 9,
+     "note": ""
+    },
+    {
+     "asl": "ASST Bergamo Ovest",
+     "ambito": "Boltiere, Osio Sotto",
+     "posti": 9,
+     "note": ""
+    },
+    {
+     "asl": "ASST Bergamo Ovest",
+     "ambito": "Azzano San Paolo, Comun Nuovo, Stezzano, Urgnano, Zanica",
+     "posti": 21,
+     "note": ""
+    },
+    {
+     "asl": "ASST Bergamo Ovest",
+     "ambito": "Verdello, Verdellino, Ciserano",
+     "posti": 12,
+     "note": ""
+    },
+    {
+     "asl": "ASST Bergamo Ovest",
+     "ambito": "Ambivere, Brembate di Sopra, Mapello",
+     "posti": 6,
+     "note": ""
+    },
+    {
+     "asl": "ASST Bergamo Ovest",
+     "ambito": "Sotto il Monte, Carvico, Villa d’Adda",
+     "posti": 6,
+     "note": ""
+    },
+    {
+     "asl": "ASST Bergamo Ovest",
+     "ambito": "Bonate Sopra, Bonate Sotto, Chignolo d’Isola, Madone, Terno d’Isola",
+     "posti": 16,
+     "note": ""
+    },
+    {
+     "asl": "ASST Bergamo Ovest",
+     "ambito": "Calusco d’Adda, Suisio, Medolago, Solza",
+     "posti": 8,
+     "note": ""
+    },
+    {
+     "asl": "ASST Bergamo Ovest",
+     "ambito": "Bottanuco, Brembate, Capriate San Gervasio, Filago",
+     "posti": 10,
+     "note": ""
+    },
+    {
+     "asl": "ASST Bergamo Ovest",
+     "ambito": "Pontida, Caprino Bergamasco, Cisano Bergamasco, Torre de’ Busi",
+     "posti": 5,
+     "note": ""
+    },
+    {
+     "asl": "ASST Bergamo Ovest",
+     "ambito": "Ponte San Pietro, Presezzo",
+     "posti": 2,
+     "note": ""
+    },
+    {
+     "asl": "ASST Brianza",
+     "ambito": "ALBIATE-TRIUGGIO",
+     "posti": 9,
+     "note": ""
+    },
+    {
+     "asl": "ASST Brianza",
+     "ambito": "BESANA IN BRIANZA",
+     "posti": 8,
+     "note": ""
+    },
+    {
+     "asl": "ASST Brianza",
+     "ambito": "BIASSONO-MACHERIO- SOVICO-VEDANO AL LAMBRO",
+     "posti": 16,
+     "note": ""
+    },
+    {
+     "asl": "ASST Brianza",
+     "ambito": "BRIOSCO-RENATE-VEDUGGIO CON COLZANO",
+     "posti": 7,
+     "note": ""
+    },
+    {
+     "asl": "ASST Brianza",
+     "ambito": "CARATE BRIANZA",
+     "posti": 8,
+     "note": ""
+    },
+    {
+     "asl": "ASST Brianza",
+     "ambito": "LISSONE",
+     "posti": 21,
+     "note": ""
+    },
+    {
+     "asl": "ASST Brianza",
+     "ambito": "VERANO BRIANZA",
+     "posti": 5,
+     "note": ""
+    },
+    {
+     "asl": "ASST Brianza",
+     "ambito": "BOVISIO MASCIAGO",
+     "posti": 10,
+     "note": ""
+    },
+    {
+     "asl": "ASST Brianza",
+     "ambito": "CESANO MADERNO",
+     "posti": 21,
+     "note": ""
+    },
+    {
+     "asl": "ASST Brianza",
+     "ambito": "DESIO",
+     "posti": 20,
+     "note": ""
+    },
+    {
+     "asl": "ASST Brianza",
+     "ambito": "LIMBIATE",
+     "posti": 19,
+     "note": ""
+    },
+    {
+     "asl": "ASST Brianza",
+     "ambito": "MUGGIO'",
+     "posti": 11,
+     "note": ""
+    },
+    {
+     "asl": "ASST Brianza",
+     "ambito": "NOVA MILANESE",
+     "posti": 11,
+     "note": ""
+    },
+    {
+     "asl": "ASST Brianza",
+     "ambito": "VAREDO",
+     "posti": 8,
+     "note": ""
+    },
+    {
+     "asl": "ASST Brianza",
+     "ambito": "BRUGHERIO",
+     "posti": 16,
+     "note": ""
+    },
+    {
+     "asl": "ASST Brianza",
+     "ambito": "MONZA",
+     "posti": 52,
+     "note": "n. 1 S.ROCCO, n. 2. S.ALBINO, n. 1 S.FRUTTUOSO"
+    },
+    {
+     "asl": "ASST Brianza",
+     "ambito": "VILLASANTA",
+     "posti": 5,
+     "note": ""
+    },
+    {
+     "asl": "ASST Brianza",
+     "ambito": "COGLIATE -LAZZATE-MISINTO- CERIANO LAGHETTO",
+     "posti": 15,
+     "note": ""
+    },
+    {
+     "asl": "ASST Brianza",
+     "ambito": "GIUSSANO",
+     "posti": 10,
+     "note": ""
+    },
+    {
+     "asl": "ASST Brianza",
+     "ambito": "LENTATE SUL SEVESO",
+     "posti": 8,
+     "note": ""
+    },
+    {
+     "asl": "ASST Brianza",
+     "ambito": "MEDA",
+     "posti": 12,
+     "note": ""
+    },
+    {
+     "asl": "ASST Brianza",
+     "ambito": "SEREGNO",
+     "posti": 22,
+     "note": ""
+    },
+    {
+     "asl": "ASST Brianza",
+     "ambito": "SEVESO - BARLASSINA",
+     "posti": 13,
+     "note": ""
+    },
+    {
+     "asl": "ASST Brianza",
+     "ambito": "AGRATE - CAPONAGO",
+     "posti": 9,
+     "note": ""
+    },
+    {
+     "asl": "ASST Brianza",
+     "ambito": "ARCORE",
+     "posti": 8,
+     "note": ""
+    },
+    {
+     "asl": "ASST Brianza",
+     "ambito": "BERNAREGGIO - AICURZIO-SULBIATE - RONCO BRIANTINO",
+     "posti": 10,
+     "note": ""
+    },
+    {
+     "asl": "ASST Brianza",
+     "ambito": "BUSNAGO - CORNATE D'ADDA - RONCELLO",
+     "posti": 10,
+     "note": ""
+    },
+    {
+     "asl": "ASST Brianza",
+     "ambito": "CARNATE",
+     "posti": 4,
+     "note": ""
+    },
+    {
+     "asl": "ASST Brianza",
+     "ambito": "CAVENAGO DI BRIANZA -BELLUSCO - MEZZAGO - ORNAGO",
+     "posti": 10,
+     "note": ""
+    },
+    {
+     "asl": "ASST Brianza",
+     "ambito": "CONCOREZZO",
+     "posti": 6,
+     "note": ""
+    },
+    {
+     "asl": "ASST Brianza",
+     "ambito": "LESMO-CAMPARADA- CORREZZANA",
+     "posti": 5,
+     "note": ""
+    },
+    {
+     "asl": "ASST Brianza",
+     "ambito": "USMATE VELATE",
+     "posti": 4,
+     "note": ""
+    },
+    {
+     "asl": "ASST Brianza",
+     "ambito": "VIMERCATE - BURAGO DI MOLGORA",
+     "posti": 13,
+     "note": ""
+    },
+    {
+     "asl": "ASST Crema",
+     "ambito": "centro",
+     "posti": 45,
+     "note": ""
+    },
+    {
+     "asl": "ASST Crema",
+     "ambito": "est",
+     "posti": 15,
+     "note": ""
+    },
+    {
+     "asl": "ASST Crema",
+     "ambito": "ovest",
+     "posti": 17,
+     "note": ""
+    },
+    {
+     "asl": "ASST Cremona",
+     "ambito": "Cremona Centro",
+     "posti": 32,
+     "note": "1 ROBECCO D'OGLIO - 1 CORTE DE FRATI -1 POZZAGLIO ED UNITI - 1 PERSICO DOSIMO - 1 CASTELVERDE - 1 SPINADESCO - 1 MALAGNINO - 1 BONEMERSE - 1 GERRE DE' CAPRIOLI"
+    },
+    {
+     "asl": "ASST Cremona",
+     "ambito": "Cremona Est",
+     "posti": 14,
+     "note": "1 SCANDOLARA RIPA D'OGLIO, GRONTARDO - 1 STAGNO LOMBARDO - 1 PESCAROLO ED UNITI, CICOGNOLO - 1 ISOLA DOVARESE - 1 CAPPELLA DE PICENARDI, PIEVE SAN GIACOMO - 1 OSTIANO, PESSINA CREMONESE - 1 VESCOVATO - 1 SAN DANIELE PO - 1 PIEVE D'OLMI - 1 GABBIONETA BINANUOVA, VOLONGO- 1 GADESCO PIEVE DELMONA - 1 C"
+    },
+    {
+     "asl": "ASST Cremona",
+     "ambito": "Cremona Ovest",
+     "posti": 16,
+     "note": "1 SORESINA- 1 CASALBUTTANO ED UNITI- 1 PADERNO PONCHIELLI - 1 PIZZIGHETTONE - 1 ANNICCO - 1 GRUMELLO CREMONESE - 1 SESTO CREMONESE ED UNITI - 1 OLMENETA - 1 CASALMORANO - 1 SAN BASSANO, CAPPELLA CANTONE - 1 AZZANELLO, CASTELVISCONTI - 1 ACQUANEGRA CREMONESE - 1 CROTTA D'ADDA"
+    },
+    {
+     "asl": "ASST Cremona",
+     "ambito": "Casalmaggiore",
+     "posti": 16,
+     "note": "1 MOTTA BALUFFI - 1 SPINEDA, CASALMAGGIORE - 1 TORRICELLA DEL PIZZO, SCANDOLARA RAVARA - 1 SAN GIOVANNI IN CROCE - 1 CASTELDIDONE, CASALMAGGIORE - 1 SOLAROLO RAINERIO, CASALMAGGIORE - 1 CINGIA DE BOTTI, TORRE DE PICENARDI -1 PIADENA DRIZZONA - 1 CALVATONE, TORNATA - 1 SAN MARTINO DEL LAGO, VOLTIDO -"
+    },
+    {
+     "asl": "ASST Franciacorta",
+     "ambito": "Paderno F.C., Passirano, Monticelli Brusati, Provaglio D'Iseo, Cortefranca",
+     "posti": 4,
+     "note": ""
+    },
+    {
+     "asl": "ASST Franciacorta",
+     "ambito": "Iseo, Monte Isola, Sulzano, Marone, Sale M., Zone, Paratico",
+     "posti": 5,
+     "note": ""
+    },
+    {
+     "asl": "ASST Franciacorta",
+     "ambito": "Adro-Capriolo",
+     "posti": 5,
+     "note": "n. 3 vincoli a Adro n. 1 vincolo a Capriolo"
+    },
+    {
+     "asl": "ASST Franciacorta",
+     "ambito": "Cologne, Erbusco",
+     "posti": 7,
+     "note": "n. 2 vincoli a Cologne n. 2 vincoli a Erbusco"
+    },
+    {
+     "asl": "ASST Franciacorta",
+     "ambito": "Palazzolo S/Oglio , Pontoglio",
+     "posti": 10,
+     "note": "n. 2 vincoli a Pontoglio n. 2 vincoli a Palazzolo s/O"
+    },
+    {
+     "asl": "ASST Franciacorta",
+     "ambito": "Castelcovati, Comezzano Cizzago",
+     "posti": 6,
+     "note": "n. 1 vincolo a Castelcovati n. 1 vincolo a Comezzano-Cizzago"
+    },
+    {
+     "asl": "ASST Franciacorta",
+     "ambito": "Castrezzato, Trenzano",
+     "posti": 4,
+     "note": "n. 1 vincolo a Castrezzato n. 1 vincolo a Trenzano"
+    },
+    {
+     "asl": "ASST Franciacorta",
+     "ambito": "Chiari",
+     "posti": 5,
+     "note": ""
+    },
+    {
+     "asl": "ASST Franciacorta",
+     "ambito": "Roccafranca, Rudiano, Urago D/O",
+     "posti": 9,
+     "note": "n. 2 vincoli a Rudiano n. 1 vincolo a Roccafranca"
+    },
+    {
+     "asl": "ASST Franciacorta",
+     "ambito": "Cazzago San Martino",
+     "posti": 3,
+     "note": ""
+    },
+    {
+     "asl": "ASST Franciacorta",
+     "ambito": "Coccaglio",
+     "posti": 4,
+     "note": ""
+    },
+    {
+     "asl": "ASST Franciacorta",
+     "ambito": "Rovato",
+     "posti": 6,
+     "note": ""
+    },
+    {
+     "asl": "ASST Franciacorta",
+     "ambito": "Barbariga, Borgo San Giacomo, Dello, Longhena, Mairano, Quinzano d’Oglio, San Paolo, Villachiara",
+     "posti": 16,
+     "note": "n. 2 vincoli a Borgo San Giacomo n. 2 vincoli a Quinzano d'Oglio n. 2 vincoli a Dello n. 1 vincolo a Mairano n. 1 vincolo a Villachiara"
+    },
+    {
+     "asl": "ASST Franciacorta",
+     "ambito": "Brandico, Corzano, Lograto, Maclodio,Orzinuovi, Orzivecchi, Pompiano",
+     "posti": 18,
+     "note": "n. 1 vincolo a Pompiano n. 2 vincoli a Orzivecchi"
+    },
+    {
+     "asl": "ASST Garda",
+     "ambito": "Alfianello, Pontevico, Bassano Bs.No, S.Gervasio",
+     "posti": 7,
+     "note": ""
+    },
+    {
+     "asl": "ASST Garda",
+     "ambito": "Bagnolo Mella",
+     "posti": 3,
+     "note": ""
+    },
+    {
+     "asl": "ASST Garda",
+     "ambito": "Ghedi",
+     "posti": 6,
+     "note": ""
+    },
+    {
+     "asl": "ASST Garda",
+     "ambito": "Cigole, Pavone Mella, Milzano, Pralboino, Seniga",
+     "posti": 5,
+     "note": "n. 1 vincolo a Seniga"
+    },
+    {
+     "asl": "ASST Garda",
+     "ambito": "Leno",
+     "posti": 7,
+     "note": ""
+    },
+    {
+     "asl": "ASST Garda",
+     "ambito": "Manerbio, Offlaga",
+     "posti": 9,
+     "note": "n. 1 vincolo a Offlaga"
+    },
+    {
+     "asl": "ASST Garda",
+     "ambito": "Fiesse, Gambara, Gottolengo, Isorella",
+     "posti": 5,
+     "note": ""
+    },
+    {
+     "asl": "ASST Garda",
+     "ambito": "Verolavecchia, Verolanuova",
+     "posti": 3,
+     "note": ""
+    },
+    {
+     "asl": "ASST Garda",
+     "ambito": "Acquafredda, Calcinato, Calvisano, Carpenedolo, Montichiari, Remedello, Visano",
+     "posti": 27,
+     "note": "n. 1 vincolo a Calcinato"
+    },
+    {
+     "asl": "ASST Garda",
+     "ambito": "Salò, Gardone R., S.Felice B.",
+     "posti": 5,
+     "note": ""
+    },
+    {
+     "asl": "ASST Garda",
+     "ambito": "Toscolano",
+     "posti": 5,
+     "note": ""
+    },
+    {
+     "asl": "ASST Garda",
+     "ambito": "Lonato",
+     "posti": 5,
+     "note": ""
+    },
+    {
+     "asl": "ASST Garda",
+     "ambito": "Desenzano",
+     "posti": 6,
+     "note": ""
+    },
+    {
+     "asl": "ASST Garda",
+     "ambito": "Manerba, Moniga, Padenghe, Polpenazze, Soiano, Puegnago",
+     "posti": 6,
+     "note": "n. 1 vincolo a Polpenazze"
+    },
+    {
+     "asl": "ASST Garda",
+     "ambito": "Gargnano, Tignale, Tremosine, Limone",
+     "posti": 2,
+     "note": "n. 1 vincolo a Tremosine"
+    },
+    {
+     "asl": "ASST Garda",
+     "ambito": "Pozzolengo, Sirmione",
+     "posti": 2,
+     "note": ""
+    },
+    {
+     "asl": "ASST Garda",
+     "ambito": "Bedizzole, Calvagese",
+     "posti": 6,
+     "note": ""
+    },
+    {
+     "asl": "ASST Garda",
+     "ambito": "Gavardo, Villanuova, Vallio, Paitone, Serle",
+     "posti": 8,
+     "note": ""
+    },
+    {
+     "asl": "ASST Garda",
+     "ambito": "Sabbio Chiese, Provaglio V.S., Barghe",
+     "posti": 2,
+     "note": ""
+    },
+    {
+     "asl": "ASST Garda",
+     "ambito": "Vobarno, Roè Volciano",
+     "posti": 7,
+     "note": ""
+    },
+    {
+     "asl": "ASST Garda",
+     "ambito": "Vestone, Pertica Alta, Pertica Bassa, Casto, Mura",
+     "posti": 3,
+     "note": ""
+    },
+    {
+     "asl": "ASST Garda",
+     "ambito": "Anfo-Lavenone-Idro-Treviso B.-Capovalle-Magasa- Valvestino",
+     "posti": 1,
+     "note": ""
+    },
+    {
+     "asl": "ASST Garda",
+     "ambito": "Agnosine, Bione, Odolo, Preseglie",
+     "posti": 3,
+     "note": ""
+    },
+    {
+     "asl": "ASST Garda",
+     "ambito": "Bagolino",
+     "posti": 3,
+     "note": "n. 1 vincolo a Bagolino"
+    },
+    {
+     "asl": "ASST Garda",
+     "ambito": "Muscoline, Prevalle",
+     "posti": 4,
+     "note": ""
+    },
+    {
+     "asl": "ASST Lariana",
+     "ambito": "Albese Con Cassano, Lipomo, Montorfano, Tavernerio",
+     "posti": 1,
+     "note": ""
+    },
+    {
+     "asl": "ASST Lariana",
+     "ambito": "Asso, Barni, Caglio, Lasnigo, Magreglio, Rezzago, Sormano, Valbrona",
+     "posti": 2,
+     "note": ""
+    },
+    {
+     "asl": "ASST Lariana",
+     "ambito": "Canzo, Caslino D'Erba, Castelmarte, Eupilio, Longone Al Segrino, Ponte Lambro, Proserpio",
+     "posti": 1,
+     "note": ""
+    },
+    {
+     "asl": "ASST Lariana",
+     "ambito": "Erba, Pusiano",
+     "posti": 3,
+     "note": ""
+    },
+    {
+     "asl": "ASST Lariana",
+     "ambito": "Arosio, Cabiate, Carugo, Mariano Comense",
+     "posti": 2,
+     "note": ""
+    },
+    {
+     "asl": "ASST Lariana",
+     "ambito": "Inverigo, Lurago D'Erba",
+     "posti": 1,
+     "note": ""
+    },
+    {
+     "asl": "ASST Lariana",
+     "ambito": "Albiolo, Beregazzo Con Figliaro, Binago, Bizzarone, Castelnuovo Bozzente, Rodero, Solbiate Con Cagno, Uggiate con Ronago, Valmorea",
+     "posti": 3,
+     "note": "2 Uggiate con Ronago"
+    },
+    {
+     "asl": "ASST Lariana",
+     "ambito": "Appiano Gentile, Bulgarograsso, Guanzate, Oltrona S. Mamette, Veniano",
+     "posti": 1,
+     "note": ""
+    },
+    {
+     "asl": "ASST Lariana",
+     "ambito": "Lurate Caccivio, Olgiate Comasco",
+     "posti": 1,
+     "note": ""
+    },
+    {
+     "asl": "ASST Lariana",
+     "ambito": "Bregnano, Rovellasca, Cirimido, Lomazzo, Rovello Porro, Turate",
+     "posti": 4,
+     "note": "1 Rovello Porro 2 Turate"
+    },
+    {
+     "asl": "ASST Lariana",
+     "ambito": "Cadorago, Vertemate con Minoprio",
+     "posti": 1,
+     "note": ""
+    },
+    {
+     "asl": "ASST Lariana",
+     "ambito": "Carbonate, Locate Varesino, Mozzate",
+     "posti": 1,
+     "note": ""
+    },
+    {
+     "asl": "ASST Lariana",
+     "ambito": "Casnate Con Bernate, Grandate",
+     "posti": 1,
+     "note": ""
+    },
+    {
+     "asl": "ASST Lariana",
+     "ambito": "Alta Valle Intelvi, Argegno, Blessagno, Centro Valle Intelvi, Cerano D'Intelvi, Dizzasco, Laino, Pigra, Ponna, Schignano",
+     "posti": 2,
+     "note": ""
+    },
+    {
+     "asl": "ASST Lariana",
+     "ambito": "Carlazzo, Cavargna, Claino Con Osteno, Corrido, Cusino, Porlezza, S. Bartolomeo Val Cavargna, S. Nazzaro Val Cavargna, Val Rezzo, Valsolda",
+     "posti": 2,
+     "note": ""
+    },
+    {
+     "asl": "ASST Lecco",
+     "ambito": "Airuno, Brivio, Calco, La Valletta Brianza, Olgiate Molgora, Santa Maria Hoè",
+     "posti": 10,
+     "note": ""
+    },
+    {
+     "asl": "ASST Lecco",
+     "ambito": "Annone Di Brianza, Castello Di Brianza, Dolzago, Ello, Garbagnate Monastero, Molteno, Oggiono, Sirone",
+     "posti": 13,
+     "note": ""
+    },
+    {
+     "asl": "ASST Lecco",
+     "ambito": "Barzago, Barzanò, Cassago Brianza, Cremella, Sirtori, Viganò, Casatenovo, Missaglia, Monticello Brianza",
+     "posti": 22,
+     "note": ""
+    },
+    {
+     "asl": "ASST Lecco",
+     "ambito": "Bellano, Colico, Dervio, Dorio, Esino Lario, Perledo, Sueglio, Varenna, Valvarrone",
+     "posti": 5,
+     "note": ""
+    },
+    {
+     "asl": "ASST Lecco",
+     "ambito": "Bosisio Parini, Cesana Brianza, Rogeno, Suello",
+     "posti": 5,
+     "note": ""
+    },
+    {
+     "asl": "ASST Lecco",
+     "ambito": "Calolziocorte, Carenno, Erve, Monte Marenzo, Vercurago",
+     "posti": 5,
+     "note": ""
+    },
+    {
+     "asl": "ASST Lecco",
+     "ambito": "Casargo, Crandola Valsassina, Margno, Pagnona, Premana, Ballabio, Barzio, Cassina Valsassina, Cortenova, Cremeno, Introbio, Moggio, Morterone, Parlasco, Pasturo, Primaluna, Taceno",
+     "posti": 10,
+     "note": ""
+    },
+    {
+     "asl": "ASST Lecco",
+     "ambito": "Cernusco Lombardone, Lomagna, Montevecchia, Osnago",
+     "posti": 8,
+     "note": ""
+    },
+    {
+     "asl": "ASST Lecco",
+     "ambito": "Colle Brianza, Galbiate, Pescate",
+     "posti": 5,
+     "note": ""
+    },
+    {
+     "asl": "ASST Lecco",
+     "ambito": "Costamasnaga, Bulciago, Nibionno",
+     "posti": 3,
+     "note": ""
+    },
+    {
+     "asl": "ASST Lecco",
+     "ambito": "Imbersago, Paderno D' Adda, Robbiate, Verderio",
+     "posti": 11,
+     "note": ""
+    },
+    {
+     "asl": "ASST Lecco",
+     "ambito": "Lecco",
+     "posti": 16,
+     "note": ""
+    },
+    {
+     "asl": "ASST Lecco",
+     "ambito": "Mandello Del Lario , Abbadia Lariana , Lierna",
+     "posti": 8,
+     "note": ""
+    },
+    {
+     "asl": "ASST Lecco",
+     "ambito": "Merate",
+     "posti": 5,
+     "note": ""
+    },
+    {
+     "asl": "ASST Lecco",
+     "ambito": "Olginate, Garlate, Valgreghentino",
+     "posti": 4,
+     "note": ""
+    },
+    {
+     "asl": "ASST Lecco",
+     "ambito": "Valmadrera, Civate, Malgrate, Oliveto Lario",
+     "posti": 10,
+     "note": ""
+    },
+    {
+     "asl": "ASST Lodi",
+     "ambito": "Lodi, Abbadia Cerreto, Boffalora D'Adda, Corte Palasio, Cavenago D'Adda, Cornegliano Laudense, Crespiatica, Mairago, Massalengo, Ossago Lodigiano, San Martino In Strada",
+     "posti": 34,
+     "note": ""
+    },
+    {
+     "asl": "ASST Lodi",
+     "ambito": "Lodi Vecchio, Casalmaiocco, Cervignano D'Adda, Comazzo, Galgagnano, Merlino, Montanaso Lombardo, Mulazzano, Sordio, Tavazzano Con Villavesco, Zelo Buon Persico",
+     "posti": 20,
+     "note": ""
+    },
+    {
+     "asl": "ASST Lodi",
+     "ambito": "Sant'Angelo Lodigiano - Borghetto Lodigiano - Borgo San Giovanni - Casaletto Lodigiano - Caselle Lurani - Castiraga Vidardo - Graffignana - Marudo - Pieve Fissiraga - Salerano Sul Lambro - San Colombano Al Lambro - Valera Fratta - Villanova Del Sillaro",
+     "posti": 21,
+     "note": ""
+    },
+    {
+     "asl": "ASST Lodi",
+     "ambito": "Codogno, Castelgerundo (Camairago, Cavacurta), Caselle Landi, Castelnuovo Bocca D'Adda, Cornogiovine, Cornovecchio, Fombio, Guardamiglio, Maccastorna, Maleo, Meleti, San Fiorano, San Rocco Al Porto, Santo Stefano Lodigiano",
+     "posti": 17,
+     "note": ""
+    },
+    {
+     "asl": "ASST Lodi",
+     "ambito": "Casalpusterlengo, Bertonico, Brembio, Castiglione D'Adda, Livraga, Orio Litta, Ospedaletto Lodigiano, Secugnago, Senna Lodigiana, Somaglia, Terranova Dei Passerini, Turano Lodigiano",
+     "posti": 18,
+     "note": ""
+    },
+    {
+     "asl": "ASST Mantova",
+     "ambito": "Asola, Casalmoro, Mariana Mantovana, Canneto sull’Oglio, Acquanegra sul Chiese, Casalromano",
+     "posti": 18,
+     "note": "Acquanegra sul Chiese e Mosio (1) - Acquanegra sul Chiese (1) - Mariana Mantovana (1) - Canneto sull'Oglio (2) - Casalromano e Fontanella Grazioli (1)"
+    },
+    {
+     "asl": "ASST Mantova",
+     "ambito": "Castel Goffredo, Casaloldo, Gazoldo degli Ippoliti, Ceresara, Piubega, Redondesco",
+     "posti": 4,
+     "note": "Casaloldo (1) - Piubega (1) - Ceresara (1)"
+    },
+    {
+     "asl": "ASST Mantova",
+     "ambito": "Castiglione delle Stiviere, Solferino, Cavriana, Medole, Guidizzolo, Ponti sul Mincio, Monzambano, Volta Mantovana, Goito",
+     "posti": 32,
+     "note": "Solferino (1) - Guidizzolo (1) - Medole (1) - Castiglione delle Stiviere (3) - Ponti sul Mincio (1) - Goito (3) - Goito e Solarolo di Goito (1) - Cavriana (1)"
+    },
+    {
+     "asl": "ASST Mantova",
+     "ambito": "Roncoferraro, Bagnolo S. Vito, Borgo Virgilio, Curtatone, Castellucchio, Rodigo",
+     "posti": 26,
+     "note": "Rodigo e Rivalta sul Mincio (1) - Borgoforte di Borgo Virgilio (2) - Buscolodo di Curtatone (1) - Governolo di Roncoferraro (1) - Roncoferraro (1) - Bagnolo San Vito (1) - Cerese di Borgo Virgilio (1)"
+    },
+    {
+     "asl": "ASST Mantova",
+     "ambito": "Castelbelforte, Castel d’Ario, Villimpenta, San Giorgio Bigarello, Porto Mantovano, Roverbella, Marmirolo",
+     "posti": 27,
+     "note": "Porto Mantovano (2) - Malavicina di Roverbella (1) - Marmirolo (1) - San Giorgio Bigarello (1) - Villimpenta (1) - Castel d'Ario (1)"
+    },
+    {
+     "asl": "ASST Mantova",
+     "ambito": "Mantova",
+     "posti": 26,
+     "note": "Borgo Angeli (2) - Lunetta e Colle Aperto (1) - Valletta Valsecchi (1) - Cittadella (1)"
+    },
+    {
+     "asl": "ASST Mantova",
+     "ambito": "Suzzara, Motteggiana, Gonzaga, Moglia, Pegognaga, San Benedetto Po",
+     "posti": 25,
+     "note": "San Benedetto Po (2) - Suzzara (4 ) - Palidano di Gonzaga (1) - Gonzaga (2) - Motteggiana (1) - Moglia (1)"
+    },
+    {
+     "asl": "ASST Mantova",
+     "ambito": "Ostiglia, Borgo Mantovano, Serravalle a Po, Sustinente, Poggio Rusco, Magnacavallo, San Giovanni del Dosso, Schivenoglia, Quistello, Quingentole, San Giacomo delle Segnate, Sermide e Felonica, Borgocarbonara",
+     "posti": 26,
+     "note": "San Giovanni del Dosso (1) - Poggio Rusco (2) - Revere di Borgo Mantovano (1) - Villa Poma di Borgo Mantovano (1) - Pieve di Coriano di Borgo Mantovano (1) - Quistello (1) - Schivenoglia (1) - Ostiglia (1) - Ostiglia e Correggioli (1) - Borgocarbonara (2) - Magnacavallo (1) - Sermide e Felonica (2)"
+    },
+    {
+     "asl": "ASST Mantova",
+     "ambito": "Viadana, Commessaggio, Dosolo, Pomponesco, Sabbioneta, Bozzolo, Gazzuolo, Marcaria, Rivarolo Mantovano, San Martino dall'Argine",
+     "posti": 23,
+     "note": "Viadana e San Matteo delle Chiaviche (1) - Bozzolo (1) - Commessaggio (1) - Marcaria (1) - Campitello di Marcaria (1) - Sabbioneta e Villa Pasquali (1) - Cizzolo di Viadana (1) - Dosolo (1) - Pomponesco (1) - Viadana (1)"
+    },
+    {
+     "asl": "ASST Melegnano e della Martesana",
+     "ambito": "Binasco, Casarile, Lacchiarella, Noviglio, Vernate, Zibido San Giacomo",
+     "posti": 19,
+     "note": ""
+    },
+    {
+     "asl": "ASST Melegnano e della Martesana",
+     "ambito": "Cassano D'Adda, Inzago",
+     "posti": 18,
+     "note": ""
+    },
+    {
+     "asl": "ASST Melegnano e della Martesana",
+     "ambito": "Cernusco Sul Naviglio, Carugate",
+     "posti": 18,
+     "note": ""
+    },
+    {
+     "asl": "ASST Melegnano e della Martesana",
+     "ambito": "Gessate, Cambiago, Pessano Con Bornago, Bellinzago Lombardo",
+     "posti": 15,
+     "note": ""
+    },
+    {
+     "asl": "ASST Melegnano e della Martesana",
+     "ambito": "Gorgonzola, Bussero, Cassina De Pecchi",
+     "posti": 20,
+     "note": ""
+    },
+    {
+     "asl": "ASST Melegnano e della Martesana",
+     "ambito": "Melegnano, Carpiano, Cerro Al Lambro, Colturano, Dresano, San Zenone Al Lambro, Vizzolo Predabissi",
+     "posti": 22,
+     "note": ""
+    },
+    {
+     "asl": "ASST Melegnano e della Martesana",
+     "ambito": "Melzo, Liscate, Pozzuolo Martesana, Settala, Truccazzano, Vignate",
+     "posti": 22,
+     "note": ""
+    },
+    {
+     "asl": "ASST Melegnano e della Martesana",
+     "ambito": "Opera, Locate Triulzi, Pieve Emanuele",
+     "posti": 18,
+     "note": ""
+    },
+    {
+     "asl": "ASST Melegnano e della Martesana",
+     "ambito": "Paullo, Mediglia, Pantigliate, Peschiera Borromeo, Tribiano",
+     "posti": 27,
+     "note": ""
+    },
+    {
+     "asl": "ASST Melegnano e della Martesana",
+     "ambito": "Pioltello, Rodano",
+     "posti": 19,
+     "note": ""
+    },
+    {
+     "asl": "ASST Melegnano e della Martesana",
+     "ambito": "Rozzano, Basiglio",
+     "posti": 24,
+     "note": ""
+    },
+    {
+     "asl": "ASST Melegnano e della Martesana",
+     "ambito": "San Donato Milanese, San Giuliano Milanese",
+     "posti": 29,
+     "note": ""
+    },
+    {
+     "asl": "ASST Melegnano e della Martesana",
+     "ambito": "Segrate, Vimodrone",
+     "posti": 18,
+     "note": ""
+    },
+    {
+     "asl": "ASST Melegnano e della Martesana",
+     "ambito": "Trezzo Sull'Adda, Basiano, Grezzago, Masate, Pozzo D'Adda, Trezzano Rosa, Vaprio D'Adda",
+     "posti": 18,
+     "note": ""
+    },
+    {
+     "asl": "ASST Fatebenefratelli-Sacco",
+     "ambito": "MUNICIPIO 1",
+     "posti": 34,
+     "note": ""
+    },
+    {
+     "asl": "ASST Fatebenefratelli-Sacco",
+     "ambito": "MUNICIPIO 2",
+     "posti": 81,
+     "note": ""
+    },
+    {
+     "asl": "ASST Fatebenefratelli-Sacco",
+     "ambito": "MUNICIPIO 3",
+     "posti": 53,
+     "note": ""
+    },
+    {
+     "asl": "ASST Fatebenefratelli-Sacco",
+     "ambito": "MUNICIPIO 4",
+     "posti": 62,
+     "note": ""
+    },
+    {
+     "asl": "ASST Fatebenefratelli-Sacco",
+     "ambito": "MUNICIPIO 8",
+     "posti": 93,
+     "note": ""
+    },
+    {
+     "asl": "ASST Niguarda",
+     "ambito": "MUNICIPIO 9",
+     "posti": 82,
+     "note": ""
+    },
+    {
+     "asl": "ASST Santi Paolo e Carlo",
+     "ambito": "MUNICIPIO 5",
+     "posti": 54,
+     "note": ""
+    },
+    {
+     "asl": "ASST Santi Paolo e Carlo",
+     "ambito": "MUNICIPIO 6",
+     "posti": 75,
+     "note": ""
+    },
+    {
+     "asl": "ASST Santi Paolo e Carlo",
+     "ambito": "MUNICIPIO 7",
+     "posti": 94,
+     "note": ""
+    },
+    {
+     "asl": "ASST Nord Milano",
+     "ambito": "Cologno Monzese, Sesto San Giovanni",
+     "posti": 50,
+     "note": ""
+    },
+    {
+     "asl": "ASST Nord Milano",
+     "ambito": "Bresso, Cinisello Balsamo, Cormano, Cusano Milanino",
+     "posti": 54,
+     "note": ""
+    },
+    {
+     "asl": "ASST Ovest Milanese",
+     "ambito": "Legnano, Rescaldina",
+     "posti": 31,
+     "note": ""
+    },
+    {
+     "asl": "ASST Ovest Milanese",
+     "ambito": "Busto Garolfo, Canegrate, Dairago, San Giorgio Su Legnano, Villa Cortese",
+     "posti": 18,
+     "note": ""
+    },
+    {
+     "asl": "ASST Ovest Milanese",
+     "ambito": "Parabiago, Nerviano, Cerro Maggiore, San Vittore Olona",
+     "posti": 30,
+     "note": ""
+    },
+    {
+     "asl": "ASST Ovest Milanese",
+     "ambito": "Castano Primo, Magnago, Nosate, Robecchetto Con Induno, Turbigo, Vanzaghello",
+     "posti": 17,
+     "note": ""
+    },
+    {
+     "asl": "ASST Ovest Milanese",
+     "ambito": "Cuggiono, Arconate, Bernate Ticino, Buscate, Inveruno",
+     "posti": 12,
+     "note": ""
+    },
+    {
+     "asl": "ASST Ovest Milanese",
+     "ambito": "Magenta, Boffalora Sopra Ticino, Corbetta, Marcallo Con Casone, Mesero, Robecco Sul Naviglio",
+     "posti": 23,
+     "note": ""
+    },
+    {
+     "asl": "ASST Ovest Milanese",
+     "ambito": "Arluno, Bareggio, Casorezzo, Ossona, Santo Stefano Ticino, Sedriano, Vittuone",
+     "posti": 31,
+     "note": ""
+    },
+    {
+     "asl": "ASST Ovest Milanese",
+     "ambito": "Abbiategrasso, Besate, Morimondo, Motta Visconti, Ozzero",
+     "posti": 17,
+     "note": ""
+    },
+    {
+     "asl": "ASST Ovest Milanese",
+     "ambito": "Albairate, Bubbiano, Calvignasco, Cassinetta Di Lugagnano, Cisliano, Gaggiano, Gudo Visconti, Vermezzo E Zelo, Rosate",
+     "posti": 17,
+     "note": ""
+    },
+    {
+     "asl": "ASST Papa Giovanni XXIII",
+     "ambito": "Bergamo, Ponteranica, Sorisole, Torre Boldone, Gorle, Orio Al Serio",
+     "posti": 65,
+     "note": ""
+    },
+    {
+     "asl": "ASST Papa Giovanni XXIII",
+     "ambito": "Oltre Il Colle, Serina, Cornalba, Algua, Bracca, Costa Serina, Rigosa di Algua, Dossena",
+     "posti": 4,
+     "note": "Algua, Bracca, Serina, Oltre Il Colle"
+    },
+    {
+     "asl": "ASST Papa Giovanni XXIII",
+     "ambito": "San Giovanni Bianco, San Pellegrino Terme, Taleggio, Vedeseta, Camerata Cornello",
+     "posti": 4,
+     "note": ""
+    },
+    {
+     "asl": "ASST Papa Giovanni XXIII",
+     "ambito": "Zogno, Sedrina, Ubiale Clanezzo, Val Brembilla, Blello",
+     "posti": 5,
+     "note": ""
+    },
+    {
+     "asl": "ASST Papa Giovanni XXIII",
+     "ambito": "Cassiglio, Ornica, Valtorta, Cusio, Averara, Santa Brigida, Piazzatorre, Piazzolo, Olmo Al Brembo, Mezzoldo",
+     "posti": 1,
+     "note": ""
+    },
+    {
+     "asl": "ASST Papa Giovanni XXIII",
+     "ambito": "Piazza Brembana, Lenna, Valnegra, Roncobello, Moio de Calvi, Branzi, Carona, Valleve, Foppolo, Isola di Fondra",
+     "posti": 2,
+     "note": "Branzi, Valleve, Foppolo, Isola di Fondra"
+    },
+    {
+     "asl": "ASST Papa Giovanni XXIII",
+     "ambito": "Almè, Paladina, Valbrembo, Villa D'Almè",
+     "posti": 7,
+     "note": ""
+    },
+    {
+     "asl": "ASST Papa Giovanni XXIII",
+     "ambito": "Sant'Omobono Terme, Rota Imagna, Brumano, Costa Imagna, Corna Imagna, Locatello, Fuipiano Valle Imagna, Capizzone, Bedulita, Berbenno, Almenno San Salvatore, Strozza, Almenno San Bartolomeo, Roncola, Palazzago, Barzana",
+     "posti": 11,
+     "note": ""
+    },
+    {
+     "asl": "ASST Pavia",
+     "ambito": "Albonese, Cilavegna, Nicorvo, Parona",
+     "posti": 4,
+     "note": ""
+    },
+    {
+     "asl": "ASST Pavia",
+     "ambito": "Albuzzano, Filighera, Belgioioso, Torre de' Negri",
+     "posti": 9,
+     "note": ""
+    },
+    {
+     "asl": "ASST Pavia",
+     "ambito": "Arena Po, Bosnasco, Golferenzo, Montecalvo Versiggia, Montù Beccaria, Portalbera, Rocca de' Giorgi, Rovescala, San Cipriano Po, San Damiano al Colle, Santa Maria della Versa, Stradella, Volpara, Zenevredo",
+     "posti": 10,
+     "note": ""
+    },
+    {
+     "asl": "ASST Pavia",
+     "ambito": "Bagnaria, Brallo di Pregola, Cecima, Colli Verdi, Godiasco Salice Terme, Menconico, Ponte Nizza, Romagnese, Santa Margherita di Staffora, Val di Nizza, Varzi, Zavattarello",
+     "posti": 7,
+     "note": ""
+    },
+    {
+     "asl": "ASST Pavia",
+     "ambito": "Barbianello, Bressana Bottarone, Casanova Lonati, Mezzanino, Pinarolo Po, Rea, Verrua Po",
+     "posti": 4,
+     "note": ""
+    },
+    {
+     "asl": "ASST Pavia",
+     "ambito": "Bascapè, Landriano, Marzano, Torrevecchia Pia",
+     "posti": 7,
+     "note": ""
+    },
+    {
+     "asl": "ASST Pavia",
+     "ambito": "Cornale e Bastida, Casei Gerola, Corana, Silvano Pietra",
+     "posti": 4,
+     "note": ""
+    },
+    {
+     "asl": "ASST Pavia",
+     "ambito": "Bastida Pancarana, Castelletto di Branduzzo, Cervesina, Lungavilla, Pancarana, Pizzale, Verretto",
+     "posti": 4,
+     "note": ""
+    },
+    {
+     "asl": "ASST Pavia",
+     "ambito": "Borgarello, Certosa di Pavia, Giussago, Vellezzo Bellini, Rognano",
+     "posti": 7,
+     "note": ""
+    },
+    {
+     "asl": "ASST Pavia",
+     "ambito": "Borgo Priolo, Borgoratto Mormorolo, Codevilla, Montesegale, Retorbido, Rivanazzano Terme, Rocca Susella, Torrazza Coste, Montalto Pavese",
+     "posti": 13,
+     "note": ""
+    },
+    {
+     "asl": "ASST Pavia",
+     "ambito": "Borgo San Siro, Ottobiano, San Giorgio di Lomellina, Tromello",
+     "posti": 5,
+     "note": ""
+    },
+    {
+     "asl": "ASST Pavia",
+     "ambito": "Bornasco, Zeccone, Siziano, Vidigulfo",
+     "posti": 6,
+     "note": ""
+    },
+    {
+     "asl": "ASST Pavia",
+     "ambito": "Breme, Frascarolo, Sartirana Lomellina, Semiana, Torre Beretti e Castellaro, Valle Lomellina, Velezzo Lomellina",
+     "posti": 3,
+     "note": ""
+    },
+    {
+     "asl": "ASST Pavia",
+     "ambito": "Calvignano, Casatisma, Casteggio, Corvino San Quirico, Fortunago, Montebello della Battaglia, Mornico Losana, Oliva Gessi, Robecco Pavese, Santa Giuletta, Torricella Verzate",
+     "posti": 4,
+     "note": ""
+    },
+    {
+     "asl": "ASST Pavia",
+     "ambito": "Campospinoso Albaredo, Broni, Redavalle",
+     "posti": 4,
+     "note": ""
+    },
+    {
+     "asl": "ASST Pavia",
+     "ambito": "Candia Lomellina, Castello d'Agogna, Ceretto Lomellina, Cergnago, Cozzo, Langosco, Zeme",
+     "posti": 5,
+     "note": ""
+    },
+    {
+     "asl": "ASST Pavia",
+     "ambito": "Canneto Pavese, Castana, Cigognola, Lirio, Montescano, Pietra de' Giorgi",
+     "posti": 4,
+     "note": ""
+    },
+    {
+     "asl": "ASST Pavia",
+     "ambito": "Carbonara al Ticino, Villanova d'Ardenghi, Gropello Cairoli, Zerbolò",
+     "posti": 5,
+     "note": ""
+    },
+    {
+     "asl": "ASST Pavia",
+     "ambito": "Casorate Primo",
+     "posti": 3,
+     "note": ""
+    },
+    {
+     "asl": "ASST Pavia",
+     "ambito": "Cassolnovo, Gravellona Lomellina",
+     "posti": 6,
+     "note": ""
+    },
+    {
+     "asl": "ASST Pavia",
+     "ambito": "Castelnovetto, Confienza, Palestro, Rosasco, Sant'Angelo Lomellina",
+     "posti": 3,
+     "note": ""
+    },
+    {
+     "asl": "ASST Pavia",
+     "ambito": "Cava Manara, Sommo, Zinasco, Mezzana Rabattone",
+     "posti": 4,
+     "note": ""
+    },
+    {
+     "asl": "ASST Pavia",
+     "ambito": "Chignolo Po, Miradolo Terme, Monticelli Pavese, Badia Pavese, Pieve Porto Morone",
+     "posti": 3,
+     "note": ""
+    },
+    {
+     "asl": "ASST Pavia",
+     "ambito": "Copiano, Vistarino, Gerenzago, Inverno e Monteleone, Magherno, Torre d'Arese, Villanterio",
+     "posti": 4,
+     "note": ""
+    },
+    {
+     "asl": "ASST Pavia",
+     "ambito": "Corteolona e Genzone, Santa Cristina e Bissone, San Zenone al Po, Spessa, Zerbo, Costa de' Nobili",
+     "posti": 3,
+     "note": ""
+    },
+    {
+     "asl": "ASST Pavia",
+     "ambito": "Cura Carpignano, Roncaro, Lardirago, Sant'Alessio con Vialone, Ceranova",
+     "posti": 7,
+     "note": ""
+    },
+    {
+     "asl": "ASST Pavia",
+     "ambito": "Dorno, Pieve Albignola, Scaldasole, Valeggio",
+     "posti": 5,
+     "note": ""
+    },
+    {
+     "asl": "ASST Pavia",
+     "ambito": "Ferrera Erbognone, Mezzana Bigli, Sannazzaro de' Burgondi",
+     "posti": 4,
+     "note": ""
+    },
+    {
+     "asl": "ASST Pavia",
+     "ambito": "Gambolò",
+     "posti": 7,
+     "note": ""
+    },
+    {
+     "asl": "ASST Pavia",
+     "ambito": "Garlasco, Alagna",
+     "posti": 2,
+     "note": ""
+    },
+    {
+     "asl": "ASST Pavia",
+     "ambito": "Mede, Galliavola, Gambarana, Lomello, Pieve del Cairo, Suardi, Villa Biscossi",
+     "posti": 5,
+     "note": ""
+    },
+    {
+     "asl": "ASST Pavia",
+     "ambito": "Mortara, Olevano Lomellina",
+     "posti": 9,
+     "note": ""
+    },
+    {
+     "asl": "ASST Pavia",
+     "ambito": "Pavia, San Genesio ed Uniti, Torre d'Isola",
+     "posti": 16,
+     "note": ""
+    },
+    {
+     "asl": "ASST Pavia",
+     "ambito": "Robbio",
+     "posti": 2,
+     "note": ""
+    },
+    {
+     "asl": "ASST Pavia",
+     "ambito": "San Martino Siccomario, Travacò Siccomario",
+     "posti": 7,
+     "note": ""
+    },
+    {
+     "asl": "ASST Pavia",
+     "ambito": "Vigevano",
+     "posti": 26,
+     "note": ""
+    },
+    {
+     "asl": "ASST Rhodense",
+     "ambito": "Garbagnate Milanese, Cesate, Solaro",
+     "posti": 26,
+     "note": ""
+    },
+    {
+     "asl": "ASST Rhodense",
+     "ambito": "Bollate, Baranzate, Novate Milanese",
+     "posti": 34,
+     "note": ""
+    },
+    {
+     "asl": "ASST Rhodense",
+     "ambito": "Paderno Dugnano, Senago",
+     "posti": 32,
+     "note": ""
+    },
+    {
+     "asl": "ASST Rhodense",
+     "ambito": "Rho, Pero",
+     "posti": 23,
+     "note": ""
+    },
+    {
+     "asl": "ASST Rhodense",
+     "ambito": "Arese, Lainate",
+     "posti": 23,
+     "note": ""
+    },
+    {
+     "asl": "ASST Rhodense",
+     "ambito": "Cornaredo, Pogliano Milanese, Pregnana Milanese, Settimo Milanese, Vanzago",
+     "posti": 30,
+     "note": ""
+    },
+    {
+     "asl": "ASST Rhodense",
+     "ambito": "Corsico, Cesano Boscone",
+     "posti": 21,
+     "note": ""
+    },
+    {
+     "asl": "ASST Rhodense",
+     "ambito": "Assago, Buccinasco, Cusago, Trezzano Sul Naviglio",
+     "posti": 21,
+     "note": ""
+    },
+    {
+     "asl": "ASST Sette Laghi",
+     "ambito": "Arcisate, Bisuschio",
+     "posti": 5,
+     "note": ""
+    },
+    {
+     "asl": "ASST Sette Laghi",
+     "ambito": "Induno Olona",
+     "posti": 3,
+     "note": ""
+    },
+    {
+     "asl": "ASST Sette Laghi",
+     "ambito": "Besano, Brusimpiano, Cuasso Al Monte, Porto Ceresio",
+     "posti": 5,
+     "note": ""
+    },
+    {
+     "asl": "ASST Sette Laghi",
+     "ambito": "Cantello, Clivio, Saltrio, Viggiu'",
+     "posti": 7,
+     "note": ""
+    },
+    {
+     "asl": "ASST Sette Laghi",
+     "ambito": "Azzate,Brunello, Buguggiate",
+     "posti": 5,
+     "note": "Buguggiate"
+    },
+    {
+     "asl": "ASST Sette Laghi",
+     "ambito": "Carnago, Castronno, Caronno Varesino, Sumirago",
+     "posti": 8,
+     "note": ""
+    },
+    {
+     "asl": "ASST Sette Laghi",
+     "ambito": "Daverio, Crosio Della Valle, Casale Litta, Mornago, Cazzago Brabbia, Inarzo, Bodio Lomnago, Galliate Lombardo",
+     "posti": 8,
+     "note": "Daverio, Casale Litta"
+    },
+    {
+     "asl": "ASST Sette Laghi",
+     "ambito": "Gazzada Schianno, Morazzone",
+     "posti": 4,
+     "note": ""
+    },
+    {
+     "asl": "ASST Sette Laghi",
+     "ambito": "Azzio, Cuvio, Orino, Castello Cabiaglio, Gemonio, Cocquio Trevisago",
+     "posti": 6,
+     "note": ""
+    },
+    {
+     "asl": "ASST Sette Laghi",
+     "ambito": "Brenta, Caravate, Cittiglio",
+     "posti": 3,
+     "note": ""
+    },
+    {
+     "asl": "ASST Sette Laghi",
+     "ambito": "Laveno Mombello, Leggiuno, Sangiano",
+     "posti": 4,
+     "note": ""
+    },
+    {
+     "asl": "ASST Sette Laghi",
+     "ambito": "Casalzuigno, Cuveglio, Duno, Rancio Valcuvia, Masciago Primo, Cassano Valcuvia",
+     "posti": 3,
+     "note": "Rancio Valcuvia"
+    },
+    {
+     "asl": "ASST Sette Laghi",
+     "ambito": "Brebbia, Monvalle, Besozzo,Gavirate, Bardello Con Malgesso E Bregano, Biandronno",
+     "posti": 11,
+     "note": ""
+    },
+    {
+     "asl": "ASST Sette Laghi",
+     "ambito": "Dumenza, Agra Curiglia Con Monteviasco, Maccagno Con Pino E Veddasca, Tronzano Lago Maggiore, Luino",
+     "posti": 8,
+     "note": "Maccagno con Pino e Veddasca"
+    },
+    {
+     "asl": "ASST Sette Laghi",
+     "ambito": "Cremenaga, Lavena Ponte Tresa, Cadegliano Viconago, Marchirolo, Cugliate Fabiasco",
+     "posti": 6,
+     "note": ""
+    },
+    {
+     "asl": "ASST Sette Laghi",
+     "ambito": "Cunardo, Ferrera di Varese, Valganna, Marzio e Bedero Valcuvia",
+     "posti": 2,
+     "note": "Valganna"
+    },
+    {
+     "asl": "ASST Sette Laghi",
+     "ambito": "Mesenzana, Brissago Valtravaglia, Grantola, Montegrino Valtravaglia",
+     "posti": 3,
+     "note": ""
+    },
+    {
+     "asl": "ASST Sette Laghi",
+     "ambito": "Porto Valtravaglia, Castelveccana , Germignaga e Brezzo di Bedero",
+     "posti": 2,
+     "note": ""
+    },
+    {
+     "asl": "ASST Sette Laghi",
+     "ambito": "Sesto Calende, Mercallo",
+     "posti": 4,
+     "note": ""
+    },
+    {
+     "asl": "ASST Sette Laghi",
+     "ambito": "Angera, Ranco, Taino",
+     "posti": 3,
+     "note": ""
+    },
+    {
+     "asl": "ASST Sette Laghi",
+     "ambito": "Cadrezzate Con Osmate, Travedona Monate, Ispra, Comabbio , Ternate, Varano Borghi, Vergiate",
+     "posti": 10,
+     "note": ""
+    },
+    {
+     "asl": "ASST Sette Laghi",
+     "ambito": "Lonate Ceppino, Tradate",
+     "posti": 10,
+     "note": ""
+    },
+    {
+     "asl": "ASST Sette Laghi",
+     "ambito": "Castelseprio, Castiglione Olona, Gornate Olona",
+     "posti": 4,
+     "note": "Castelseprio"
+    },
+    {
+     "asl": "ASST Sette Laghi",
+     "ambito": "Venegono Inferiore, Venegono Superiore, Vedano Olona",
+     "posti": 8,
+     "note": ""
+    },
+    {
+     "asl": "ASST Sette Laghi",
+     "ambito": "Malnate",
+     "posti": 7,
+     "note": ""
+    },
+    {
+     "asl": "ASST Sette Laghi",
+     "ambito": "Barasso, Comerio, Luvinate, Casciago",
+     "posti": 2,
+     "note": ""
+    },
+    {
+     "asl": "ASST Sette Laghi",
+     "ambito": "Varese, Brinzio, Lozza",
+     "posti": 26,
+     "note": ""
+    },
+    {
+     "asl": "ASST Spedali Civili di Brescia",
+     "ambito": "Brescia, Collebeato",
+     "posti": 61,
+     "note": "n. 3 con vincoli a Quartiere Cazazza n. 4 con vincoli Quartiere S. Bartolomeo n. 1 con vincolo Quartiere Urago Mella n. 2 con vincoli Quartiere Villaggio Badia n. 9 con vincoli Quartiere I° Maggio n. 2 con vincoli Quartiere Porta Venezia n. 5 con vincoli Quartiere Don Bosco n. 8 con vincoli Quartier"
+    },
+    {
+     "asl": "ASST Spedali Civili di Brescia",
+     "ambito": "Ospitaletto, Travagliato, Torbole, Berlingo, Roncadelle, Castelmella",
+     "posti": 16,
+     "note": ""
+    },
+    {
+     "asl": "ASST Spedali Civili di Brescia",
+     "ambito": "Gussago, Cellatica, Rodengo Saiano, Castegnato, Ome",
+     "posti": 10,
+     "note": ""
+    },
+    {
+     "asl": "ASST Spedali Civili di Brescia",
+     "ambito": "Flero, Capriano D.C., Azzano M., Poncarale, Borgosatollo, Montirone, San Zeno, Castenedolo",
+     "posti": 18,
+     "note": "n. 3 vincoli a Flero n. 2 vincoli a Poncarale n. 2 vincoli a Montirone n. 3 vincoli a Castenedolo"
+    },
+    {
+     "asl": "ASST Spedali Civili di Brescia",
+     "ambito": "Botticino, Rezzato, Mazzano, Nuvolera, Nuvolento",
+     "posti": 10,
+     "note": "n. 2 vincoli a Botticino n. 2 vincoli a Nuvolera n. 1 vincolo a Mazzano n. 1 vincolo a Rezzato"
+    },
+    {
+     "asl": "ASST Spedali Civili di Brescia",
+     "ambito": "Bovegno-Collio",
+     "posti": 1,
+     "note": ""
+    },
+    {
+     "asl": "ASST Spedali Civili di Brescia",
+     "ambito": "Pezzaze-Irma-Tavernole-Marmentino",
+     "posti": 1,
+     "note": ""
+    },
+    {
+     "asl": "ASST Spedali Civili di Brescia",
+     "ambito": "Lodrino-Marcheno",
+     "posti": 2,
+     "note": "n. 1 vincolo a Lodrino"
+    },
+    {
+     "asl": "ASST Spedali Civili di Brescia",
+     "ambito": "Lumezzane",
+     "posti": 8,
+     "note": ""
+    },
+    {
+     "asl": "ASST Spedali Civili di Brescia",
+     "ambito": "Gardone V.T., Polaveno, Brione",
+     "posti": 7,
+     "note": "n. 1 Polaveno e Brione"
+    },
+    {
+     "asl": "ASST Spedali Civili di Brescia",
+     "ambito": "Sarezzo",
+     "posti": 5,
+     "note": ""
+    },
+    {
+     "asl": "ASST Spedali Civili di Brescia",
+     "ambito": "Villa Carcina",
+     "posti": 4,
+     "note": ""
+    },
+    {
+     "asl": "ASST Spedali Civili di Brescia",
+     "ambito": "Concesio",
+     "posti": 5,
+     "note": ""
+    },
+    {
+     "asl": "ASST Spedali Civili di Brescia",
+     "ambito": "Nave-Bovezzo-Caino",
+     "posti": 6,
+     "note": "n. 1 vincolo a Nave"
+    },
+    {
+     "asl": "ASST Valcamonica",
+     "ambito": "Alta Vallecamonica",
+     "posti": 13,
+     "note": "Ponte di Legno, Saviore dell'Adamello, Ono San Pietro, Ceto, Cimbergo, Paspardo, Paisco Loveno"
+    },
+    {
+     "asl": "ASST Valcamonica",
+     "ambito": "Media Vallecamonica",
+     "posti": 14,
+     "note": "Breno, Niardo, Losine, Bienno, Esine, Piamborno Fraz.Piancogno"
+    },
+    {
+     "asl": "ASST Valcamonica",
+     "ambito": "Bassa Vallecamonica",
+     "posti": 17,
+     "note": "Angolo Terme, 3 Darfo, Gianico, Artogne, Pisogne"
+    },
+    {
+     "asl": "ASST Valle Olona",
+     "ambito": "Busto Arsizio",
+     "posti": 39,
+     "note": ""
+    },
+    {
+     "asl": "ASST Valle Olona",
+     "ambito": "Castellanza",
+     "posti": 7,
+     "note": ""
+    },
+    {
+     "asl": "ASST Valle Olona",
+     "ambito": "Gorla Maggiore, Gorla Minore, Marnate",
+     "posti": 12,
+     "note": ""
+    },
+    {
+     "asl": "ASST Valle Olona",
+     "ambito": "Fagnano Olona, Olgiate Olona, Solbiate Olona",
+     "posti": 13,
+     "note": ""
+    },
+    {
+     "asl": "ASST Valle Olona",
+     "ambito": "Gallarate",
+     "posti": 23,
+     "note": ""
+    },
+    {
+     "asl": "ASST Valle Olona",
+     "ambito": "Cavaria con Premezzo, Oggiona Santo Stefano, Jerago con Orago",
+     "posti": 5,
+     "note": ""
+    },
+    {
+     "asl": "ASST Valle Olona",
+     "ambito": "Cassano Magnago, Cairate",
+     "posti": 13,
+     "note": ""
+    },
+    {
+     "asl": "ASST Valle Olona",
+     "ambito": "Albizzate, Solbiate Arno",
+     "posti": 4,
+     "note": ""
+    },
+    {
+     "asl": "ASST Valle Olona",
+     "ambito": "Samarate",
+     "posti": 6,
+     "note": ""
+    },
+    {
+     "asl": "ASST Valle Olona",
+     "ambito": "Saronno",
+     "posti": 21,
+     "note": ""
+    },
+    {
+     "asl": "ASST Valle Olona",
+     "ambito": "Caronno Pertusella",
+     "posti": 10,
+     "note": ""
+    },
+    {
+     "asl": "ASST Valle Olona",
+     "ambito": "Cislago, Gerenzano",
+     "posti": 9,
+     "note": ""
+    },
+    {
+     "asl": "ASST Valle Olona",
+     "ambito": "Origgio, Uboldo",
+     "posti": 7,
+     "note": ""
+    },
+    {
+     "asl": "ASST Valle Olona",
+     "ambito": "Somma Lombardo, Vizzola Ticino, Golasecca",
+     "posti": 10,
+     "note": ""
+    },
+    {
+     "asl": "ASST Valle Olona",
+     "ambito": "Cardano al Campo",
+     "posti": 5,
+     "note": ""
+    },
+    {
+     "asl": "ASST Valle Olona",
+     "ambito": "Arsago Seprio, Besnate, Casorate Sempione",
+     "posti": 11,
+     "note": ""
+    },
+    {
+     "asl": "ASST Valle Olona",
+     "ambito": "Lonate Pozzolo",
+     "posti": 6,
+     "note": ""
+    },
+    {
+     "asl": "ASST Valtellina e Alto Lario",
+     "ambito": "Livigno",
+     "posti": 3,
+     "note": ""
+    },
+    {
+     "asl": "ASST Valtellina e Alto Lario",
+     "ambito": "Bormio",
+     "posti": 9,
+     "note": ""
+    },
+    {
+     "asl": "ASST Valtellina e Alto Lario",
+     "ambito": "Tirano",
+     "posti": 17,
+     "note": "Aprica"
+    },
+    {
+     "asl": "ASST Valtellina e Alto Lario",
+     "ambito": "Sondrio",
+     "posti": 16,
+     "note": "Chiuro, Ponte in Valtellina"
+    },
+    {
+     "asl": "ASST Valtellina e Alto Lario",
+     "ambito": "Morbegno",
+     "posti": 21,
+     "note": "Cosio Valtellino Frazione Regoledo"
+    },
+    {
+     "asl": "ASST Valtellina e Alto Lario",
+     "ambito": "Chiavenna",
+     "posti": 10,
+     "note": ""
+    },
+    {
+     "asl": "ASST Valtellina e Alto Lario",
+     "ambito": "Dongo",
+     "posti": 9,
+     "note": ""
+    }
+   ]
+  },
+  {
+   "id": "lom-pls-2026-10",
+   "tipo": "pls",
+   "titolo": "Incarichi vacanti per i pediatri di libera scelta - ottobre 2026",
+   "edizione": "ottobre 2026",
+   "anno": 2026,
+   "pubblicatoIl": "2026-10-28",
+   "bollettino": "BURL Serie Avvisi e Concorsi n. 44 del 28/10/2026, comunicato regionale n. 77 del 22/10/2026",
+   "scadenza": "2026-11-17",
+   "scadenzaCalcolata": false,
+   "paginaUrl": "https://www.regione.lombardia.it/sanita/personale-sanitario-e-sociosanitario/concorsi-e-avvisi-presso-enti-sanitari/pubblicazione-ambiti-carenti-di-assistenza-primaria-a-ciclo-di-scelta-e-pediatria-e-ore-vacanti-di-assistenza-primaria-ad-attivit--oraria-e-di-emergenza-territoriale",
+   "pdfUrl": "https://omceomi.it/wp-content/uploads/2026/10/Pubblicazione-incarichi-vacanti-per-medici-ruolo-unico-assistenza-primaria-e-pls-DIREZIONE-GENERALE-WELFARE-BURL-28.10.2026-1.pdf",
+   "bollettinoUrl": "https://www.regione.lombardia.it/burl-bollettino-ufficiale-regione-lombardia",
+   "totalePosti": 30,
+   "totaleUfficiale": 30,
+   "nota": "Il PDF è la copia del comunicato pubblicata dall'OMCeO di Milano; l'atto ufficiale è nel BURL.",
+   "corrente": true,
+   "perAsl": [
+    {
+     "asl": "ASST Bergamo Ovest",
+     "posti": 3,
+     "ambiti": 3
+    },
+    {
+     "asl": "ASST Brianza",
+     "posti": 1,
+     "ambiti": 1
+    },
+    {
+     "asl": "ASST Franciacorta",
+     "posti": 2,
+     "ambiti": 2
+    },
+    {
+     "asl": "ASST Lariana",
+     "posti": 1,
+     "ambiti": 1
+    },
+    {
+     "asl": "ASST Lecco",
+     "posti": 1,
+     "ambiti": 1
+    },
+    {
+     "asl": "ASST Lodi",
+     "posti": 1,
+     "ambiti": 1
+    },
+    {
+     "asl": "ASST Mantova",
+     "posti": 5,
+     "ambiti": 3
+    },
+    {
+     "asl": "ASST Melegnano e della Martesana",
+     "posti": 2,
+     "ambiti": 2
+    },
+    {
+     "asl": "ASST Nord Milano",
+     "posti": 1,
+     "ambiti": 1
+    },
+    {
+     "asl": "ASST Ovest Milanese",
+     "posti": 3,
+     "ambiti": 2
+    },
+    {
+     "asl": "ASST Papa Giovanni XXIII",
+     "posti": 1,
+     "ambiti": 1
+    },
+    {
+     "asl": "ASST Pavia",
+     "posti": 2,
+     "ambiti": 2
+    },
+    {
+     "asl": "ASST Spedali Civili di Brescia",
+     "posti": 1,
+     "ambiti": 1
+    },
+    {
+     "asl": "ASST Valcamonica",
+     "posti": 3,
+     "ambiti": 2
+    },
+    {
+     "asl": "ASST Valtellina e Alto Lario",
+     "posti": 3,
+     "ambiti": 2
+    }
+   ],
+   "voci": [
+    {
+     "asl": "ASST Bergamo Ovest",
+     "ambito": "Arzago D'Adda, Calvenzano, Casirate D' Adda, Misano Di Gera D’Adda, Treviglio",
+     "posti": 1,
+     "note": ""
+    },
+    {
+     "asl": "ASST Bergamo Ovest",
+     "ambito": "Romano di Lombardia, Covo, Fara Olivana Con Sola, Isso",
+     "posti": 1,
+     "note": ""
+    },
+    {
+     "asl": "ASST Bergamo Ovest",
+     "ambito": "Bonate Sopra, Bonate Sotto, Terno D'Isola, Chignolo D'Isola, Madone",
+     "posti": 1,
+     "note": ""
+    },
+    {
+     "asl": "ASST Brianza",
+     "ambito": "Nova Milanese - Muggiò",
+     "posti": 1,
+     "note": "Muggiò"
+    },
+    {
+     "asl": "ASST Franciacorta",
+     "ambito": "Castelcovati-Castrezzato-Comezzano Cizzago-Trenzano",
+     "posti": 1,
+     "note": ""
+    },
+    {
+     "asl": "ASST Franciacorta",
+     "ambito": "Barbariga-Dello-Longhena-Brandico-Mairano-Lograto-Maclodio- Corzano-Orzivecchi-Orzinuovi-Pompiano-Borgo S.G.-Villachiara- Quinzano-S. Paolo",
+     "posti": 1,
+     "note": ""
+    },
+    {
+     "asl": "ASST Lariana",
+     "ambito": "Como-Brunate",
+     "posti": 1,
+     "note": ""
+    },
+    {
+     "asl": "ASST Lecco",
+     "ambito": "Bosisio Parini, Bulciago, Cesana Brianza, Costa Masnaga, Nibionno, Rogeno, Suello",
+     "posti": 1,
+     "note": ""
+    },
+    {
+     "asl": "ASST Lodi",
+     "ambito": "S. Angelo Lodigiano, Borghetto Lodigiano, Borgo San Giovanni, Castiraga Vidardo, Graffignana, San Colombano al Lambro, Salerano sul Lambro, Valera Fratta, Marudo (Casaletto Lodigiano, Caselle Lurani, Pieve Fissiraga, Villanova del Sillaro)",
+     "posti": 1,
+     "note": ""
+    },
+    {
+     "asl": "ASST Mantova",
+     "ambito": "Castiglione delle Stiviere, Solferino, Cavriana, Medole, Guidizzolo, Ponti sul Mincio, Monzambano, Volta Mantovana, Goito",
+     "posti": 2,
+     "note": "Castiglione delle Stiviere, Monzambano"
+    },
+    {
+     "asl": "ASST Mantova",
+     "ambito": "Ostiglia, Borgo Mantovano, Serravalle a Po, Sustinente, Poggio Rusco, Magnacavallo, San Giovanni del Dosso, Schivenoglia, Quistello, Quingentole, San Giacomo delle Segnate, Sermide e Felonica, Borgocarbonara.",
+     "posti": 1,
+     "note": "Poggio Rusco"
+    },
+    {
+     "asl": "ASST Mantova",
+     "ambito": "Mantova, Castelbelforte, Castel d’Ario, Villimpenta, San Giorgio Bigarello, Porto Mantovano, Roverbella, Marmirolo, Roncoferraro, Bagnolo S. Vito, Borgo Virgilio, Curtatone, Castellucchio, Rodigo",
+     "posti": 2,
+     "note": "Cerese di Borgo Virgilio, Porto Mantovano"
+    },
+    {
+     "asl": "ASST Melegnano e della Martesana",
+     "ambito": "Gorgonzola, Bussero, Cassina De Pecchi",
+     "posti": 1,
+     "note": ""
+    },
+    {
+     "asl": "ASST Melegnano e della Martesana",
+     "ambito": "Rozzano, Basiglio",
+     "posti": 1,
+     "note": ""
+    },
+    {
+     "asl": "ASST Nord Milano",
+     "ambito": "Cologno Monzese, Sesto San Giovanni",
+     "posti": 1,
+     "note": "Sesto San Giovanni"
+    },
+    {
+     "asl": "ASST Ovest Milanese",
+     "ambito": "Magenta, Boffalora sopra Ticino, Corbetta, Marcallo con Casone, Mesero, Robecco Sul Naviglio",
+     "posti": 1,
+     "note": "Magenta"
+    },
+    {
+     "asl": "ASST Ovest Milanese",
+     "ambito": "Abbiategrasso, Besate, Motta Visconti, Morimondo, Ozzero",
+     "posti": 2,
+     "note": "di cui 1 MottaVisconti"
+    },
+    {
+     "asl": "ASST Papa Giovanni XXIII",
+     "ambito": "Almè, Paladina, Valbrembo, Villa d'Almè, Almenno San Salvatore, Strozza, Almenno San Bartolomeo, Roncola, Palazzago, Barzana, Sant'Omobono Terme, Rota Imagna, Brumano, Costa Imagna, Corna Imagna, Locatello, Fuipiano Valle Imagna, Capizzone, Bedulita, Berbenno",
+     "posti": 1,
+     "note": "Uno o più Comuni tra: Sant'Omobono Terme, Rota Imagna, Brumano, Costa Imagna, Corna Imagna, Locatello, Fuipiano Valle Imagna, Capizzone, Bedulita, Berbenno"
+    },
+    {
+     "asl": "ASST Pavia",
+     "ambito": "Arena Po - Bosnasco – Broni - Albaredo Campospinoso - Canneto Pavese - Castana - Cigognola - Colli Verdi - Golferenzo - Lirio - Montebello della Battaglia - Montecalvo - Versiggia Monticelli Pavese - Pietra de' Giorgi - Portalbera Redavalle - Rocca de' Giorgi - Rovescala San Cipriano Po San Damiano al Colle - Santa Maria della Versa – Stradella – Volpara – Zenevredo.",
+     "posti": 1,
+     "note": ""
+    },
+    {
+     "asl": "ASST Pavia",
+     "ambito": "Alagna - Borgo San Siro - Dorno - Ferrera Erbognone - Garlasco - Mezzana Bigli - Pieve Albignola - Sannazzaro de' Burgondi – Scaldasole – Tromello - Valeggio.",
+     "posti": 1,
+     "note": "Sannazzaro de’ Burgondi"
+    },
+    {
+     "asl": "ASST Spedali Civili di Brescia",
+     "ambito": "Gardone V.T.-Polaveno-Brione - Sarezzo - Marcheno -Bovegno- Collio - Pezzaze - Irma - Tavernole - Marmentino - Lodrino",
+     "posti": 1,
+     "note": "1 volta a settimana presso CdC di Tavernole"
+    },
+    {
+     "asl": "ASST Valcamonica",
+     "ambito": "Alta/Media Vallecamonica",
+     "posti": 1,
+     "note": "Edolo"
+    },
+    {
+     "asl": "ASST Valcamonica",
+     "ambito": "Bassa Vallecamonica",
+     "posti": 2,
+     "note": "Piancamuno, Darfo"
+    },
+    {
+     "asl": "ASST Valtellina e Alto Lario",
+     "ambito": "Livigno",
+     "posti": 1,
+     "note": ""
+    },
+    {
+     "asl": "ASST Valtellina e Alto Lario",
+     "ambito": "Tirano",
+     "posti": 2,
+     "note": ""
+    }
+   ]
+  },
+  {
+   "id": "lom-ru-2026-03",
+   "tipo": "ruolo-unico",
+   "titolo": "Incarichi vacanti per i medici del ruolo unico di assistenza primaria - marzo 2026",
+   "edizione": "marzo 2026 (pubblicazione ordinaria)",
+   "anno": 2026,
+   "pubblicatoIl": "2026-04-01",
+   "bollettino": "BURL Serie Avvisi e Concorsi n. 14 del 01/04/2026, comunicato regionale n. 27 del 24/03/2026",
+   "scadenza": "2026-04-20",
+   "scadenzaCalcolata": false,
+   "paginaUrl": "https://www.regione.lombardia.it/sanita/personale-sanitario-e-sociosanitario/concorsi-e-avvisi-presso-enti-sanitari/pubblicazione-ambiti-carenti-di-assistenza-primaria-a-ciclo-di-scelta-e-pediatria-e-ore-vacanti-di-assistenza-primaria-ad-attivit--oraria-e-di-emergenza-territoriale",
+   "pdfUrl": "https://omceomi.it/wp-content/uploads/2026/04/Pubblicazione-incarichi-vacanti-per-medici-di-ruolo-unico-di-assistenza-primaria-e-per-pls-COMUNICATO-GIUNTA-REGIONALE-24.3.2026.pdf",
+   "bollettinoUrl": "https://www.regione.lombardia.it/burl-bollettino-ufficiale-regione-lombardia",
+   "totalePosti": 4416,
+   "totaleUfficiale": null,
+   "nota": "Il PDF è la copia del comunicato pubblicata dall'OMCeO di Milano; l'atto ufficiale è nel BURL.",
+   "corrente": false,
+   "perAsl": [
+    {
+     "asl": "ASST Bergamo Est",
+     "posti": 181,
+     "ambiti": 22
+    },
+    {
+     "asl": "ASST Bergamo Ovest",
+     "posti": 231,
+     "ambiti": 23
+    },
+    {
+     "asl": "ASST Brianza",
+     "posti": 420,
+     "ambiti": 33
+    },
+    {
+     "asl": "ASST Crema",
+     "posti": 77,
+     "ambiti": 3
+    },
+    {
+     "asl": "ASST Cremona",
+     "posti": 79,
+     "ambiti": 4
+    },
+    {
+     "asl": "ASST Franciacorta",
+     "posti": 104,
+     "ambiti": 14
+    },
+    {
+     "asl": "ASST Garda",
+     "posti": 153,
+     "ambiti": 25
+    },
+    {
+     "asl": "ASST Lariana",
+     "posti": 293,
+     "ambiti": 30
+    },
+    {
+     "asl": "ASST Lecco",
+     "posti": 140,
+     "ambiti": 16
+    },
+    {
+     "asl": "ASST Lodi",
+     "posti": 104,
+     "ambiti": 5
+    },
+    {
+     "asl": "ASST Mantova",
+     "posti": 217,
+     "ambiti": 9
+    },
+    {
+     "asl": "ASST Melegnano e della Martesana",
+     "posti": 302,
+     "ambiti": 14
+    },
+    {
+     "asl": "ASST Fatebenefratelli-Sacco",
+     "posti": 325,
+     "ambiti": 5
+    },
+    {
+     "asl": "ASST Niguarda",
+     "posti": 79,
+     "ambiti": 1
+    },
+    {
+     "asl": "ASST Santi Paolo e Carlo",
+     "posti": 218,
+     "ambiti": 3
+    },
+    {
+     "asl": "ASST Nord Milano",
+     "posti": 107,
+     "ambiti": 2
+    },
+    {
+     "asl": "ASST Ovest Milanese",
+     "posti": 207,
+     "ambiti": 9
+    },
+    {
+     "asl": "ASST Papa Giovanni XXIII",
+     "posti": 99,
+     "ambiti": 8
+    },
+    {
+     "asl": "ASST Pavia",
+     "posti": 205,
+     "ambiti": 36
+    },
+    {
+     "asl": "ASST Rhodense",
+     "posti": 217,
+     "ambiti": 8
+    },
+    {
+     "asl": "ASST Sette Laghi",
+     "posti": 172,
+     "ambiti": 27
+    },
+    {
+     "asl": "ASST Spedali Civili di Brescia",
+     "posti": 160,
+     "ambiti": 13
+    },
+    {
+     "asl": "ASST Valcamonica",
+     "posti": 43,
+     "ambiti": 3
+    },
+    {
+     "asl": "ASST Valle Olona",
+     "posti": 190,
+     "ambiti": 17
+    },
+    {
+     "asl": "ASST Valtellina e Alto Lario",
+     "posti": 93,
+     "ambiti": 7
+    }
+   ]
+  },
+  {
+   "id": "lom-pls-2026-03",
+   "tipo": "pls",
+   "titolo": "Incarichi vacanti per i pediatri di libera scelta - marzo 2026",
+   "edizione": "marzo 2026 (pubblicazione ordinaria)",
+   "anno": 2026,
+   "pubblicatoIl": "2026-04-01",
+   "bollettino": "BURL Serie Avvisi e Concorsi n. 14 del 01/04/2026, comunicato regionale n. 27 del 24/03/2026",
+   "scadenza": "2026-04-20",
+   "scadenzaCalcolata": false,
+   "paginaUrl": "https://www.regione.lombardia.it/sanita/personale-sanitario-e-sociosanitario/concorsi-e-avvisi-presso-enti-sanitari/pubblicazione-ambiti-carenti-di-assistenza-primaria-a-ciclo-di-scelta-e-pediatria-e-ore-vacanti-di-assistenza-primaria-ad-attivit--oraria-e-di-emergenza-territoriale",
+   "pdfUrl": "https://omceomi.it/wp-content/uploads/2026/04/Pubblicazione-incarichi-vacanti-per-medici-di-ruolo-unico-di-assistenza-primaria-e-per-pls-COMUNICATO-GIUNTA-REGIONALE-24.3.2026.pdf",
+   "bollettinoUrl": "https://www.regione.lombardia.it/burl-bollettino-ufficiale-regione-lombardia",
+   "totalePosti": 55,
+   "totaleUfficiale": 55,
+   "nota": "Il PDF è la copia del comunicato pubblicata dall'OMCeO di Milano; l'atto ufficiale è nel BURL.",
+   "corrente": false,
+   "perAsl": [
+    {
+     "asl": "ASST Bergamo Est",
+     "posti": 2,
+     "ambiti": 2
+    },
+    {
+     "asl": "ASST Bergamo Ovest",
+     "posti": 2,
+     "ambiti": 2
+    },
+    {
+     "asl": "ASST Brianza",
+     "posti": 2,
+     "ambiti": 2
+    },
+    {
+     "asl": "ASST Cremona",
+     "posti": 3,
+     "ambiti": 2
+    },
+    {
+     "asl": "ASST Franciacorta",
+     "posti": 1,
+     "ambiti": 1
+    },
+    {
+     "asl": "ASST Garda",
+     "posti": 3,
+     "ambiti": 3
+    },
+    {
+     "asl": "ASST Lariana",
+     "posti": 1,
+     "ambiti": 1
+    },
+    {
+     "asl": "ASST Lecco",
+     "posti": 1,
+     "ambiti": 1
+    },
+    {
+     "asl": "ASST Lodi",
+     "posti": 3,
+     "ambiti": 2
+    },
+    {
+     "asl": "ASST Mantova",
+     "posti": 3,
+     "ambiti": 3
+    },
+    {
+     "asl": "ASST Melegnano e della Martesana",
+     "posti": 2,
+     "ambiti": 2
+    },
+    {
+     "asl": "ASST Fatebenefratelli-Sacco",
+     "posti": 6,
+     "ambiti": 3
+    },
+    {
+     "asl": "ASST Niguarda",
+     "posti": 2,
+     "ambiti": 1
+    },
+    {
+     "asl": "ASST Nord Milano",
+     "posti": 2,
+     "ambiti": 2
+    },
+    {
+     "asl": "ASST Ovest Milanese",
+     "posti": 2,
+     "ambiti": 2
+    },
+    {
+     "asl": "ASST Papa Giovanni XXIII",
+     "posti": 2,
+     "ambiti": 1
+    },
+    {
+     "asl": "ASST Pavia",
+     "posti": 6,
+     "ambiti": 5
+    },
+    {
+     "asl": "ASST Rhodense",
+     "posti": 4,
+     "ambiti": 3
+    },
+    {
+     "asl": "ASST Spedali Civili di Brescia",
+     "posti": 2,
+     "ambiti": 2
+    },
+    {
+     "asl": "ASST Valcamonica",
+     "posti": 1,
+     "ambiti": 1
+    },
+    {
+     "asl": "ASST Valtellina e Alto Lario",
+     "posti": 5,
+     "ambiti": 4
+    }
+   ]
+  }
+ ],
+ "generatoIl": "2026-11-20"
+}

@@ -32,6 +32,7 @@ import { CAREERS, hasSalaryData } from "@/lib/salary-tables";
 import { buildJobsMeta, jobLastmod, listSitemapJobs } from "@/lib/sitemap-jobs";
 import { RECENT_PATH } from "@/lib/recent-jobs";
 import { SITE_URL } from "@/lib/seo";
+import { REGIONI, ZC_HUB_PATH, hubLastmod, regionLastmod, zcRegionPath } from "@/lib/zone-carenti";
 
 export const dynamic = "force-dynamic";
 
@@ -262,6 +263,19 @@ ${entries.join("\n")}
 `;
 }
 
+/** Zone carenti: lastmod = data di pubblicazione ufficiale piu' recente (Regione), non la data del build. */
+function buildZoneCarentiSitemap() {
+  const entries = [
+    urlEntry(`${SITE_URL}${ZC_HUB_PATH}`, hubLastmod(), "weekly", "0.8"),
+    ...REGIONI.map((r) => urlEntry(`${SITE_URL}${zcRegionPath(r.slug)}`, regionLastmod(r), "weekly", "0.8")),
+  ];
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${entries.join("\n")}
+</urlset>
+`;
+}
+
 export async function GET(
   _request: Request,
   context: { params: Promise<{ segment: string }> },
@@ -272,6 +286,9 @@ export async function GET(
   }
   if (segment === "aziende.xml") {
     return xmlResponse(await buildEmployersSitemap());
+  }
+  if (segment === "zone-carenti.xml") {
+    return xmlResponse(buildZoneCarentiSitemap());
   }
   if (segment === "jobs.xml") {
     return xmlResponse(await buildJobsSitemap());

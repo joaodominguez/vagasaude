@@ -47,6 +47,9 @@ fi
   python3 "$ROOT/tools/jobs_integrity.py" "$DATA_DIR" http://127.0.0.1:3014 /offerte/ || true
 ) || true
 
+# Zone carenti (2026-11-20): controlla se le Regioni hanno pubblicato nuovi elenchi (al massimo 1 volta ogni 20 h; non modifica il sito).
+python3 "$ROOT/zone_carenti/watch.py" "$DATA_DIR" || true
+
 # Google Indexing API: offerte nuove/ritirate. Progetto Google Cloud proprio dell'IT
 # (my-project-1483913428749, "offertesanita-it"): 200 richieste/giorno solo per questo sito.
 INDEXING_KEY="${GOOGLE_INDEXING_KEY:-/home/portal/.config/vagasaude/indexing-key-it.json}"

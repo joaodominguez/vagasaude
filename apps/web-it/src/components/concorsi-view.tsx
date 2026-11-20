@@ -116,6 +116,7 @@ export function ConcorsiView({
     ? expiringProfessions(all).some(([name]) => name === profession)
     : soon.length > 0;
   const extraLinks = [
+    ...(!profession || profession === "Medicina" ? [{ label: "Zone carenti medici di famiglia e pediatri", href: "/zone-carenti" }] : []),
     ...(hub && !district ? [{ label: `${hub.h1Lead} ${year}`, href: hub.path }] : []),
     ...(expiringPage
       ? [{ label: "In scadenza", href: profession ? expiringProfessionPath(profession) : EXPIRING_PATH }]
