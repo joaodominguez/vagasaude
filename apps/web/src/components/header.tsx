@@ -16,14 +16,13 @@ const NAV_ITEMS = [
   { href: "/noticias", label: "Notícias" },
   { href: "/favoritos", label: "Favoritos" },
   { href: "/alertas", label: "Criar alerta" },
-  { href: "/como-funciona", label: "Como funciona" },
 ] as const;
 
 const ALERT_HREF = "/alertas";
 /** Fora do menu de texto no ecrã grande (o alerta é o botão; favoritos é o coração). Ficam no menu móvel. */
 const DESKTOP_HIDDEN = new Set<string>([ALERT_HREF]);
-// Favoritos e Como funciona: no menu de desktop a partir de 1024 px (abaixo ficam no menu móvel).
-const SECONDARY_HREFS = new Set<string>(["/favoritos", "/como-funciona", "/vagas/hoje"]);
+// Favoritos e Vagas de hoje: no menu de desktop a partir de 1024 px (abaixo ficam no menu móvel).
+const SECONDARY_HREFS = new Set<string>(["/favoritos", "/vagas/hoje"]);
 
 export function Header() {
   const [open, setOpen] = useState(false);
