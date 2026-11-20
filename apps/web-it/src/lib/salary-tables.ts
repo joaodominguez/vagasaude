@@ -77,6 +77,8 @@ const COMPARTO_YEAR = 2024;
 const COMPARTO_BASE_NOTE = (area: string, val: string) =>
   `Tabella 2a (PDF p. 107), ${area}, dal 1/1/2024: ${val} € su 12 mensilità più tredicesima (${val} ÷ 12 × 13)`;
 
+const cents2 = (n: number) => n.toLocaleString("it-IT", { minimumFractionDigits: 2 });
+
 function comparto(args: {
   slug: string;
   label: string;
@@ -85,6 +87,8 @@ function comparto(args: {
   ssnRole: string;
   profili: string;
   area: "professionisti" | "operatori";
+  /** Indennità di specificità (art. 65, Tabella 3) o tutela del malato (art. 66, Tabella 4): valori mensili lordi su 12 mensilità. */
+  indennita?: { art: 65 | 66; tabella: 3 | 4; nome: string; da2024: number; da2025: number };
 }): Career {
   const professionisti = args.area === "professionisti";
   const value = professionisti ? 24918.93 : 21545.34;
@@ -113,6 +117,23 @@ function comparto(args: {
           },
         ],
       },
+      ...(args.indennita
+        ? [
+            {
+              name: "Indennità fissa prevista dal CCNL (non inclusa nel tabellare)",
+              rows: [
+                {
+                  service: `${args.indennita.nome} (art. ${args.indennita.art})`,
+                  year: 2025,
+                  annual: Math.round(args.indennita.da2025 * 12 * 100) / 100,
+                  note: `art. ${args.indennita.art} e Tabella ${args.indennita.tabella} (PDF p. 108): ${cents2(args.indennita.da2025)} € al mese per 12 mensilità dal 1/1/2025 (${cents2(args.indennita.da2024)} € dal 1/1/2024); senza tredicesima`,
+                  source: ARAN_COMPARTO_SANITA_2022_2024,
+                  kind: "component" as const,
+                },
+              ],
+            },
+          ]
+        : []),
     ],
   };
 }
@@ -252,6 +273,7 @@ export const CAREERS: Career[] = [
     ssnRole: "un infermiere",
     profili: "l'infermiere (e l'infermiere pediatrico)",
     area: "professionisti",
+    indennita: { art: 65, tabella: 3, nome: "Indennità di specificità infermieristica", da2024: 80.73, da2025: 87.79 },
   }),
   comparto({
     slug: "ostetrica",
@@ -261,6 +283,7 @@ export const CAREERS: Career[] = [
     ssnRole: "un'ostetrica",
     profili: "l'ostetrica",
     area: "professionisti",
+    indennita: { art: 66, tabella: 4, nome: "Indennità tutela del malato e promozione della salute (ostetrica)", da2024: 80.73, da2025: 87.79 },
   }),
   comparto({
     slug: "tecnico-sanitario",
@@ -271,6 +294,7 @@ export const CAREERS: Career[] = [
     profili:
       "il tecnico sanitario (di laboratorio biomedico, di radiologia medica, di neurofisiopatologia e le altre professioni tecnico sanitarie)",
     area: "professionisti",
+    indennita: { art: 66, tabella: 4, nome: "Indennità tutela del malato e promozione della salute", da2024: 45.58, da2025: 51.97 },
   }),
   comparto({
     slug: "fisioterapista",
@@ -280,6 +304,7 @@ export const CAREERS: Career[] = [
     ssnRole: "un fisioterapista",
     profili: "il fisioterapista",
     area: "professionisti",
+    indennita: { art: 66, tabella: 4, nome: "Indennità tutela del malato e promozione della salute", da2024: 45.58, da2025: 51.97 },
   }),
   comparto({
     slug: "logopedista",
@@ -290,6 +315,7 @@ export const CAREERS: Career[] = [
     profili:
       "il logopedista, come gli altri professionisti sanitari della riabilitazione (terapista occupazionale, educatore professionale socio-sanitario, ortottista, podologo e altri)",
     area: "professionisti",
+    indennita: { art: 66, tabella: 4, nome: "Indennità tutela del malato e promozione della salute", da2024: 45.58, da2025: 51.97 },
   }),
   comparto({
     slug: "dietista",
@@ -299,6 +325,7 @@ export const CAREERS: Career[] = [
     ssnRole: "un dietista",
     profili: "il dietista (professione tecnico sanitaria)",
     area: "professionisti",
+    indennita: { art: 66, tabella: 4, nome: "Indennità tutela del malato e promozione della salute", da2024: 45.58, da2025: 51.97 },
   }),
   comparto({
     slug: "assistente-sociale",
@@ -308,6 +335,7 @@ export const CAREERS: Career[] = [
     ssnRole: "un assistente sociale",
     profili: "l'assistente sociale (profilo del ruolo socio-sanitario)",
     area: "professionisti",
+    indennita: { art: 66, tabella: 4, nome: "Indennità tutela del malato e promozione della salute", da2024: 45.58, da2025: 51.97 },
   }),
   comparto({
     slug: "oss",
@@ -317,6 +345,7 @@ export const CAREERS: Career[] = [
     ssnRole: "un OSS",
     profili: "l'operatore socio sanitario (OSS, ruolo sociosanitario)",
     area: "operatori",
+    indennita: { art: 66, tabella: 4, nome: "Indennità tutela del malato e promozione della salute", da2024: 38.0, da2025: 43.51 },
   }),
   dirigenza({
     slug: "medico",

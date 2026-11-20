@@ -130,6 +130,29 @@ export default async function SalariesIndexPage() {
             </table>
           </section>
 
+          <section className="content-card p-5">
+            <h2 className="text-lg font-extrabold">Dalle tabelle alle offerte</h2>
+            <p className="mt-2 text-sm leading-6 text-muted">
+              Il tabellare del CCNL Comparto Sanità 2022-2024 (ARAN, firmato il 27/10/2025) vale per chi è assunto
+              nelle aziende sanitarie pubbliche, e si ottiene con i concorsi e gli avvisi pubblici. Per infermieri
+              e OSS le pagine di dettaglio riportano anche le indennità fisse dell&apos;art. 65 e dell&apos;art. 66.
+            </p>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <Link href="/concorsi-infermieri-2026" className="button button-primary">
+                Concorsi infermieri 2026
+              </Link>
+              <Link href="/concorsi-oss-2026" className="button button-secondary">
+                Concorsi OSS 2026
+              </Link>
+              <Link href="/concorsi/in-scadenza" className="button button-secondary">
+                Concorsi in scadenza
+              </Link>
+              <Link href="/offerte" className="button button-secondary">
+                Tutte le offerte
+              </Link>
+            </div>
+          </section>
+
           <p className="text-sm leading-6 text-muted">
             Metodologia: mostriamo solo le tabelle ufficiali (ARAN e Gazzetta Ufficiale) che abbiamo potuto verificare alla
             fonte primaria, con anno e link, e omettiamo i contratti senza tabella verificata. Le

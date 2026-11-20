@@ -19,6 +19,18 @@ export function Footer() {
             <Link className="hover:text-primary" href="/offerte/oggi">
               Offerte di oggi
             </Link>
+            <Link className="hover:text-primary" href="/concorsi/in-scadenza">
+              Concorsi in scadenza
+            </Link>
+            <Link className="hover:text-primary" href="/concorsi-infermieri-2026">
+              Concorsi infermieri
+            </Link>
+            <Link className="hover:text-primary" href="/concorsi-oss-2026">
+              Concorsi OSS
+            </Link>
+            <Link className="hover:text-primary" href="/stipendi">
+              Stipendi
+            </Link>
             <Link className="hover:text-primary" href="/aziende">
               Aziende
             </Link>

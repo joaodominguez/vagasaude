@@ -74,7 +74,7 @@ export function shortDate(value: string | null | undefined): string | null {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return null;
   return date
-    .toLocaleDateString("it-IT", { day: "numeric", month: "short", year: "numeric" })
+    .toLocaleDateString("it-IT", { day: "numeric", month: "short", year: "numeric", timeZone: "Europe/Rome" })
     .replace(/\./g, "");
 }
 
@@ -99,6 +99,42 @@ export function deadlineLabel(
   const day = date.getDate();
   // «Scade l'8 dic», «Scade l'11 nov», «Scade il 19 nov».
   return `Scade ${day === 8 || day === 11 ? "l'" : "il "}${dayMonth(date)}`;
+}
+
+const ROME_DAY = new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Rome" });
+
+/** Giorno di calendario (fuso Europe/Rome) come numero di giorni dall'epoca. */
+function romeDayNumber(time: number): number {
+  const [y, m, d] = ROME_DAY.format(time).split("-").map(Number);
+  return Math.floor(Date.UTC(y, m - 1, d) / 86_400_000);
+}
+
+/** Giorni di calendario (Roma) da oggi alla scadenza: 0 = oggi, negativo = scaduta; null se manca la data. */
+export function daysUntilDeadline(
+  expiresAt: string | null | undefined,
+  now = Date.now(),
+): number | null {
+  if (!expiresAt) return null;
+  const time = Date.parse(expiresAt);
+  if (Number.isNaN(time)) return null;
+  return romeDayNumber(time) - romeDayNumber(now);
+}
+
+/**
+ * Scadenza con conto alla rovescia: «Scade il 27/11 · tra 5 giorni», «Scade oggi», «Scade domani».
+ * null per scadenze passate o assenti. Il conto alla rovescia compare solo entro 60 giorni.
+ */
+export function deadlineCountdownLabel(
+  expiresAt: string | null | undefined,
+  now = Date.now(),
+): string | null {
+  const days = daysUntilDeadline(expiresAt, now);
+  if (days === null || days < 0) return null;
+  if (days === 0) return "Scade oggi";
+  if (days === 1) return "Scade domani";
+  const [, m, d] = ROME_DAY.format(Date.parse(expiresAt as string)).split("-").map(Number);
+  const prefix = `Scade ${d === 8 || d === 11 ? "l'" : "il "}${d}/${String(m).padStart(2, "0")}`;
+  return days <= 60 ? `${prefix} · tra ${days} giorni` : prefix;
 }
 
 const UNIT_LABEL = { MONTH: "/mese", HOUR: "/ora", DAY: "/giorno", YEAR: "/anno" } as const;

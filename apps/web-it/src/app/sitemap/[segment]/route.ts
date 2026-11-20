@@ -6,7 +6,20 @@ import {
 } from "@/lib/categories";
 import { getJobs } from "@/lib/jobs-data";
 import { employerLastmod, listEmployers } from "@/lib/employers";
-import { listEligibleConcorsi, listConcorsi } from "@/lib/concorsi";
+import { filterConcorsi, listEligibleConcorsi, listConcorsi } from "@/lib/concorsi";
+import {
+  EXPIRING_LONG_DAYS,
+  EXPIRING_PATH,
+  HUBS,
+  TYPE_MIN_INDEXABLE,
+  TYPE_PAGES,
+  expiringItems,
+  expiringProfessionPath,
+  expiringProfessions,
+  itemsLastmod,
+  itemsOfType,
+  typePagePath,
+} from "@/lib/concorsi-hubs";
 import {
   listArticles,
   listNewsCategories,
@@ -147,19 +160,43 @@ async function buildConcorsiSitemap() {
   const latest = items[0]?.job.publishedAt
     ? new Date(Math.min(Date.parse(items[0].job.publishedAt) || Date.now(), Date.now()))
     : now;
+  const entries = paths.map((path) =>
+    urlEntry(`${SITE_URL}${path}`, latest, "daily", path === "/concorsi" ? "0.85" : "0.75"),
+  );
+  // Landing aggiuntive (hub perenni, in scadenza, per tipo): lastmod = ultimo aggiornamento reale dei bandi inclusi.
+  for (const hub of HUBS) {
+    const hubItems = filterConcorsi(items, hub.profession, null);
+    if (hubItems.length > 0) entries.push(urlEntry(`${SITE_URL}${hub.path}`, itemsLastmod(hubItems), "daily", "0.9"));
+  }
+  const soon = expiringItems(items, EXPIRING_LONG_DAYS);
+  if (soon.length > 0) {
+    entries.push(urlEntry(`${SITE_URL}${EXPIRING_PATH}`, itemsLastmod(soon), "daily", "0.85"));
+    for (const [profession] of expiringProfessions(items)) {
+      entries.push(
+        urlEntry(
+          `${SITE_URL}${expiringProfessionPath(profession)}`,
+          itemsLastmod(filterConcorsi(soon, profession, null)),
+          "daily",
+          "0.75",
+        ),
+      );
+    }
+  }
+  for (const page of TYPE_PAGES) {
+    const typed = itemsOfType(items, page.type);
+    if (typed.length >= TYPE_MIN_INDEXABLE) {
+      entries.push(urlEntry(`${SITE_URL}${typePagePath(page.slug)}`, itemsLastmod(typed), "daily", "0.75"));
+    }
+  }
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${paths
-  .map((path) =>
-    urlEntry(`${SITE_URL}${path}`, latest, "daily", path === "/concorsi" ? "0.85" : "0.75"),
-  )
-  .join("\n")}
+${entries.join("\n")}
 </urlset>
 `;
 }
 
 /** Tabelle stipendi: vuote finche' non ci sono dati con fonte citata (vedi lib/salary-tables.ts). */
-const SALARY_TABLES_UPDATED = new Date("2026-11-18T00:00:00Z");
+const SALARY_TABLES_UPDATED = new Date("2026-11-20T00:00:00Z");
 
 function buildSalariesSitemap() {
   if (!hasSalaryData()) {

@@ -140,7 +140,8 @@ function ActiveJobView({
   const related = relatedJobs(job, allJobs);
 
   // Ripubblicazione di un'altra offerta: senza JobPosting (solo l'offerta principale).
-  const jsonLd = canonicalSlug ? null : buildJobPostingJsonLd(job);
+  // Le graduatorie non sono offerte di lavoro: niente JobPosting.
+  const jsonLd = canonicalSlug || classifyJob(job) === "graduatoria" ? null : buildJobPostingJsonLd(job);
   const shareUrl = jobUrl(job.slug);
   const categoryLinks = buildJobCategoryLinks(job, allJobs);
   const back = buildBackLink(job, allJobs);

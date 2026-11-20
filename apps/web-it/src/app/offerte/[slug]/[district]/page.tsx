@@ -96,6 +96,7 @@ export default async function ProfessionDistrictPage({
       jobs={jobs}
       page={page}
       allCategoryRefs={listEligibleCategories(allJobs)}
+      allJobs={allJobs}
     />
   );
 }

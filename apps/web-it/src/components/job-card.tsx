@@ -6,7 +6,7 @@ import { compactBandoTitle, displayTitle } from "@/lib/display-title";
 import {
   announcedSalaryLabel,
   contractBesideType,
-  deadlineLabel,
+  deadlineCountdownLabel,
   relativePublished,
 } from "@/lib/job-display";
 import { extractSchedule, specialtyFromTitle } from "@/lib/job-facts";
@@ -21,7 +21,7 @@ export function JobCard({ job }: { job: Job }) {
   const contract = contractBesideType(job);
   const salary = announcedSalaryLabel(job.salary);
   const published = relativePublished(job.publishedAt);
-  const deadline = deadlineLabel(job.expiresAt);
+  const deadline = deadlineCountdownLabel(job.expiresAt);
   const isPublic = isPublicJob(job);
   const schedule = isBando ? null : extractSchedule(`${job.title}\n${job.description}`, job.contract);
   const shift = schedule && /turni/i.test(schedule) ? "Turni" : null;

@@ -53,5 +53,20 @@ rm -f "$STAGE/.next/server/app/offerte/oggi.html" \
   "$STAGE/.next/server/app/offerte/oggi.meta"
 rm -rf "$STAGE/.next/server/app/offerte/oggi.segments" 2>/dev/null || true
 
+# Pagine nuove (Fase 1, parte A) che dipendono dai dati: concorsi-infermieri-2026, concorsi-oss-2026,
+# concorsi/in-scadenza e concorsi/tipo/*. Si tolgono HTML/RSC/meta/segments, non le cartelle di codice.
+for page in concorsi-infermieri-2026 concorsi-oss-2026; do
+  rm -f "$STAGE/.next/server/app/$page.html" \
+    "$STAGE/.next/server/app/$page.rsc" \
+    "$STAGE/.next/server/app/$page.meta"
+  rm -rf "$STAGE/.next/server/app/$page.segments" 2>/dev/null || true
+done
+for page in concorsi/in-scadenza concorsi/tipo/concorsi-pubblici concorsi/tipo/avvisi-tempo-determinato concorsi/tipo/mobilita concorsi/tipo/incarichi-libero-professionali concorsi/tipo/graduatorie; do
+  rm -f "$STAGE/.next/server/app/$page.html" \
+    "$STAGE/.next/server/app/$page.rsc" \
+    "$STAGE/.next/server/app/$page.meta"
+  rm -rf "$STAGE/.next/server/app/$page.segments" 2>/dev/null || true
+done
+
 COPYFILE_DISABLE=1 tar -C "$STAGE" -czf "$OUT" .
-echo "OK $OUT (css=$CSS_COUNT, data prerenders stripped: index concorsi stipendi aziende dati offerte/oggi)"
+echo "OK $OUT (css=$CSS_COUNT, data prerenders stripped: index concorsi stipendi aziende dati offerte/oggi concorsi-infermieri-2026 concorsi-oss-2026 concorsi/in-scadenza concorsi/tipo/*)"

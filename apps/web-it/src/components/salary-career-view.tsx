@@ -15,6 +15,24 @@ import {
 } from "@/lib/salary-tables";
 import { SITE_NAME, truncateMeta } from "@/lib/seo";
 
+export type CareerLinks = {
+  concorsiCount: number;
+  soonCount: number;
+  concorsiHref: string | null;
+  hubHref: string | null;
+  hubLabel: string | null;
+  expiringHref: string | null;
+};
+
+/** Confronto con la Germania: solo la tabella TVöD-P 2026 (Pflege, enti pubblici comunali), fonte ufficiale citata. */
+const GERMANY_NOTE = {
+  text: "In Germania il personale infermieristico degli enti pubblici comunali è inquadrato nel contratto TVöD-P: nella tabella 2026 il gruppo di inquadramento P 7 prevede, dal livello (Stufe) 2 al 6, da 3.510,30 a 4.305,40 € lordi al mese a tempo pieno; l'inquadramento effettivo dipende dal profilo e dal datore di lavoro. Sono importi lordi mensili di un altro Paese e di un altro sistema: non si confrontano direttamente con il tabellare italiano, perché cambiano imposte, contributi, tredicesima e costo della vita. Per lavorare in Germania occorre inoltre il riconoscimento del titolo e la conoscenza della lingua.",
+  source: {
+    label: "Entgelttabelle TVöD-P 2026, Città di Stoccarda (tabella contrattuale per Pflege, Betreuung)",
+    url: "https://www.stuttgart.de/medien/ibs/entgelttabelle_tvoed-p_2026.pdf",
+  },
+};
+
 type PrivateData = Awaited<ReturnType<typeof getPrivateSalaryData>>;
 
 function capitalize(text: string) {
@@ -62,10 +80,12 @@ export function SalaryCareerView({
   career,
   privateData,
   jobsHref,
+  links,
 }: {
   career: Career;
   privateData: PrivateData;
   jobsHref: string;
+  links?: CareerLinks;
 }) {
   const entry = careerEntry(career);
   const range = careerRange(career);
@@ -198,6 +218,51 @@ export function SalaryCareerView({
             <Link href={jobsHref} className="button button-secondary inline-flex">
               Vedi le offerte per {career.label}
             </Link>
+          )}
+
+          {links && (
+            <section className="content-card p-5">
+              <h2 className="text-lg font-extrabold">Offerte e concorsi aperti per {career.label}</h2>
+              <p className="mt-2 text-sm leading-6 text-muted">
+                {links.concorsiCount > 0
+                  ? `Su Offerte Sanità ci sono ora ${links.concorsiCount} ${links.concorsiCount === 1 ? "bando pubblico aperto" : "bandi pubblici aperti"} per questa professione${links.soonCount > 0 ? `, ${links.soonCount} in scadenza entro 14 giorni` : ""}: il contratto qui sopra è quello applicato da questi enti, salvo quanto indicato nel singolo bando.`
+                  : "Al momento non ci sono bandi pubblici aperti per questa professione, ma puoi vedere le offerte di strutture pubbliche e private."}
+              </p>
+              <div className="mt-4 flex flex-wrap gap-3">
+                <Link href={jobsHref} className="button button-secondary inline-flex">
+                  Offerte di lavoro per {career.label}
+                </Link>
+                {links.hubHref && links.hubLabel && (
+                  <Link href={links.hubHref} className="button button-primary inline-flex">
+                    {links.hubLabel}
+                  </Link>
+                )}
+                {links.concorsiHref && (
+                  <Link href={links.concorsiHref} className="button button-secondary inline-flex">
+                    Tutti i concorsi
+                  </Link>
+                )}
+                {links.expiringHref && (
+                  <Link href={links.expiringHref} className="button button-secondary inline-flex">
+                    Concorsi in scadenza
+                  </Link>
+                )}
+              </div>
+            </section>
+          )}
+
+          {career.slug === "infermiere" && (
+            <section className="content-card p-5">
+              <h2 className="text-lg font-extrabold">Lavorare in Germania: un riferimento contrattuale</h2>
+              <p className="mt-2 text-sm leading-6 text-muted">{GERMANY_NOTE.text}</p>
+              <p className="mt-2 text-xs text-muted">
+                Fonte:{" "}
+                <a href={GERMANY_NOTE.source.url} className="underline" rel="noopener" target="_blank">
+                  {GERMANY_NOTE.source.label}
+                </a>
+                . Non pubblichiamo un confronto con la Svizzera perché non abbiamo una tabella ufficiale aggiornata e verificabile.
+              </p>
+            </section>
           )}
 
           <section className="content-card p-5">

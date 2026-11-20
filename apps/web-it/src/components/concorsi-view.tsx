@@ -23,6 +23,23 @@ import {
   type ConcorsoItem,
 } from "@/lib/concorsi";
 import { inRegione } from "@/lib/it-locative";
+import {
+  EXPIRING_LONG_DAYS,
+  EXPIRING_PATH,
+  TYPE_MIN_INDEXABLE,
+  TYPE_PAGES,
+  expiringItems,
+  expiringProfessionPath,
+  expiringProfessions,
+  firstDeadlineText,
+  hubForProfession,
+  itemsOfType,
+  plural,
+  topDistrictsText,
+  topEmployersText,
+  typeBreakdownText,
+  typePagePath,
+} from "@/lib/concorsi-hubs";
 
 /**
  * Hub /concorsi e sotto-landing /concorsi/<professione>[/<regione>].
@@ -93,6 +110,28 @@ export function ConcorsiView({
     .map(([type, n]) => `${n} ${JOB_TYPE_LABEL[type as keyof typeof JOB_TYPE_LABEL].toLowerCase()}`)
     .join(", ");
 
+  const soon = expiringItems(items, EXPIRING_LONG_DAYS);
+  const hub = hubForProfession(profession);
+  const expiringPage = profession
+    ? expiringProfessions(all).some(([name]) => name === profession)
+    : soon.length > 0;
+  const extraLinks = [
+    ...(hub && !district ? [{ label: `${hub.h1Lead} ${year}`, href: hub.path }] : []),
+    ...(expiringPage
+      ? [{ label: "In scadenza", href: profession ? expiringProfessionPath(profession) : EXPIRING_PATH }]
+      : []),
+    ...(profession
+      ? []
+      : TYPE_PAGES.filter((page) => itemsOfType(all, page.type).length >= TYPE_MIN_INDEXABLE).map((page) => ({
+          label: page.h1.replace(" nella sanità", ""),
+          href: typePagePath(page.slug),
+        }))),
+  ];
+  // Paragrafo con i numeri reali dell'elenco (contesto della pagina, non testo fisso).
+  const dataNote =
+    profession && items.length > 0
+      ? `Su Offerte Sanità ${items.length === 1 ? "è aperto 1 bando" : `sono aperti ${items.length} bandi`} per ${professionLower(profession)}${district ? ` ${inRegione(district)}` : ""}: ${typeBreakdownText(items)}. ${district ? `Gli enti con più bandi sono ${topEmployersText(items)}.` : `Le regioni con più bandi sono ${topDistrictsText(items)}; gli enti più presenti ${topEmployersText(items)}.`}${soon.length > 0 ? ` ${plural(soon.length, "scade", "scadono")} entro ${EXPIRING_LONG_DAYS} giorni. ${firstDeadlineText(items)}` : ""}`
+      : "";
   const jsonLd = buildConcorsiItemListJsonLd(`${heading} ${year}`, path, items);
 
   return (
@@ -116,10 +155,15 @@ export function ConcorsiView({
               requisiti e la scadenza per presentare domanda.
             </p>
 
+            {dataNote && (
+              <p className="mt-3 max-w-3xl text-sm leading-7 text-muted sm:text-base">{dataNote}</p>
+            )}
+
             {[
               { title: "Per professione", links: professionLinks },
               { title: `Concorsi ${what} per regione`, links: districtLinks },
               { title: "Altre professioni", links: siblingProfessions },
+              { title: "Scadenze, tipi di bando e guide", links: extraLinks.map((l) => ({ ...l, count: undefined as number | undefined })) },
             ].map(
               (group) =>
                 group.links.length > 0 && (
@@ -130,7 +174,8 @@ export function ConcorsiView({
                     <div className="mt-2 flex flex-wrap gap-2 text-sm">
                       {group.links.map((link) => (
                         <Link prefetch={false} key={link.href} href={link.href} className="filter-chip">
-                          {link.label} ({link.count})
+                          {link.label}
+                          {link.count !== undefined ? ` (${link.count})` : ""}
                         </Link>
                       ))}
                     </div>

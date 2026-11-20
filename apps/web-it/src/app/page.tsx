@@ -290,6 +290,15 @@ export default async function Home() {
             </div>
             {concorsoRefs.length > 0 && (
               <div className="explore-links mt-5">
+                <Link prefetch={false} href="/concorsi/in-scadenza">
+                  Concorsi in scadenza
+                </Link>
+                <Link prefetch={false} href="/concorsi-infermieri-2026">
+                  Concorsi infermieri 2026
+                </Link>
+                <Link prefetch={false} href="/concorsi-oss-2026">
+                  Concorsi OSS 2026
+                </Link>
                 {concorsoRefs.map((ref) => (
                   <Link prefetch={false} key={ref.path} href={concorsiPath(ref.profession)}>
                     Concorsi di {professionLower(ref.profession ?? "")} ({ref.count})

@@ -5,6 +5,7 @@ import { GuideCta } from "@/components/guide-cta";
 import { EduCrosslink } from "@/components/edu-crosslink";
 import { Breadcrumbs, type BreadcrumbItem } from "@/components/breadcrumbs";
 import { CategoryInsights } from "@/components/category-insights";
+import { ComboNarrative } from "@/components/combo-narrative";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { JobCard } from "@/components/job-card";
@@ -30,11 +31,13 @@ export function CategoryPageView({
   jobs,
   page = 1,
   allCategoryRefs,
+  allJobs,
 }: {
   category: CategoryRef;
   jobs: Job[];
   page?: number;
   allCategoryRefs: CategoryRef[];
+  allJobs?: Job[];
 }) {
   const stats = buildCategoryStats(jobs);
   const intro = buildCategoryIntro(
@@ -236,6 +239,14 @@ export function CategoryPageView({
           <CategoryInsights
             category={category}
             jobs={jobs}
+            allCategoryRefs={allCategoryRefs}
+          />
+        )}
+        {page === 1 && allJobs && (
+          <ComboNarrative
+            category={category}
+            jobs={jobs}
+            allJobs={allJobs}
             allCategoryRefs={allCategoryRefs}
           />
         )}
