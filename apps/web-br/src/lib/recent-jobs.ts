@@ -6,7 +6,7 @@ import { categoryPagePath } from "@/lib/categories";
 import { countTop, joinList, plural } from "@/lib/landing-text";
 
 /**
- * «Vagas de hoje» (/vagas/hoje): vagas publicadas nas últimas 48 h, paginadas, com ligação direta
+ * «Vagas de hoje» (/vagas/hoje): vagas que entraram no site nas últimas 48 h, paginadas, com ligação direta
  * a cada uma. É o caminho de descoberta por rastreio natural das vagas novas (o Googlebot chega
  * por aqui sem depender dos 200 envios/dia da Indexing API). Só entram vagas indexáveis
  * (as mesmas do jobs.xml): nenhum link para páginas noindex.
@@ -20,11 +20,24 @@ export const RECENT_PAGE_SIZE = 50;
 
 export type RecentSet = { jobs: Job[]; hours: number };
 
+/**
+ * Quando a vaga entrou no site: o mais antigo entre a primeira vez que a vimos (firstSeenAt) e a data
+ * da fonte. Não basta o createdAt: a recuperação de 17/11 recriou ~1500 vagas antigas com createdAt
+ * recente; e a data da fonte sozinha avança quando a fonte «republica» o anúncio.
+ */
+export function entryTime(job: Pick<Job, "publishedAt" | "firstSeenAt">): number {
+  const times = [job.publishedAt, job.firstSeenAt]
+    .map((value) => (value ? Date.parse(value) : Number.NaN))
+    .filter((t) => !Number.isNaN(t));
+  return times.length ? Math.min(...times) : Number.NaN;
+}
+
+
 export function listRecentJobs(jobs: Job[], now: number = Date.now()): RecentSet {
   const indexable = jobs.filter((job) => isSitemapJob(job, now));
   const within = (hours: number) =>
     indexable.filter((job) => {
-      const t = Date.parse(job.publishedAt);
+      const t = entryTime(job);
       return !Number.isNaN(t) && t <= now && now - t <= hours * 3_600_000;
     });
   let hours = RECENT_HOURS;
@@ -34,7 +47,7 @@ export function listRecentJobs(jobs: Job[], now: number = Date.now()): RecentSet
     recent = within(hours);
   }
   // `jobs` já vem ordenado por publicação (mais recente primeiro); garantir a ordem.
-  recent.sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || a.title.localeCompare(b.title, "pt"));
+  recent.sort((a, b) => entryTime(b) - entryTime(a) || a.title.localeCompare(b.title, "pt"));
   return { jobs: recent, hours };
 }
 
