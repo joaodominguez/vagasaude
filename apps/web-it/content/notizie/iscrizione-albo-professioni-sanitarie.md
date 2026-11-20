@@ -3,6 +3,10 @@ title: "Iscrizione all'albo delle professioni sanitarie: come funziona e perché
 slug: iscrizione-albo-professioni-sanitarie
 date: 2026-11-12
 category: guide
+image: /notizie/iscrizione-albo-professioni-sanitarie.webp
+imageAlt: "Medica in camice bianco con lo stetoscopio"
+imageCredit: "Antoni Shkraba / Pexels"
+imageCreditUrl: "https://www.pexels.com/photo/a-woman-in-a-white-coat-5214963/"
 draft: false
 description: "Guida all'iscrizione all'albo per medici, infermieri, ostetriche, tecnici sanitari, farmacisti, veterinari e psicologi: quali Ordini esistono, perché serve per esercitare e cosa fare per iscriversi."
 summary:

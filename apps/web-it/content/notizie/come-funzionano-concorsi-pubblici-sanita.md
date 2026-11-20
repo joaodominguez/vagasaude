@@ -3,6 +3,10 @@ title: "Come funzionano i concorsi pubblici in sanità"
 slug: come-funzionano-concorsi-pubblici-sanita
 date: 2026-11-12
 category: guide
+image: /notizie/come-funzionano-concorsi-pubblici-sanita.webp
+imageAlt: "Aula d'esame con banchi vuoti e fogli"
+imageCredit: "Andy Barbour / Pexels"
+imageCreditUrl: "https://www.pexels.com/photo/desks-with-papers-on-top-6683392/"
 draft: false
 description: "Guida ai concorsi pubblici del Servizio sanitario nazionale: comparto e dirigenza, dove si pubblicano i bandi (inPA, Gazzetta Ufficiale, siti degli enti), differenza tra concorso, avviso, mobilità e incarico libero-professionale."
 summary:

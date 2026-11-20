@@ -3,6 +3,10 @@ title: "Lettera di presentazione per lavorare nella sanità: come scriverla (con
 slug: lettera-di-presentazione-sanita
 date: 2026-11-12
 category: guide
+image: /notizie/lettera-di-presentazione-sanita.webp
+imageAlt: "Penna stilografica su un foglio scritto a mano"
+imageCredit: "Miguel Á. Padriñán / Pexels"
+imageCreditUrl: "https://www.pexels.com/photo/black-fountain-pen-on-printing-paper-114107/"
 draft: false
 description: "Come scrivere una lettera di presentazione efficace per un'offerta di lavoro nella sanità privata o accreditata: struttura, cosa dire, cosa evitare e un esempio da adattare. Perché nei concorsi pubblici non serve."
 summary:

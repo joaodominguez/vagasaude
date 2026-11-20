@@ -3,6 +3,10 @@ title: "Curriculum vitae per la sanità: cosa inserire e come strutturarlo"
 slug: curriculum-vitae-sanita
 date: 2026-11-12
 category: guide
+image: /notizie/curriculum-vitae-sanita.webp
+imageAlt: "Curriculum vitae su una cartellina, sul tavolo di un colloquio"
+imageCredit: "cottonbro studio / Pexels"
+imageCreditUrl: "https://www.pexels.com/photo/person-holding-black-tablet-computer-5989943/"
 draft: false
 description: "Come scrivere un curriculum per lavorare nella sanità: Europass, iscrizione all'albo, crediti ECM, specializzazione, esperienze e la formula sulla privacy (GDPR e D.Lgs. 196/2003)."
 summary:

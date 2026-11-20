@@ -59,7 +59,11 @@ export type NewsArticle = {
   districts: string[];
   sources: NewsSource[];
   draft: boolean;
+  /** Caminho local em /public (WebP 1600x900); miniatura: <nome>-sm.webp (640x360). */
   image?: string;
+  imageAlt?: string;
+  imageCredit?: string;
+  imageCreditUrl?: string;
   /** Markdown grezzo (senza frontmatter). */
   body: string;
 };
@@ -71,6 +75,12 @@ export function isNewsCategory(value: string): value is NewsCategory {
 export function newsCategoryLabel(category: NewsCategory) {
   return NEWS_CATEGORIES[category].label;
 }
+
+/** Miniatura (640x360) dell'immagine di copertina, per le schede. */
+export const newsThumb = (image: string) => image.replace(/\.webp$/, "-sm.webp");
+
+/** JPEG 1200x630 (ritaglio centrato) solo per og:image/twitter:image. */
+export const newsOgImage = (image: string) => image.replace(/\.webp$/, "-og.jpg");
 
 export const newsPath = (slug: string) => `/notizie/${slug}`;
 export const newsCategoryPath = (category: NewsCategory) =>
@@ -154,6 +164,10 @@ function parseArticle(filename: string, raw: string): NewsArticle {
   }
 
   const image = str(data.image);
+  if (image && !/^\/notizie\/[a-z0-9-]+\.webp$/.test(image)) {
+    fail(filename, '"image" deve essere /notizie/<nome>.webp (in public/)');
+  }
+  if (image && !str(data.imageAlt)) fail(filename, '"imageAlt" em falta (texto alternativo da imagem)');
   return {
     title,
     slug,
@@ -168,6 +182,9 @@ function parseArticle(filename: string, raw: string): NewsArticle {
     sources,
     draft: data.draft === true,
     image: image || undefined,
+    imageAlt: str(data.imageAlt) || undefined,
+    imageCredit: str(data.imageCredit) || undefined,
+    imageCreditUrl: str(data.imageCreditUrl) || undefined,
     body: match[2],
   };
 }
@@ -178,7 +195,7 @@ export const listArticles = cache((): NewsArticle[] => {
   if (!fs.existsSync(dir)) return [];
   const articles = fs
     .readdirSync(dir)
-    .filter((file) => file.endsWith(".md"))
+    .filter((file) => file.endsWith(".md") && file !== "IMAGENS.md") // IMAGENS.md = registo de licenças, não é artigo
     .map((file) => parseArticle(file, fs.readFileSync(path.join(dir, file), "utf8")))
     .filter((article) => draftsAllowed() || !article.draft);
   return articles.sort(

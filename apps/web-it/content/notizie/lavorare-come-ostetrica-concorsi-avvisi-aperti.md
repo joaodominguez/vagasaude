@@ -3,6 +3,10 @@ title: "Lavorare come ostetrica: concorsi e avvisi aperti a novembre 2026"
 slug: lavorare-come-ostetrica-concorsi-avvisi-aperti
 date: 2026-11-18
 category: concorsi
+image: /notizie/lavorare-come-ostetrica-concorsi-avvisi-aperti.webp
+imageAlt: "Misurazione della pancia di una donna incinta con un metro da sarta"
+imageCredit: "RDNE Stock project / Pexels"
+imageCreditUrl: "https://www.pexels.com/photo/a-pregnant-woman-with-a-measuring-tape-around-her-abdomen-9215399/"
 draft: false
 professions:
   - Ostetricia

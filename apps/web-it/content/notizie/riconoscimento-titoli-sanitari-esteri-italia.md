@@ -3,6 +3,10 @@ title: "Riconoscimento dei titoli sanitari esteri in Italia: come funziona"
 slug: riconoscimento-titoli-sanitari-esteri-italia
 date: 2026-11-12
 category: guide
+image: /notizie/riconoscimento-titoli-sanitari-esteri-italia.webp
+imageAlt: "Neolaureati in toga si scambiano i diplomi"
+imageCredit: "George Pak / Pexels"
+imageCreditUrl: "https://www.pexels.com/photo/photograph-of-people-s-hands-holding-white-diplomas-7972735/"
 draft: false
 description: "Come ottenere in Italia il riconoscimento di un titolo sanitario estero: titoli UE e extra-UE, ruolo del Ministero della Salute e degli Ordini, documenti, misure compensative e lingua italiana."
 summary:

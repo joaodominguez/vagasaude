@@ -3,6 +3,10 @@ title: "Come leggere un bando di concorso in sanità: la checklist"
 slug: come-leggere-bando-concorso-sanita
 date: 2026-11-12
 category: guide
+image: /notizie/come-leggere-bando-concorso-sanita.webp
+imageAlt: "Checklist su una cartellina, indicata con una penna"
+imageCredit: "RDNE Stock project / Pexels"
+imageCreditUrl: "https://www.pexels.com/photo/a-person-holding-a-clipboard-with-colored-documents-8293774/"
 draft: false
 description: "Checklist per leggere un bando di concorso nella sanità pubblica: requisiti, scadenza, posti e riserve, prove, titoli e punteggi, domanda e PEC, graduatoria. Cosa controllare prima di candidarsi."
 summary:

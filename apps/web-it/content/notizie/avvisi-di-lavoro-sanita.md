@@ -3,6 +3,10 @@ title: "Avvisi di lavoro in sanità: come ricevere le nuove offerte via email"
 slug: avvisi-di-lavoro-sanita
 date: 2026-11-12
 category: guide
+image: /notizie/avvisi-di-lavoro-sanita.webp
+imageAlt: "Mano con guanto in lattice che tiene uno smartphone"
+imageCredit: "Laura James / Pexels"
+imageCreditUrl: "https://www.pexels.com/photo/crop-doctor-in-uniform-surfing-internet-on-smartphone-6097774/"
 draft: false
 description: "Come creare un avviso gratuito su Offerte Sanità: scegli regione, professione e settore, conferma l'email e ricevi le nuove offerte in un riepilogo al mattino e uno a fine giornata. Come modificare o annullare l'avviso."
 summary:

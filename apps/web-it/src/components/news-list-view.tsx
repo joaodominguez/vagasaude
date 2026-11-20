@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Breadcrumbs, type BreadcrumbItem } from "@/components/breadcrumbs";
@@ -9,6 +10,7 @@ import {
   newsCategoryLabel,
   newsCategoryPath,
   newsPath,
+  newsThumb,
   type NewsArticle,
   type NewsCategory,
 } from "@/lib/news";
@@ -16,6 +18,19 @@ import {
 export function NewsCard({ article }: { article: NewsArticle }) {
   return (
     <article className="content-card flex min-w-0 flex-col p-5 transition hover:border-primary">
+      {article.image && (
+        <Link href={newsPath(article.slug)} tabIndex={-1} aria-hidden="true" className="mb-4 block overflow-hidden rounded-xl">
+          <Image
+            src={newsThumb(article.image)}
+            alt=""
+            width={640}
+            height={360}
+            sizes="(min-width: 1024px) 380px, (min-width: 640px) 45vw, 92vw"
+            unoptimized
+            className="h-auto w-full"
+          />
+        </Link>
+      )}
       <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
         <span className="tag tag-primary">{newsCategoryLabel(article.category)}</span>
         <time dateTime={article.date}>{formatNewsDate(article.date)}</time>

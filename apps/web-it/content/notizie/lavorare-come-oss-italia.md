@@ -3,6 +3,10 @@ title: "Lavorare come OSS in Italia: qualifica, dove si lavora e come trovare of
 slug: lavorare-come-oss-italia
 date: 2026-11-12
 category: guide
+image: /notizie/lavorare-come-oss-italia.webp
+imageAlt: "Operatori assistono una donna in sedia a rotelle in cucina"
+imageCredit: "Gustavo Fring / Pexels"
+imageCreditUrl: "https://www.pexels.com/photo/a-man-monitoring-the-blood-pressure-of-the-woman-sitting-on-the-wheelchair-using-sphygmomanometer-7446755/"
 draft: false
 professions:
   - OSS

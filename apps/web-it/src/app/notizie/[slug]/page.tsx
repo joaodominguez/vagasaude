@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Bell } from "lucide-react";
@@ -16,6 +17,7 @@ import {
   listArticles,
   newsCategoryLabel,
   newsCategoryPath,
+  newsOgImage,
   newsPath,
   relatedArticles,
   renderArticleHtml,
@@ -56,13 +58,13 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
       modifiedTime: article.updated ?? article.date,
       authors: [article.author],
       section: newsCategoryLabel(article.category),
-      ...(article.image ? { images: [article.image] } : {}),
+      ...(article.image ? { images: [{ url: newsOgImage(article.image), width: 1200, height: 630, alt: article.imageAlt }] } : {}),
     },
     twitter: {
       card: "summary_large_image",
       title: article.title,
       description,
-      ...(article.image ? { images: [article.image] } : {}),
+      ...(article.image ? { images: [{ url: newsOgImage(article.image), width: 1200, height: 630, alt: article.imageAlt }] } : {}),
     },
   };
 }
@@ -121,7 +123,7 @@ export default async function NewsArticlePage({ params }: { params: Params }) {
       url: SITE_URL,
       logo: { "@type": "ImageObject", url: absoluteUrl("/icon.svg") },
     },
-    ...(article.image ? { image: [absoluteUrl(article.image)] } : {}),
+    ...(article.image ? { image: [absoluteUrl(newsOgImage(article.image)), absoluteUrl(article.image)] } : {}),
   };
 
   const what = article.professions.length > 0 ? article.professions.join(", ") : "sanitarie";
@@ -164,8 +166,30 @@ export default async function NewsArticlePage({ params }: { params: Params }) {
           </header>
 
           {article.image && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={article.image} alt="" className="mt-6 w-full rounded-2xl border border-border" />
+            <figure className="mt-6">
+              <Image
+                src={article.image}
+                alt={article.imageAlt ?? ""}
+                width={1600}
+                height={900}
+                priority
+                sizes="(min-width: 768px) 68ch, 100vw"
+                unoptimized
+                className="h-auto w-full rounded-2xl border border-border"
+              />
+              {article.imageCredit && (
+                <figcaption className="mt-2 text-xs text-muted">
+                  Foto:{" "}
+                  {article.imageCreditUrl ? (
+                    <a href={article.imageCreditUrl} target="_blank" rel="noopener noreferrer" className="underline">
+                      {article.imageCredit}
+                    </a>
+                  ) : (
+                    article.imageCredit
+                  )}
+                </figcaption>
+              )}
+            </figure>
           )}
 
           <aside aria-labelledby="in-sintesi" className="content-card mt-6 border-primary/40 bg-primary-soft p-5">
