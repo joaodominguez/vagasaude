@@ -80,7 +80,7 @@ def save_state(path: Path, state: dict) -> None:
     os.replace(tmp, path)
 
 
-def submit(urls: list[str], key: str) -> int:
+def submit(urls: list[str], key: str) -> tuple[int, str]:
     payload = json.dumps(
         {"host": HOST, "key": key, "keyLocation": f"https://{HOST}/{key}.txt", "urlList": urls}
     ).encode("utf-8")
@@ -92,9 +92,10 @@ def submit(urls: list[str], key: str) -> int:
     )
     try:
         with urllib.request.urlopen(request, timeout=60) as response:  # noqa: S310
-            return response.status
+            return response.status, ""
     except urllib.error.HTTPError as exc:
-        return exc.code
+        # Ex.: 403 SiteVerificationNotCompleted nas primeiras horas (o Bing ainda valida a chave).
+        return exc.code, exc.read()[:200].decode("utf-8", "replace")
 
 
 def main() -> int:
@@ -139,9 +140,9 @@ def main() -> int:
     accepted = 0
     for start in range(0, len(plan), BATCH):
         chunk = plan[start : start + BATCH]
-        status = submit([u for u, _ in chunk], key)
+        status, detail = submit([u for u, _ in chunk], key)
         if status not in (200, 202):
-            print(f"[indexnow] lote de {len(chunk)} URLs recusado: HTTP {status} (fica para a próxima execução)")
+            print(f"[indexnow] lote de {len(chunk)} URLs recusado: HTTP {status} {detail} (fica para a próxima execução)")
             break
         accepted += len(chunk)
         for url, is_new in chunk:
