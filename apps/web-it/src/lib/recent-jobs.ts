@@ -5,7 +5,7 @@ import { categoryPagePath } from "@/lib/categories";
 import { absoluteUrl, SITE_NAME, truncateMeta } from "@/lib/seo";
 
 /**
- * «Offerte di oggi» (/offerte/oggi): offerte pubblicate nelle ultime 48 h, paginate, con link diretto
+ * «Offerte di oggi» (/offerte/oggi): offerte entrate nel sito nelle ultime 48 h, paginate, con link diretto
  * a ciascuna. È il percorso di scoperta per crawling naturale delle offerte nuove (Googlebot arriva
  * da qui senza dipendere dai 200 invii/giorno della Indexing API). Entrano solo le offerte del
  * jobs.xml (stesso criterio): nessun link a pagine noindex o in scadenza.
@@ -23,11 +23,22 @@ export const RECENT_PAGE_SIZE = 50;
 
 export type RecentSet = { jobs: Job[]; hours: number };
 
+/**
+ * Quando a vaga entrou no site: a primeira vez que a vimos (firstSeenAt = createdAt), não a data da
+ * fonte, que algumas fontes (net-empregos…) fazem avançar ao «republicar» anúncios antigos.
+ * Sem firstSeenAt (dados de exemplo) cai para a data de publicação.
+ */
+export function entryTime(job: Pick<Job, "publishedAt" | "firstSeenAt">): number {
+  const seen = job.firstSeenAt ? Date.parse(job.firstSeenAt) : Number.NaN;
+  return Number.isNaN(seen) ? Date.parse(job.publishedAt) : seen;
+}
+
+
 export function listRecentJobs(jobs: Job[], now: number = Date.now()): RecentSet {
   const indexable = jobs.filter((job) => isSitemapJob(job, now));
   const within = (hours: number) =>
     indexable.filter((job) => {
-      const t = Date.parse(job.publishedAt);
+      const t = entryTime(job);
       return !Number.isNaN(t) && t <= now && now - t <= hours * 3_600_000;
     });
   let hours = RECENT_HOURS;
@@ -41,7 +52,7 @@ export function listRecentJobs(jobs: Job[], now: number = Date.now()): RecentSet
     recent = within(hours);
   }
   recent.sort(
-    (a, b) => b.publishedAt.localeCompare(a.publishedAt) || a.title.localeCompare(b.title, "it"),
+    (a, b) => entryTime(b) - entryTime(a) || a.title.localeCompare(b.title, "it"),
   );
   return { jobs: recent, hours };
 }

@@ -12,6 +12,8 @@ export type Job = {
   expiresAt?: string | null;
   /** Ultima volta in cui lo scraper ha restituito l'offerta (base del validThrough). */
   lastSeenAt?: string | null;
+  /** Quando a vaga entrou no site (createdAt): base de «de hoje», dos alertas e do datePosted. */
+  firstSeenAt?: string;
   /** Fonte di origine. */
   source?: string;
   /** ID dell'offerta nella fonte (identifier del JobPosting). */

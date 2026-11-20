@@ -122,11 +122,17 @@ export function jobValidThrough(job: Job) {
   return expires.toISOString();
 }
 
-/** publishedAt arriva gia normalizzato dal job-store (mai l'ora della richiesta). */
-export function safeDatePosted(value: string) {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime()) || date.getTime() > Date.now()) return undefined;
-  return date.toISOString();
+/**
+ * datePosted do JobPosting: a data original estável. publishedAt já vem do job-store como o mais
+ * antigo entre a data da fonte e a 1.ª vez vista; o min com firstSeenAt é só cinto e suspensórios.
+ * Nunca avança quando a fonte «republica» o anúncio, nunca é a hora do pedido.
+ */
+export function safeDatePosted(value: string, firstSeen?: string | null) {
+  const times = [value, firstSeen]
+    .map((v) => (v ? Date.parse(v) : Number.NaN))
+    .filter((t) => !Number.isNaN(t) && t <= Date.now());
+  if (!times.length) return undefined;
+  return new Date(Math.min(...times)).toISOString();
 }
 
 export function buildJobMetadata(
@@ -236,7 +242,7 @@ function buildBaseSalaryJsonLd(job: Job) {
 }
 
 export function buildJobPostingJsonLd(job: Job) {
-  const datePosted = safeDatePosted(job.publishedAt);
+  const datePosted = safeDatePosted(job.publishedAt, job.firstSeenAt);
   const validThrough = jobValidThrough(job);
   const description = [job.description, ...job.requirements, ...job.responsibilities]
     .filter(Boolean)
