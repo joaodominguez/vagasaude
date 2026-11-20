@@ -4,6 +4,8 @@ import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { listEmployers } from "@/lib/employers";
+import { employerRegions, entityType } from "@/lib/employer-info";
+import { isPublicJob } from "@/lib/job-type";
 import { getJobs } from "@/lib/jobs-data";
 import { SITE_NAME } from "@/lib/seo";
 
@@ -51,7 +53,13 @@ export default async function EmployersIndexPage() {
                   prefetch={false}
                   className="flex items-center justify-between gap-3 rounded-xl border border-border bg-surface px-4 py-3 hover:border-primary"
                 >
-                  <span className="font-semibold">{employer.name}</span>
+                  <span className="min-w-0">
+                    <span className="block font-semibold">{employer.name}</span>
+                    <span className="block text-xs text-muted">
+                      {entityType(employer.name, employer.jobs.some(isPublicJob)).short}
+                      {employerRegions(employer.jobs).main ? ` · ${employerRegions(employer.jobs).main}` : ""}
+                    </span>
+                  </span>
                   <span className="shrink-0 text-sm text-muted">{employer.jobs.length} offerte</span>
                 </Link>
               </li>

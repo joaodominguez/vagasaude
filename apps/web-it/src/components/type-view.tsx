@@ -185,6 +185,8 @@ export function TypeView({ all, page }: { all: ConcorsoItem[]; page: TypePage })
           title: "Vedi anche",
           links: [
             { label: "Concorsi in scadenza", href: EXPIRING_PATH },
+            { label: "Calendario concorsi", href: "/concorsi/calendario" },
+            { label: "Calcolo punteggio titoli", href: "/strumenti/calcolo-punteggio-concorso" },
             ...hubLinks,
             { label: "Stipendi nella sanità", href: "/stipendi" },
           ],

@@ -13,3 +13,4 @@ Tutte da Pexels (Pexels License: uso commerciale consentito, attribuzione non ob
 | lavorare-come-ostetrica-concorsi-avvisi-aperti | https://www.pexels.com/photo/a-pregnant-woman-with-a-measuring-tape-around-her-abdomen-9215399/ | RDNE Stock project | Pexels License |
 | lettera-di-presentazione-sanita | https://www.pexels.com/photo/black-fountain-pen-on-printing-paper-114107/ | Miguel Á. Padriñán | Pexels License |
 | riconoscimento-titoli-sanitari-esteri-italia | https://www.pexels.com/photo/photograph-of-people-s-hands-holding-white-diplomas-7972735/ | George Pak | Pexels License |
+| concorsi-sanita-aperti-novembre-2026 | https://www.pexels.com/photo/documents-beside-a-laptop-8112204/ | Pavel Danilyuk | Pexels License |

@@ -92,6 +92,7 @@ async function buildPagesSitemap() {
     urlEntry(`${SITE_URL}/avvisi`, STATIC_PAGES_UPDATED, "weekly", "0.6"),
     urlEntry(`${SITE_URL}/come-funziona`, STATIC_PAGES_UPDATED, "monthly", "0.5"),
     urlEntry(`${SITE_URL}/dati`, latest, "daily", "0.7"),
+    urlEntry(`${SITE_URL}/strumenti/calcolo-punteggio-concorso`, new Date("2026-11-20T00:00:00Z"), "monthly", "0.7"),
     urlEntry(`${SITE_URL}/privacy`, STATIC_PAGES_UPDATED, "weekly", "0.6"),
     urlEntry(`${SITE_URL}/note-legali`, STATIC_PAGES_UPDATED, "monthly", "0.3"),
     urlEntry(`${SITE_URL}/cookie`, STATIC_PAGES_UPDATED, "monthly", "0.3"),
@@ -174,6 +175,9 @@ async function buildConcorsiSitemap() {
     if (hubItems.length > 0) entries.push(urlEntry(`${SITE_URL}${hub.path}`, itemsLastmod(hubItems), "daily", "0.9"));
   }
   const soon = expiringItems(items, EXPIRING_LONG_DAYS);
+  if (items.length > 0) {
+    entries.push(urlEntry(`${SITE_URL}/concorsi/calendario`, itemsLastmod(items), "daily", "0.8"));
+  }
   if (soon.length > 0) {
     entries.push(urlEntry(`${SITE_URL}${EXPIRING_PATH}`, itemsLastmod(soon), "daily", "0.85"));
     for (const [profession] of expiringProfessions(items)) {

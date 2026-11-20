@@ -22,6 +22,12 @@ export function Footer() {
             <Link className="hover:text-primary" href="/concorsi/in-scadenza">
               Concorsi in scadenza
             </Link>
+            <Link className="hover:text-primary" href="/concorsi/calendario">
+              Calendario concorsi
+            </Link>
+            <Link className="hover:text-primary" href="/strumenti/calcolo-punteggio-concorso">
+              Calcolo punteggio
+            </Link>
             <Link className="hover:text-primary" href="/concorsi-infermieri-2026">
               Concorsi infermieri
             </Link>

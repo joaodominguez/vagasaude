@@ -117,6 +117,12 @@ export function ConcorsiView({
     : soon.length > 0;
   const extraLinks = [
     ...(!profession || profession === "Medicina" ? [{ label: "Zone carenti medici di famiglia e pediatri", href: "/zone-carenti" }] : []),
+    ...(!profession && !district
+      ? [
+          { label: "Calendario concorsi", href: "/concorsi/calendario" },
+          { label: "Calcolo punteggio titoli", href: "/strumenti/calcolo-punteggio-concorso" },
+        ]
+      : []),
     ...(hub && !district ? [{ label: `${hub.h1Lead} ${year}`, href: hub.path }] : []),
     ...(expiringPage
       ? [{ label: "In scadenza", href: profession ? expiringProfessionPath(profession) : EXPIRING_PATH }]

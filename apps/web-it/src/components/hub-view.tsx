@@ -153,6 +153,8 @@ export function HubView({ hub, all, jobs }: { hub: HubConfig; all: ConcorsoItem[
         { label: `Tutti i concorsi per ${plain}`, href: concorsiPath(hub.profession) },
         { label: privateCount > 0 ? `Offerte di lavoro per ${hub.plural} (anche private)` : `Offerte per ${hub.plural}`, href: offersLink },
         { label: "Concorsi in scadenza", href: EXPIRING_PATH },
+        { label: "Calendario concorsi", href: "/concorsi/calendario" },
+        { label: "Calcolo punteggio titoli", href: "/strumenti/calcolo-punteggio-concorso" },
         ...(expiringHasPage ? [{ label: `In scadenza: ${plain}`, href: expiringProfessionPath(hub.profession) }] : []),
         { label: hub.otherHub === "/concorsi-oss-2026" ? `Concorsi OSS ${year}` : `Concorsi infermieri ${year}`, href: hub.otherHub },
         ...TYPE_PAGES.slice(1, 3).map((p) => ({ label: p.h1, href: typePagePath(p.slug) })),
