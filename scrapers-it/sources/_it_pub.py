@@ -213,7 +213,8 @@ KIND_SELEZIONE = "Selezione pubblica"
 KIND_TEMPO_DET = "Avviso a tempo determinato"
 KIND_MOBILITA = "Mobilità"
 KIND_INCARICO = "Incarico libero-professionale"
-KINDS = (KIND_CONCORSO, KIND_SELEZIONE, KIND_TEMPO_DET, KIND_MOBILITA, KIND_INCARICO)
+KIND_GRADUATORIA = "Graduatoria"
+KINDS = (KIND_CONCORSO, KIND_SELEZIONE, KIND_TEMPO_DET, KIND_MOBILITA, KIND_INCARICO, KIND_GRADUATORIA)
 
 _MOBILITA_RE = re.compile(r"mobilit[aà]|passaggio diretto|trasferimento (volontario|tra aziende)", re.I)
 _CONCORSO_RE = re.compile(r"\bconcors[oi]\b", re.I)
@@ -222,7 +223,34 @@ _INCARICO_RE = re.compile(
     r"incarico di collaborazione|contratto di consulenza",
     re.I,
 )
-_TEMPO_DET_RE = re.compile(r"tempo determinato|a termine|sostituzion|supplenz|incarico a tempo|incarichi a tempo|temporane", re.I)
+_TEMPO_DET_RE = re.compile(r"tempo determinato|\bdeterminat[oa]\b|a termine|sostituzion|supplenz|incarico a tempo|incarichi a tempo|temporane", re.I)
+
+
+# Graduatoria PUBBLICATA (atto di esito, non un bando): classificata da job-type.ts come "graduatoria" quando il titolo
+# inizia con «Graduatoria». Un avviso PER FORMARE una graduatoria/elenco di disponibilita' e' invece un bando aperto.
+_GRAD_RE = re.compile(r"graduatori[ae]|elenco (?:degli )?idonei", re.I)
+_GRAD_OPEN_RE = re.compile(
+    r"(?:formazione|costituzione|predisposizione|aggiornamento|riapertura|iscrizione)\s+(?:di\s+|della\s+|dell['’]\s*|alla\s+)?(?:una\s+|un\s+|nuova\s+)?"
+    r"(?:graduatori|elenco|lista)|\bda formare\b|\bper (?:la )?formazione\b|disponibilit[aà]|manifestazione di interesse|\bavviso\b.{0,80}\bper (?:titoli|soli titoli)",
+    re.I,
+)
+
+
+# Atos que citam uma graduatoria mas nao a publicam (rectificacao, domanda de inscricao, avviso/bando/concorso/convocacao...).
+_GRAD_NOT_ACT_START_RE = re.compile(
+    r"(?:rettifica|domanda|avviso|bando|concorso|selezione|manifestazione|convocazion|sorteggio|errata|proroga|riapertura|iscrizione|modulo|presa d)", re.I)
+
+
+def is_graduatoria_act(text: str) -> bool:
+    """«Graduatoria finale concorso ...», «Approvazione graduatoria ...»: o titulo publica o resultado.
+
+    So conta se a palavra aparece no inicio do titulo (primeiros 70 caracteres): um concurso cujo titulo termina com
+    «... GRADUATORIA» continua a ser tratado como acto intermedio (e nao como oferta).
+    """
+    t = re.sub(r"\s+", " ", (text or "")).strip()
+    if not _GRAD_RE.search(t[:70]) or _GRAD_NOT_ACT_START_RE.match(t):
+        return False
+    return not _GRAD_OPEN_RE.search(t)
 
 
 def classify_kind(text: str) -> str:

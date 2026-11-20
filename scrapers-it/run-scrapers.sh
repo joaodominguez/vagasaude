@@ -40,6 +40,9 @@ fi
 # Fonti guaste (ultime 4 esecuzioni a 0 offerte o in errore) + integrita' di jobs.json.
 (
   export NEXT_PUBLIC_SITE_URL="https://offertesanita.it"
+  # ASL/AO do Lazio e da Campania (lote 1 da fase 2): 0 vagas abertas durante dias e' normal; a estrutura do site mudar
+  # levanta erro no leitor (lista nao reconhecida) e isso conta sempre como avaria.
+  export HEALTH_ALLOW_EMPTY="${HEALTH_ALLOW_EMPTY:-asl-roma-1,asl-roma-2,asl-roma-3,asl-roma-5,asl-napoli-3-sud,aorn-colli}"
   python3 "$ROOT/tools/scraper_health.py" "$DATA_DIR/scraper-runs.json"
   python3 "$ROOT/tools/jobs_integrity.py" "$DATA_DIR" http://127.0.0.1:3014 /offerte/ || true
 ) || true

@@ -836,6 +836,9 @@ export async function listJobCards() {
 
 function isClosedNoticeTitle(title: string) {
   const t = normalize(title);
+  // Titoli «Graduatoria per ...» (costruiti dai lettori degli enti): sono pubblicati di proposito per /concorsi/tipo/graduatorie
+  // (solo titolo, ente, data e link; senza JobPosting). Non vanno trattati come avvisi di esito da nascondere.
+  if (/^graduatori[ae]\b/.test(t)) return false;
   return (
     // Avvisi di esito/procedura, non offerte: graduatorie finali, ammessi, calendari prove, revoche.
     t.includes("graduatoria finale") ||

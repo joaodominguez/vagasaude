@@ -1,10 +1,15 @@
 import type { Job } from "@/lib/jobs";
 import { getJobs } from "@/lib/jobs-data";
 import { isSitemapJob } from "@/lib/indexable";
+import { classifyJob } from "@/lib/job-type";
 
-/** Offerte del jobs.xml (e, per trascinamento, di Indexing API e IndexNow, che leggono questo sitemap). */
+/**
+ * Offerte del jobs.xml (e, per trascinamento, di Indexing API e IndexNow, che leggono questo sitemap).
+ * Le graduatorie non sono offerte di lavoro (la pagina non ha JobPosting): restano fuori dal sitemap e quindi dalla
+ * Indexing API, che Google riserva ai JobPosting. Sono raggiungibili da /concorsi/tipo/graduatorie.
+ */
 export async function listSitemapJobs(now: number = Date.now()): Promise<Job[]> {
-  return (await getJobs()).filter((job) => isSitemapJob(job, now));
+  return (await getJobs()).filter((job) => isSitemapJob(job, now) && classifyJob(job) !== "graduatoria");
 }
 
 /** lastmod di un'offerta: la pubblicazione; senza data valida, la 1a volta vista; mai «adesso». */

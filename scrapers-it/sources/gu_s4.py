@@ -275,7 +275,7 @@ class GuS4Scraper(BaseScraper):
             # Fonti degli enti (Veneto, Plone Emilia-Romagna) prima di inPA.
             veneto_keys = [c.key for c in veneto_concorsi.collect_calls(client)]
             veneto_keys += plone_er.priority_keys(client)
-            veneto_keys += regional.priority_keys(client)  # ARES Sardegna, ESTAR Toscana, ARCS FVG
+            veneto_keys += regional.priority_keys(client)  # ARES, ESTAR, ARCS + Lazio/Campania (ver regional.py)
             inpa_calls, _ = inpa.collect_calls(client)
         finally:
             client.close()

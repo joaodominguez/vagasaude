@@ -350,7 +350,7 @@ RULES: list[tuple[re.Pattern, str]] = [
         r"tecnico della riabilitazione", r"riabilitazione psichiatrica", r"ortottist", r"audiologo"), "Logopedia e riabilitazione"),
     # Tecnici con titolo esplicito (prima di Medicina: "tecnico di radiologia medica").
     (_r(r"tecnico sanitario", r"tecnico di laboratorio", r"tecnico di radiologia", r"\btsrm\b", r"\btslb\b",
-        r"tecnico di neurofisiopatologia", r"tecnico della prevenzione", r"tecnico ortopedico", r"fisiopatologia cardiocircolatoria",
+        r"tecnico di neurofisiopatologia", r"tecnico di fisiopatologia", r"tecnico della prevenzione", r"tecnico ortopedico", r"fisiopatologia cardiocircolatoria",
         r"perfusionist", r"tecnico di anatomia", r"tecnico di emodialisi", r"tecnico sanitario di", r"podolog",
         r"tecnico (di|in) laboratorio", r"tecnico di imaging", r"tecnico di diagnostica", r"tecnico di cardiologia",
         r"tecnico di radiodiagnostica", r"tecnico (di )?elettromedical", r"dosimetrist", r"fisico medico"), "Tecnici sanitari"),

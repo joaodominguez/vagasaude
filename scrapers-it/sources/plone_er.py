@@ -57,7 +57,7 @@ LIST_PARAMS = {"portal_type": "Bando", "b_size": PAGE, "sort_on": "effective", "
 # --- filtri ------------------------------------------------------------------------------------
 
 _SKIP_SECTION_RE = re.compile(
-    r"selezion\w* intern|\binterno\b|\binterna\b|\binterni\b|riservat\w* al personale|personale dipendente|banc[ah]e? dati|"
+    r"selezion\w* intern|\binterno\b|(?<!medicina )(?<!medicina/)\binterna\b|\binterni\b|riservat\w* al personale|personale dipendente|banc[ah]e? dati|"
     r"diritto allo studio|incarichi? di funzione|stabilizzazion|bors[ae] di studio|consultazione preliminare|co-?progettazione|"
     r"ricerca di sponsor|sponsor|acquisizione beni|beni e servizi|\bgare?\b|appalto|affidamento (di|del) (servizio|lavori)|fornitur|"
     r"agevolazioni|finanziamenti|contributi|incarichi? di docenza|docenza|graduatoria interna|alienazione|locazione",

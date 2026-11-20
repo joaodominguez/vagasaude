@@ -334,7 +334,7 @@ class InpaScraper(BaseScraper):
             # vincono sugli stessi bandi letti su inPA.
             higher = [c.key for c in veneto_concorsi.collect_calls(client)]
             higher += plone_er.priority_keys(client)
-            higher += regional.priority_keys(client)  # ARES Sardegna, ESTAR Toscana, ARCS FVG
+            higher += regional.priority_keys(client)  # ARES, ESTAR, ARCS + Lazio/Campania (ver regional.py)
         finally:
             client.close()
         self.last_listings_complete = complete
