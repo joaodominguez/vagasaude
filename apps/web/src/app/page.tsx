@@ -21,7 +21,7 @@ import { formatNewsDate, listArticles, newsCategoryLabel, newsPath } from "@/lib
 import { buildHomeMetadata } from "@/lib/seo";
 import { freshnessLabel, homePaths, listHomeAreas } from "@/lib/home-sections";
 import { employerPath } from "@/lib/employers";
-import { listRecentJobs, RECENT_PATH } from "@/lib/recent-jobs";
+import { entryTime, listRecentJobs, RECENT_PATH } from "@/lib/recent-jobs";
 
 // Soft-expire alinhado ao Data Cache de jobs (ingest ≤2 min).
 export const revalidate = 120;
@@ -35,8 +35,8 @@ export default async function Home() {
   const jobs = await getJobs();
   const recentJobs = [...jobs]
     .sort((a, b) => {
-      const byPublished = b.publishedAt.localeCompare(a.publishedAt);
-      if (byPublished !== 0) return byPublished;
+      const byEntry = entryTime(b) - entryTime(a);
+      if (byEntry !== 0) return byEntry;
       return a.title.localeCompare(b.title, "pt");
     })
     .slice(0, 6);

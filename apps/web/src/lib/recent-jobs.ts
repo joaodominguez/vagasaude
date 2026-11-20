@@ -4,7 +4,7 @@ import { absoluteUrl, SITE_NAME, truncateMeta } from "@/lib/seo";
 import { categoryPagePath } from "@/lib/categories";
 
 /**
- * «Vagas de hoje» (/vagas/hoje): vagas publicadas nas últimas 48 h, paginadas, com ligação direta
+ * «Vagas de hoje» (/vagas/hoje): vagas que entraram no site nas últimas 48 h, paginadas, com ligação direta
  * a cada uma (descoberta por rastreio natural das vagas novas). Em PT todas as vagas de getJobs()
  * estão no jobs.xml, por isso a lista é a mesma do sitemap.
  */
@@ -17,10 +17,21 @@ export const RECENT_PAGE_SIZE = 50;
 
 export type RecentSet = { jobs: Job[]; hours: number };
 
+/**
+ * Quando a vaga entrou no site: a primeira vez que a vimos (firstSeenAt = createdAt), não a data da
+ * fonte, que algumas fontes (net-empregos…) fazem avançar ao «republicar» anúncios antigos.
+ * Sem firstSeenAt (dados de exemplo) cai para a data de publicação.
+ */
+export function entryTime(job: Pick<Job, "publishedAt" | "firstSeenAt">): number {
+  const seen = job.firstSeenAt ? Date.parse(job.firstSeenAt) : Number.NaN;
+  return Number.isNaN(seen) ? Date.parse(job.publishedAt) : seen;
+}
+
+
 export function listRecentJobs(jobs: Job[], now: number = Date.now()): RecentSet {
   const within = (hours: number) =>
     jobs.filter((job) => {
-      const t = Date.parse(job.publishedAt);
+      const t = entryTime(job);
       return !Number.isNaN(t) && t <= now && now - t <= hours * 3_600_000;
     });
   let hours = RECENT_HOURS;
@@ -30,7 +41,7 @@ export function listRecentJobs(jobs: Job[], now: number = Date.now()): RecentSet
     recent = within(hours);
   }
   recent.sort(
-    (a, b) => b.publishedAt.localeCompare(a.publishedAt) || a.title.localeCompare(b.title, "pt"),
+    (a, b) => entryTime(b) - entryTime(a) || a.title.localeCompare(b.title, "pt"),
   );
   return { jobs: recent, hours };
 }

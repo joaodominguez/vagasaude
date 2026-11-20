@@ -495,6 +495,36 @@ export function normalizePublishedAt(
   return value && !Number.isNaN(Date.parse(value)) ? value : new Date(t).toISOString();
 }
 
+/**
+ * Data de publicação estável. Algumas fontes (net-empregos, iefp…) «republicam» anúncios e a data
+ * da fonte avança para hoje; a vaga não é nova. Usa-se a mais antiga entre a data da fonte e a
+ * primeira vez que a vimos (createdAt). Se a fonte tiver uma data original anterior ao createdAt,
+ * essa mantém-se; nunca se inventa uma data.
+ */
+export function stablePublishedAt(
+  value: string | null | undefined,
+  firstSeen: string,
+) {
+  const normalized = normalizePublishedAt(value, firstSeen);
+  const published = parseLooseDate(normalized);
+  const seen = parseLooseDate(firstSeen);
+  return published != null && seen != null && seen < published ? firstSeen : normalized;
+}
+
+/** Na reingestão de uma vaga existente a data de publicação nunca avança (só pode recuar). */
+function ingestPublishedAt(
+  incoming: string | null | undefined,
+  existing: string | null | undefined,
+  firstSeen: string,
+) {
+  const next = normalizePublishedAt(incoming || existing, firstSeen);
+  if (!existing) return next;
+  const kept = normalizePublishedAt(existing, firstSeen);
+  const a = parseLooseDate(next);
+  const b = parseLooseDate(kept);
+  return a != null && b != null && b < a ? kept : next;
+}
+
 function isPastExpiry(job: StoredJob) {
   if (!job.expiresAt) return false;
   const expires = Date.parse(job.expiresAt);
@@ -585,8 +615,8 @@ export function toJobCard(job: StoredJob): JobCardData {
     sector: SECTOR_LABEL[job.sector],
     contract: job.contractType || "A definir",
     profession: isVeterinaryTitle(job.title) ? "Veterinária" : job.profession,
-    publishedLabel: publishedLabel(normalizePublishedAt(job.publishedAt, job.createdAt)),
-    publishedAt: normalizePublishedAt(job.publishedAt, job.createdAt),
+    publishedLabel: publishedLabel(stablePublishedAt(job.publishedAt, job.createdAt)),
+    publishedAt: stablePublishedAt(job.publishedAt, job.createdAt),
     firstSeenAt: job.createdAt,
     expiresAt: job.expiresAt,
     lastSeenAt: job.lastSeenAt || job.updatedAt,
@@ -1148,10 +1178,11 @@ async function ingestJobsUnlocked(
       dedupeHash,
       status,
       reviewReason,
-      publishedAt: normalizePublishedAt(
-        item.published_at || existingSameSource?.publishedAt,
-        existingSameSource?.createdAt || now,
-      ),
+      publishedAt: ingestPublishedAt(
+          item.published_at,
+          existingSameSource?.publishedAt,
+          existingSameSource?.createdAt || now,
+        ),
       expiresAt: item.expires_at || null,
       lastSeenAt: now,
       createdAt: existingSameSource?.createdAt || now,
