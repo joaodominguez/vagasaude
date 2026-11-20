@@ -59,7 +59,11 @@ export type NewsArticle = {
   districts: string[];
   sources: NewsSource[];
   draft: boolean;
+  /** Caminho local em /public (WebP 1600x900); miniatura: <nome>-sm.webp (640x360). */
   image?: string;
+  imageAlt?: string;
+  imageCredit?: string;
+  imageCreditUrl?: string;
   /** Markdown cru (sem frontmatter). */
   body: string;
 };
@@ -71,6 +75,12 @@ export function isNewsCategory(value: string): value is NewsCategory {
 export function newsCategoryLabel(category: NewsCategory) {
   return NEWS_CATEGORIES[category].label;
 }
+
+/** Miniatura (640x360) da imagem de capa, para os cartões. */
+export const newsThumb = (image: string) => image.replace(/\.webp$/, "-sm.webp");
+
+/** JPEG 1200x630 (crop centrado) só para og:image/twitter:image. */
+export const newsOgImage = (image: string) => image.replace(/\.webp$/, "-og.jpg");
 
 export const newsPath = (slug: string) => `/noticias/${slug}`;
 export const newsCategoryPath = (category: NewsCategory) =>
@@ -154,6 +164,10 @@ function parseArticle(filename: string, raw: string): NewsArticle {
   }
 
   const image = str(data.image);
+  if (image && !/^\/noticias\/[a-z0-9-]+\.webp$/.test(image)) {
+    fail(filename, '"image" tem de ser /noticias/<nome>.webp (em public/)');
+  }
+  if (image && !str(data.imageAlt)) fail(filename, '"imageAlt" em falta (texto alternativo da imagem)');
   return {
     title,
     slug,
@@ -168,6 +182,9 @@ function parseArticle(filename: string, raw: string): NewsArticle {
     sources,
     draft: data.draft === true,
     image: image || undefined,
+    imageAlt: str(data.imageAlt) || undefined,
+    imageCredit: str(data.imageCredit) || undefined,
+    imageCreditUrl: str(data.imageCreditUrl) || undefined,
     body: match[2],
   };
 }
