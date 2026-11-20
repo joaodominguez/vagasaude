@@ -16,6 +16,8 @@ import {
   newsTotalPages,
 } from "@/lib/news";
 import { CAREERS, hasSalaryData } from "@/lib/salary-tables";
+import { isSitemapJob } from "@/lib/indexable";
+import { RECENT_PATH } from "@/lib/recent-jobs";
 import { SITE_URL } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -57,6 +59,7 @@ async function buildPagesSitemap() {
   const entries = [
     urlEntry(`${SITE_URL}/`, now, "weekly", "1.0"),
     urlEntry(`${SITE_URL}/offerte`, now, "daily", "0.9"),
+    urlEntry(`${SITE_URL}${RECENT_PATH}`, now, "hourly", "0.9"),
     urlEntry(`${SITE_URL}/avvisi`, now, "weekly", "0.6"),
     urlEntry(`${SITE_URL}/come-funziona`, now, "monthly", "0.5"),
     urlEntry(`${SITE_URL}/dati`, now, "daily", "0.7"),
@@ -78,11 +81,7 @@ async function buildJobsSitemap() {
   const allJobs = await getJobs();
   // Fora do sitemap as ofertas com prazo (expiresAt) nas próximas 72 h: o Google lê o sitemap até 1 dia depois
   // e encontraria a página já expirada (noindex) — o GSC reporta-o como "noindex num mapa do site".
-  const cutoff = Date.now() + 72 * 3600 * 1000;
-  const jobs = allJobs.filter((job) => {
-    const deadline = job.expiresAt ? Date.parse(job.expiresAt) : NaN;
-    return Number.isNaN(deadline) || deadline > cutoff;
-  });
+  const jobs = allJobs.filter((job) => isSitemapJob(job));
   const entries = jobs.map((job) => {
     const published = Date.parse(job.publishedAt);
     const lastmod = Number.isNaN(published)

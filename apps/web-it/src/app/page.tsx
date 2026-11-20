@@ -17,6 +17,8 @@ import {
 import { getJobs } from "@/lib/jobs-data";
 import { professions } from "@/lib/jobs";
 import { formatNewsDate, listArticles, newsCategoryLabel, newsPath } from "@/lib/news";
+import { isSitemapJob } from "@/lib/indexable";
+import { RECENT_PATH, listRecentJobs, recentLinkLabel } from "@/lib/recent-jobs";
 import { buildHomeMetadata } from "@/lib/seo";
 import { freshnessLabel, homePaths, listHomeAreas } from "@/lib/home-sections";
 import { employerPath } from "@/lib/employers";
@@ -37,13 +39,16 @@ export async function generateMetadata() {
 
 export default async function Home() {
   const jobs = await getJobs();
-  const recentJobs = [...jobs]
+  // Solo offerte del jobs.xml (indicizzabili), le più recenti prima: link diretti per Googlebot.
+  const recentJobs = jobs
+    .filter((job) => isSitemapJob(job))
     .sort((a, b) => {
       const byPublished = b.publishedAt.localeCompare(a.publishedAt);
       if (byPublished !== 0) return byPublished;
       return a.title.localeCompare(b.title, "it");
     })
-    .slice(0, 6);
+    .slice(0, 12);
+  const todaySet = listRecentJobs(jobs);
   const districtCounts = jobs.reduce<Record<string, number>>((acc, job) => {
     const key = job.district || "Italia";
     acc[key] = (acc[key] || 0) + 1;
@@ -149,8 +154,8 @@ export default async function Home() {
               <span className="section-kicker">Aggiornato ogni giorno</span>
               <h2 className="section-title">Offerte più recenti</h2>
             </div>
-            <Link href="/offerte" className="home-more">
-              Vedi tutte le {nf.format(jobs.length)} offerte <ArrowRight size={16} aria-hidden="true" />
+            <Link href={RECENT_PATH} className="home-more">
+              {recentLinkLabel(todaySet)} <ArrowRight size={16} aria-hidden="true" />
             </Link>
           </div>
 
@@ -174,6 +179,11 @@ export default async function Home() {
               </Link>
             </div>
           )}
+          <p className="mt-5 text-sm">
+            <Link href="/offerte" className="home-more">
+              Vedi tutte le {nf.format(jobs.length)} offerte <ArrowRight size={16} aria-hidden="true" />
+            </Link>
+          </p>
         </section>
 
         <section id="avvisi" className="page-container pb-14 sm:pb-16">

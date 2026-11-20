@@ -10,6 +10,7 @@ import { ThemeToggle } from "./theme-toggle";
 
 const NAV_ITEMS = [
   { href: "/offerte", label: "Offerte" },
+  { href: "/offerte/oggi", label: "Offerte di oggi" },
   { href: "/concorsi", label: "Concorsi" },
   { href: "/aziende", label: "Aziende" },
   { href: "/dati", label: "Dati" },
@@ -20,6 +21,7 @@ const NAV_ITEMS = [
 
 const NEWS_HREF = "/notizie";
 const ALERT_HREF = "/avvisi";
+const RECENT_HREF = "/offerte/oggi";
 
 export function HeaderClient({ showNews }: { showNews: boolean }) {
   const [open, setOpen] = useState(false);
@@ -56,7 +58,13 @@ export function HeaderClient({ showNews }: { showNews: boolean }) {
           {navItems
             .filter((item) => item.href !== ALERT_HREF)
             .map((item) => (
-              <Link key={item.href} className="nav-link" href={item.href} prefetch={false}>
+              <Link
+                key={item.href}
+                // «Offerte di oggi» compare nella barra solo da lg: a 768 px non c'è spazio (resta nel menu mobile e nel footer).
+                className={item.href === RECENT_HREF ? "nav-link hidden lg:inline" : "nav-link"}
+                href={item.href}
+                prefetch={false}
+              >
                 {item.label}
               </Link>
             ))}

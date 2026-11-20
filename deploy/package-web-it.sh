@@ -46,5 +46,12 @@ for page in index concorsi stipendi aziende dati; do
   rm -rf "$STAGE/.next/server/app/$page.segments" 2>/dev/null || true
 done
 
-tar -C "$STAGE" -czf "$OUT" .
-echo "OK $OUT (css=$CSS_COUNT, data prerenders stripped: index concorsi stipendi aziende dati)"
+# /offerte/oggi (2026-11-20): pagina nuova con dati. Il prerender del build porta i dati del Mac:
+# togliere HTML/RSC/meta (NON la cartella oggi/, che ha il codice della rotta).
+rm -f "$STAGE/.next/server/app/offerte/oggi.html" \
+  "$STAGE/.next/server/app/offerte/oggi.rsc" \
+  "$STAGE/.next/server/app/offerte/oggi.meta"
+rm -rf "$STAGE/.next/server/app/offerte/oggi.segments" 2>/dev/null || true
+
+COPYFILE_DISABLE=1 tar -C "$STAGE" -czf "$OUT" .
+echo "OK $OUT (css=$CSS_COUNT, data prerenders stripped: index concorsi stipendi aziende dati offerte/oggi)"
