@@ -1,6 +1,7 @@
 import { cache } from "react";
 import { jobs as seedJobs, type Job } from "@/lib/jobs";
-import { getJobCard, listJobCards } from "@/lib/job-store";
+import { getJobCard, listAllStoredJobs, listJobCards } from "@/lib/job-store";
+import { countEmployerHistory, hasEmployerHistory, setEmployerHistory } from "@/lib/employers";
 import { isConcursoJob } from "@/lib/concursos";
 
 export type { Job };
@@ -45,6 +46,11 @@ export const getListingJobs = cache(async (): Promise<Job[]> => {
   if (!listing) {
     listing = all.filter((job) => !isConcursoJob(job));
     listingByJobs.set(all, listing);
+  }
+  if (!hasEmployerHistory(listing)) {
+    // Histórico por empresa (páginas de empresa com histerese, ver employers.ts), sem editais.
+    const stored = await listAllStoredJobs();
+    setEmployerHistory(listing, countEmployerHistory(stored.filter((job) => !isConcursoJob(job))));
   }
   return listing;
 });
