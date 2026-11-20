@@ -16,12 +16,11 @@ const NAV_ITEMS = [
   { href: "/noticias", label: "Notícias" },
   { href: "/favoritos", label: "Favoritos" },
   { href: "/alertas", label: "Criar alerta" },
-  { href: "/como-funciona", label: "Como funciona" },
 ] as const;
 
 const ALERT_HREF = "/alertas";
 /** Itens do menu que, em tela média, cedem lugar ao botão «Criar alerta» (continuam no menu mobile). */
-const SECONDARY_HREFS = new Set<string>(["/favoritos", "/como-funciona", "/vagas/hoje"]);
+const SECONDARY_HREFS = new Set<string>(["/favoritos", "/vagas/hoje"]);
 
 export function Header() {
   const [open, setOpen] = useState(false);
