@@ -53,7 +53,15 @@ for attempt in 1 2 3; do
     ssh -S "$SOCK" -O exit "$VPS" >/dev/null 2>&1 || true
     grep -E "^\[net_empregos\]" "$SOCK.out" || true
     rm -f "$SOCK.out"
-    [[ "$rc" -eq 0 ]] && exit 0
+    if [[ "$rc" -eq 0 ]]; then
+      # Igual ao run-scrapers.sh do servidor: limpa a cache Cloudflare (com atraso
+      # > revalidate do ISR). Sem isto as vagas atualizadas aqui (descrição completa)
+      # ficavam até 6 h com o excerto antigo na cache do Cloudflare.
+      ssh -o BatchMode=yes -o ConnectTimeout=20 "$VPS" \
+        'nohup /var/www/vagasaude/cf_purge_later.sh 767eabea9b74de2fe7073bc0bdd1af83 >> /var/www/vagasaude/logs/cf-purge.log 2>&1 </dev/null &' \
+        && echo "[$(date '+%F %T')] purge Cloudflare agendado" || echo "[$(date '+%F %T')] AVISO: purge Cloudflare falhou"
+      exit 0
+    fi
   fi
   echo "[$(date '+%F %T')] tentativa $attempt falhou; nova tentativa em 60 s"
   sleep 60
