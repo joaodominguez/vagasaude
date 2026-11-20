@@ -82,7 +82,7 @@ export function shortDate(value: string | null | undefined): string | null {
 /** «19 nov» (sin año, para plazos cortos). */
 function dayMonth(date: Date): string {
   return date
-    .toLocaleDateString("es-ES", { day: "numeric", month: "short" })
+    .toLocaleDateString("es-ES", { day: "numeric", month: "short", timeZone: "Europe/Madrid" })
     .replace(/\./g, "")
     .replace(/ de /g, " ");
 }
@@ -169,7 +169,7 @@ export function trimTruncatedExcerpt(text: string): { text: string; truncated: b
 }
 
 /** Empresas «genéricas» de agregadores (SNE, colegios profesionales): no son el empleador real. */
-const GENERIC_COMPANY_RE = /^(?:empresa anunciante|oferta v[ií]a|ofertas? de empleo v[ií]a|anunciante)/i;
+export const GENERIC_COMPANY_RE = /^(?:empresa anunciante|oferta v[ií]a|ofertas? de empleo v[ií]a|anunciante)/i;
 
 /**
  * Nombre de empresa para mostrar. Si viene del SNE o de una bolsa de un colegio profesional,

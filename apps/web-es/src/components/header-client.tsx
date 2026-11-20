@@ -10,6 +10,7 @@ import { ThemeToggle } from "./theme-toggle";
 
 const NAV_ITEMS = [
   { href: "/empleo", label: "Buscar empleo" },
+  { href: "/empleo/hoy", label: "Ofertas de hoy" },
   { href: "/oposiciones", label: "Oposiciones" },
   { href: "/noticias", label: "Noticias" },
   { href: "/favoritos", label: "Favoritos" },
@@ -18,6 +19,8 @@ const NAV_ITEMS = [
 ] as const;
 
 const NEWS_HREF = "/noticias";
+// Solo en pantalla grande (lg+): en md la barra ya va justa. En el menú móvil aparece siempre.
+const LARGE_ONLY_HREFS = new Set<string>(["/empleo/hoy"]);
 const ALERT_HREF = "/alertas";
 
 export function HeaderClient({ showNews }: { showNews: boolean }) {
@@ -55,7 +58,12 @@ export function HeaderClient({ showNews }: { showNews: boolean }) {
           {navItems
             .filter((item) => item.href !== ALERT_HREF)
             .map((item) => (
-              <Link key={item.href} className="nav-link" href={item.href} prefetch={false}>
+              <Link
+                key={item.href}
+                className={LARGE_ONLY_HREFS.has(item.href) ? "nav-link hidden lg:inline-block" : "nav-link"}
+                href={item.href}
+                prefetch={false}
+              >
                 {item.label}
               </Link>
             ))}

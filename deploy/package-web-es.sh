@@ -46,5 +46,12 @@ for page in index oposiciones salarios datos; do
   rm -rf "$STAGE/.next/server/app/$page.segments" 2>/dev/null || true
 done
 
-tar -C "$STAGE" -czf "$OUT" .
-echo "OK $OUT (css=$CSS_COUNT, data prerenders stripped: index oposiciones salarios datos)"
+# Páginas nuevas con datos (2026-11-20): /empleo/hoy y su paginación. Prerenderizadas en el build =
+# datos del jobs.json del Mac; borrarlas para que la 1.ª petición en el VPS las genere con datos reales.
+rm -f "$STAGE/.next/server/app/empleo/hoy.html" \
+  "$STAGE/.next/server/app/empleo/hoy.rsc" \
+  "$STAGE/.next/server/app/empleo/hoy.meta"
+rm -rf "$STAGE/.next/server/app/empleo/hoy.segments" 2>/dev/null || true
+
+COPYFILE_DISABLE=1 tar -C "$STAGE" -czf "$OUT" .
+echo "OK $OUT (css=$CSS_COUNT, data prerenders stripped: index oposiciones salarios datos empleo/hoy)"

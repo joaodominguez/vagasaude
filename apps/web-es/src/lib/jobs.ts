@@ -10,6 +10,8 @@ export type Job = {
   publishedLabel: string;
   publishedAt: string;
   expiresAt?: string | null;
+  /** Cuándo entró la oferta en el sitio (createdAt). */
+  firstSeenAt?: string;
   /** Última vez que el scraper devolvió la oferta (base del validThrough). */
   lastSeenAt?: string | null;
   /** Fuente de origen. */

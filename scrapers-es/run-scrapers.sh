@@ -57,6 +57,12 @@ if [[ -f "$INDEXING_KEY" && -x /home/portal/.venvs/indexing/bin/python ]]; then
     --state /var/www/vacantessalud/data/indexing-state.json || true
 fi
 
+# IndexNow (Bing y, por arrastre, ChatGPT) — clave propia del ES (https://vacantessalud.es/<clave>.txt,
+# apps/web-es/public). Solo avisa de lo que ha cambiado en el sitemap desde la última ejecución.
+python3 "$ROOT/tools/indexnow_notify.py" \
+  --sitemap http://127.0.0.1:3012/sitemap/jobs-meta.json \
+  --state /var/www/vacantessalud/data/indexnow-state.json || true
+
 # Digest de nuevas ofertas a los suscriptores ES (solo si Resend está configurado).
 if [[ -n "${RESEND_API_KEY:-}" && -n "${SCRAPER_API_TOKEN:-}" ]]; then
   curl -sS -X POST "http://127.0.0.1:3012/api/alerts/digest" \

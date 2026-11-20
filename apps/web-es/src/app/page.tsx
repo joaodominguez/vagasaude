@@ -18,6 +18,8 @@ import { getJobs } from "@/lib/jobs-data";
 import { professions } from "@/lib/jobs";
 import { formatNewsDate, listArticles, newsCategoryLabel, newsPath } from "@/lib/news";
 import { buildHomeMetadata } from "@/lib/seo";
+import { isSitemapJob } from "@/lib/sitemap-jobs";
+import { listRecentJobs, RECENT_PATH } from "@/lib/recent-jobs";
 import { freshnessLabel, homePaths, listHomeAreas } from "@/lib/home-sections";
 import { employerPath } from "@/lib/employers";
 import {
@@ -37,13 +39,16 @@ export async function generateMetadata() {
 
 export default async function Home() {
   const jobs = await getJobs();
+  // Solo ofertas indexables (las del jobs.xml), más recientes primero: enlaces directos para Googlebot.
   const recentJobs = [...jobs]
+    .filter((job) => isSitemapJob(job))
     .sort((a, b) => {
       const byPublished = b.publishedAt.localeCompare(a.publishedAt);
       if (byPublished !== 0) return byPublished;
       return a.title.localeCompare(b.title, "es");
     })
-    .slice(0, 6);
+    .slice(0, 12);
+  const todaySet = listRecentJobs(jobs);
   const districtCounts = jobs.reduce<Record<string, number>>((acc, job) => {
     const key = job.district || "España";
     acc[key] = (acc[key] || 0) + 1;
@@ -149,8 +154,11 @@ export default async function Home() {
               <span className="section-kicker">Actualizado a diario</span>
               <h2 className="section-title">Ofertas más recientes</h2>
             </div>
-            <Link href="/empleo" className="home-more">
-              Ver las {nf.format(jobs.length)} ofertas <ArrowRight size={16} aria-hidden="true" />
+            <Link href={RECENT_PATH} className="home-more">
+              {todaySet.hours <= 48
+                ? `Ver las ${nf.format(todaySet.jobs.length)} ofertas de hoy`
+                : `Ver las ${nf.format(todaySet.jobs.length)} ofertas más recientes`}{" "}
+              <ArrowRight size={16} aria-hidden="true" />
             </Link>
           </div>
 
@@ -173,6 +181,13 @@ export default async function Home() {
                 Crear alerta
               </Link>
             </div>
+          )}
+          {recentJobs.length > 0 && (
+            <p className="mt-5 text-sm">
+              <Link href="/empleo" className="home-more">
+                Ver las {nf.format(jobs.length)} ofertas <ArrowRight size={16} aria-hidden="true" />
+              </Link>
+            </p>
           )}
         </section>
 

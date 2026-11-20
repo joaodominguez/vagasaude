@@ -4,7 +4,10 @@ import {
   filterJobsForCategory,
   listEligibleCategories,
 } from "@/lib/categories";
+import type { Job } from "@/lib/jobs";
 import { getJobs } from "@/lib/jobs-data";
+import { buildJobsMeta, jobLastmod, listSitemapJobs } from "@/lib/sitemap-jobs";
+import { RECENT_PATH } from "@/lib/recent-jobs";
 import { employerLastmod, listEmployers } from "@/lib/employers";
 import { listEligibleOposiciones, listOposiciones } from "@/lib/oposiciones";
 import {
@@ -43,6 +46,20 @@ function urlEntry(
   </url>`;
 }
 
+/** Fecha de reserva de las páginas fijas (cambio real de contenido: 2026-11-04). */
+const STATIC_PAGES_UPDATED = new Date("2026-11-04T00:00:00Z");
+
+/** Publicación más reciente (no futura) de las ofertas; sin ninguna, la fecha de reserva. */
+function newestPublished(jobs: Job[], fallback: Date): Date {
+  const now = Date.now();
+  let best = 0;
+  for (const job of jobs) {
+    const t = Date.parse(job.publishedAt);
+    if (!Number.isNaN(t) && t <= now && t > best) best = t;
+  }
+  return best ? new Date(best) : fallback;
+}
+
 function xmlResponse(body: string) {
   return new Response(body, {
     headers: {
@@ -53,16 +70,19 @@ function xmlResponse(body: string) {
 }
 
 async function buildPagesSitemap() {
-  const now = new Date();
+  // lastmod = última publicación real (no «ahora»): Google/Bing solo se fían del lastmod si refleja cambios.
+  const jobs = await getJobs();
+  const latest = newestPublished(jobs, STATIC_PAGES_UPDATED);
   const entries = [
-    urlEntry(`${SITE_URL}/`, now, "weekly", "1.0"),
-    urlEntry(`${SITE_URL}/empleo`, now, "daily", "0.9"),
-    urlEntry(`${SITE_URL}/alertas`, now, "weekly", "0.6"),
-    urlEntry(`${SITE_URL}/como-funciona`, now, "monthly", "0.5"),
-    urlEntry(`${SITE_URL}/datos`, now, "daily", "0.7"),
-    urlEntry(`${SITE_URL}/privacidad`, now, "weekly", "0.6"),
-    urlEntry(`${SITE_URL}/aviso-legal`, now, "monthly", "0.3"),
-    urlEntry(`${SITE_URL}/cookies`, now, "monthly", "0.3"),
+    urlEntry(`${SITE_URL}/`, latest, "weekly", "1.0"),
+    urlEntry(`${SITE_URL}/empleo`, latest, "daily", "0.9"),
+    urlEntry(`${SITE_URL}${RECENT_PATH}`, latest, "hourly", "0.9"),
+    urlEntry(`${SITE_URL}/alertas`, STATIC_PAGES_UPDATED, "weekly", "0.6"),
+    urlEntry(`${SITE_URL}/como-funciona`, STATIC_PAGES_UPDATED, "monthly", "0.5"),
+    urlEntry(`${SITE_URL}/datos`, latest, "daily", "0.7"),
+    urlEntry(`${SITE_URL}/privacidad`, STATIC_PAGES_UPDATED, "weekly", "0.6"),
+    urlEntry(`${SITE_URL}/aviso-legal`, STATIC_PAGES_UPDATED, "monthly", "0.3"),
+    urlEntry(`${SITE_URL}/cookies`, STATIC_PAGES_UPDATED, "monthly", "0.3"),
   ];
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -73,27 +93,12 @@ ${entries.join("\n")}
 
 async function buildJobsSitemap() {
   const now = new Date();
-  // getJobs() devolve só vagas publicadas (activas) — expiradas ficam fora do sitemap.
-  const allJobs = await getJobs();
-  // Fora do sitemap as ofertas com prazo (expiresAt) nas próximas 72 h: o Google lê o sitemap até 1 dia depois
-  // e encontraria a página já expirada (noindex) — o GSC reporta-o como "noindex num mapa do site".
-  const cutoff = Date.now() + 72 * 3600 * 1000;
-  const jobs = allJobs.filter((job) => {
-    const deadline = job.expiresAt ? Date.parse(job.expiresAt) : NaN;
-    return Number.isNaN(deadline) || deadline > cutoff;
-  });
-  const entries = jobs.map((job) => {
-    const published = Date.parse(job.publishedAt);
-    const lastmod = Number.isNaN(published)
-      ? now
-      : new Date(Math.min(published, Date.now()));
-    return urlEntry(
-      `${SITE_URL}/empleo/${job.slug}`,
-      lastmod,
-      "daily",
-      "0.8",
-    );
-  });
+  // Solo ofertas activas, con plazo a más de 72 h y que seguirán activas dentro de 72 h
+  // (lib/sitemap-jobs.ts): fuera del sitemap = fuera de la Indexing API y de IndexNow (que lo leen).
+  const jobs = await listSitemapJobs();
+  const entries = jobs.map((job) =>
+    urlEntry(`${SITE_URL}/empleo/${job.slug}`, jobLastmod(job) ?? now, "daily", "0.8"),
+  );
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${entries.join("\n")}
@@ -232,6 +237,20 @@ export async function GET(
   }
   if (segment === "jobs.xml") {
     return xmlResponse(await buildJobsSitemap());
+  }
+  if (segment === "jobs-meta.json") {
+    // Cola de la Indexing API/IndexNow (tools/indexing_notify.py): las mismas ofertas del jobs.xml + metadatos.
+    const jobs = await listSitemapJobs();
+    return new Response(
+      JSON.stringify({ generatedAt: new Date().toISOString(), jobs: buildJobsMeta(jobs, SITE_URL) }),
+      {
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+          "Cache-Control": "no-store",
+          "X-Robots-Tag": "noindex",
+        },
+      },
+    );
   }
   if (segment === "categories.xml") {
     return xmlResponse(await buildCategoriesSitemap());

@@ -7,8 +7,14 @@ A 1.ª execução (sem estado) só regista a base atual, sem notificar.
 
 Uso (no fim do run-scrapers.sh):
     python3 tools/indexing_notify.py \
-        --sitemap http://127.0.0.1:3010/sitemap/jobs.xml \
-        --state /var/www/vagasaude/data/indexing-state.json
+        --sitemap http://127.0.0.1:3012/sitemap/jobs.xml \
+        --state /var/www/vacantessalud/data/indexing-state.json
+
+Fila priorizada (ES, 2026-11-20): com a quota fixa de 200/dia, as vagas novas vão por pontuação
+(clínica, sem gémeas/fonte rara, mais tempo de vida, mais recente; vagas sindicadas — SNE «Empresa
+anunciante», ~24 % — com penalização forte), lida de /sitemap/jobs-meta.json
+(mesmas vagas do jobs.xml: nunca noindex nem com prazo < 72 h). Os URL_DELETED só usam a quota que
+sobra. Sem esse endpoint, cai para a ordem antiga (mais recentes primeiro).
 
 Credenciais: GOOGLE_INDEXING_KEY = JSON da conta de serviço (proprietária da
 propriedade no Search Console). Sem chave corre em simulação (--dry-run implícito).
@@ -57,6 +63,66 @@ def read_sitemap(url: str) -> dict[str, str]:
     return entries
 
 
+# Vagas com prazo a menos de 72 h não gastam quota (o Google chega depois do fim) — o jobs.xml já as
+# exclui; esta guarda repete a regra caso o meta venha de um sitemap mais antigo.
+MIN_LIFETIME = timedelta(hours=72)
+SYNDICATED_PENALTY = 6.0  # fontes sindicadas (SNE) só passam à frente de vagas fracas (nunca de clínicas únicas)
+ASSUMED_LIFETIME_DAYS = 30  # sem prazo na fonte: o validThrough da página é "visto + 30 dias"
+
+
+def parse_dt(value: str | None) -> datetime | None:
+    if not value:
+        return None
+    try:
+        dt = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    return dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
+
+
+def meta_url_for(sitemap_url: str) -> str:
+    return re.sub(r"jobs\.xml(\?.*)?$", "jobs-meta.json", sitemap_url)
+
+
+def read_meta(url: str) -> dict[str, dict]:
+    """URL → metadados da vaga (vazio se o endpoint não existir: ordem antiga)."""
+    try:
+        response = httpx.get(url, timeout=60)
+        response.raise_for_status()
+        return {item["url"]: item for item in response.json().get("jobs", [])}
+    except Exception as exc:  # noqa: BLE001 — a fila funciona sem prioridades
+        print(f"[indexing] sem metadados de prioridade ({exc.__class__.__name__}); ordem por data")
+        return {}
+
+
+def priority(item: dict, now: datetime) -> float:
+    """Maior = enviar primeiro. Novas, clínicas, únicas/fonte rara, com mais tempo de vida."""
+    score = 0.0
+    if item.get("clinical"):
+        score += 4.0
+    if item.get("syndicated"):
+        score -= SYNDICATED_PENALTY  # SNE: já está em muitos portais e sem nome de empresa
+    siblings = int(item.get("siblings") or 1)
+    score += 2.0 if siblings == 1 else 1.0 if siblings <= 3 else 0.0
+    if int(item.get("sourceCount") or 1_000_000) <= 150:
+        score += 1.0  # fonte pequena: conteúdo que o Google dificilmente vê noutro lado
+    expires = parse_dt(item.get("expiresAt"))
+    lifetime_days = (
+        (expires - now).total_seconds() / 86400 if expires else ASSUMED_LIFETIME_DAYS
+    )
+    score += 2.0 * min(max(lifetime_days, 0.0), 30.0) / 30.0
+    first_seen = parse_dt(item.get("firstSeenAt")) or parse_dt(item.get("publishedAt"))
+    if first_seen:
+        age_days = max((now - first_seen).total_seconds() / 86400, 0.0)
+        score += 3.0 * (1.0 - min(age_days, 14.0) / 14.0)  # novas primeiro
+    return score
+
+
+def eligible(item: dict, now: datetime) -> bool:
+    expires = parse_dt(item.get("expiresAt"))
+    return not (expires and expires - now < MIN_LIFETIME)
+
+
 def load_state(path: Path) -> dict | None:
     try:
         return json.loads(path.read_text(encoding="utf-8"))
@@ -81,11 +147,30 @@ def authorized_session(key_path: str):
     return AuthorizedSession(credentials)
 
 
+def report_simulation(new: list[str], meta: dict[str, dict], current: dict[str, str], n: int, now: datetime) -> None:
+    """Composição das primeiras N vagas da fila (só leitura)."""
+    from collections import Counter
+
+    top = new[:n]
+    items = [meta.get(u, {}) for u in top]
+    print(f"[indexing] simulação: primeiras {len(top)} de {len(new)} novas")
+    print(f"  clínicas: {sum(1 for i in items if i.get('clinical'))}")
+    print(f"  únicas (sem gémeas): {sum(1 for i in items if int(i.get('siblings') or 1) == 1)}")
+    print(f"  SNE/sindicadas: {sum(1 for i in items if i.get('syndicated'))}")
+    print(f"  fonte pequena (<=150): {sum(1 for i in items if int(i.get('sourceCount') or 1_000_000) <= 150)}")
+    print("  por fonte: " + ", ".join(f"{k or '?'}={v}" for k, v in Counter(i.get('source') for i in items).most_common(12)))
+    print("  por profissão: " + ", ".join(f"{k or '?'}={v}" for k, v in Counter(i.get('profession') for i in items).most_common(8)))
+    rest = [meta.get(u, {}) for u in new]
+    print(f"  fila toda: clínicas {sum(1 for i in rest if i.get('clinical'))}, SNE {sum(1 for i in rest if i.get('syndicated'))} de {len(rest)}")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--sitemap", required=True)
     parser.add_argument("--state", required=True)
+    parser.add_argument("--meta", help="URL do jobs-meta.json (por defeito, ao lado do --sitemap)")
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--simulate", type=int, metavar="N", help="mostra a composição das primeiras N da fila e sai (não envia nem grava)")
     args = parser.parse_args()
 
     key_path = os.environ.get("GOOGLE_INDEXING_KEY", "")
@@ -109,13 +194,34 @@ def main() -> int:
         state["day"], state["used"] = today, 0
     budget = max(0, quota - int(state.get("used", 0)))
 
-    new = sorted((u for u in current if u not in notified), key=lambda u: current[u], reverse=True)
+    meta = read_meta(args.meta or meta_url_for(args.sitemap))
+    now_dt = datetime.now(timezone.utc)
+    candidates = [u for u in current if u not in notified]
+    skipped = [u for u in candidates if u in meta and not eligible(meta[u], now_dt)]
+    skipped_set = set(skipped)
+    candidates = [u for u in candidates if u not in skipped_set]
+    if meta:
+        # Sem metadados de uma vaga (não devia acontecer): vai para o fim da fila de novas.
+        new = sorted(
+            candidates,
+            key=lambda u: (priority(meta[u], now_dt) if u in meta else -1.0, current[u]),
+            reverse=True,
+        )
+    else:
+        new = sorted(candidates, key=lambda u: current[u], reverse=True)
+    # Remoções só com a quota que sobra depois das novas: o Google retira sozinho as páginas
+    # noindex/404 no rastreio seguinte; a quota vale mais a descobrir vagas novas.
     gone = [u for u in notified if u not in current]
     plan = [(u, "URL_UPDATED") for u in new] + [(u, "URL_DELETED") for u in gone]
     print(
         f"[indexing] novas {len(new)}, removidas {len(gone)}, quota restante hoje {budget}"
         f"{' (simulação)' if dry_run else ''}"
+        f"{f', ignoradas por prazo < 72 h: {len(skipped)}' if skipped else ''}"
+        f"{', fila priorizada' if meta else ''}"
     )
+    if args.simulate:
+        report_simulation(new, meta, current, args.simulate, now_dt)
+        return 0
     if dry_run or not plan or budget == 0:
         return 0
 

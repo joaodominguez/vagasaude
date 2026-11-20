@@ -473,9 +473,9 @@ function splitList(text: string | null): string[] {
 
 const DAY_MS = 86_400_000;
 /** Vaga publicada há mais de 1 ano sem data de fim futura: tratada como encerrada. */
-const MAX_JOB_AGE_DAYS = 365;
+export const MAX_JOB_AGE_DAYS = 365;
 /** Fonte sem devolver a vaga há 7 dias (~28 execuções falhadas): tratada como encerrada. */
-const MAX_UNSEEN_DAYS = 7;
+export const MAX_UNSEEN_DAYS = 7;
 
 /** "Publicado em 16/02/2023 15h15" (INCA) e outros dd/mm/aaaa. */
 function parseLooseDate(value: string | null | undefined) {
@@ -501,15 +501,85 @@ export function normalizePublishedAt(
   return value && !Number.isNaN(Date.parse(value)) ? value : new Date(t).toISOString();
 }
 
+const MADRID_TZ = "Europe/Madrid";
+
+/** Desfase (ms) de Europe/Madrid respecto a UTC en un instante dado (3 600 000 en invierno, 7 200 000 en verano). */
+function madridOffsetMs(utcMs: number): number {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: MADRID_TZ,
+    hourCycle: "h23",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  }).formatToParts(new Date(utcMs));
+  const get = (type: string) => Number(parts.find((part) => part.type === type)?.value);
+  const asUtc = Date.UTC(get("year"), get("month") - 1, get("day"), get("hour"), get("minute"), get("second"));
+  return asUtc - Math.floor(utcMs / 1000) * 1000;
+}
+
+/** Instante (ms UTC) de las 23:59:59 hora de Madrid del día indicado; NaN si la fecha no existe. */
+export function madridEndOfDay(year: number, month: number, day: number): number {
+  const guess = Date.UTC(year, month - 1, day, 23, 59, 59);
+  const check = new Date(guess);
+  if (check.getUTCFullYear() !== year || check.getUTCMonth() !== month - 1 || check.getUTCDate() !== day) {
+    return Number.NaN;
+  }
+  return guess - madridOffsetMs(guess);
+}
+
+/** "2026-11-22T00:00:00+00:00" = medianoche UTC sintética: el scraper (SNE) solo conoce la fecha. */
+const MIDNIGHT_UTC_RE = /^(\d{4})-(\d{2})-(\d{2})T00:00(?::00(?:\.0+)?)?(?:Z|[+-]00:?00)$/;
+
+/**
+ * Plazo (expiresAt) coherente (2026-11-20, igual que el BR). Diagnóstico ES: el SNE (918 ofertas) y el
+ * CGCOF (806) solo dan la fecha, guardada como 00:00 UTC (= 01:00 en Madrid): el último día de
+ * inscripción contaba como terminado al empezar ese día. Otros plazos eran inválidos o anteriores a la
+ * publicación.
+ * - solo fecha (aaaa-mm-dd, dd/mm/aaaa) o 00:00 UTC exactas → 23:59:59 de ese día en hora de Madrid;
+ * - inválido, año absurdo o anterior a la publicación → null (sin plazo conocido);
+ * - con hora real → se mantiene el instante.
+ * Idempotente: se aplica en la ingesta y en la lectura (datos ya guardados).
+ */
+export function normalizeExpiresAt(
+  value: string | null | undefined,
+  publishedAt?: string | null,
+): string | null {
+  const raw = (value ?? "").trim();
+  if (!raw) return null;
+  let ms = Number.NaN;
+  const iso = raw.match(/^(\d{4})-(\d{2})-(\d{2})$/) ?? raw.match(MIDNIGHT_UTC_RE);
+  const dmy = raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (iso) {
+    ms = madridEndOfDay(Number(iso[1]), Number(iso[2]), Number(iso[3]));
+  } else if (dmy) {
+    ms = madridEndOfDay(Number(dmy[3]), Number(dmy[2]), Number(dmy[1]));
+  } else {
+    ms = Date.parse(raw);
+  }
+  if (Number.isNaN(ms)) return null;
+  const year = new Date(ms).getUTCFullYear();
+  if (year < 2000 || year > new Date().getUTCFullYear() + 3) return null;
+  const published = publishedAt ? Date.parse(publishedAt) : Number.NaN;
+  // Plazo anterior al día de publicación: dato de la fuente inservible (el día de publicación aún cuenta).
+  if (!Number.isNaN(published) && ms < published - DAY_MS) return null;
+  return new Date(ms).toISOString();
+}
+
+/** Plazo normalizado de una oferta guardada (ver normalizeExpiresAt). */
+function storedExpiresAt(job: StoredJob): string | null {
+  return normalizeExpiresAt(job.expiresAt, normalizePublishedAt(job.publishedAt, job.createdAt));
+}
+
 function isPastExpiry(job: StoredJob) {
-  if (!job.expiresAt) return false;
-  const expires = Date.parse(job.expiresAt);
+  const expires = Date.parse(storedExpiresAt(job) || "");
   return !Number.isNaN(expires) && expires < Date.now();
 }
 
 function hasFutureExpiry(job: StoredJob) {
-  if (!job.expiresAt) return false;
-  const expires = Date.parse(job.expiresAt);
+  const expires = Date.parse(storedExpiresAt(job) || "");
   return !Number.isNaN(expires) && expires >= Date.now();
 }
 
@@ -593,7 +663,7 @@ export function toJobCard(job: StoredJob): JobCardData {
     publishedLabel: publishedLabel(normalizePublishedAt(job.publishedAt, job.createdAt)),
     publishedAt: normalizePublishedAt(job.publishedAt, job.createdAt),
     firstSeenAt: job.createdAt,
-    expiresAt: job.expiresAt,
+    expiresAt: storedExpiresAt(job),
     lastSeenAt: job.lastSeenAt || job.updatedAt,
     source: job.source,
     sourceId: job.sourceId,
@@ -1161,7 +1231,13 @@ async function ingestJobsUnlocked(
         item.published_at || existingSameSource?.publishedAt,
         existingSameSource?.createdAt || now,
       ),
-      expiresAt: item.expires_at || null,
+      expiresAt: normalizeExpiresAt(
+        item.expires_at,
+        normalizePublishedAt(
+          item.published_at || existingSameSource?.publishedAt,
+          existingSameSource?.createdAt || now,
+        ),
+      ),
       lastSeenAt: now,
       createdAt: existingSameSource?.createdAt || now,
       updatedAt: now,
