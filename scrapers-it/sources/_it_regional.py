@@ -136,7 +136,9 @@ def build_call(
         stats["thin"] = stats.get("thin", 0) + 1
         return None
 
-    key_entes = entes or [src.owner]
+    # Chave: enti destinatari + ente titolare della fonte (ARES/ESTAR/ARCS): inPA e GU citano spesso il titolare
+    # («ARES Sardegna») e non la ASL destinataria, e viceversa. Servono comunque profilo, disciplina e posti/scadenza uguali.
+    key_entes = [*entes, src.owner] if entes else [src.owner]
     key = P.make_key(key_entes, profile, discipline, [posts], item.deadline)
     job = JobPayload(
         title=job_title,

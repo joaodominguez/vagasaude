@@ -102,7 +102,7 @@ def priority(item: dict, now: datetime) -> float:
     score = 0.0
     public = str(item.get("sector") or "").lower().startswith("pubbl")
     if public:
-        score += 3.0 if item.get("source") in AGGREGATOR_SOURCES else 5.0
+        score += 5.0 if item.get("source") in AGGREGATOR_SOURCES else 10.0  # direta > inPA/GU > privada (camadas)
     if item.get("agency"):
         score -= AGENCY_PENALTY
     if item.get("clinical"):
