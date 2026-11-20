@@ -19,7 +19,7 @@ import { professions } from "@/lib/jobs";
 import { formatNewsDate, listArticles, newsCategoryLabel, newsPath } from "@/lib/news";
 import { buildHomeMetadata } from "@/lib/seo";
 import { isSitemapJob } from "@/lib/sitemap-jobs";
-import { listRecentJobs, RECENT_PATH } from "@/lib/recent-jobs";
+import { entryTime, listRecentJobs, RECENT_PATH } from "@/lib/recent-jobs";
 import { freshnessLabel, homePaths, listHomeAreas } from "@/lib/home-sections";
 import { employerPath } from "@/lib/employers";
 import {
@@ -43,8 +43,8 @@ export default async function Home() {
   const recentJobs = [...jobs]
     .filter((job) => isSitemapJob(job))
     .sort((a, b) => {
-      const byPublished = b.publishedAt.localeCompare(a.publishedAt);
-      if (byPublished !== 0) return byPublished;
+      const byEntry = entryTime(b) - entryTime(a);
+      if (byEntry !== 0) return byEntry;
       return a.title.localeCompare(b.title, "es");
     })
     .slice(0, 12);

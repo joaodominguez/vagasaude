@@ -6,7 +6,7 @@ import { absoluteUrl, SITE_NAME, truncateMeta } from "@/lib/seo";
 import { isSitemapJob } from "@/lib/sitemap-jobs";
 
 /**
- * «Ofertas de hoy» (/empleo/hoy): ofertas publicadas en las últimas 48 h, paginadas, con enlace directo a
+ * «Ofertas de hoy» (/empleo/hoy): ofertas que entraron en el sitio en las últimas 48 h, paginadas, con enlace directo a
  * cada una. Es el camino de descubrimiento por rastreo natural de las ofertas nuevas (Googlebot llega por
  * aquí sin depender de los 200 envíos/día de la Indexing API). Solo entran ofertas indexables (las mismas
  * del jobs.xml): ningún enlace a páginas noindex.
@@ -20,11 +20,22 @@ export const RECENT_PAGE_SIZE = 50;
 
 export type RecentSet = { jobs: Job[]; hours: number };
 
+/**
+ * Quando a vaga entrou no site: a primeira vez que a vimos (firstSeenAt = createdAt), não a data da
+ * fonte, que algumas fontes (net-empregos…) fazem avançar ao «republicar» anúncios antigos.
+ * Sem firstSeenAt (dados de exemplo) cai para a data de publicação.
+ */
+export function entryTime(job: Pick<Job, "publishedAt" | "firstSeenAt">): number {
+  const seen = job.firstSeenAt ? Date.parse(job.firstSeenAt) : Number.NaN;
+  return Number.isNaN(seen) ? Date.parse(job.publishedAt) : seen;
+}
+
+
 export function listRecentJobs(jobs: Job[], now: number = Date.now()): RecentSet {
   const indexable = jobs.filter((job) => isSitemapJob(job, now));
   const within = (hours: number) =>
     indexable.filter((job) => {
-      const t = Date.parse(job.publishedAt);
+      const t = entryTime(job);
       return !Number.isNaN(t) && t <= now && now - t <= hours * 3_600_000;
     });
   let hours = RECENT_HOURS;
@@ -34,7 +45,7 @@ export function listRecentJobs(jobs: Job[], now: number = Date.now()): RecentSet
     recent = within(hours);
   }
   recent.sort(
-    (a, b) => b.publishedAt.localeCompare(a.publishedAt) || a.title.localeCompare(b.title, "es"),
+    (a, b) => entryTime(b) - entryTime(a) || a.title.localeCompare(b.title, "es"),
   );
   return { jobs: recent, hours };
 }
