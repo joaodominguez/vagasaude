@@ -100,12 +100,16 @@ export function mapEmploymentType(
   return list.length === 1 ? list[0] : list;
 }
 
-/** Giorni di validita dall'ultima volta che la fonte ha restituito l'offerta. */
-const VALID_THROUGH_DAYS_AFTER_SEEN = 30;
+/**
+ * Giorni di validita dall'ultima volta che la fonte ha restituito l'offerta (offerte senza scadenza
+ * futura). Uguale al TTL del job-store (MAX_UNSEEN_DAYS = 7): dopo quel momento la pagina diventa
+ * noindex, quindi il validThrough non lo supera mai. Si rinnova a ogni raccolta (ogni 6 h).
+ */
+const VALID_THROUGH_DAYS_AFTER_SEEN = 7; // = MAX_UNSEEN_DAYS do job-store (não importado: traria node:fs)
 
 /**
  * validThrough: data di scadenza della fonte se futura; altrimenti ultima volta
- * vista dallo scraper + 30 giorni. Un'offerta che sparisce dalla fonte scade
+ * vista dallo scraper + 7 giorni (TTL). Un'offerta che sparisce dalla fonte scade
  * ed esce dal JobPosting, quindi non resta mai con date passate.
  */
 export function jobValidThrough(job: Job) {

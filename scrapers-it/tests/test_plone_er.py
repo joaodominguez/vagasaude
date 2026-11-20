@@ -58,5 +58,7 @@ def test_build_call_open_health_call():
 def test_key_only_mode_and_registry():
     assert R.build_call(item(), ENT, None, NOW) is not None  # chiavi per il dedupe senza dettaglio
     slugs = {c.slug for c in R.SCRAPER_CLASSES}
-    assert slugs == {"ausl-ferrara", "ausl-romagna", "ausl-modena"}
-    assert "www.ospfe.it" not in {e.host for e in R.ENTITIES}  # robots Disallow: /*?
+    assert slugs == {"ausl-ferrara", "ausl-romagna", "ausl-modena", "aou-ferrara"}
+    # AOU Ferrara (ospfe.it): robots `User-agent: *` permette tutto; `Disallow: /*?` vale solo per Googlebot.
+    assert "www.ospfe.it" in {e.host for e in R.ENTITIES}
+    assert "www.ausl.pc.it" not in {e.host for e in R.ENTITIES}  # Plone con sole gare/forniture, nessun reclutamento

@@ -4,10 +4,11 @@ Endpoint (stessi del sito, solo lettura anonima; robots.txt di ogni dominio viet
   GET https://<host>/++api++/@search?portal_type=Bando&b_size=100&metadata_fields=_all   (elenco, con scadenza e stato)
   GET https://<host>/++api++/<percorso-del-bando>                                          (testi: a chi si rivolge, come partecipare...)
 
-Un lettore generico, una configurazione per ente, UNO SLUG PER ENTE (`ausl-ferrara`, `ausl-romagna`, `ausl-modena`): cosi' ogni ente ha la propria scheda fonte con il nome vero e un guasto/soft-expire di un ente non
-cancella le offerte degli altri. L'AOU di Ferrara (www.ospfe.it) NON e' registrata: il suo robots.txt ha
-`Disallow: /*?` e l'elenco @search richiede parametri. L'AUSL di Piacenza non e' registrata: il suo Plone contiene solo gare e forniture
-(le procedure di reclutamento stanno su offline.ausl.pc.it, fuori dalle API Plone).
+Un lettore generico, una configurazione per ente, UNO SLUG PER ENTE (`ausl-ferrara`, `ausl-romagna`, `ausl-modena`, `aou-ferrara`): cosi' ogni ente ha la propria scheda fonte con il nome vero e un guasto/soft-expire di un ente non
+cancella le offerte degli altri. L'AOU di Ferrara (www.ospfe.it) e' registrata dal 2026-11-20: il suo robots.txt vieta `/*?` solo a Googlebot
+(`User-agent: *` ha `Disallow:` vuoto), quindi la nostra identificazione propria puo' leggere @search. Qui lo stato «inProgress» e' un
+bando scaduto non archiviato (251 su 565): conta `bando_state == open` + scadenza futura (9 bandi). L'AUSL di Piacenza NON e'
+registrata: il suo Plone (170 bandi) contiene solo gare, forniture e convenzioni, nessun reclutamento (verificato 2026-11-20).
 
 Solo bandi APERTI di reclutamento verso l'esterno: concorsi, avvisi a tempo determinato, mobilita' in entrata, incarichi
 libero-professionali, direttori di struttura complessa. Si scartano selezioni interne, banche dati, stabilizzazioni,
@@ -46,6 +47,7 @@ ENTITIES = (
     Entity("ausl-ferrara", "Azienda USL di Ferrara", "AUSL Ferrara", "www.ausl.fe.it", "Ferrara", "AUSL Ferrara - Concorsi e avvisi"),
     Entity("ausl-romagna", "Azienda USL della Romagna", "AUSL Romagna", "www.auslromagna.it", "Ravenna", "AUSL Romagna - Concorsi e selezioni"),
     Entity("ausl-modena", "Azienda USL di Modena", "AUSL Modena", "www.ausl.mo.it", "Modena", "AUSL Modena - Concorsi"),
+    Entity("aou-ferrara", "Azienda Ospedaliero-Universitaria di Ferrara", "AOU Ferrara", "www.ospfe.it", "Ferrara", "AOU Ferrara - Bandi di concorso"),
 )
 
 LIST_PATH = "/++api++/@search"

@@ -53,6 +53,12 @@ if [[ -f "$INDEXING_KEY" && -x /home/portal/.venvs/indexing/bin/python ]]; then
     --state "$DATA_DIR/indexing-state.json" || true
 fi
 
+# IndexNow (Bing e, a cascata, ChatGPT) -- chiave propria dell'IT (https://offertesanita.it/<chiave>.txt,
+# apps/web-it/public). Avvisa solo di quello che e' cambiato nel sitemap dall'ultima esecuzione.
+python3 "$ROOT/tools/indexnow_notify.py" \
+  --sitemap http://127.0.0.1:3014/sitemap/jobs-meta.json \
+  --state "$DATA_DIR/indexnow-state.json" || true
+
 # Digest delle nuove offerte agli iscritti IT (solo se Resend e' configurato).
 if [[ -n "${RESEND_API_KEY:-}" && -n "${SCRAPER_API_TOKEN:-}" ]]; then
   curl -sS -X POST "http://127.0.0.1:3014/api/alerts/digest" \

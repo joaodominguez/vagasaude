@@ -330,9 +330,9 @@ function splitList(text: string | null): string[] {
 
 const DAY_MS = 86_400_000;
 /** Offerta pubblicata da oltre 1 anno senza scadenza futura: considerata chiusa. */
-const MAX_JOB_AGE_DAYS = 365;
+export const MAX_JOB_AGE_DAYS = 365;
 /** Fonte che non restituisce l'offerta da 7 giorni (~28 esecuzioni fallite): considerata chiusa. */
-const MAX_UNSEEN_DAYS = 7;
+export const MAX_UNSEEN_DAYS = 7;
 
 /** "Publicado em 16/02/2023 15h15" (INCA) e outros dd/mm/aaaa. */
 function parseLooseDate(value: string | null | undefined) {

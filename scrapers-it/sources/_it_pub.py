@@ -436,7 +436,7 @@ _ENTE_SHORT = [
 _ACRONYM_FIX = re.compile(r"^(ASST|AST|AUSL|ASL|AOUI|AOU|AORN|AO|ATS|IRCCS)\s+(.*)$")
 
 
-_ACRONYMS = ("ASUIT", "ASUFC", "ASUGI", "ASUI", "ASU", "ASL", "ASST", "AUSL", "ULSS", "IRCCS", "ESTAR", "AOU", "AOUI", "AORN", "ATS", "ARES", "ARCS", "APSS", "USL", "AO", "AST", "ASP", "IZS", "AUSS", "ASUGI", "ASUFC", "ASFO", "ASUIT", "SABES")
+_ACRONYMS = ("ASUIT", "ASUFC", "ASUGI", "ASUI", "ASU", "ASL", "ASST", "AUSL", "ULSS", "IRCCS", "ESTAR", "AOU", "AOUI", "AORN", "ATS", "ARES", "ARCS", "APSS", "USL", "AO", "AST", "ASP", "IZS", "AUSS", "ASUGI", "ASUFC", "ASFO", "ASUIT", "SABES", "ARNAS", "SOD", "UOC")
 
 
 def _fix_acronyms(text: str) -> str:

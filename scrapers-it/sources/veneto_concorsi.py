@@ -13,8 +13,11 @@ ente) e gli avvisi regionali; i bandi che ogni ULSS pubblica sul proprio sito NO
 from __future__ import annotations
 
 import re
+import time
 from datetime import date, datetime, timezone
 from html import unescape
+
+import httpx
 
 from common.http import HttpClient
 from common.models import BaseScraper, JobPayload
@@ -214,10 +217,30 @@ def _contract(tipo: str, kind: str) -> str | None:
     return None
 
 
+def _get_with_retry(client: HttpClient, url: str, tries: int = 3, pause: float = 4.0) -> str:
+    """O portale ColdFusion devolve 500 intermitentes (visto 2026-11-17/18): 3 tentativas com pausa antes de falhar."""
+    for attempt in range(tries):
+        try:
+            return client.get_text(url)
+        except httpx.HTTPStatusError as exc:
+            if exc.response.status_code < 500 or attempt == tries - 1:
+                raise
+            time.sleep(pause * (attempt + 1))
+    raise RuntimeError("unreachable")
+
+
 def collect_calls(client: HttpClient, now: datetime | None = None, stats: dict | None = None) -> list[P.Call]:
     ids: list[str] = []
     for page in range(MAX_PAGES):
-        html = client.get_text(LIST_URL.format(start=page * 5 + 1))
+        try:
+            html = _get_with_retry(client, LIST_URL.format(start=page * 5 + 1))
+        except httpx.HTTPError:
+            if page == 0:
+                raise
+            # Falha numa pagina seguinte: usa o que ja leu, mas marca o lote incompleto (sem soft-expire).
+            if stats is not None:
+                stats["errors"] = stats.get("errors", 0) + 1
+            break
         if page == 0 and "elenco_bandi" not in html and "navbar_mys" not in html:
             raise RuntimeError("veneto-concorsi: elenco non riconosciuto (struttura della pagina cambiata?)")
         page_ids = [i for i in parse_list(html) if i not in ids]

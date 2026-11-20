@@ -9,6 +9,9 @@ Fonti pubbliche (ordine di priorita' contro i duplicati: Veneto > inPA > Gazzett
 vedi sources/_it_pub.py: i lettori a priorita' piu' bassa rileggono le chiavi di quelli piu' ricchi).
 """
 from .affidea import AffideaScraper
+from .ares_sardegna import AresSardegnaScraper
+from .arcs_fvg import ArcsFvgScraper
+from .estar_toscana import EstarToscanaScraper
 from .anicura import AnicuraScraper
 from .auxologico import AuxologicoScraper
 from .bianalisi import BianalisiScraper
@@ -33,6 +36,8 @@ SCRAPERS: dict = {
     scraper.slug: scraper
     for scraper in (VenetoConcorsiScraper, InpaScraper, GuS4Scraper, HumanitasScraper, ClarianeScraper, AnicuraScraper, CerbaScraper, FreseniusScraper,
                     AffideaScraper, MaugeriScraper, AuxologicoScraper, FatebenefratelliScraper, BianalisiScraper, IeoScraper, HabilitaScraper, *PLONE_ER_SCRAPERS, RandstadScraper,
+                    # Fontes regionais novas (2026-11-20): ver _it_regional.py / regional.py.
+                    AresSardegnaScraper, EstarToscanaScraper, ArcsFvgScraper,
                     # Intervieweb: autorizzati dai gruppi il 2026-11-17 (vedi _intervieweb.py).
                     GemelliScraper, GvmScraper, SynlabScraper,)
 }
