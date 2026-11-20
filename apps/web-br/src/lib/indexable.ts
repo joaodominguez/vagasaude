@@ -52,3 +52,40 @@ export function isIndexableJob(
   if (job.profession === "Outros" && !HEALTH_HINT_RE.test(title)) return false;
   return true;
 }
+
+/**
+ * Margem de segurança do sitemap de vagas (2026-11-20, igual ao ES d999e1a e IT d64e246): o Google lê
+ * o jobs.xml até 1 dia depois de gerado (e a cache aguenta até 6 h) e a vaga já pode estar encerrada
+ * (noindex) → o GSC reporta "noindex num mapa do site" e a Indexing API gasta quota. Fora do sitemap
+ * (e da Indexing API/IndexNow) ficam as vagas cujo prazo cai nas próximas 72 h (incluindo prazos já
+ * passados) e as que dentro dessas 72 h deixam de ser indexáveis (ex.: a fazer 90 dias).
+ */
+export const SITEMAP_MARGIN_MS = 72 * 3_600_000;
+
+export function isSitemapJob(
+  job: Pick<Job, "title" | "profession"> & { publishedAt?: string | null; expiresAt?: string | null },
+  now: number = Date.now(),
+): boolean {
+  const deadline = job.expiresAt ? Date.parse(job.expiresAt) : NaN;
+  if (!Number.isNaN(deadline) && deadline <= now + SITEMAP_MARGIN_MS) return false;
+  // Indexável agora E daqui a 72 h (a idade só aumenta; títulos/profissão não mudam com o tempo).
+  return isIndexableJob(job, now) && isIndexableJob(job, now + SITEMAP_MARGIN_MS);
+}
+
+/** Profissões clínicas (as "Outros"/"Auxiliares" contam só com pista clínica no título). */
+const CLINICAL_PROFESSIONS = new Set([
+  "Enfermagem",
+  "Medicina",
+  "Farmácia",
+  "Fisioterapia",
+  "Nutrição",
+  "Psicologia",
+  "Técnico de Saúde",
+]);
+const CLINICAL_TITLE_RE =
+  /enferm|m[eé]dic|fisioter|farm[aá]c|laborat|radiolog|nutri|psic[oó]l|fono|terapeut|biom[eé]dic|odont|socorr|instrumentad|hemodi[aá]l|dentist|cuidador|paciente|assistencial|t[eé]cnic[oa] (de|em) (sa[uú]de|an[aá]lises)/i;
+
+export function isClinicalJob(job: Pick<Job, "title" | "profession">): boolean {
+  if (CLINICAL_PROFESSIONS.has(job.profession)) return true;
+  return CLINICAL_TITLE_RE.test(job.title || "");
+}

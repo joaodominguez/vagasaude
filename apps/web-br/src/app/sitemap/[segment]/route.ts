@@ -5,11 +5,10 @@ import {
   listEligibleCategories,
 } from "@/lib/categories";
 import { listEligibleCities } from "@/lib/cities";
-import { isConcursoJob } from "@/lib/concursos";
-import { isIndexableJob } from "@/lib/indexable";
 import { listConcursos, listEligibleConcursos } from "@/lib/concursos-hub";
 import type { Job } from "@/lib/jobs";
 import { getJobs, getListingJobs } from "@/lib/jobs-data";
+import { buildJobsMeta, jobLastmod, listSitemapJobs } from "@/lib/sitemap-jobs";
 import { employerLastmod, listEmployers } from "@/lib/employers";
 import { getSalaryObservations, listSalaryPages } from "@/lib/salary-observatory";
 import {
@@ -91,23 +90,12 @@ ${entries.join("\n")}
 async function buildJobsSitemap() {
   const today = new Date();
   today.setUTCHours(0, 0, 0, 0);
-  // getJobs() devolve só vagas publicadas (ativas) — expiradas ficam fora do sitemap.
-  // Concursos (noindex) também ficam fora, tal como as não indexáveis (lib/indexable.ts):
-  // fora do sitemap = fora da Indexing API (que lê este sitemap).
-  const jobs = (await getJobs()).filter((job) => !isConcursoJob(job) && isIndexableJob(job));
-  const entries = jobs.map((job) => {
-    const published = Date.parse(job.publishedAt);
-    const lastmod =
-      Number.isNaN(published) || published > Date.now()
-        ? today
-        : new Date(published);
-    return urlEntry(
-      `${SITE_URL}/vagas/${job.slug}`,
-      lastmod,
-      "daily",
-      "0.8",
-    );
-  });
+  // Só vagas publicadas, ativas, indexáveis e com prazo a mais de 72 h (lib/sitemap-jobs.ts):
+  // fora do sitemap = fora da Indexing API e do IndexNow (que leem este sitemap).
+  const jobs = await listSitemapJobs();
+  const entries = jobs.map((job) =>
+    urlEntry(`${SITE_URL}/vagas/${job.slug}`, jobLastmod(job) ?? today, "daily", "0.8"),
+  );
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${entries.join("\n")}
@@ -255,6 +243,20 @@ export async function GET(
   }
   if (segment === "jobs.xml") {
     return xmlResponse(await buildJobsSitemap());
+  }
+  if (segment === "jobs-meta.json") {
+    // Fila da Indexing API/IndexNow (tools/indexing_notify.py): mesmas vagas do jobs.xml + metadados.
+    const jobs = await listSitemapJobs();
+    return new Response(
+      JSON.stringify({ generatedAt: new Date().toISOString(), jobs: buildJobsMeta(jobs, SITE_URL) }),
+      {
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+          "Cache-Control": "no-store",
+          "X-Robots-Tag": "noindex",
+        },
+      },
+    );
   }
   if (segment === "categories.xml") {
     return xmlResponse(await buildCategoriesSitemap());

@@ -12,6 +12,8 @@ export type Job = {
   expiresAt?: string | null;
   /** Última vez que o scraper devolveu a vaga (base do validThrough). */
   lastSeenAt?: string | null;
+  /** Quando a vaga entrou no VagaSaúde (createdAt). */
+  firstSeenAt?: string;
   /** Fonte de origem (ex.: pci_concursos). */
   source?: string;
   /** ID da vaga na fonte (identifier do JobPosting). */

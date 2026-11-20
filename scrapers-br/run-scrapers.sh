@@ -52,6 +52,12 @@ if [[ -f "$INDEXING_KEY" && -x /home/portal/.venvs/indexing/bin/python ]]; then
     --state /var/www/vagasaudebr/data/indexing-state.json || true
 fi
 
+# IndexNow (Bing e, por arrasto, o ChatGPT) — só BR: vagas novas/removidas do sitemap desde a última
+# execução. A chave pública está em https://vagasaude.com.br/<chave>.txt (apps/web-br/public).
+python3 "$ROOT/tools/indexnow_notify.py" \
+  --sitemap http://127.0.0.1:3011/sitemap/jobs-meta.json \
+  --state /var/www/vagasaudebr/data/indexnow-state.json || true
+
 # Envia digest de novas vagas aos subscritores BR (se Resend estiver configurado).
 if [[ -n "${RESEND_API_KEY:-}" && -n "${SCRAPER_API_TOKEN:-}" ]]; then
   curl -sS -X POST "http://127.0.0.1:3011/api/alerts/digest" \

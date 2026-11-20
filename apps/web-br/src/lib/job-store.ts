@@ -484,15 +484,56 @@ export function normalizePublishedAt(
   return value && !Number.isNaN(Date.parse(value)) ? value : new Date(t).toISOString();
 }
 
+/**
+ * Prazo (expiresAt) coerente (2026-11-20). Diagnóstico nos dados BR: os 6.647 prazos guardados eram só
+ * data ("2026-11-20", Gupy/Rede D'Or…), lidos como 00:00 UTC — o último dia de candidaturas contava
+ * como já terminado às 21h do dia anterior em Brasília; 84 prazos eram anteriores à publicação
+ * (editais PCI com data antiga) e outros eram inválidos.
+ * - só data (aaaa-mm-dd ou dd/mm/aaaa) → fim desse dia em Brasília (23:59:59-03:00), em ISO UTC;
+ * - inválido, ano absurdo ou anterior à publicação → null (sem prazo conhecido);
+ * - com hora → mantém o instante.
+ * É idempotente: aplica-se na ingestão e na leitura (dados já guardados).
+ */
+const BR_END_OF_DAY = "T23:59:59-03:00";
+
+export function normalizeExpiresAt(
+  value: string | null | undefined,
+  publishedAt?: string | null,
+): string | null {
+  const raw = (value ?? "").trim();
+  if (!raw) return null;
+  let ms = NaN;
+  const iso = raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  const br = raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (iso) {
+    ms = Date.parse(`${raw}${BR_END_OF_DAY}`);
+  } else if (br) {
+    const day = `${br[3]}-${br[2].padStart(2, "0")}-${br[1].padStart(2, "0")}`;
+    ms = Date.parse(`${day}${BR_END_OF_DAY}`);
+  } else {
+    ms = Date.parse(raw);
+  }
+  if (Number.isNaN(ms)) return null;
+  const year = new Date(ms).getUTCFullYear();
+  if (year < 2000 || year > new Date().getUTCFullYear() + 3) return null;
+  const published = publishedAt ? Date.parse(publishedAt) : NaN;
+  // Prazo antes do dia da publicação: dado da fonte inutilizável (o dia da publicação ainda conta).
+  if (!Number.isNaN(published) && ms < published - DAY_MS) return null;
+  return new Date(ms).toISOString();
+}
+
+/** Prazo normalizado de uma vaga guardada (ver normalizeExpiresAt). */
+function storedExpiresAt(job: StoredJob): string | null {
+  return normalizeExpiresAt(job.expiresAt, normalizePublishedAt(job.publishedAt, job.createdAt));
+}
+
 function isPastExpiry(job: StoredJob) {
-  if (!job.expiresAt) return false;
-  const expires = Date.parse(job.expiresAt);
+  const expires = Date.parse(storedExpiresAt(job) || "");
   return !Number.isNaN(expires) && expires < Date.now();
 }
 
 function hasFutureExpiry(job: StoredJob) {
-  if (!job.expiresAt) return false;
-  const expires = Date.parse(job.expiresAt);
+  const expires = Date.parse(storedExpiresAt(job) || "");
   return !Number.isNaN(expires) && expires >= Date.now();
 }
 
@@ -531,7 +572,7 @@ function toJobCardListItem(job: StoredJob): JobCardData {
     publishedLabel: publishedLabel(normalizePublishedAt(job.publishedAt, job.createdAt)),
     publishedAt: normalizePublishedAt(job.publishedAt, job.createdAt),
     firstSeenAt: job.createdAt,
-    expiresAt: job.expiresAt,
+    expiresAt: storedExpiresAt(job),
     lastSeenAt: job.lastSeenAt || job.updatedAt,
     source: job.source,
     sourceId: job.sourceId,
@@ -575,7 +616,7 @@ export function toJobCard(job: StoredJob): JobCardData {
     publishedLabel: publishedLabel(normalizePublishedAt(job.publishedAt, job.createdAt)),
     publishedAt: normalizePublishedAt(job.publishedAt, job.createdAt),
     firstSeenAt: job.createdAt,
-    expiresAt: job.expiresAt,
+    expiresAt: storedExpiresAt(job),
     lastSeenAt: job.lastSeenAt || job.updatedAt,
     source: job.source,
     sourceId: job.sourceId,
@@ -1331,7 +1372,13 @@ async function ingestJobsUnlocked(
         item.published_at || existingSameSource?.publishedAt,
         existingSameSource?.createdAt || now,
       ),
-      expiresAt: item.expires_at || null,
+      expiresAt: normalizeExpiresAt(
+        item.expires_at,
+        normalizePublishedAt(
+          item.published_at || existingSameSource?.publishedAt,
+          existingSameSource?.createdAt || now,
+        ),
+      ),
       lastSeenAt: now,
       createdAt: existingSameSource?.createdAt || now,
       updatedAt: now,
