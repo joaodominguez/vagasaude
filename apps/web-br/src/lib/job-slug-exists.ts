@@ -21,10 +21,10 @@ type SqliteModule = {
 
 const DB_MAINTAINED = new Set(["dual", "sqlite-dual", "sqlite"]);
 
-type Db = { prepare(sql: string): { get(...p: unknown[]): unknown; all?(...p: unknown[]): unknown[] }; close(): void };
+export type Db = { prepare(sql: string): { get(...p: unknown[]): unknown; all?(...p: unknown[]): unknown[] }; close(): void };
 
 /** Abre o jobs.db só para leitura; null quando não é mantido, não existe ou o node:sqlite falta. */
-function openJobsDb(): Db | null {
+export function openJobsDb(): Db | null {
   if (!DB_MAINTAINED.has(process.env.JOB_STORE || "json")) return null;
   const file = path.join(process.env.DATA_DIR ?? path.join(process.cwd(), "data"), "jobs.db");
   if (!existsSync(file)) return null;

@@ -10,6 +10,7 @@ import { SocialLinks } from "./social-links";
 
 const NAV_ITEMS = [
   { href: "/vagas", label: "Buscar vagas" },
+  { href: "/vagas/hoje", label: "Vagas de hoje" },
   { href: "/concursos", label: "Concursos" },
   { href: "/salarios", label: "Salários" },
   { href: "/noticias", label: "Notícias" },
@@ -20,7 +21,7 @@ const NAV_ITEMS = [
 
 const ALERT_HREF = "/alertas";
 /** Itens do menu que, em tela média, cedem lugar ao botão «Criar alerta» (continuam no menu mobile). */
-const SECONDARY_HREFS = new Set<string>(["/favoritos", "/como-funciona"]);
+const SECONDARY_HREFS = new Set<string>(["/favoritos", "/como-funciona", "/vagas/hoje"]);
 
 export function Header() {
   const [open, setOpen] = useState(false);

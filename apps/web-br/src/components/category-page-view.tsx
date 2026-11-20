@@ -9,6 +9,7 @@ import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { JobCard } from "@/components/job-card";
 import type { Job } from "@/lib/jobs";
+import { buildComboIntroText } from "@/lib/local-landings";
 import {
   buildCategoryIntro,
   buildCategoryStats,
@@ -37,7 +38,15 @@ export function CategoryPageView({
   allCategoryRefs: CategoryRef[];
 }) {
   const stats = buildCategoryStats(jobs);
-  const intro = buildCategoryIntro(stats, category.profession, category.district);
+  const intro =
+    category.kind === "combo" && category.profession && category.district
+      ? buildComboIntroText(jobs, category.profession, category.district, category.path)
+      : buildCategoryIntro(stats, category.profession, category.district);
+  // H1 orientado à pesquisa: «Vagas de Técnico de Enfermagem em São Paulo — 232 vagas».
+  const heading =
+    category.kind === "combo"
+      ? `${category.title} — ${stats.count} ${stats.count === 1 ? "vaga" : "vagas"}`
+      : category.title;
   const related = relatedCategoryLinks(allCategoryRefs, category);
   const siblings = siblingDistrictLinks(allCategoryRefs, category);
   const totalPages = categoryTotalPages(jobs.length);
@@ -102,7 +111,7 @@ export function CategoryPageView({
           <div className="page-container">
             <Breadcrumbs items={crumbs} />
             <h1 className="mt-2 text-3xl font-extrabold tracking-[-0.045em] sm:text-4xl">
-              {category.title}
+              {heading}
             </h1>
             <p className="mt-2 text-sm font-semibold text-primary">
               {stats.count}{" "}

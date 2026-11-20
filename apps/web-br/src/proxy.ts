@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GONE_JOB_SLUGS } from "@/lib/gone-job-slugs";
 import { isStaleExpiredSlug, jobSlugExists } from "@/lib/job-slug-exists";
+import { localRedirectTarget } from "@/lib/local-redirect";
 
 const GONE_LINKS: Array<[string, string]> = [
   ["/vagas/enfermagem", "Enfermagem"],
@@ -77,6 +78,23 @@ export function proxy(request: NextRequest) {
       const url = request.nextUrl.clone();
       url.pathname = repaired;
       return NextResponse.redirect(url, 308);
+    }
+    // «pagina-1» das páginas novas → URL base (308 aqui: o permanentRedirect() de páginas duplica o Location).
+    const first = pathname.replace(/\/$/, "").match(/^(\/vagas\/hoje|\/vagas\/[^/]+\/[^/]+\/[^/]+)\/pagina-0*1$/);
+    if (first) {
+      const url = request.nextUrl.clone();
+      url.pathname = first[1];
+      return NextResponse.redirect(url, 308);
+    }
+    // Landings profissão × cidade sem volume mínimo: 307 para a cidade (ver lib/local-redirect.ts).
+    if (pathname.split("/").length >= 5) {
+      const target = localRedirectTarget(pathname);
+      if (target) {
+        const url = request.nextUrl.clone();
+        url.pathname = target;
+        url.search = "";
+        return NextResponse.redirect(url, 307);
+      }
     }
     // Vagas que deixaram de existir de vez: 410 (o Google retira-as mais depressa do que com 404).
     const slug = pathname.slice("/vagas/".length).replace(/\/$/, "");

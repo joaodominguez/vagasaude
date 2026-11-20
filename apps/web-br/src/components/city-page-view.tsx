@@ -21,6 +21,7 @@ import {
   type CityRef,
 } from "@/lib/cities";
 import type { Job } from "@/lib/jobs";
+import { getLocalIndex, localPath } from "@/lib/local-landings";
 
 /** Landing de cidade /vagas/<estado>/<cidade>; só a `page` atual é renderizada. */
 export function CityPageView({
@@ -43,14 +44,19 @@ export function CityPageView({
     .filter((c) => c.path !== city.path)
     .slice(0, 12);
 
+  const localIndex = getLocalIndex(allJobs);
   const professionCounts = new Map<string, number>();
   for (const job of jobs) {
     if (job.profession === "Outros") continue;
     professionCounts.set(job.profession, (professionCounts.get(job.profession) ?? 0) + 1);
   }
+  // Sub-profissões com landing própria nesta cidade (técnico/auxiliar de enfermagem, enfermeiro…).
+  for (const local of localIndex.all) {
+    if (local.city.path === city.path) professionCounts.set(local.profession, local.jobs.length);
+  }
   const professions = [...professionCounts.entries()]
     .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "pt"))
-    .slice(0, 10);
+    .slice(0, 12);
 
   const crumbs: BreadcrumbItem[] = [
     { label: "Início", href: "/" },
@@ -186,14 +192,20 @@ export function CityPageView({
                     <h2 className="text-xl font-extrabold">Profissões com vagas em {city.name}</h2>
                     <ul className="mt-4 grid gap-x-6 gap-y-2 text-sm sm:grid-cols-2">
                       {professions.map(([name, count]) => {
-                        const href = isCategoryEligible(allJobs, name, city.district)
-                          ? categoryPath(name, city.district)
-                          : null;
+                        const localHref = localPath(city, name);
+                        const href = localIndex.byKey.has(localHref)
+                          ? localHref
+                          : isCategoryEligible(allJobs, name, city.district)
+                            ? categoryPath(name, city.district)
+                            : null;
+                        const label = localIndex.byKey.has(localHref)
+                          ? `${name} em ${city.name}`
+                          : `${name} em ${city.district}`;
                         return (
                           <li key={name} className="flex justify-between gap-3">
                             {href ? (
                               <Link href={href} className="font-semibold text-primary hover:underline">
-                                {name} em {city.district}
+                                {label}
                               </Link>
                             ) : (
                               <span>{name}</span>

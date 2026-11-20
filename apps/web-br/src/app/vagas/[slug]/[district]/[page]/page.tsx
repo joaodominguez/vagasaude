@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound, permanentRedirect, redirect } from "next/navigation";
 import { CategoryPageView } from "@/components/category-page-view";
 import { CityPageView } from "@/components/city-page-view";
+import { LocalLandingView } from "@/components/local-landing-view";
 import { buildCityMetadata, resolveCity } from "@/lib/cities";
 import {
   buildCategoryMetadata,
@@ -15,6 +16,7 @@ import {
   fallbackCategoryPath,
 } from "@/lib/categories";
 import { getListingJobs } from "@/lib/jobs-data";
+import { buildLocalMetadata, resolveLocal } from "@/lib/local-landings";
 
 export const dynamic = "force-static";
 export const revalidate = 600;
@@ -38,6 +40,9 @@ export async function generateMetadata({
   const cityPage = parseCategoryPageSegment(pageSegment);
   const city = cityPage ? resolveCity(await getListingJobs(), slug, district) : null;
   if (city && cityPage) return buildCityMetadata(city, cityPage);
+  // /vagas/<estado>/<cidade>/<profissao>: landing profissão × cidade.
+  const local = !cityPage ? resolveLocal(await getListingJobs(), slug, district, pageSegment) : null;
+  if (local) return buildLocalMetadata(local);
   const resolved = resolveSegments(slug, district, pageSegment);
   if (!resolved) return { title: "Categoria não encontrada" };
   const { category, page } = resolved;
@@ -61,8 +66,15 @@ export default async function ProfessionDistrictPagedPage({
   if (city) {
     if (isFirstPageSegment(pageSegment)) permanentRedirect(city.path);
     const cityPage = parseCategoryPageSegment(pageSegment);
-    if (!cityPage || cityPage > categoryTotalPages(city.jobs.length)) notFound();
-    return <CityPageView city={city} page={cityPage} allJobs={cityJobs} />;
+    if (cityPage) {
+      if (cityPage > categoryTotalPages(city.jobs.length)) notFound();
+      return <CityPageView city={city} page={cityPage} allJobs={cityJobs} />;
+    }
+    // Primeira página da landing profissão × cidade (as seguintes: [page]/[n]).
+    // Abaixo do mínimo o proxy já redireciona para a cidade; aqui, 404 de segurança.
+    const local = resolveLocal(cityJobs, slug, district, pageSegment);
+    if (local) return <LocalLandingView local={local} allJobs={cityJobs} />;
+    notFound();
   }
   if (isFirstPageSegment(pageSegment)) {
     const first = resolveCategoryFromSegments(slug, district);

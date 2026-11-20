@@ -10,6 +10,7 @@ const CHILD_SITEMAPS = [
   "pages",
   "jobs",
   "categories",
+  "landings",
   "concursos",
   "salarios",
   "noticias",
@@ -39,6 +40,7 @@ export async function GET() {
     pages: jobsLastmod,
     jobs: jobsLastmod,
     categories: jobsLastmod,
+    landings: jobsLastmod,
     empresas: jobsLastmod,
     concursos: newest(
       listConcursos(jobs).map((item) => item.job.publishedAt),

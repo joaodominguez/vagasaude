@@ -5,6 +5,8 @@ import {
   listEligibleCategories,
 } from "@/lib/categories";
 import { listEligibleCities } from "@/lib/cities";
+import { listEligibleLocals } from "@/lib/local-landings";
+import { RECENT_PATH } from "@/lib/recent-jobs";
 import { listConcursos, listEligibleConcursos } from "@/lib/concursos-hub";
 import type { Job } from "@/lib/jobs";
 import { getJobs, getListingJobs } from "@/lib/jobs-data";
@@ -74,6 +76,7 @@ async function buildPagesSitemap() {
   const entries = [
     urlEntry(`${SITE_URL}/`, latestJob, "weekly", "1.0"),
     urlEntry(`${SITE_URL}/vagas`, latestJob, "daily", "0.9"),
+    urlEntry(`${SITE_URL}${RECENT_PATH}`, latestJob, "hourly", "0.9"),
     urlEntry(`${SITE_URL}/alertas`, STATIC_PAGES_UPDATED, "weekly", "0.6"),
     urlEntry(`${SITE_URL}/como-funciona`, STATIC_PAGES_UPDATED, "monthly", "0.5"),
     urlEntry(`${SITE_URL}/contato`, STATIC_PAGES_UPDATED, "monthly", "0.4"),
@@ -138,6 +141,23 @@ async function buildCategoriesSitemap() {
       );
     }
   }
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${entries.join("\n")}
+</urlset>
+`;
+}
+
+/**
+ * Landings profissão × cidade (/vagas/<estado>/<cidade>/<profissao>), só as com volume mínimo
+ * (lib/local-landings.ts). lastmod = publicação da vaga mais recente de cada landing.
+ */
+async function buildLandingsSitemap() {
+  const jobs = await getListingJobs();
+  const fallback = newestPublished(jobs, STATIC_PAGES_UPDATED);
+  const entries = listEligibleLocals(jobs).map((local) =>
+    urlEntry(`${SITE_URL}${local.path}`, newestPublished(local.jobs, fallback), "daily", "0.7"),
+  );
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${entries.join("\n")}
@@ -260,6 +280,9 @@ export async function GET(
   }
   if (segment === "categories.xml") {
     return xmlResponse(await buildCategoriesSitemap());
+  }
+  if (segment === "landings.xml") {
+    return xmlResponse(await buildLandingsSitemap());
   }
   if (segment === "concursos.xml") {
     return xmlResponse(await buildConcursosSitemap());

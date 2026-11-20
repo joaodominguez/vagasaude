@@ -27,6 +27,8 @@ import {
   listEligibleConcursos,
 } from "@/lib/concursos-hub";
 import { getListingJobs } from "@/lib/jobs-data";
+import { isSitemapJob } from "@/lib/indexable";
+import { listRecentJobs, RECENT_PATH } from "@/lib/recent-jobs";
 import { professions } from "@/lib/jobs";
 import { formatNewsDate, listArticles, newsCategoryLabel, newsPath } from "@/lib/news";
 import { buildHomeMetadata } from "@/lib/seo";
@@ -43,7 +45,9 @@ export async function generateMetadata() {
 
 export default async function Home() {
   const jobs = await getListingJobs();
-  const recentJobs = jobs.slice(0, 12);
+  // Só vagas indexáveis (as do jobs.xml), mais recentes primeiro: ligações diretas para o Googlebot.
+  const recentJobs = jobs.filter((job) => isSitemapJob(job)).slice(0, 12);
+  const todaySet = listRecentJobs(jobs);
   const latestNews = listArticles().slice(0, 3);
   const districtCounts = jobs.reduce<Record<string, number>>((acc, job) => {
     const key = job.district || "Brasil";
@@ -153,8 +157,11 @@ export default async function Home() {
               <span className="section-kicker">Atualizado diariamente</span>
               <h2 className="section-title">Vagas mais recentes</h2>
             </div>
-            <Link href="/vagas" className="home-more">
-              Ver todas as {nf.format(jobs.length)} vagas <ArrowRight size={16} aria-hidden="true" />
+            <Link href={RECENT_PATH} className="home-more">
+              {todaySet.hours <= 48
+                ? `Ver as ${nf.format(todaySet.jobs.length)} vagas de hoje`
+                : `Ver as ${nf.format(todaySet.jobs.length)} vagas mais recentes`}{" "}
+              <ArrowRight size={16} aria-hidden="true" />
             </Link>
           </div>
 
@@ -163,6 +170,11 @@ export default async function Home() {
               <JobCard key={job.slug} job={job} />
             ))}
           </div>
+          <p className="mt-5 text-sm">
+            <Link href="/vagas" className="home-more">
+              Ver todas as {nf.format(jobs.length)} vagas <ArrowRight size={16} aria-hidden="true" />
+            </Link>
+          </p>
         </section>
 
         <section id="alertas" className="page-container pb-14 sm:pb-16">

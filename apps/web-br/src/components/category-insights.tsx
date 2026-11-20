@@ -12,6 +12,7 @@ import {
   getSalaryBenchmark,
 } from "@/lib/salary-benchmarks";
 import { cityOfJob, citiesOfDistrict, getCityIndex } from "@/lib/cities";
+import { getLocalIndex, localPath } from "@/lib/local-landings";
 import { concursosPath, listConcursos, listEligibleConcursos } from "@/lib/concursos-hub";
 import { getListingJobs } from "@/lib/jobs-data";
 import { articlesForCategory, newsPath } from "@/lib/news";
@@ -55,6 +56,7 @@ export async function CategoryInsights({
   const eligible = new Set(allCategoryRefs.map((ref) => ref.path));
   const allJobs = await getListingJobs();
   const cityIndex = getCityIndex(allJobs);
+  const localIndex = getLocalIndex(allJobs);
   const concursoPaths = new Set(
     listEligibleConcursos(listConcursos(allJobs)).map((ref) => ref.path),
   );
@@ -111,12 +113,18 @@ export async function CategoryInsights({
               const city = cityOfJob(job);
               if (!city) continue;
               const key = `${city.district}/${city.slug}`;
+              const cityRef = cityIndex.all.find(
+                (c) => c.district === city.district && c.slug === city.slug,
+              );
+              // Preferir a landing profissão × cidade; senão a da cidade.
+              const localHref =
+                cityRef && category.profession
+                  ? localPath(cityRef, category.profession)
+                  : undefined;
               const entry = byCity.get(key) ?? {
                 name: city.name,
                 count: 0,
-                href: cityIndex.all.find(
-                  (c) => c.district === city.district && c.slug === city.slug,
-                )?.path,
+                href: localHref && localIndex.byKey.has(localHref) ? localHref : cityRef?.path,
               };
               entry.count += 1;
               byCity.set(key, entry);

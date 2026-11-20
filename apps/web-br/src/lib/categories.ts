@@ -4,6 +4,7 @@ import {
   professions as taxonomyProfessions,
 } from "@/lib/taxonomies";
 import { absoluteUrl, SITE_NAME, truncateMeta } from "@/lib/seo";
+import { BRAZIL_STATES } from "@/lib/brazil-states";
 import type { Metadata } from "next";
 
 export const CATEGORY_MIN_JOBS = 3;
@@ -23,6 +24,12 @@ const SUB_PROFESSIONS = [
     label: "Auxiliar de Enfermagem",
     parent: "Enfermagem",
     pattern: /\baux(iliar|\.)?(\s*\(a\))?\s*(de |em )?\s*enf/,
+  },
+  {
+    // «enfermeiro RJ»: título com enfermeiro/enfermeira (técnicos e auxiliares dizem «enfermagem»).
+    label: "Enfermeiro",
+    parent: "Enfermagem",
+    pattern: /\benfermeir[oa]/,
   },
 ] as const;
 
@@ -402,6 +409,7 @@ export function buildCategoryIntro(
     .map((item) => `${item.count} no setor ${item.name.toLowerCase()}`)
     .join(", ");
   const contracts = stats.contractCounts
+    .filter((item) => item.name !== "A definir")
     .slice(0, 3)
     .map((item) => item.name.toLowerCase())
     .join(", ");
@@ -444,7 +452,7 @@ export function buildCategoryMetadata(
   const offerWord = count === 1 ? "oferta ativa" : "ofertas ativas";
   const baseTitle =
     ref.kind === "combo"
-      ? `${ref.profession} em ${ref.district}: ${count} ${offerWord}`
+      ? `Vagas de ${ref.profession} em ${ref.district}${comboUf(ref.district)}: ${count} ${count === 1 ? "vaga" : "vagas"}`
       : ref.kind === "profession"
         ? `${ref.profession}: ${count} vagas de saúde no Brasil`
         : `Saúde em ${ref.district}: ${count} ${offerWord}`;
@@ -475,6 +483,12 @@ export function buildCategoryMetadata(
       description,
     },
   };
+}
+
+/** « (SP)» para o título das landings profissão × estado (pesquisas por sigla: «enfermeiro RJ»). */
+function comboUf(district: string | null) {
+  const uf = BRAZIL_STATES.find((state) => state.name === district)?.uf;
+  return uf ? ` (${uf})` : "";
 }
 
 function professionDistrictDescription(ref: CategoryRef, count: number) {

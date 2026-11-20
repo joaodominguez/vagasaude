@@ -42,5 +42,12 @@ rm -f "$STAGE/.next/server/app/index.html" \
   "$STAGE/.next/server/app/index.meta"
 rm -rf "$STAGE/.next/server/app/index.segments" 2>/dev/null || true
 
+# Páginas novas com dados (2026-11-20): /vagas/hoje e paginação. Prerendered no build = dados do
+# jobs.json do Mac; apagar para a 1ª request no VPS gerar com os dados reais.
+rm -f "$STAGE/.next/server/app/vagas/hoje.html" \
+  "$STAGE/.next/server/app/vagas/hoje.rsc" \
+  "$STAGE/.next/server/app/vagas/hoje.meta"
+rm -rf "$STAGE/.next/server/app/vagas/hoje.segments" 2>/dev/null || true
+
 tar -C "$STAGE" -czf "$OUT" .
 echo "OK $OUT (css=$CSS_COUNT, homepage prerender stripped)"
