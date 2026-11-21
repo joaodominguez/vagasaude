@@ -141,13 +141,22 @@ export function safeDatePosted(value: string, firstSeen?: string | null) {
 
 export function buildJobMetadata(
   job: Job,
-  options?: { expired?: boolean; canonicalSlug?: string },
+  options?: { expired?: boolean; canonicalSlug?: string; indexableExpired?: boolean },
 ): Metadata {
   const expired = Boolean(options?.expired);
-  const title = expired
+  // Concorso pubblico scaduto da <= 90 giorni: resta indicizzabile (vedi expired-concorso.ts).
+  const indexableExpired = expired && Boolean(options?.indexableExpired);
+  const title = indexableExpired
+    ? `${job.title} — ${job.company} (bando scaduto)`
+    : expired
     ? `${job.title} (offerta chiusa) — ${job.company}`
     : `${job.title} — ${job.company}`;
-  const description = expired
+  const description = indexableExpired
+    ? truncateMeta(
+        `Bando scaduto: ${job.title} a ${job.city} · ${job.company}. Le candidature sono chiuse: scopri i concorsi aperti simili su ${SITE_NAME}.`,
+        160,
+      )
+    : expired
     ? truncateMeta(
         `Questa offerta di ${job.profession} a ${job.city} non è più attiva. Scopri offerte sanitarie simili su ${SITE_NAME}.`,
         160,
@@ -161,7 +170,7 @@ export function buildJobMetadata(
     title,
     description,
     alternates: { canonical },
-    robots: expired
+    robots: expired && !indexableExpired
       ? { index: false, follow: true }
       : { index: true, follow: true },
     openGraph: {

@@ -86,15 +86,25 @@ def meta_url_for(sitemap_url: str) -> str:
     return re.sub(r"jobs\.xml(\?.*)?$", "jobs-meta.json", sitemap_url)
 
 
-def read_meta(url: str) -> dict[str, dict]:
-    """URL → metadados da vaga (vazio se o endpoint não existir: ordem antiga)."""
+def read_meta(url: str) -> tuple[dict[str, dict], set[str] | None]:
+    """(URL → metadados da vaga, URLs de concursos públicos expirados há <= 90 dias).
+
+    Metadados vazios se o endpoint não existir (ordem antiga). O 2.º valor é None quando o endpoint
+    não responde ou é de uma versão sem a lista: nesse caso NENHUM URL_DELETED é enviado nesta
+    execução (não se sabe que URLs estão na janela de 90 dias).
+    """
     try:
         response = httpx.get(url, timeout=60)
         response.raise_for_status()
-        return {item["url"]: item for item in response.json().get("jobs", [])}
+        data = response.json()
+        expired = data.get("expiredIndexable")
+        return (
+            {item["url"]: item for item in data.get("jobs", [])},
+            set(expired) if isinstance(expired, list) else None,
+        )
     except Exception as exc:  # noqa: BLE001 — a fila funciona sem prioridades
         print(f"[indexing] sem metadados de prioridade ({exc.__class__.__name__}); ordem por data")
-        return {}
+        return {}, None
 
 
 def priority(item: dict, now: datetime) -> float:
@@ -200,7 +210,7 @@ def main() -> int:
         state["day"], state["used"] = today, 0
     budget = max(0, quota - int(state.get("used", 0)))
 
-    meta = read_meta(args.meta or meta_url_for(args.sitemap))
+    meta, expired_indexable = read_meta(args.meta or meta_url_for(args.sitemap))
     now_dt = datetime.now(timezone.utc)
     candidates = [u for u in current if u not in notified]
     skipped = [u for u in candidates if u in meta and not eligible(meta[u], now_dt)]
@@ -217,10 +227,23 @@ def main() -> int:
         new = sorted(candidates, key=lambda u: current[u], reverse=True)
     # Remoções só com a quota que sobra depois das novas: o Google retira sozinho as páginas
     # noindex/404 no rastreio seguinte; a quota vale mais a descobrir vagas novas.
-    gone = [u for u in notified if u not in current]
-    plan = [(u, "URL_UPDATED") for u in new] + [(u, "URL_DELETED") for u in gone]
+    # Concursos públicos expirados há <= 90 dias continuam indexáveis (index,follow, sem JobPosting):
+    # nunca URL_DELETED enquanto estiverem na janela. Sem a lista (endpoint em baixo/versão antiga) não
+    # se remove nada. Cada um é notificado uma vez como URL_UPDATED (o Google vê o aviso «scaduto»).
+    expired_notified: dict[str, str] = state.get("expired_notified", {})
+    keep = expired_indexable or set()
+    gone_all = [u for u in notified if u not in current]
+    gone = [u for u in gone_all if u not in keep] if expired_indexable is not None else []
+    protected = len(gone_all) - len(gone)
+    expired_new = sorted(u for u in keep if u not in expired_notified and u not in current)
+    plan = (
+        [(u, "URL_UPDATED") for u in new]
+        + [(u, "EXPIRED_UPDATED") for u in expired_new]
+        + [(u, "URL_DELETED") for u in gone]
+    )
     print(
         f"[indexing] novas {len(new)}, removidas {len(gone)}, quota restante hoje {budget}"
+        f"{f', expirados <=90d protegidos: {protected}, a notificar: {len(expired_new)}' if expired_indexable is not None else ', lista de expirados indisponível: sem remoções'}"
         f"{' (simulação)' if dry_run else ''}"
         f"{f', ignoradas por prazo < 72 h: {len(skipped)}' if skipped else ''}"
         f"{', fila priorizada' if meta else ''}"
@@ -235,23 +258,32 @@ def main() -> int:
     sent = errors = 0
     exhausted = False
     for url, kind in plan[:budget]:
-        response = session.post(ENDPOINT, json={"url": url, "type": kind}, timeout=30)
+        api_type = "URL_UPDATED" if kind == "EXPIRED_UPDATED" else kind
+        response = session.post(ENDPOINT, json={"url": url, "type": api_type}, timeout=30)
         if response.status_code == 429:
             print("[indexing] quota da API esgotada (429)")
             exhausted = True
             break
         if response.status_code >= 400:
             errors += 1
-            print(f"[indexing] {kind} {url}: HTTP {response.status_code} {response.text[:160]}")
+            print(f"[indexing] {api_type} {url}: HTTP {response.status_code} {response.text[:160]}")
             if errors >= 5:
                 break
             continue
         sent += 1
         if kind == "URL_UPDATED":
             notified[url] = now
+        elif kind == "EXPIRED_UPDATED":
+            expired_notified[url] = now
         else:
             notified.pop(url, None)
     state["notified"] = notified
+    # Só guarda os que ainda estão na janela (os restantes saem do estado).
+    state["expired_notified"] = (
+        {u: t for u, t in expired_notified.items() if u in keep}
+        if expired_indexable is not None
+        else expired_notified
+    )
     # Com 429 não vale a pena tentar de novo até o Google reiniciar a quota.
     state["used"] = quota if exhausted else int(state.get("used", 0)) + sent
     save_state(state_path, state)

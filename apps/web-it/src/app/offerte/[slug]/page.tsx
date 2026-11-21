@@ -31,6 +31,7 @@ import {
 import type { Job } from "@/lib/jobs";
 import { relatedJobs } from "@/lib/related-jobs";
 import { getJob, getJobs } from "@/lib/jobs-data";
+import { expiredConcorsoClosure, formatClosureDate, type ExpiredClosure } from "@/lib/expired-concorso";
 import { buildJobMetadata, buildJobPostingJsonLd, jobUrl } from "@/lib/seo";
 import { inRegione } from "@/lib/it-locative";
 import { classifyJob, isConcorsoJob, isPublicJob, JOB_TYPE_LABEL } from "@/lib/job-type";
@@ -48,7 +49,13 @@ import { splitOffering } from "@/lib/job-sections";
 import { findEmployer } from "@/lib/employers";
 import { SOURCE_META } from "@/lib/sources";
 import { jobProvince } from "@/lib/provinces";
-import { hasConcorsoLanding, listConcorsi, concorsiPath } from "@/lib/concorsi";
+import {
+  filterConcorsi,
+  hasConcorsoLanding,
+  listConcorsi,
+  listEligibleConcorsi,
+  concorsiPath,
+} from "@/lib/concorsi";
 
 // force-static + revalidate: ISR on-demand (il solo revalidate non basta
 // se l'albero viene trattato come dinamico per via dell'I/O).
@@ -82,6 +89,8 @@ export async function generateMetadata({
   return buildJobMetadata(found.job, {
     expired: found.expired,
     canonicalSlug: found.canonicalSlug,
+    indexableExpired:
+      found.expired && expiredConcorsoClosure(found.job, found.closure) != null,
   });
 }
 
@@ -117,6 +126,8 @@ export default async function OffertaSlugPage({ params }: { params: Params }) {
   if (!found) notFound();
 
   if (found.expired) {
+    const closure = expiredConcorsoClosure(found.job, found.closure);
+    if (closure) return <ClosedConcorsoView job={found.job} allJobs={allJobs} closure={closure} />;
     return <ExpiredJobView job={found.job} allJobs={allJobs} />;
   }
 
@@ -415,6 +426,164 @@ function buildBackLink(job: Job, allJobs: Job[]): { href: string; label: string 
     return { href: categoryPath(null, job.district), label: `Offerte ${inRegione(job.district)}` };
   }
   return { href: "/offerte", label: "Tutte le offerte" };
+}
+
+/**
+ * Concorso pubblico scaduto da <= 90 giorni: index,follow, SENZA JobPosting (solo BreadcrumbList),
+ * avviso «scaduto» in alto, nessun pulsante Candidati e bandi aperti simili.
+ */
+function ClosedConcorsoView({
+  job,
+  allJobs,
+  closure,
+}: {
+  job: Job;
+  allJobs: Job[];
+  closure: ExpiredClosure;
+}) {
+  const title = displayTitle(job.title, job);
+  const type = classifyJob(job);
+  const date = formatClosureDate(closure.at);
+  const notice =
+    closure.kind === "deadline"
+      ? `Bando scaduto il ${date} · Le candidature sono chiuse`
+      : `Bando scaduto (non più online dal ${date}) · Le candidature sono chiuse`;
+
+  // Bandi ABERTI della stessa professione e regione; ripiego: stessa professione in tutta Italia.
+  const open = listConcorsi(allJobs).filter(({ job: j }) => j.slug !== job.slug);
+  const sameRegion = filterConcorsi(open, job.profession, job.district || null).map((i) => i.job);
+  const sameProfession = filterConcorsi(open, job.profession, null).map((i) => i.job);
+  const similar = (sameRegion.length > 0 ? sameRegion : sameProfession).slice(0, 6);
+  const regionScoped = sameRegion.length > 0;
+
+  const refs = listEligibleConcorsi(listConcorsi(allJobs));
+  const links: Array<{ href: string; label: string }> = [];
+  if (job.district && refs.some((r) => r.profession === job.profession && r.district === job.district)) {
+    links.push({
+      href: concorsiPath(job.profession, job.district),
+      label: `Concorsi ${job.profession} ${inRegione(job.district)}`,
+    });
+  }
+  if (hasConcorsoLanding(listConcorsi(allJobs), job.profession)) {
+    links.push({ href: concorsiPath(job.profession), label: `Concorsi di ${job.profession === "OSS" ? "OSS" : job.profession.toLowerCase()}` });
+  }
+  links.push({ href: "/concorsi/in-scadenza", label: "Concorsi in scadenza" });
+  links.push({ href: "/concorsi", label: "Tutti i concorsi aperti" });
+
+  const excerpt = trimTruncatedExcerpt(job.description);
+  const { blocks } = splitOffering(excerpt.text);
+
+  return (
+    <>
+      <Header />
+      <main>
+        <div className="page-container py-5 sm:py-8">
+          <BreadcrumbJsonLd items={buildJobBreadcrumbs(job, allJobs)} />
+          <Link href={buildBackLink(job, allJobs).href} className="job-back">
+            <ArrowLeft size={16} aria-hidden="true" />
+            {buildBackLink(job, allJobs).label}
+          </Link>
+
+          <div
+            role="status"
+            className="content-card mt-3 border-amber-500/30 bg-amber-500/5 p-4 sm:p-5"
+          >
+            <p className="text-sm font-extrabold uppercase tracking-wider text-amber-800 dark:text-amber-200">
+              {notice}
+            </p>
+          </div>
+
+          <div className="mt-6 grid min-w-0 gap-8 lg:grid-cols-[minmax(0,1fr)_22.5rem]">
+            <article className="min-w-0">
+              <header className="border-b border-border pb-7">
+                <div className="flex min-w-0 items-start gap-3 sm:gap-4">
+                  <JobIcon profession={job.profession} concorso={type !== "offerta"} large />
+                  <div className="min-w-0">
+                    <h1 className="break-words text-2xl font-extrabold leading-tight tracking-[-0.04em] sm:text-4xl">
+                      {title}
+                    </h1>
+                    <p className="mt-1.5 text-base font-semibold text-muted sm:text-lg">
+                      {job.company}
+                    </p>
+                  </div>
+                </div>
+                <ul className="mt-5 flex flex-wrap items-center gap-2" aria-label="Dati del bando">
+                  {job.city && (
+                    <li className="fact-chip">
+                      <MapPin size={14} aria-hidden="true" />
+                      {job.city}
+                    </li>
+                  )}
+                  <li className="fact-chip fact-chip-public">Pubblico</li>
+                  {type !== "offerta" && <li className="fact-chip">{JOB_TYPE_LABEL[type]}</li>}
+                  <li className="fact-chip">{closure.kind === "deadline" ? "Scaduto il" : "Chiuso dal"} {date}</li>
+                </ul>
+              </header>
+
+              <div className="job-content">
+                <section>
+                  <h2>Sul bando</h2>
+                  <JobDescription blocks={blocks} />
+                </section>
+                <section>
+                  <h2>Graduatoria e prossime edizioni</h2>
+                  <p>
+                    Per esiti e graduatoria consulta il sito dell&apos;ente. Qui sotto trovi i
+                    concorsi ancora aperti per {job.profession}; con un avviso email ti
+                    segnaliamo i nuovi bandi appena escono.
+                  </p>
+                </section>
+              </div>
+
+              <section className="mt-9 border-t border-border pt-7" aria-labelledby="concorsi-simili">
+                <h2 id="concorsi-simili" className="text-xl font-extrabold tracking-[-0.03em]">
+                  Concorsi aperti simili
+                </h2>
+                {similar.length > 0 ? (
+                  <>
+                    <p className="mt-1.5 text-sm text-muted">
+                      {regionScoped
+                        ? `Bandi aperti di ${job.profession} ${inRegione(job.district)}.`
+                        : `Bandi aperti di ${job.profession} in tutta Italia.`}
+                    </p>
+                    <div className="mt-5 grid min-w-0 gap-3 sm:grid-cols-2">
+                      {similar.map((item) => (
+                        <JobCard key={item.slug} job={item} />
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <p className="mt-3 text-sm text-muted">
+                    Al momento non ci sono concorsi aperti simili.
+                  </p>
+                )}
+                <div className="explore-links mt-5">
+                  {links.map((link) => (
+                    <Link prefetch={false} key={link.href} href={link.href}>
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
+              </section>
+            </article>
+
+            <aside className="min-w-0 space-y-4">
+              <div className="alert-card">
+                <h2 className="font-extrabold">Ricevi i nuovi concorsi</h2>
+                <p className="mt-1.5 text-sm leading-6 text-muted">
+                  {[job.profession, job.district].filter(Boolean).join(" · ")}. Al massimo 2 email al giorno.
+                </p>
+                <div className="mt-4">
+                  <AlertForm compact defaultDistrict={job.district} defaultProfession={job.profession} />
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </main>
+      <Footer />
+    </>
+  );
 }
 
 function ExpiredJobView({ job, allJobs }: { job: Job; allJobs: Job[] }) {

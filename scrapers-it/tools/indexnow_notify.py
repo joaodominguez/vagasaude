@@ -47,6 +47,19 @@ def parse_dt(value):
     return dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
 
 
+def read_expired_indexable(url: str) -> set[str] | None:
+    """Concursos públicos expirados há <= 90 dias (ainda indexáveis); None se o endpoint não os der."""
+    if not url.endswith(".json"):
+        return None
+    try:
+        with urllib.request.urlopen(url, timeout=60) as response:  # noqa: S310 — URL interno
+            data = json.loads(response.read().decode("utf-8"))
+        expired = data.get("expiredIndexable")
+        return set(expired) if isinstance(expired, list) else None
+    except Exception:  # noqa: BLE001
+        return None
+
+
 def read_current(url: str) -> list[str]:
     """URLs das vagas do sitemap (jobs-meta.json ou jobs.xml), sem prazo < 72 h."""
     with urllib.request.urlopen(url, timeout=60) as response:  # noqa: S310 — URL interno
@@ -130,7 +143,13 @@ def main() -> int:
 
     current_set = set(current)
     new = [u for u in current if u not in sent]
-    gone = [u for u in sent if u not in current_set]
+    # Expirados <= 90 dias continuam indexáveis: não se pedem remoções. Sem a lista, nenhuma remoção.
+    expired_indexable = read_expired_indexable(args.sitemap)
+    gone = (
+        [u for u in sent if u not in current_set and u not in expired_indexable]
+        if expired_indexable is not None
+        else []
+    )
     print(f"[indexnow] novas {len(new)}, removidas {len(gone)}, teto restante hoje {budget}{' (simulação)' if args.dry_run else ''}")
     plan = [(u, True) for u in new] + [(u, False) for u in gone]
     if args.dry_run or not plan or budget == 0:

@@ -29,7 +29,7 @@ import {
   newsTotalPages,
 } from "@/lib/news";
 import { CAREERS, hasSalaryData } from "@/lib/salary-tables";
-import { buildJobsMeta, jobLastmod, listSitemapJobs } from "@/lib/sitemap-jobs";
+import { buildJobsMeta, jobLastmod, listExpiredIndexableUrls, listSitemapJobs } from "@/lib/sitemap-jobs";
 import { RECENT_PATH } from "@/lib/recent-jobs";
 import { SITE_URL } from "@/lib/seo";
 import { REGIONI, ZC_HUB_PATH, hubLastmod, regionLastmod, zcRegionPath } from "@/lib/zone-carenti";
@@ -301,7 +301,12 @@ export async function GET(
     // Coda della Indexing API/IndexNow (tools/indexing_notify.py): le stesse offerte del jobs.xml + metadati.
     const jobs = await listSitemapJobs();
     return new Response(
-      JSON.stringify({ generatedAt: new Date().toISOString(), jobs: buildJobsMeta(jobs, SITE_URL) }),
+      JSON.stringify({
+        generatedAt: new Date().toISOString(),
+        jobs: buildJobsMeta(jobs, SITE_URL),
+        // Concorsi pubblici scaduti da <= 90 giorni (ancora indicizzabili): mai URL_DELETED/rimozioni.
+        expiredIndexable: await listExpiredIndexableUrls(SITE_URL),
+      }),
       {
         headers: {
           "Content-Type": "application/json; charset=utf-8",

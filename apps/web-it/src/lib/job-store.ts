@@ -394,6 +394,30 @@ function isPastExpiry(job: StoredJob) {
   return !Number.isNaN(expires) && expires < Date.now();
 }
 
+/**
+ * Quando e' scaduto/chiuso un bando pubblico (ms) e come lo sappiamo:
+ *  - "deadline": scadenza (expiresAt) passata;
+ *  - "gone": la fonte non lo restituisce piu' (status expired / non visto da >7 giorni / piu' vecchio di 1 anno).
+ * null = non e' un caso di chiusura per data (es. avviso di esito, o stato nascosto/duplicato).
+ */
+export function expiredClosure(job: StoredJob): { at: number; kind: "deadline" | "gone" } | null {
+  if (job.status !== "published" && job.status !== "expired") return null;
+  if (isClosedNoticeTitle(job.title)) return null;
+  const expires = job.expiresAt ? Date.parse(job.expiresAt) : Number.NaN;
+  if (!Number.isNaN(expires) && expires < Date.now()) return { at: expires, kind: "deadline" };
+  const lastSeen = Date.parse(job.lastSeenAt || job.updatedAt || "");
+  const times: number[] = [];
+  if (!Number.isNaN(lastSeen)) times.push(lastSeen);
+  if (!hasFutureExpiry(job)) {
+    const published = parseLooseDate(normalizePublishedAt(job.publishedAt, job.createdAt));
+    if (published != null && Date.now() - published > MAX_JOB_AGE_DAYS * DAY_MS) {
+      times.push(published + MAX_JOB_AGE_DAYS * DAY_MS);
+    }
+  }
+  if (times.length === 0) return null;
+  return { at: Math.min(...times), kind: "gone" };
+}
+
 function hasFutureExpiry(job: StoredJob) {
   if (!job.expiresAt) return false;
   const expires = Date.parse(job.expiresAt);
@@ -829,6 +853,24 @@ export async function getStoredJobBySlugIncludingExpired(slug: string) {
   return null;
 }
 
+/**
+ * Offerte chiuse (pagina scaduta, non attiva) con data di chiusura, una per slug: base della lista dei
+ * concorsi pubblici scaduti da <= 90 giorni (vedi expired-concorso.ts) per sitemap-meta e Indexing API.
+ */
+export async function listClosedCards() {
+  const { bySlug } = await getDerivedJobsCache();
+  const out: Array<{ job: JobCardData; closure: { at: number; kind: "deadline" | "gone" } }> = [];
+  const seen = new Set<StoredJob>(); // bySlug tem também chaves alternativas (slug normalizado)
+  for (const job of bySlug.values()) {
+    if (seen.has(job)) continue;
+    seen.add(job);
+    if (!(job.status === "expired" || (job.status === "published" && isInactive(job)))) continue;
+    const closure = expiredClosure(job);
+    if (closure) out.push({ job: toJobCard(job), closure });
+  }
+  return out;
+}
+
 export async function listJobCards() {
   const { cards } = await getDerivedJobsCache();
   return cards;
@@ -872,6 +914,7 @@ export async function getJobCard(slug: string) {
     job: company ? { ...card, company } : card,
     expired: found.expired,
     canonicalSlug: found.expired ? undefined : canonicalOf.get(found.job.slug),
+    closure: found.expired ? expiredClosure(found.job) : null,
   };
 }
 

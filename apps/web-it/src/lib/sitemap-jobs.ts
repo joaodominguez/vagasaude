@@ -2,6 +2,8 @@ import type { Job } from "@/lib/jobs";
 import { getJobs } from "@/lib/jobs-data";
 import { isSitemapJob } from "@/lib/indexable";
 import { classifyJob } from "@/lib/job-type";
+import { listClosedCards } from "@/lib/job-store";
+import { expiredConcorsoClosure } from "@/lib/expired-concorso";
 
 /**
  * Offerte del jobs.xml (e, per trascinamento, di Indexing API e IndexNow, che leggono questo sitemap).
@@ -85,4 +87,17 @@ export function buildJobsMeta(jobs: Job[], siteUrl: string, now: number = Date.n
     siblings: siblings.get(keyOf(job)) ?? 1,
     sourceCount: sources.get(job.source ?? "") ?? 1,
   }));
+}
+
+/**
+ * URL dei concorsi pubblici scaduti da <= 90 giorni: pagine indicizzabili (index,follow, senza JobPosting)
+ * fuori dal jobs.xml. Indexing API e IndexNow NON devono mandare URL_DELETED/rimozioni per questi URL;
+ * tools/indexing_notify.py li notifica una volta come URL_UPDATED.
+ */
+export async function listExpiredIndexableUrls(siteUrl: string, now: number = Date.now()): Promise<string[]> {
+  const closed = await listClosedCards();
+  return closed
+    .filter(({ job, closure }) => expiredConcorsoClosure(job, closure, now) != null)
+    .map(({ job }) => `${siteUrl}/offerte/${job.slug}`)
+    .sort();
 }

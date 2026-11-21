@@ -51,7 +51,12 @@ export const getJobs = cache(async (): Promise<Job[]> => {
 export const getJob = cache(
   async (
     slug: string,
-  ): Promise<{ job: Job; expired: boolean; canonicalSlug?: string } | null> => {
+  ): Promise<{
+    job: Job;
+    expired: boolean;
+    canonicalSlug?: string;
+    closure?: { at: number; kind: "deadline" | "gone" } | null;
+  } | null> => {
     // Preferire l'indice in memoria (evita l'accesso al filesystem nel percorso caldo).
     const jobs = await getJobs();
     const active = jobs.find((job) => job.slug === slug);
