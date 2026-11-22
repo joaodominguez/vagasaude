@@ -21,6 +21,7 @@ import {
   newsPath,
   newsTotalPages,
 } from "@/lib/news";
+import { validLastmodMs } from "@/lib/lastmod";
 import { SITE_URL } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -65,8 +66,8 @@ function newestPublished(jobs: Job[], fallback: Date) {
   const now = Date.now();
   let newest = 0;
   for (const job of jobs) {
-    const t = Date.parse(job.publishedAt);
-    if (!Number.isNaN(t) && t <= now && t > newest) newest = t;
+    const t = validLastmodMs(job.publishedAt, now);
+    if (t != null && t <= now && t > newest) newest = t;
   }
   return newest ? new Date(newest) : fallback;
 }
