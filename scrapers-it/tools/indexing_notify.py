@@ -86,7 +86,7 @@ def meta_url_for(sitemap_url: str) -> str:
     return re.sub(r"jobs\.xml(\?.*)?$", "jobs-meta.json", sitemap_url)
 
 
-def read_meta(url: str) -> tuple[dict[str, dict], set[str] | None]:
+def read_meta(url: str) -> tuple[dict[str, dict], set[str] | None, set[str]]:
     """(URL → metadados da vaga, URLs de concursos públicos expirados há <= 90 dias).
 
     Metadados vazios se o endpoint não existir (ordem antiga). O 2.º valor é None quando o endpoint
@@ -98,13 +98,15 @@ def read_meta(url: str) -> tuple[dict[str, dict], set[str] | None]:
         response.raise_for_status()
         data = response.json()
         expired = data.get("expiredIndexable")
+        redirected = data.get("expiredRedirected")  # A5: concursos públicos > 90 dias → 301
         return (
             {item["url"]: item for item in data.get("jobs", [])},
             set(expired) if isinstance(expired, list) else None,
+            set(redirected) if isinstance(redirected, list) else set(),
         )
     except Exception as exc:  # noqa: BLE001 — a fila funciona sem prioridades
         print(f"[indexing] sem metadados de prioridade ({exc.__class__.__name__}); ordem por data")
-        return {}, None
+        return {}, None, set()
 
 
 def priority(item: dict, now: datetime) -> float:
@@ -210,7 +212,7 @@ def main() -> int:
         state["day"], state["used"] = today, 0
     budget = max(0, quota - int(state.get("used", 0)))
 
-    meta, expired_indexable = read_meta(args.meta or meta_url_for(args.sitemap))
+    meta, expired_indexable, redirected_301 = read_meta(args.meta or meta_url_for(args.sitemap))
     now_dt = datetime.now(timezone.utc)
     candidates = [u for u in current if u not in notified]
     skipped = [u for u in candidates if u in meta and not eligible(meta[u], now_dt)]
@@ -233,7 +235,15 @@ def main() -> int:
     expired_notified: dict[str, str] = state.get("expired_notified", {})
     keep = expired_indexable or set()
     gone_all = [u for u in notified if u not in current]
-    gone = [u for u in gone_all if u not in keep] if expired_indexable is not None else []
+    # A5: os que passam a 301 (> 90 dias) também não levam URL_DELETED: o Google segue o 301 ao rastrear.
+    gone = (
+        [u for u in gone_all if u not in keep and u not in redirected_301]
+        if expired_indexable is not None
+        else []
+    )
+    for u in gone_all:
+        if u in redirected_301:
+            notified.pop(u, None)
     protected = len(gone_all) - len(gone)
     expired_new = sorted(u for u in keep if u not in expired_notified and u not in current)
     plan = (

@@ -7,6 +7,8 @@ import {
 import { CONTRACT_UNKNOWN } from "@/lib/contracts";
 import { normalizeInlineLists } from "@/lib/format-job-text";
 import { shortenJobTitle, tidyTitleEnd } from "@/lib/shorten-job-title";
+import { isPublicJob } from "@/lib/job-type";
+import { EXPIRED_INDEXABLE_DAYS } from "@/lib/expired-concorso";
 
 export type StoredJob = {
   id: string;
@@ -869,6 +871,59 @@ export async function listClosedCards() {
     if (closure) out.push({ job: toJobCard(job), closure });
   }
   return out;
+}
+
+export type ClosedBeyondWindow = {
+  /** Chave de pesquisa (slug ou slug normalizado) tal como a página a resolve. */
+  key: string;
+  profession: string;
+  district: string;
+  closedAt: number;
+};
+
+let closedBeyondWindowCache: {
+  source: DerivedJobsCache;
+  entries: ClosedBeyondWindow[];
+} | null = null;
+
+/**
+ * Concorsi/avvisi del settore pubblico chiusi da PIU' di 90 giorni (A5): la pagina fa 301 verso la
+ * pagina /concorsi piu' pertinente (proxy.ts). Una sola voce per chiave di slug, quella che la pagina
+ * mostra (bySlug); uno slug con una offerta viva (collisione di slug troncati) NON compare mai: si mostra la viva.
+ * Privati/agenzie e avvisi senza data di chiusura (esiti, nascosti) restano fuori: comportamento invariato.
+ * Riusa la cache derivata (stat + una scansione per ricostruzione, al massimo 1 volta al minuto).
+ */
+export async function listClosedBeyondWindow(now: number = Date.now()): Promise<{
+  cards: JobCardData[];
+  entries: ClosedBeyondWindow[];
+  source: object;
+}> {
+  const derived = await getDerivedJobsCache();
+  if (closedBeyondWindowCache?.source === derived) {
+    return { cards: derived.cards, entries: closedBeyondWindowCache.entries, source: derived };
+  }
+  const live = new Set<string>();
+  for (const job of derived.active) {
+    live.add(job.slug);
+    const normalized = slugify(job.slug);
+    if (normalized) live.add(normalized);
+  }
+  const entries: ClosedBeyondWindow[] = [];
+  for (const [key, job] of derived.bySlug) {
+    if (live.has(key) || live.has(job.slug)) continue;
+    if (!(job.status === "expired" || (job.status === "published" && isInactive(job)))) continue;
+    if (!isPublicJob({ sector: SECTOR_LABEL[job.sector], source: job.source })) continue;
+    const closure = expiredClosure(job);
+    if (!closure || now - closure.at <= EXPIRED_INDEXABLE_DAYS * DAY_MS) continue;
+    entries.push({
+      key,
+      profession: isVeterinaryTitle(job.title) ? "Veterinaria" : job.profession,
+      district: job.locationDistrict,
+      closedAt: closure.at,
+    });
+  }
+  closedBeyondWindowCache = { source: derived, entries };
+  return { cards: derived.cards, entries, source: derived };
 }
 
 export async function listJobCards() {

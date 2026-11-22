@@ -30,6 +30,7 @@ import {
 } from "@/lib/news";
 import { CAREERS, hasSalaryData } from "@/lib/salary-tables";
 import { buildJobsMeta, jobLastmod, listExpiredIndexableUrls, listSitemapJobs } from "@/lib/sitemap-jobs";
+import { listExpiredRedirectTargets } from "@/lib/expired-redirect";
 import { RECENT_PATH } from "@/lib/recent-jobs";
 import { validLastmodMs } from "@/lib/lastmod";
 import { SITE_URL } from "@/lib/seo";
@@ -307,6 +308,10 @@ export async function GET(
         jobs: buildJobsMeta(jobs, SITE_URL),
         // Concorsi pubblici scaduti da <= 90 giorni (ancora indicizzabili): mai URL_DELETED/rimozioni.
         expiredIndexable: await listExpiredIndexableUrls(SITE_URL),
+        // Concorsi pubblici scaduti da > 90 giorni: la pagina fa 301 (A5); il Google segue il 301, niente URL_DELETED.
+        expiredRedirected: [...(await listExpiredRedirectTargets()).keys()]
+          .map((slug) => `${SITE_URL}/offerte/${slug}`)
+          .sort(),
       }),
       {
         headers: {

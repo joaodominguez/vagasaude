@@ -55,7 +55,11 @@ def read_expired_indexable(url: str) -> set[str] | None:
         with urllib.request.urlopen(url, timeout=60) as response:  # noqa: S310 — URL interno
             data = json.loads(response.read().decode("utf-8"))
         expired = data.get("expiredIndexable")
-        return set(expired) if isinstance(expired, list) else None
+        if not isinstance(expired, list):
+            return None
+        # A5: concursos públicos > 90 dias passam a 301: sem remoção também.
+        redirected = data.get("expiredRedirected")
+        return set(expired) | (set(redirected) if isinstance(redirected, list) else set())
     except Exception:  # noqa: BLE001
         return None
 

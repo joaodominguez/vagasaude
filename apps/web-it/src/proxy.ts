@@ -1,10 +1,45 @@
 import { NextRequest, NextResponse } from "next/server";
 
-export function proxy(request: NextRequest) {
+import { expiredConcorsoRedirectTarget } from "@/lib/expired-redirect";
+import { resolveCategoryFromSegments } from "@/lib/categories";
+
+const SITE_ORIGIN = (process.env.NEXT_PUBLIC_SITE_URL || "https://offertesanita.it").replace(/\/$/, "");
+
+/**
+ * A5: pagina di un concorso pubblico chiuso da piu' di 90 giorni → 301 verso /concorsi/... (vedi
+ * lib/expired-redirect.ts). Nel proxy e non in redirect() della pagina (Next 16 duplica Location).
+ * Qualsiasi errore → la pagina risponde come prima.
+ */
+async function expiredConcorsoRedirect(request: NextRequest) {
+  const match = /^\/offerte\/([^/]+)\/?$/.exec(request.nextUrl.pathname);
+  if (!match) return NextResponse.next();
+  try {
+    let slug = match[1];
+    try {
+      slug = decodeURIComponent(slug);
+    } catch {
+      return NextResponse.next();
+    }
+    if (resolveCategoryFromSegments(slug)) return NextResponse.next();
+    const target = await expiredConcorsoRedirectTarget(slug);
+    if (!target) return NextResponse.next();
+    return new NextResponse(null, {
+      status: 301,
+      headers: {
+        Location: `${SITE_ORIGIN}${target}`,
+        "Cache-Control": "public, max-age=600, s-maxage=600",
+      },
+    });
+  } catch {
+    return NextResponse.next();
+  }
+}
+
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (!pathname.startsWith("/admin")) {
-    return NextResponse.next();
+    return expiredConcorsoRedirect(request);
   }
 
   const expectedUser = process.env.ADMIN_USER;
@@ -49,5 +84,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/admin/:path*", "/offerte/:slug"],
 };
