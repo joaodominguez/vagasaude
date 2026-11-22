@@ -31,6 +31,7 @@ import {
 import { CAREERS, hasSalaryData } from "@/lib/salary-tables";
 import { buildJobsMeta, jobLastmod, listExpiredIndexableUrls, listSitemapJobs } from "@/lib/sitemap-jobs";
 import { RECENT_PATH } from "@/lib/recent-jobs";
+import { validLastmodMs } from "@/lib/lastmod";
 import { SITE_URL } from "@/lib/seo";
 import { REGIONI, ZC_HUB_PATH, hubLastmod, regionLastmod, zcRegionPath } from "@/lib/zone-carenti";
 
@@ -76,8 +77,8 @@ function newestPublished(jobs: Array<{ publishedAt: string }>, fallback: Date): 
   const now = Date.now();
   let best = 0;
   for (const job of jobs) {
-    const t = Date.parse(job.publishedAt);
-    if (!Number.isNaN(t) && t <= now && t > best) best = t;
+    const t = validLastmodMs(job.publishedAt, now);
+    if (t != null && t <= now && t > best) best = t;
   }
   return best ? new Date(best) : fallback;
 }

@@ -1,5 +1,6 @@
 import type { Job } from "@/lib/jobs";
 import { getJobs } from "@/lib/jobs-data";
+import { dedupeBySlug, pickLastmod } from "@/lib/lastmod";
 import { isSitemapJob } from "@/lib/indexable";
 import { classifyJob } from "@/lib/job-type";
 import { listClosedCards } from "@/lib/job-store";
@@ -11,16 +12,13 @@ import { expiredConcorsoClosure } from "@/lib/expired-concorso";
  * Indexing API, che Google riserva ai JobPosting. Sono raggiungibili da /concorsi/tipo/graduatorie.
  */
 export async function listSitemapJobs(now: number = Date.now()): Promise<Job[]> {
-  return (await getJobs()).filter((job) => isSitemapJob(job, now) && classifyJob(job) !== "graduatoria");
+  // Uma voce per slug (A3): prima si deduplica sull'insieme completo (e' la scheda che la pagina mostra), poi si filtra.
+  return dedupeBySlug(await getJobs()).filter((job) => isSitemapJob(job, now) && classifyJob(job) !== "graduatoria");
 }
 
 /** lastmod di un'offerta: la pubblicazione; senza data valida, la 1a volta vista; mai «adesso». */
 export function jobLastmod(job: Job, now: number = Date.now()): Date | null {
-  for (const value of [job.publishedAt, job.firstSeenAt]) {
-    const t = value ? Date.parse(value) : Number.NaN;
-    if (!Number.isNaN(t) && t <= now) return new Date(t);
-  }
-  return null;
+  return pickLastmod([job.publishedAt, job.firstSeenAt], now);
 }
 
 /**
