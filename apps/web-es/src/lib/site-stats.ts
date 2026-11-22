@@ -42,6 +42,8 @@ export type HitInput = {
   device: "mobile" | "tablet" | "desktop";
   unique: boolean;
   event?: string;
+  /** Solo en email_visit: campaña (utm_campaign) del email. */
+  eventCampaign?: string | null;
   slug?: string | null;
   placement?: string | null;
 };
@@ -149,7 +151,10 @@ export function recordHit(input: HitInput) {
     if (input.utmCampaign) bump(day.campaigns, input.utmCampaign, CAPS.campaigns);
     if (input.screen) bump(day.screens, input.screen, 10);
   } else if (input.event) {
-    bump(day.events, input.event, 20);
+    bump(day.events, input.event, 80);
+      if (input.event === "email_visit" && input.eventCampaign) {
+        bump(day.events, `email_visit:${input.eventCampaign}`, 80);
+      }
     if (input.event === "apply_click") {
       if (input.slug) bump(day.applyBySlug, input.slug, CAPS.slugs);
       if (input.placement) bump(day.applyByPlacement, input.placement, 30);

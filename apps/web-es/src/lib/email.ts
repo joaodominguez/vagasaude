@@ -19,6 +19,8 @@ export type SendEmailInput = {
   html: string;
   text?: string;
   headers?: Record<string, string>;
+  /** Campaña (alerta_confirmacao, alerta_ativo, alerta_diario…): va como tag de Resend. */
+  campaign?: string;
 };
 
 export type SendEmailResult =
@@ -42,6 +44,11 @@ export function getEmailFrom() {
   );
 }
 
+/** Las tags de Resend solo aceptan letras ASCII, números, _ y -. */
+function tagValue(value: string) {
+  return value.replace(/[^A-Za-z0-9_-]/g, "_").slice(0, 256);
+}
+
 export async function sendEmail(
   input: SendEmailInput,
 ): Promise<SendEmailResult> {
@@ -63,6 +70,10 @@ export async function sendEmail(
       html: input.html,
       ...(input.text ? { text: input.text } : {}),
       ...(input.headers ? { headers: input.headers } : {}),
+      tags: [
+        { name: "site", value: tagValue(new URL(SITE_URL).hostname) },
+        ...(input.campaign ? [{ name: "campaign", value: tagValue(input.campaign) }] : []),
+      ],
     }),
   });
 
@@ -389,6 +400,7 @@ ${rows
 </table>`;
 
   return {
+    campaign: "alerta_confirmacao",
     subject: `Confirma tu alerta: ${summary}`,
     html: layout({
       campaign: "alerta_confirmacao",
@@ -428,6 +440,7 @@ export function alertConfirmedEmail(
       : `Recibirás las nuevas ${summary} por email, por la mañana y al final del día, cada vez que haya ofertas nuevas.`;
 
   return {
+    campaign: "alerta_ativo",
     subject: `Alerta activa: ${summary}`,
     html: layout({
       campaign: "alerta_ativo",
@@ -479,6 +492,7 @@ export function newJobsDigestEmail(
   const moreLabel = countLabel(more, "oferta nueva", "ofertas nuevas");
 
   return {
+    campaign: "alerta_diario",
     subject,
     html: layout({
       campaign: "alerta_diario",

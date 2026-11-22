@@ -139,7 +139,7 @@ export default function PrivacyPage() {
             </li>
             <li>
               <strong>Resend (Estados Unidos):</strong> envío de correos
-              transaccionales y de alertas. Transferencia internacional
+              transaccionales y de alertas. Los emails miden aperturas y clics para mejorar el servicio. Transferencia internacional
               amparada en el Marco de Privacidad de Datos UE-EE. UU. y/o
               cláusulas contractuales tipo de la Comisión Europea.
             </li>
