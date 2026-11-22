@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect, useRef } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
+import { trackEvent } from "@/lib/track-event";
 
 /**
  * Estatísticas próprias sem cookies: nada é guardado no dispositivo.
@@ -62,6 +63,19 @@ function Tracker() {
       w: widthBucket(),
     });
   }, [pathname, source, medium, campaign]);
+
+  // Aterragem vinda de um email: evento email_visit (uma vez por sessão e campanha).
+  useEffect(() => {
+    if (!pathname || pathname.startsWith("/admin")) return;
+    if ((medium ?? "").toLowerCase() !== "email") return;
+    const label = (campaign ?? "").toLowerCase().replace(/[^a-z0-9_.+\- ]/g, "").slice(0, 50) || "sem_campanha";
+    const key = `vs-email-visit:${label}`;
+    try {
+      if (sessionStorage.getItem(key)) return;
+      sessionStorage.setItem(key, "1");
+    } catch {}
+    trackEvent("email_visit", { campaign: label });
+  }, [pathname, medium, campaign]);
 
   useEffect(() => {
     function onClick(event: MouseEvent) {

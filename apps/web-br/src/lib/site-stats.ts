@@ -44,6 +44,8 @@ export type HitInput = {
   event?: string;
   slug?: string | null;
   placement?: string | null;
+  /** Só no email_visit: campanha (utm_campaign) do email. */
+  eventCampaign?: string | null;
 };
 
 const MAX_DAYS = 400;
@@ -149,7 +151,10 @@ export function recordHit(input: HitInput) {
     if (input.utmCampaign) bump(day.campaigns, input.utmCampaign, CAPS.campaigns);
     if (input.screen) bump(day.screens, input.screen, 10);
   } else if (input.event) {
-    bump(day.events, input.event, 20);
+    bump(day.events, input.event, 80);
+    if (input.event === "email_visit" && input.eventCampaign) {
+      bump(day.events, `email_visit:${input.eventCampaign}`, 80);
+    }
     if (input.event === "apply_click") {
       if (input.slug) bump(day.applyBySlug, input.slug, CAPS.slugs);
       if (input.placement) bump(day.applyByPlacement, input.placement, 30);

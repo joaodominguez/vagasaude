@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { TrackOnMount } from "@/components/track-on-mount";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { confirmAlert, getAlertByToken } from "@/lib/alerts";
@@ -132,6 +133,7 @@ async function ConfirmBody({ token }: { token?: string }) {
 
   return (
     <>
+      <TrackOnMount event="alert_confirm" />
       <h1 className="text-2xl font-extrabold tracking-[-0.04em]">Alerta confirmado</h1>
       <p className="mt-3 text-sm leading-6 text-muted">
         A inscrição de <strong>{alert.email}</strong> está ativa. Vamos enviar
