@@ -19,6 +19,8 @@ export type SendEmailInput = {
   html: string;
   text?: string;
   headers?: Record<string, string>;
+  /** Campanha (alerta_confirmacao, alerta_ativo, alerta_diario…): vai como tag Resend para o webhook. */
+  campaign?: string;
 };
 
 export type SendEmailResult =
@@ -42,6 +44,11 @@ export function getEmailFrom() {
   );
 }
 
+/** Tags da Resend só aceitam letras ASCII, números, _ e -. */
+function tagValue(value: string) {
+  return value.replace(/[^A-Za-z0-9_-]/g, "_").slice(0, 256);
+}
+
 export async function sendEmail(
   input: SendEmailInput,
 ): Promise<SendEmailResult> {
@@ -63,6 +70,10 @@ export async function sendEmail(
       html: input.html,
       ...(input.text ? { text: input.text } : {}),
       ...(input.headers ? { headers: input.headers } : {}),
+      tags: [
+        { name: "site", value: tagValue(new URL(SITE_URL).hostname) },
+        ...(input.campaign ? [{ name: "campaign", value: tagValue(input.campaign) }] : []),
+      ],
     }),
   });
 
@@ -389,6 +400,7 @@ ${rows
 </table>`;
 
   return {
+    campaign: "alerta_confirmacao",
     subject: `Confirma o teu alerta: ${summary}`,
     html: layout({
       campaign: "alerta_confirmacao",
@@ -428,6 +440,7 @@ export function alertConfirmedEmail(
       : `Vais receber as novas ${summary} por email, de manhã e ao fim do dia, sempre que houver vagas novas.`;
 
   return {
+    campaign: "alerta_ativo",
     subject: `Alerta activo: ${summary}`,
     html: layout({
       campaign: "alerta_ativo",
@@ -480,6 +493,7 @@ export function newJobsDigestEmail(
 
   return {
     subject,
+    campaign: "alerta_diario",
     html: layout({
       campaign: "alerta_diario",
       preheader,

@@ -33,7 +33,8 @@ export default function PrivacyPage() {
           <p>
             O email é utilizado exclusivamente para enviar oportunidades e
             comunicações relacionadas com o alerta. Não vendemos dados pessoais
-            nem os partilhamos para publicidade de terceiros.
+            nem os partilhamos para publicidade de terceiros. Os emails medem
+            aberturas e cliques para melhorarmos o serviço.
           </p>
           <h2>Cancelamento e eliminação</h2>
           <p>

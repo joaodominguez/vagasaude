@@ -1,4 +1,11 @@
 import { describeAlertFilters, listAlerts } from "@/lib/alerts";
+import { lastByRecipient, readEmailEvents } from "@/lib/email-events";
+import { getRecentDays } from "@/lib/site-stats";
+import {
+  CampaignPanel,
+  EventsPanel,
+  RecipientLine,
+} from "@/components/admin-email-metrics";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +23,8 @@ const STATUS_LABEL: Record<string, string> = {
 
 export default async function AdminAlertsPage() {
   const alerts = await listAlerts();
+  const emailEvents = await readEmailEvents();
+  const activity = lastByRecipient(emailEvents);
   const resendConfigured = Boolean(process.env.RESEND_API_KEY);
   const active = alerts.filter((alert) => alert.status === "active").length;
   const pending = alerts.filter(
@@ -48,6 +57,9 @@ export default async function AdminAlertsPage() {
             : "Resend ainda não está configurado. Os emails ficam só guardados."}
         </div>
 
+        <CampaignPanel events={emailEvents} lang="pt" />
+        <EventsPanel days={getRecentDays(7)} lang="pt" />
+
         <section className="content-card mt-6 overflow-hidden">
           <div className="divide-y divide-border">
             {alerts.length === 0 && (
@@ -65,6 +77,7 @@ export default async function AdminAlertsPage() {
                   <p className="mt-1 text-xs text-muted">
                     {describeAlertFilters(alert)}
                   </p>
+                  <RecipientLine activity={activity.get(alert.email)} lang="pt" />
                 </div>
                 <div className="text-right text-xs text-muted">
                   <p

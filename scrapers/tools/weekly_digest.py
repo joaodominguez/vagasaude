@@ -948,7 +948,9 @@ def digest_windows_pending(cfg: dict, now: datetime) -> list[str]:
 
 def send_one(key: str, cfg: dict, to: str, content: dict, idem: str) -> tuple[bool, str]:
     payload = json.dumps({"from": cfg["from"], "to": [to], "subject": content["subject"], "html": content["html"],
-                          "text": content["text"], "headers": content["headers"]}).encode()
+                          "text": content["text"], "headers": content["headers"],
+                          "tags": [{"name": "site", "value": re.sub(r"[^A-Za-z0-9_-]", "_", urllib.parse.urlparse(cfg["site_url"]).hostname or "site")},
+                                   {"name": "campaign", "value": CAMPAIGN}]}).encode()
     for attempt in range(4):
         req = urllib.request.Request("https://api.resend.com/emails", data=payload, method="POST", headers={
             "Authorization": f"Bearer {key}", "Content-Type": "application/json",
