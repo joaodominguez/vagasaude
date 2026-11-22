@@ -11,6 +11,7 @@ import {
 import { useRouter } from "next/navigation";
 import { MapPin, Search } from "lucide-react";
 import { districts } from "@/lib/jobs";
+import { safeSearchTerm, trackEvent } from "@/lib/track-event";
 
 type SearchSuggestion = {
   label: string;
@@ -135,7 +136,11 @@ export function SearchForm({
   function goToSearch(nextQuery: string, nextDistrict: string) {
     const params = new URLSearchParams();
     const trimmed = nextQuery.trim();
-    if (trimmed) params.set("q", trimmed);
+    if (trimmed) {
+      params.set("q", trimmed);
+      const term = safeSearchTerm(trimmed);
+      trackEvent("search", term ? { search_term: term } : {});
+    }
     if (nextDistrict) params.set("regione", nextDistrict);
     const qs = params.toString();
     router.push(qs ? `/offerte?${qs}` : "/offerte");

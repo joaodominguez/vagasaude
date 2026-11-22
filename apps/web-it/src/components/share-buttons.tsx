@@ -3,6 +3,7 @@
 import { useEffect, useId, useState, useSyncExternalStore } from "react";
 import { Check, Link2, MessageCircle, Share2 } from "lucide-react";
 import { FavoriteButton } from "@/components/favorite-button";
+import { trackEvent } from "@/lib/track-event";
 
 type SaveShareRowProps = {
   slug: string;
@@ -42,6 +43,7 @@ export function SaveShareRow({ slug, url, title, summary }: SaveShareRowProps) {
   async function copyLink() {
     try {
       await navigator.clipboard.writeText(url);
+      trackEvent("share", { method: "copy_link" });
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1800);
     } catch {
@@ -52,6 +54,7 @@ export function SaveShareRow({ slug, url, title, summary }: SaveShareRowProps) {
   async function nativeShare() {
     try {
       await navigator.share({ title, text: summary, url });
+      trackEvent("share", { method: "native" });
     } catch {
       // annullato dall'utente
     }
@@ -85,11 +88,11 @@ export function SaveShareRow({ slug, url, title, summary }: SaveShareRowProps) {
               Condividi…
             </button>
           )}
-          <a href={whatsappHref} target="_blank" rel="noopener noreferrer" className="share-chip">
+          <a href={whatsappHref} onClick={() => trackEvent("share", { method: "whatsapp" })} target="_blank" rel="noopener noreferrer" className="share-chip">
             <MessageCircle size={15} aria-hidden="true" />
             WhatsApp
           </a>
-          <a href={linkedinHref} target="_blank" rel="noopener noreferrer" className="share-chip">
+          <a href={linkedinHref} onClick={() => trackEvent("share", { method: "linkedin" })} target="_blank" rel="noopener noreferrer" className="share-chip">
             LinkedIn
           </a>
           <button type="button" className="share-chip" onClick={copyLink} aria-live="polite">

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useSyncExternalStore } from "react";
+import { trackEvent } from "@/lib/track-event";
 
 const STORAGE_KEY = "offertesanita-favorites";
 
@@ -78,6 +79,7 @@ export function useFavorites() {
       : [slug, ...current];
     snapshot = next;
     writeSlugs(next);
+    if (!current.includes(slug)) trackEvent("favorite_add");
   }, []);
 
   const isFavorite = useCallback(

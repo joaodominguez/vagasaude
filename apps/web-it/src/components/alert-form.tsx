@@ -2,6 +2,7 @@
 
 import { CheckCircle2, LoaderCircle, Mail } from "lucide-react";
 import { FormEvent, useState } from "react";
+import { trackEvent } from "@/lib/track-event";
 import { districts, professions, sectors } from "@/lib/taxonomies";
 
 export function AlertForm({
@@ -72,6 +73,7 @@ export function AlertForm({
       setMessage("Preferenze aggiornate. Il tuo avviso resta attivo.");
     }
 
+    trackEvent("alert_signup");
     setStatus("success");
   }
 
@@ -138,7 +140,7 @@ export function AlertForm({
             Non è stato possibile creare l’avviso. Riprova.
           </p>
         )}
-        <small>Niente spam. Solo offerte nuove in linea con la tua scelta.</small>
+        <small>Niente spam. Solo offerte nuove in linea con la tua scelta. Le email misurano aperture e clic per migliorare il servizio.</small>
       </form>
     );
   }
@@ -232,11 +234,10 @@ export function AlertForm({
           Non è stato possibile creare l’avviso. Riprova.
         </p>
       )}
-      {!compact && (
-        <p className="text-xs leading-5 text-muted">
-          Niente spam. Confermi via email e puoi annullare in qualsiasi momento.
-        </p>
-      )}
+      <p className="text-xs leading-5 text-muted">
+        {!compact && "Niente spam. Confermi via email e puoi annullare in qualsiasi momento. "}
+        Le email misurano aperture e clic per migliorare il servizio.
+      </p>
     </form>
   );
 }

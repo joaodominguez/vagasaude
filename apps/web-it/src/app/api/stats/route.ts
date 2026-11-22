@@ -4,6 +4,15 @@ import { recordHit } from "@/lib/site-stats";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+const EVENTS = new Set([
+  "apply_click",
+  "alert_signup",
+  "alert_confirm",
+  "email_visit",
+  "favorite_add",
+  "search",
+  "share",
+]);
 const MAX_BODY = 2048;
 const MAX_HITS_PER_VISITOR_DAY = 400;
 const MAX_TRACKED_VISITORS = 200_000;
@@ -87,7 +96,7 @@ export async function POST(request: Request) {
 
     const kind = body.t === "event" ? "event" : "pageview";
     const event = kind === "event" ? clean(body.e, 30, /^[a-z_]+$/) : null;
-    if (kind === "event" && event !== "apply_click") return done();
+    if (kind === "event" && !(event && EVENTS.has(event))) return done();
 
     // Visitatore approssimato: hash con sale giornaliero solo in memoria.
     const ip =
@@ -122,6 +131,7 @@ export async function POST(request: Request) {
       event: event ?? undefined,
       slug: clean(body.s, 200, /^[a-zA-Z0-9_\-.]+$/),
       placement: clean(body.pl, 40, /^[a-zA-Z0-9_\-.]+$/),
+      eventCampaign: event === "email_visit" ? utm(body.c) : null,
     });
   } catch {
     // Payload non valido: ignora in silenzio.

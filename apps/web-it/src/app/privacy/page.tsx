@@ -143,7 +143,8 @@ export default function PrivacyPage() {
             filtro delle offerte che configuri tu. Non trattiamo categorie
             particolari di dati. Il servizio non è rivolto a minori di 14 anni.
             Il conferimento dei dati per gli avvisi è facoltativo, ma senza
-            indirizzo email non possiamo inviarli.
+            indirizzo email non possiamo inviarli. Le email misurano aperture e
+            clic per migliorare il servizio.
           </p>
 
           <h2>3. Destinatari e responsabili del trattamento</h2>
