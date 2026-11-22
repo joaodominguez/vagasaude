@@ -9,6 +9,7 @@
 import type { Job } from "@/lib/jobs";
 import { categoryPath, isCategoryEligible, toCategorySlug } from "@/lib/categories";
 import { parseAnnouncedSalary } from "@/lib/seo";
+import { validLastmodMs } from "@/lib/lastmod";
 
 export const EMPLOYER_MIN_JOBS = 5;
 export const EMPLOYER_JOBS_SHOWN = 30;
@@ -233,8 +234,8 @@ export function employerLastmod(employer: Employer, fallback: Date) {
   const now = Date.now();
   let newest = 0;
   for (const job of employer.jobs) {
-    const t = Date.parse(job.publishedAt);
-    if (!Number.isNaN(t) && t <= now && t > newest) newest = t;
+    const t = validLastmodMs(job.publishedAt, now);
+    if (t != null && t <= now && t > newest) newest = t;
   }
   return newest ? new Date(newest) : fallback;
 }

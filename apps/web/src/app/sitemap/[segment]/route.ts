@@ -9,6 +9,7 @@ import { employerLastmod, listEmployers } from "@/lib/employers";
 import { listEligibleConcelhos, concelhoTotalPages } from "@/lib/concelhos";
 import { listConcursos, listEligibleConcursos } from "@/lib/concursos";
 import { CAREERS } from "@/lib/salary-tables";
+import { dedupeBySlug, pickLastmod } from "@/lib/lastmod";
 import { SITE_URL } from "@/lib/seo";
 import {
   listArticles,
@@ -75,12 +76,11 @@ ${entries.join("\n")}
 async function buildJobsSitemap() {
   const now = new Date();
   // getJobs() devolve só vagas publicadas (activas) — expiradas ficam fora do sitemap.
-  const jobs = await getJobs();
+  // Um URL por slug (A3): slugs truncados repetem-se; fica a vaga que a página mostra (a primeira).
+  const jobs = dedupeBySlug(await getJobs());
   const entries = jobs.map((job) => {
-    const published = Date.parse(job.publishedAt);
-    const lastmod = Number.isNaN(published)
-      ? now
-      : new Date(Math.min(published, Date.now()));
+    // lastmod estável (A2): publicação válida (>= 2020, não futura), senão a 1.ª vez vista.
+    const lastmod = pickLastmod([job.publishedAt, job.firstSeenAt]) ?? now;
     return urlEntry(
       `${SITE_URL}/vagas/${job.slug}`,
       lastmod,
