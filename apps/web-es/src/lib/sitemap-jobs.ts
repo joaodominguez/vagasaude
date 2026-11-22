@@ -1,5 +1,6 @@
 import type { Job } from "@/lib/jobs";
 import { getJobs } from "@/lib/jobs-data";
+import { dedupeBySlug, pickLastmod } from "@/lib/lastmod";
 import { MAX_JOB_AGE_DAYS, MAX_UNSEEN_DAYS } from "@/lib/job-store";
 
 /**
@@ -56,16 +57,13 @@ const SYNDICATED_SOURCES = new Set(["sne"]);
 
 /** Ofertas del jobs.xml (y, por arrastre, de la Indexing API e IndexNow, que leen este sitemap). */
 export async function listSitemapJobs(now: number = Date.now()): Promise<Job[]> {
-  return (await getJobs()).filter((job) => isSitemapJob(job, now));
+  // Una entrada por slug (A3): se deduplica sobre el conjunto completo (es la ficha que muestra la página) y luego se filtra.
+  return dedupeBySlug(await getJobs()).filter((job) => isSitemapJob(job, now));
 }
 
 /** lastmod de una oferta: la publicación; sin fecha válida, la 1.ª vez vista; nunca «ahora». */
 export function jobLastmod(job: Job, now: number = Date.now()): Date | null {
-  for (const value of [job.publishedAt, job.firstSeenAt]) {
-    const t = value ? Date.parse(value) : Number.NaN;
-    if (!Number.isNaN(t) && t <= now) return new Date(t);
-  }
-  return null;
+  return pickLastmod([job.publishedAt, job.firstSeenAt], now);
 }
 
 const normalizeKey = (value: string) =>

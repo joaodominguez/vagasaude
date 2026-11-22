@@ -19,6 +19,7 @@ import {
   newsTotalPages,
 } from "@/lib/news";
 import { CAREERS } from "@/lib/salary-tables";
+import { validLastmodMs } from "@/lib/lastmod";
 import { SITE_URL } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -54,8 +55,8 @@ function newestPublished(jobs: Job[], fallback: Date): Date {
   const now = Date.now();
   let best = 0;
   for (const job of jobs) {
-    const t = Date.parse(job.publishedAt);
-    if (!Number.isNaN(t) && t <= now && t > best) best = t;
+    const t = validLastmodMs(job.publishedAt, now);
+    if (t != null && t <= now && t > best) best = t;
   }
   return best ? new Date(best) : fallback;
 }
