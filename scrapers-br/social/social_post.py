@@ -679,16 +679,23 @@ def deliver_email(root: Path, out: Path, day: date) -> None:
         print("[social] e-mail: falta RESEND_API_KEY/EMAIL_FROM/ALERTS_TO — pacote não enviado")
         return
     jobs = json.loads((out / "picks.json").read_text("utf-8"))
-    box = "white-space:pre-wrap;background:#f4f6f8;padding:12px;border-radius:8px"
-    pre = lambda name: f"<pre style='{box}'>{html.escape((out / name).read_text('utf-8'))}</pre>"
-    body = (f"<p>Pacote do dia {day.strftime('%d/%m')} para o {M['label']}. Os canais automáticos "
-            f"publicam sozinhos às 8h ({M['tz']}).</p>"
-            f"<p><b>Canal de WhatsApp (manual):</b> anexar <i>square.png</i> e colar este texto:</p>{pre('whatsapp.txt')}")
-    files = ["square.png"]
+    # Texto em parágrafos normais (<br>), não em <pre>: algumas apps de email escondem o <pre>.
+    # Vai também em texto simples e como anexo whatsapp.txt, para aparecer em qualquer app.
+    wa = (out / "whatsapp.txt").read_text("utf-8")
+    box = "background:#f4f6f8;padding:12px;border-radius:8px;font-size:14px;line-height:1.5"
+    wa_html = "<br>".join(html.escape(line) for line in wa.split("\n"))
+    intro = (f"Pacote do dia {day.strftime('%d/%m')} para o {M['label']}. Os canais automáticos "
+             f"publicam sozinhos às 8h ({M['tz']}).")
+    body = (f"<p>{intro}</p>"
+            f"<p><b>Canal de WhatsApp (manual):</b> anexar <i>square.png</i> e colar este texto "
+            f"(também vai em anexo: <i>whatsapp.txt</i>):</p><div style='{box}'>{wa_html}</div>")
+    text = f"{intro}\n\nCanal de WhatsApp (manual): anexar square.png e colar este texto:\n\n{wa}"
+    files = ["square.png", "whatsapp.txt"]
     payload = {
         "from": sender, "to": [to],
         "subject": f"Post do dia {M['label']} — {day.strftime('%d/%m')} ({len(jobs)} vagas)",
         "html": body,
+        "text": text,
         "attachments": [{"filename": f, "content": base64.b64encode((out / f).read_bytes()).decode()} for f in files],
     }
     r = httpx.post("https://api.resend.com/emails", json=payload, headers={"Authorization": f"Bearer {key}"}, timeout=60)
