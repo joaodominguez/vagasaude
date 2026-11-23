@@ -18,7 +18,9 @@ from sources.vithas import VithasScraper
 from sources.boc_canarias import BocCanariasScraper
 from sources.bocm import BocmScraper
 from sources.bocyl import BocylScraper
-from sources.boib import BoibScraper
+# BOIB desligada a 23/11/2026: o robots.txt do caib.es proíbe /boib e /eboibfront para User-agent: *
+# (só motores de busca têm Allow). Não reativar sem fonte permitida (ex.: /webgoib/).
+# from sources.boib import BoibScraper
 from sources.boja import BojaScraper
 from sources.borm import BormScraper
 from sources.docm import DocmScraper
@@ -92,7 +94,7 @@ SCRAPERS: dict = {
     BocCanariasScraper.slug: BocCanariasScraper,
     BocmScraper.slug: BocmScraper,
     BocylScraper.slug: BocylScraper,
-    BoibScraper.slug: BoibScraper,
+    # BoibScraper.slug: BoibScraper,  # desligada (robots.txt), ver nota no import
     BojaScraper.slug: BojaScraper,
     BormScraper.slug: BormScraper,
     DocmScraper.slug: DocmScraper,
