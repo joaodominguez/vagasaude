@@ -11,6 +11,7 @@ import {
   newJobsDigestEmail,
   sendEmail,
 } from "@/lib/email";
+import { effectiveSince, weeklySentEmails } from "@/lib/alert-digest-rules";
 import { listJobCards, type JobCardData } from "@/lib/job-store";
 
 /** Email de confirmação, com o nº de vagas activas hoje para o filtro. */
@@ -34,6 +35,11 @@ type AlertState = {
   /** Dia local do último resumo do fim do dia — no máximo 1 por fim do dia. */
   lastEveningDigestDay?: string | null;
   deliveries: Record<string, string[]>;
+  /**
+   * Endereços que saltaram o resumo do fim do dia (já receberam o de domingo): data desde a qual as
+   * vagas entram no resumo da manhã seguinte. Limpa-se quando esse resumo é enviado (ou não há vagas).
+   */
+  carryOver?: Record<string, string>;
 };
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -93,6 +99,7 @@ function digestClock(now: Date) {
   }).formatToParts(now);
   const part = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
   return {
+    timeZone,
     day: `${part("year")}-${part("month")}-${part("day")}`,
     hour: Number(part("hour")),
     startHour: Number.isFinite(startHour) ? startHour : 6,
@@ -100,6 +107,22 @@ function digestClock(now: Date) {
     eveningStartHour: Number.isFinite(eveningStartHour) ? eveningStartHour : 17,
     eveningEndHour: Number.isFinite(eveningEndHour) ? eveningEndHour : 23,
   };
+}
+
+/**
+ * Ficheiro ÚNICO dos 4 sites de saúde (escrito por scrapers/tools/weekly_digest.py, chaves pt|br|es|it);
+ * todas as apps o leem deste caminho, não do seu DATA_DIR. Inexistente/inválido = {} (ninguém saltado).
+ */
+const WEEKLY_DIGEST_MARKET = "es";
+const WEEKLY_DIGEST_STATE_PATH =
+  process.env.WEEKLY_DIGEST_STATE_PATH?.trim() || "/var/www/vagasaude/data/weekly-digest-state.json";
+
+async function readWeeklyDigestState(): Promise<unknown> {
+  try {
+    return JSON.parse(await readFile(WEEKLY_DIGEST_STATE_PATH, "utf8"));
+  } catch {
+    return {};
+  }
 }
 
 function sleep(ms: number) {
@@ -135,7 +158,25 @@ export async function sendNewJobsDigest(limit = 10) {
     Number.isNaN(lastDigest) ? nowMs - DAY_MS : lastDigest,
     nowMs - MAX_LOOKBACK_DAYS * DAY_MS,
   );
+  const floor = nowMs - MAX_LOOKBACK_DAYS * DAY_MS;
   const oldestPublished = nowMs - MAX_SOURCE_AGE_DAYS * DAY_MS;
+  const carryIn = state.carryOver ?? {};
+  const carryOver = { ...carryIn };
+  // Fim do dia: quem recebeu hoje o resumo de domingo salta (1 email por dia por endereço).
+  const weeklyToday = evening
+    ? weeklySentEmails(
+        await readWeeklyDigestState(),
+        WEEKLY_DIGEST_MARKET,
+        alerts,
+        clock.day,
+        clock.timeZone,
+      )
+    : new Set<string>();
+  // Janela de vagas: a mais antiga entre a normal e os carryOver; cada endereço filtra pela sua.
+  const windowStart = Math.min(
+    since,
+    ...alerts.map((alert) => effectiveSince(since, carryIn, alert.email, floor)),
+  );
 
   // "Nova" = entrou no site desde o último resumo. A data da fonte não serve:
   // muitas só trazem o dia (00:00), e essas vagas ficavam sempre de fora.
@@ -144,20 +185,36 @@ export async function sendNewJobsDigest(limit = 10) {
     const published = Date.parse(job.publishedAt);
     return (
       !Number.isNaN(seen) &&
-      seen >= since &&
+      seen >= windowStart &&
       (Number.isNaN(published) || published >= oldestPublished)
     );
   });
 
   let sent = 0;
   let failed = 0;
+  let skippedWeekly = 0;
 
   for (const alert of alerts) {
+    if (weeklyToday.has(alert.email.toLowerCase())) {
+      // Sem enviar e sem marcar como entregues: as vagas entram no resumo da manhã seguinte.
+      carryOver[alert.email] = new Date(
+        Math.min(since, Date.parse(carryOver[alert.email] ?? "") || since),
+      ).toISOString();
+      skippedWeekly += 1;
+      continue;
+    }
+    const alertSince = effectiveSince(since, carryIn, alert.email, floor);
     const already = new Set(state.deliveries[alert.email] || []);
     const matching = freshJobs.filter(
-      (job) => alertMatchesJob(alert, job) && !already.has(jobKey(job)),
+      (job) =>
+        Date.parse(job.firstSeenAt ?? job.publishedAt) >= alertSince &&
+        alertMatchesJob(alert, job) &&
+        !already.has(jobKey(job)),
     );
-    if (matching.length === 0) continue;
+    if (matching.length === 0) {
+      if (morning) delete carryOver[alert.email];
+      continue;
+    }
 
     const email = newJobsDigestEmail(
       alert,
@@ -176,6 +233,7 @@ export async function sendNewJobsDigest(limit = 10) {
       sent += 1;
       const next = [...already, ...matching.map(jobKey)];
       state.deliveries[alert.email] = next.slice(-300);
+      delete carryOver[alert.email];
     } else {
       failed += 1;
       console.error(`[alert-digest] falhou para ${alert.id}: ${result.error}`);
@@ -185,6 +243,8 @@ export async function sendNewJobsDigest(limit = 10) {
   // Se falhou tudo (ex.: Resend em baixo), não avançar: a próxima execução tenta de novo.
   if (failed === 0 || sent > 0) {
     state.lastDigestAt = now.toISOString();
+    if (Object.keys(carryOver).length > 0) state.carryOver = carryOver;
+    else delete state.carryOver;
     if (morning) state.lastDigestDay = clock.day;
     else state.lastEveningDigestDay = clock.day;
     await writeState(state);
@@ -197,5 +257,6 @@ export async function sendNewJobsDigest(limit = 10) {
     jobs: freshJobs.length,
     sent,
     failed,
+    skippedWeekly,
   };
 }
