@@ -74,15 +74,15 @@ function sumDays(list: SiteSummary[]) {
   return out;
 }
 
-function Goal({ value }: { value: number }) {
-  const pct = Math.min(100, (value / GOAL) * 100);
+function Goal({ value, target = GOAL }: { value: number; target?: number }) {
+  const pct = Math.min(100, (value / target) * 100);
   return (
     <div className="mt-2">
       <div className="h-1.5 rounded-full bg-primary-soft">
         <div className="h-1.5 rounded-full bg-primary" style={{ width: `${Math.max(1, pct)}%` }} />
       </div>
       <p className="mt-1 text-xs text-muted">
-        {nf.format(value)} / {nf.format(GOAL)} ({((value / GOAL) * 100).toFixed(1)}%)
+        {nf.format(value)} / {nf.format(target)} ({((value / target) * 100).toFixed(1)}%)
       </p>
     </div>
   );
@@ -133,7 +133,7 @@ export default async function AdminPortaisPage() {
           <div className="content-card p-5">
             <p className="text-xs font-semibold text-muted">Total 8 sites · 30 dias</p>
             <p className="mt-2 text-3xl font-extrabold tracking-[-0.04em]">{nf.format(total30)}</p>
-            <Goal value={total30} />
+            <Goal value={total30} target={GOAL * all.length} />
           </div>
           {VERTICALS.map(([v, label]) => {
             const list = all.filter((s) => s.site.vertical === v);
@@ -147,6 +147,7 @@ export default async function AdminPortaisPage() {
                   hoje {nf.format(list.reduce((s, x) => s + x.today, 0))} · 7 dias{" "}
                   {nf.format(list.reduce((s, x) => s + x.last7, 0))}
                 </p>
+                <Goal value={list.reduce((s, x) => s + x.last30, 0)} target={GOAL * list.length} />
               </div>
             );
           })}
