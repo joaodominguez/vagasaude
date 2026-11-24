@@ -7,6 +7,7 @@ import {
   BarChart3,
   Bell,
   BriefcaseBusiness,
+  Globe2,
   LayoutDashboard,
   LogOut,
   RefreshCw,
@@ -22,6 +23,7 @@ const NAV: Array<{ href: string; label: string; icon: LucideIcon }> = [
   { href: "/admin/scrapers", label: "Scrapers", icon: RefreshCw },
   { href: "/admin/alertas", label: "Alertas", icon: Bell },
   { href: "/admin/estatisticas", label: "Estatísticas", icon: BarChart3 },
+  { href: "/admin/portais", label: "Todos os portais", icon: Globe2 },
   { href: "/admin/sistema", label: "Sistema", icon: Settings },
 ];
 
