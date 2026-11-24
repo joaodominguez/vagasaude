@@ -576,10 +576,13 @@ class RedeAmericasScraper(GupyScraper):
     sector = "privado"
     filter_mode = "health"
 
+    # 24/11/2026: os boards redeamericas/vagasredeamericas foram descontinuados (0 vagas, aviso
+    # "Em breve, este endereço será descontinuado") e as vagas passaram para boards por jornada.
+    # Só lemos as jornadas clínicas: Assistencial e Apoio (Atendimento/Corp/Programas de entrada
+    # são sobretudo administrativas). Prefixos novos: os ids antigos não existem nos boards novos.
     BOARDS: list[Board] = [
-        # Prefixo "" — board original single-tenant; mantém sourceIds antigos.
-        ("redeamericas", "Rede Américas", "privado", ""),
-        ("vagasredeamericas", "Rede Américas", "privado", "vagas"),
+        ("saudeamericasassistencial", "Rede Américas", "privado", "assistencial"),
+        ("saudeamericasapoio", "Rede Américas", "privado", "apoio"),
     ]
 
 
