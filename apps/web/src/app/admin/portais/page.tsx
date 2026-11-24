@@ -88,6 +88,23 @@ function Goal({ value }: { value: number }) {
   );
 }
 
+/** "chatgpt.com/-" → "ChatGPT", "facebook/social" → "Facebook", "vagasaude/email" → "Email". */
+function sourceLabel(key: string) {
+  const [src, medium] = key.split("/");
+  if (medium === "email") return "Email";
+  const map: Record<string, string> = {
+    "chatgpt.com": "ChatGPT",
+    facebook: "Facebook",
+    google_jobs_apply: "Google Jobs",
+    google: "Google",
+    perplexity: "Perplexity",
+    instagram: "Instagram",
+    telegram: "Telegram",
+    whatsapp: "WhatsApp",
+  };
+  return map[src] ?? src;
+}
+
 function StatusNote({ s }: { s: SiteSummary }) {
   return (
     <span className="text-xs font-semibold text-amber-600">
@@ -103,7 +120,7 @@ export default async function AdminPortaisPage() {
 
   return (
     <main className="p-5 sm:p-8 lg:p-10">
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-[1440px]">
         <header>
           <p className="section-kicker">Utilização</p>
           <h1 className="mt-2 text-3xl font-extrabold tracking-[-0.045em]">Todos os portais</h1>
@@ -137,20 +154,20 @@ export default async function AdminPortaisPage() {
 
         <section className="content-card mt-6 overflow-x-auto p-5">
           <h2 className="text-base font-extrabold">Resumo por site</h2>
-          <table className="mt-4 w-full min-w-[960px] text-sm">
+          <table className="mt-4 w-full min-w-[1080px] text-sm">
             <thead>
-              <tr className="text-left text-xs text-muted">
+              <tr className="whitespace-nowrap text-left text-xs text-muted">
                 <th className="py-2 pr-3">Site</th>
-                <th className="px-2 text-right">Hoje</th>
-                <th className="px-2 text-right">Ontem</th>
-                <th className="px-2 text-right">7 dias</th>
-                <th className="px-2 text-right">30 dias</th>
-                <th className="px-2 text-right">vs 7 ant.</th>
-                <th className="px-2 text-right">Únicos hoje</th>
-                <th className="px-2 text-right">Candidaturas 7d</th>
-                <th className="px-2">Top fontes hoje</th>
-                <th className="px-2 text-right">% país hoje</th>
-                <th className="pl-2 text-right">Meta 100k</th>
+                <th className="px-3 text-right">Hoje</th>
+                <th className="px-3 text-right">Ontem</th>
+                <th className="px-3 text-right">7 dias</th>
+                <th className="px-3 text-right">30 dias</th>
+                <th className="px-3 text-right" title="vs 7 dias anteriores">Δ 7d</th>
+                <th className="px-3 text-right" title="Visitantes únicos hoje">Únicos</th>
+                <th className="px-3 text-right" title="Cliques em candidatar, 7 dias">Cand. 7d</th>
+                <th className="px-3">Fontes hoje</th>
+                <th className="px-3 text-right" title="% de visitas do país do mercado, hoje">% país</th>
+                <th className="pl-3 text-right" title="30 dias vs 100.000">Meta</th>
               </tr>
             </thead>
             {VERTICALS.map(([v, label]) => {
@@ -171,25 +188,29 @@ export default async function AdminPortaisPage() {
                         </td>
                       </tr>
                     ) : (
-                      <tr key={s.site.id} className="border-t border-black/5 tabular-nums">
+                      <tr key={s.site.id} className="border-t border-black/5 align-top tabular-nums [&>td]:py-2.5">
                         <td className="py-2 pr-3 font-semibold">
                           {s.site.name}
                           <span className="block text-xs font-normal text-muted">{s.site.domain}</span>
                         </td>
-                        <td className="px-2 text-right">{nf.format(s.today)}</td>
-                        <td className="px-2 text-right">{nf.format(s.yesterday)}</td>
-                        <td className="px-2 text-right">{nf.format(s.last7)}</td>
-                        <td className="px-2 text-right">{nf.format(s.last30)}</td>
-                        <td className="px-2 text-right">{trend(s)}</td>
-                        <td className="px-2 text-right">{nf.format(s.uniquesToday)}</td>
-                        <td className="px-2 text-right">{nf.format(s.apply7)}</td>
-                        <td className="px-2 text-xs">
+                        <td className="whitespace-nowrap px-3 text-right">{nf.format(s.today)}</td>
+                        <td className="whitespace-nowrap px-3 text-right">{nf.format(s.yesterday)}</td>
+                        <td className="whitespace-nowrap px-3 text-right">{nf.format(s.last7)}</td>
+                        <td className="whitespace-nowrap px-3 text-right">{nf.format(s.last30)}</td>
+                        <td className="whitespace-nowrap px-3 text-right">{trend(s)}</td>
+                        <td className="whitespace-nowrap px-3 text-right">{nf.format(s.uniquesToday)}</td>
+                        <td className="whitespace-nowrap px-3 text-right">{nf.format(s.apply7)}</td>
+                        <td className="min-w-[180px] px-3 text-xs leading-5">
                           {s.topSources.length
-                            ? s.topSources.map(([k, n]) => `${k} (${nf.format(n)})`).join(", ")
+                            ? s.topSources.map(([k, n]) => (
+                                <span key={k} className="block whitespace-nowrap">
+                                  {sourceLabel(k)} <span className="text-muted">{nf.format(n)}</span>
+                                </span>
+                              ))
                             : "—"}
                         </td>
                         <td
-                          className={`px-2 text-right ${s.homeShare !== null && s.homeShare < 70 ? "font-bold text-amber-600" : ""}`}
+                          className={`whitespace-nowrap px-3 text-right ${s.homeShare !== null && s.homeShare < 70 ? "font-bold text-amber-600" : ""}`}
                           title={
                             s.homeShare !== null && s.homeShare < 70
                               ? `Menos de 70% de ${s.site.country}: possíveis bots`
@@ -198,7 +219,7 @@ export default async function AdminPortaisPage() {
                         >
                           {s.homeShare === null ? "—" : `${s.homeShare.toFixed(0)}% ${s.site.country}`}
                         </td>
-                        <td className="pl-2 text-right">{((s.last30 / GOAL) * 100).toFixed(1)}%</td>
+                        <td className="whitespace-nowrap pl-3 text-right">{((s.last30 / GOAL) * 100).toFixed(1)}%</td>
                       </tr>
                     ),
                   )}
