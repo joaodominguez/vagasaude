@@ -158,7 +158,7 @@ export default async function AdminPortaisPage() {
           <table className="mt-4 w-full min-w-[1080px] text-sm">
             <thead>
               <tr className="whitespace-nowrap text-left text-xs text-muted">
-                <th className="py-2 pr-3">Site</th>
+                <th className="w-[22%] py-2 pr-3">Site</th>
                 <th className="px-3 text-right">Hoje</th>
                 <th className="px-3 text-right">Ontem</th>
                 <th className="px-3 text-right">7 dias</th>
@@ -166,7 +166,7 @@ export default async function AdminPortaisPage() {
                 <th className="px-3 text-right" title="vs 7 dias anteriores">Δ 7d</th>
                 <th className="px-3 text-right" title="Visitantes únicos hoje">Únicos</th>
                 <th className="px-3 text-right" title="Cliques em candidatar, 7 dias">Cand. 7d</th>
-                <th className="px-3">Fontes hoje</th>
+                <th className="w-px px-3">Fontes hoje</th>
                 <th className="px-3 text-right" title="% de visitas do país do mercado, hoje">% país</th>
                 <th className="pl-3 text-right" title="30 dias vs 100.000">Meta</th>
               </tr>
@@ -201,7 +201,7 @@ export default async function AdminPortaisPage() {
                         <td className="whitespace-nowrap px-3 text-right">{trend(s)}</td>
                         <td className="whitespace-nowrap px-3 text-right">{nf.format(s.uniquesToday)}</td>
                         <td className="whitespace-nowrap px-3 text-right">{nf.format(s.apply7)}</td>
-                        <td className="min-w-[180px] px-3 text-xs leading-5">
+                        <td className="w-px px-3 text-xs leading-5">
                           {s.topSources.length
                             ? s.topSources.map(([k, n]) => (
                                 <span key={k} className="block whitespace-nowrap">
