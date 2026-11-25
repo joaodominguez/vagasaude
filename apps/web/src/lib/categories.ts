@@ -100,7 +100,10 @@ export function categoryPath(
   district: string | null | undefined,
 ) {
   const p = profession ? toCategorySlug(profession) : null;
-  const d = district ? toCategorySlug(district) : null;
+  // "Portugal" = vaga nacional/remota, não é um distrito: não há /vagas/portugal nem
+  // /vagas/<profissão>/portugal (dariam 404) — liga à profissão no país todo ou a /vagas.
+  const rawD = district ? toCategorySlug(district) : null;
+  const d = rawD === "portugal" ? null : rawD;
   if (p && d) return `/vagas/${p}/${d}`;
   if (p) return `/vagas/${p}`;
   if (d) return `/vagas/${d}`;
