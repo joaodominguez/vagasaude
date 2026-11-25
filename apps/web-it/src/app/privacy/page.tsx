@@ -91,10 +91,10 @@ export default function PrivacyPage() {
                       dispositivo e browser, posizione approssimativa.
                     </td>
                     <td>
-                      Consenso (art. 6, par. 1, lett. a GDPR), prestato tramite
-                      il banner cookie. Gli strumenti si attivano solo dopo
-                      l&apos;accettazione e il consenso può essere revocato in
-                      ogni momento da «Impostazioni cookie».
+                      Legittimo interesse (art. 6, par. 1, lett. f GDPR) a
+                      misurare e migliorare il Sito. Gli strumenti sono attivi
+                      per impostazione predefinita e puoi rifiutarli in ogni
+                      momento da «Impostazioni cookie».
                     </td>
                   </tr>
                 ) : null}
@@ -167,8 +167,9 @@ export default function PrivacyPage() {
             </li>
             {GA_ENABLED ? (
               <li>
-                <strong>Google (Google Analytics):</strong> analisi statistica,
-                solo con il tuo consenso. Può comportare trasferimenti verso
+                <strong>Google (Google Analytics):</strong> analisi statistica
+                (attiva per impostazione predefinita; puoi rifiutarla da
+                «Impostazioni cookie»). Può comportare trasferimenti verso
                 gli Stati Uniti con le garanzie sopra indicate.
               </li>
             ) : null}
@@ -198,7 +199,7 @@ export default function PrivacyPage() {
             </li>
             {ANALYTICS_ENABLED ? (
               <li>
-                <strong>Analytics:</strong> fino alla revoca del consenso o alla
+                <strong>Analytics:</strong> fino al rifiuto o alla
                 scadenza dei cookie (vedi cookie policy); i dati presso gli
                 strumenti di terzi sono conservati secondo le impostazioni di
                 retention di ciascuno.
@@ -230,7 +231,7 @@ export default function PrivacyPage() {
               in ogni email o la pagina di gestione dell&apos;avviso.
             </li>
             <li>
-              Per modificare il consenso ai cookie usa «Impostazioni cookie»
+              Per rifiutare o riattivare i cookie di analisi usa «Impostazioni cookie»
               nel piè di pagina.
             </li>
           </ul>

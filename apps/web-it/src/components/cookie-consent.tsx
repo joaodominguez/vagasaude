@@ -11,18 +11,17 @@ import {
 } from "@/lib/consent";
 
 export function CookieConsent() {
-  const { ready, stored } = useConsent();
+  const { stored } = useConsent();
   const [reopened, setReopened] = useState(false);
   const [configuring, setConfiguring] = useState(false);
   const [choice, setChoice] = useState<boolean | null>(null);
-  // Opt-in: gli analytics sono disattivati finché l'utente non li accetta.
-  const analyticsChoice = choice ?? stored?.analytics ?? false;
+  // Analytics attivi per impostazione predefinita: disattivati solo se rifiutati espressamente.
+  const analyticsChoice = choice ?? stored?.analytics ?? true;
   const dialogRef = useRef<HTMLDivElement>(null);
   const previousFocus = useRef<HTMLElement | null>(null);
 
-  // Il banner compare da solo solo se sono configurati strumenti di analytics e
-  // non c'è ancora una scelta salvata; altrimenti si apre da "Impostazioni cookie".
-  const visible = reopened || (ANALYTICS_CONFIGURED && ready && !stored);
+  // Nessun banner automatico: il pannello si apre solo da "Impostazioni cookie" (footer).
+  const visible = reopened;
 
   useEffect(() => {
     function onOpen() {
@@ -79,7 +78,7 @@ export function CookieConsent() {
         </h2>
         <p id="cookie-desc" className="mt-2 text-sm leading-6 text-muted">
           {ANALYTICS_CONFIGURED
-            ? "Utilizziamo cookie tecnici necessari e, solo se acconsenti, cookie di analisi statistica per migliorare il servizio. Puoi rifiutare senza conseguenze e cambiare idea in qualsiasi momento. "
+            ? "Utilizziamo cookie tecnici necessari e cookie di analisi statistica (Google Analytics) per migliorare il servizio. Puoi rifiutare gli analytics in qualsiasi momento. "
             : "Al momento utilizziamo solo archiviazione tecnica necessaria: non ci sono cookie facoltativi attivi. "}
           Maggiori informazioni nella{" "}
           <Link className="font-bold text-primary underline" href="/cookie">

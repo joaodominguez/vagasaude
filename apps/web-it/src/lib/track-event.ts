@@ -1,8 +1,8 @@
 "use client";
 
 /**
- * Eventi di misurazione: GA4/GTM (solo con il consenso analytics già
- * registrato nel cookie os_consent, via dataLayer come gli altri eventi) +
+ * Eventi di misurazione: GA4/GTM (attivo salvo rifiuto registrato nel
+ * cookie os_consent, via dataLayer come gli altri eventi) +
  * contatore interno senza cookie (/api/stats, solo conteggi per giorno).
  */
 
@@ -30,14 +30,14 @@ export function safeSearchTerm(raw: string): string | null {
   return term;
 }
 
-/** Sola lettura del consenso già salvato (cookie os_consent); non lo modifica. */
+/** Sola lettura della scelta salvata (cookie os_consent): attivo salvo rifiuto esplicito. */
 function analyticsGranted(): boolean {
   if (!process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID) return false;
   try {
     const match = document.cookie.split("; ").find((p) => p.startsWith("os_consent="));
-    if (!match) return false;
+    if (!match) return true;
     const data = JSON.parse(decodeURIComponent(match.slice("os_consent=".length)));
-    return data?.analytics === true;
+    return data?.analytics !== false;
   } catch {
     return false;
   }

@@ -15,7 +15,7 @@ export const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ?? ""
  * Anche un contenitore Google Tag Manager ("GTM-XXXX") è accettato nella stessa
  * variabile: in quel caso si carica gtm.js (snippet "tag Google" del contenitore) e le
  * visualizzazioni di pagina della navigazione client vengono inviate come evento
- * "virtual_page_view" nel dataLayer (trigger in GTM). Stesso consenso opt-in.
+ * "virtual_page_view" nel dataLayer (trigger in GTM). Analytics attivi per impostazione predefinita (come PT e BR), salvo rifiuto.
  */
 const IS_GTM = GA_MEASUREMENT_ID.startsWith("GTM-");
 
@@ -82,16 +82,16 @@ function GoogleAnalyticsTracker() {
 }
 
 /**
- * Consent Mode: tutto negato per impostazione predefinita (opt-in). GA4 viene
- * caricato solo dopo che il visitante ha accettato gli analytics nel banner;
- * pubblicità e personalizzazione restano sempre negate.
+ * Analytics attivi per impostazione predefinita (come PT e BR): analytics_storage
+ * "granted" salvo che il visitatore li abbia rifiutati in "Impostazioni cookie"
+ * (cookie os_consent con analytics=false). La pubblicità resta sempre negata.
  */
 export function ConsentModeDefaults() {
   if (!GA_MEASUREMENT_ID) return null;
   return (
     <script
       dangerouslySetInnerHTML={{
-        __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}window.gtag=gtag;gtag('consent','default',{analytics_storage:'denied',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied'});`,
+        __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}window.gtag=gtag;var r=/(?:^|; )os_consent=([^;]*)/.exec(document.cookie),off=false;try{off=!!r&&JSON.parse(decodeURIComponent(r[1])).analytics===false}catch(e){}gtag('consent','default',{analytics_storage:off?'denied':'granted',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied'});`,
       }}
     />
   );
@@ -99,8 +99,8 @@ export function ConsentModeDefaults() {
 
 export function GoogleAnalytics() {
   const { ready, stored } = useConsent();
-  // Si misura solo dopo il consenso esplicito.
-  if (!GA_MEASUREMENT_ID || !ready || !stored?.analytics) return null;
+  // Si smette di misurare solo se il visitatore ha rifiutato espressamente.
+  if (!GA_MEASUREMENT_ID || !ready || stored?.analytics === false) return null;
 
   return (
     <>
@@ -117,7 +117,6 @@ export function GoogleAnalytics() {
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
           window.gtag = window.gtag || gtag;
-          gtag('consent', 'update', { analytics_storage: 'granted' });
           gtag('js', new Date());
           ${IS_GTM ? "" : `gtag('config', '${GA_MEASUREMENT_ID}', { anonymize_ip: true });`}
         `}

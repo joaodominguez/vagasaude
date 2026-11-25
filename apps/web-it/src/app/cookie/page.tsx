@@ -6,7 +6,7 @@ import { Header } from "@/components/header";
 import { LEGAL_LAST_UPDATED, LEGAL_OWNER } from "@/lib/legal";
 import { SITE_NAME } from "@/lib/seo";
 
-const DESCRIPTION = `Cookie policy di ${SITE_NAME}: quali cookie e archiviazione locale usiamo, a cosa servono, quanto durano e come modificare il consenso.`;
+const DESCRIPTION = `Cookie policy di ${SITE_NAME}: quali cookie e archiviazione locale usiamo, a cosa servono, quanto durano e come rifiutare gli analytics.`;
 
 const GA_ENABLED = Boolean(process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID);
 // Microsoft Clarity rimosso da tutti i mercati (19/11/2026).
@@ -40,12 +40,9 @@ export default function CookiesPage() {
           <p>
             I cookie sono piccoli file che un sito salva sul tuo dispositivo.
             Questa policy riguarda anche tecnologie analoghe, come la memoria
-            locale del browser (localStorage). Come previsto dalle Linee guida
-            cookie e altri strumenti di tracciamento del Garante per la
-            protezione dei dati personali (10 giugno 2021), i cookie tecnici
-            possono essere usati senza consenso, mentre quelli di analisi non
-            anonimizzati e quelli di profilazione richiedono il tuo consenso
-            preventivo.
+            locale del browser (localStorage). Oltre ai cookie tecnici
+            necessari, usiamo cookie di analisi statistica, che puoi rifiutare
+            in qualsiasi momento da «Impostazioni cookie».
           </p>
 
           <h2>2. Titolare</h2>
@@ -57,7 +54,7 @@ export default function CookiesPage() {
             l&apos;<Link href="/privacy">informativa sulla privacy</Link>.
           </p>
 
-          <h2>3. Cookie tecnici necessari (senza consenso)</h2>
+          <h2>3. Cookie tecnici necessari</h2>
           <p>
             Indispensabili al funzionamento del Sito o a ricordare le tue
             preferenze. Non sono usati per pubblicità né per analisi
@@ -113,15 +110,15 @@ export default function CookiesPage() {
             servono solo a migliorare il servizio.
           </p>
 
-          <h2>4. Cookie di analisi (solo con consenso)</h2>
+          <h2>4. Cookie di analisi</h2>
           {ANALYTICS_ENABLED ? (
             <>
               <p>
                 Ci permettono di misurare l&apos;uso del Sito e di migliorarlo.
-                Sono disattivati finché non li accetti dal banner o da
-                «Impostazioni cookie» (sezione 6): prima del tuo consenso non
-                viene caricato alcuno script di terze parti. Non usiamo cookie
-                pubblicitari né di profilazione.
+                Sono attivi per impostazione predefinita; se li rifiuti da
+                «Impostazioni cookie» (sezione 6), smettiamo di caricarli ed
+                eliminiamo i relativi cookie. Non usiamo cookie pubblicitari né
+                di profilazione.
               </p>
               <div className="table-wrap">
                 <table>
@@ -196,8 +193,7 @@ export default function CookiesPage() {
             <p>
               Al momento non sono attivi strumenti di analisi di terze parti e
               non viene installato alcun cookie di analisi. Se in futuro li
-              attiveremo, questa pagina verrà aggiornata e ti chiederemo il
-              consenso prima di installare qualsiasi cookie.
+              attiveremo, questa pagina verrà aggiornata.
             </p>
           )}
 
@@ -212,8 +208,7 @@ export default function CookiesPage() {
                 economico europeo. Tali trasferimenti si basano sulla decisione
                 di adeguatezza del EU-U.S. Data Privacy Framework (se il
                 fornitore è certificato) e/o sulle clausole contrattuali tipo
-                della Commissione europea. Accettando i cookie di analisi
-                acconsenti anche a questi trasferimenti. Maggiori informazioni
+                della Commissione europea. Maggiori informazioni
                 nelle informative di{" "}
                 <a
                   href="https://policies.google.com/privacy?hl=it"
@@ -235,11 +230,11 @@ export default function CookiesPage() {
             </>
           ) : null}
 
-          <h2>6. Come gestire o revocare il consenso</h2>
+          <h2>6. Come rifiutare i cookie di analisi</h2>
           <p>
-            Puoi accettare, rifiutare o modificare la tua scelta in qualsiasi
-            momento: <CookieSettingsButton className="link-button" />. Se
-            revochi il consenso eliminiamo i cookie di analisi e smettiamo di
+            Puoi rifiutare o riattivare gli analytics in qualsiasi momento:{" "}
+            <CookieSettingsButton className="link-button" />. Se
+            li rifiuti eliminiamo i cookie di analisi e smettiamo di
             caricare gli strumenti di terze parti; la tua scelta viene
             conservata per 13 mesi.
           </p>
