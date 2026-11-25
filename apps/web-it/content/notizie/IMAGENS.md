@@ -14,3 +14,4 @@ Tutte da Pexels (Pexels License: uso commerciale consentito, attribuzione non ob
 | lettera-di-presentazione-sanita | https://www.pexels.com/photo/black-fountain-pen-on-printing-paper-114107/ | Miguel Á. Padriñán | Pexels License |
 | riconoscimento-titoli-sanitari-esteri-italia | https://www.pexels.com/photo/photograph-of-people-s-hands-holding-white-diplomas-7972735/ | George Pak | Pexels License |
 | concorsi-sanita-aperti-novembre-2026 | https://www.pexels.com/photo/documents-beside-a-laptop-8112204/ | Pavel Danilyuk | Pexels License |
+| legge-di-bilancio-2027-sanita-infermieri-medici | https://www.pexels.com/photo/a-woman-in-yellow-shirt-using-a-stethoscope-on-a-man-in-a-white-shirt-7345465/ | Antoni Shkraba | Pexels License |
