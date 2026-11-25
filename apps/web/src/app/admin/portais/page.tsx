@@ -116,6 +116,20 @@ function estimate30(list: SiteSummary[]) {
   );
 }
 
+/** RPM de referência (€ por 1.000 pageviews) para sites de emprego, já com adblock. Só indicador. */
+const ADSENSE_RPM_EUR: Record<string, number> = { PT: 2.0, ES: 2.5, IT: 2.5, BR: 0.8 };
+
+/** Receita AdSense estimada por mês (se tivesse AdSense): estimativa a 30 dias × RPM do país. */
+function estimateAdsense(list: SiteSummary[]) {
+  return Math.round(
+    list.reduce((acc, s) => {
+      if (s.status !== "ok" || s.days.length < 30) return acc;
+      const week = s.days.slice(22, 29).reduce((t, d) => t + d.pageviews, 0);
+      return acc + ((week / 7) * 30 * (ADSENSE_RPM_EUR[s.site.country] ?? 1)) / 1000;
+    }, 0),
+  );
+}
+
 function StatusNote({ s }: { s: SiteSummary }) {
   return (
     <span className="text-xs font-semibold text-amber-600">
@@ -149,6 +163,7 @@ export default async function AdminPortaisPage() {
                 title="Média dos últimos 7 dias completos × 30 (a janela de 30 dias ainda não está completa)"
               >
                 · estimativa ≈ {nf.format(estimate30(all))}
+              <span className="ml-1" title="RPM de referência: PT 2,0 €, ES 2,5 €, IT 2,5 €, BR 0,8 € por 1.000 pageviews. Só indicador — o AdSense não está ligado.">· ≈ {nf.format(estimateAdsense(all))} €/mês se tivesse AdSense</span>
               </span>
             </p>
             <p className="mt-2 text-3xl font-extrabold tracking-[-0.04em]">{nf.format(total30)}</p>
@@ -165,6 +180,7 @@ export default async function AdminPortaisPage() {
                     title="Média dos últimos 7 dias completos × 30 (a janela de 30 dias ainda não está completa)"
                   >
                     · estimativa ≈ {nf.format(estimate30(list))}
+                  <span className="ml-1" title="RPM de referência: PT 2,0 €, ES 2,5 €, IT 2,5 €, BR 0,8 € por 1.000 pageviews. Só indicador — o AdSense não está ligado.">· ≈ {nf.format(estimateAdsense(list))} €/mês se tivesse AdSense</span>
                   </span>
                 </p>
                 <p className="mt-2 text-3xl font-extrabold tracking-[-0.04em]">
