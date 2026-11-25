@@ -25,9 +25,13 @@ export function foldText(text: string, lang: SearchLang): string {
     .trim();
 }
 
-function stripVowels(word: string): string {
+/** IT: tira todas as vogais finais (sanitario/sanitari/sanitaria); PT/ES: só uma (enfermero ≠ enfermería). */
+function stripVowels(word: string, all: boolean): string {
   let w = word;
-  while (w.length > MIN_STEM && /[aeiou]$/.test(w)) w = w.slice(0, -1);
+  while (w.length > MIN_STEM && /[aeiou]$/.test(w)) {
+    w = w.slice(0, -1);
+    if (!all) break;
+  }
   return w;
 }
 
@@ -64,7 +68,7 @@ export function stemWord(word: string, lang: SearchLang): string {
   let w = word;
   if (lang === "it") {
     w = replaceEnding(w, "oressa", "or") ?? replaceEnding(w, "trice", "tor") ?? replaceEnding(w, "trici", "tor") ?? w;
-    return stripVowels(w);
+    return stripVowels(w, true);
   }
   // PT / ES
   const plural =
@@ -75,7 +79,7 @@ export function stemWord(word: string, lang: SearchLang): string {
     (lang === "es" && /[^aeiou]es$/.test(w) ? replaceEnding(w, "es", "") : null);
   w = plural || (w.endsWith("s") && w.length - 1 >= MIN_STEM ? w.slice(0, -1) : w);
   w = replaceEnding(w, "ora", "or") ?? w;
-  return stripVowels(w);
+  return stripVowels(w, false);
 }
 
 /** Texto das vagas reduzido a radicais, com espaços nas pontas: " medic enfermeir saud ". */
