@@ -151,8 +151,9 @@ export default function CookiesPage() {
             Europeo. Dichas transferencias se amparan en la decisión de
             adecuación del Marco de Privacidad de Datos UE-EE. UU. (si el
             proveedor está certificado) y/o en cláusulas contractuales tipo de
-            la Comisión Europea. Al aceptar las cookies analíticas consientes
-            también estas transferencias. Más información en la política de
+            la Comisión Europea. Mientras las cookies analíticas estén activas (lo
+            están por defecto) se producen también estas transferencias; puedes
+            desactivarlas en «Configurar cookies». Más información en la política de
             privacidad de{" "}
             <a
               href="https://policies.google.com/privacy"
