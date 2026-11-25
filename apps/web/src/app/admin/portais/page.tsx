@@ -105,6 +105,17 @@ function sourceLabel(key: string) {
   return map[src] ?? src;
 }
 
+/** Estimativa a 30 dias: média dos 7 últimos dias completos (sem hoje) × 30. */
+function estimate30(list: SiteSummary[]) {
+  return Math.round(
+    list.reduce((acc, s) => {
+      if (s.status !== "ok" || s.days.length < 30) return acc;
+      const week = s.days.slice(22, 29).reduce((t, d) => t + d.pageviews, 0);
+      return acc + (week / 7) * 30;
+    }, 0),
+  );
+}
+
 function StatusNote({ s }: { s: SiteSummary }) {
   return (
     <span className="text-xs font-semibold text-amber-600">
@@ -131,7 +142,15 @@ export default async function AdminPortaisPage() {
 
         <section className="mt-6 grid gap-4 sm:grid-cols-3">
           <div className="content-card p-5">
-            <p className="text-xs font-semibold text-muted">Total 8 sites · 30 dias</p>
+            <p className="text-xs font-semibold text-muted">
+              Total 8 sites · 30 dias
+              <span
+                className="ml-1 font-normal"
+                title="Média dos últimos 7 dias completos × 30 (a janela de 30 dias ainda não está completa)"
+              >
+                · estimativa ≈ {nf.format(estimate30(all))}
+              </span>
+            </p>
             <p className="mt-2 text-3xl font-extrabold tracking-[-0.04em]">{nf.format(total30)}</p>
             <Goal value={total30} target={GOAL * all.length} />
           </div>
@@ -139,7 +158,15 @@ export default async function AdminPortaisPage() {
             const list = all.filter((s) => s.site.vertical === v);
             return (
               <div key={v} className="content-card p-5">
-                <p className="text-xs font-semibold text-muted">{label} · 30 dias</p>
+                <p className="text-xs font-semibold text-muted">
+                  {label} · 30 dias
+                  <span
+                    className="ml-1 font-normal"
+                    title="Média dos últimos 7 dias completos × 30 (a janela de 30 dias ainda não está completa)"
+                  >
+                    · estimativa ≈ {nf.format(estimate30(list))}
+                  </span>
+                </p>
                 <p className="mt-2 text-3xl font-extrabold tracking-[-0.04em]">
                   {nf.format(list.reduce((s, x) => s + x.last30, 0))}
                 </p>
