@@ -150,6 +150,29 @@ SITES: dict[str, dict] = {
         "footer": 'Has recibido este email porque alguien pidió una alerta de ofertas con esta dirección en <a href="{site_url}" style="color:{muted};">vacantessalud.es</a>.',
         "text_title": "Último aviso: falta confirmar tu alerta de VacantesSalud", "text_confirm": "Confirmar",
     },
+    "offertesanita": {
+        "lang": "it", "site_url": "https://offertesanita.it", "from": "Offerte Sanità <avvisi@offertesanita.it>",
+        "confirm_path": "/avvisi/conferma",
+        "utm_source": "offertesanita", "brand": 'Offerte<span style="color:{primary};">Sanità</span>',
+        "social_label": "Seguici e ricevi offerte ogni giorno",
+        "social": [("Telegram", "telegram", "https://t.me/offertesanita"),
+                   ("WhatsApp", "whatsapp", "https://whatsapp.com/channel/0029VbDuqMp9xVJnr0RzZG04"),
+                   ("Instagram", "instagram", "https://www.instagram.com/offertesanita/"),
+                   ("Facebook", "facebook", "https://www.facebook.com/offertesanita")],
+        "summary": lambda f: _summary(f, "offerte di", "offerte di lavoro in sanità", lambda d: f"in {d}", "in Italia", "settore"),
+        "subject": "Il tuo avviso di offerte non è ancora attivo — ultimo promemoria",
+        "title": "Ultimo promemoria: manca la conferma del tuo avviso",
+        "preheader": "Un clic per attivare l'avviso. Non insisteremo più.",
+        "intro": "Hai chiesto un avviso di offerte su Offerte Sanità, ma non l'hai ancora confermato, quindi non ti abbiamo inviato nulla. "
+                 "Questo è l'ultimo promemoria: conferma con un clic e inizierai a ricevere le nuove offerte via email.",
+        "intro_multi": "Hai chiesto degli avvisi di offerte su Offerte Sanità con questa email, ma non li hai ancora confermati, quindi non ti abbiamo inviato nulla. "
+                       "Questo è l'ultimo promemoria: conferma quelli che vuoi con un clic.",
+        "label_alert": "Il tuo avviso", "button": "Conferma avviso",
+        "ignore": "Se non sei stato tu, ignora questa email: non insisteremo più.",
+        "spam": "Non trovi le nostre email? Controlla anche la cartella spam o promozioni.",
+        "footer": 'Hai ricevuto questa email perché qualcuno ha chiesto un avviso di offerte con questo indirizzo su <a href="{site_url}" style="color:{muted};">offertesanita.it</a>.',
+        "text_title": "Ultimo promemoria: manca la conferma del tuo avviso Offerte Sanità", "text_confirm": "Conferma",
+    },
 }
 
 
@@ -267,7 +290,7 @@ def build_email(site: str, cfg: dict, alerts: list[dict]) -> dict:
         return f"{su}{path}{'&' if '?' in path else '?'}utm_source={cfg['utm_source']}&utm_medium=email&utm_campaign=alerta_ultimo_lembrete"
 
     def confirm_url(token: str) -> str:
-        return f"{su}/alertas/confirmar?token={token}"
+        return f"{su}{cfg.get('confirm_path', '/alertas/confirmar')}?token={token}"
 
     def icons(size: int, gap: int) -> str:
         return "".join(
