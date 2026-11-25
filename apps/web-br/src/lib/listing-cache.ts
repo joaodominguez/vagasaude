@@ -1,4 +1,5 @@
 import type { Job } from "@/lib/jobs";
+import { stemmedText, type SearchLang } from "@/lib/search-text";
 import { isCategoryEligible } from "@/lib/categories";
 import { contractBucket } from "@/lib/contracts";
 
@@ -10,13 +11,14 @@ import { contractBucket } from "@/lib/contracts";
  */
 const haystacks = new WeakMap<Job, string>();
 
-/** Texto onde a pesquisa procura (título, entidade, profissão, descrição), em minúsculas. */
-export function searchHaystack(job: Job, locale: string) {
+/**
+ * Texto onde a pesquisa procura (título, entidade, profissão, descrição), sem acentos e reduzido a
+ * radicais (ver search-text.ts), para a pesquisa ignorar maiúsculas, acentos, género e plural.
+ */
+export function searchHaystack(job: Job, lang: SearchLang) {
   let value = haystacks.get(job);
   if (value === undefined) {
-    value = `${job.title} ${job.company} ${job.profession} ${job.description}`.toLocaleLowerCase(
-      locale,
-    );
+    value = stemmedText(`${job.title} ${job.company} ${job.profession} ${job.description}`, lang);
     haystacks.set(job, value);
   }
   return value;

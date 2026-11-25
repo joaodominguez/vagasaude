@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { categoryEligibleCached, facetCounts, searchHaystack } from "@/lib/listing-cache";
+import { parseQuery, stemmedHasAll } from "@/lib/search-text";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronLeft, ChevronRight, SlidersHorizontal, X } from "lucide-react";
@@ -106,7 +107,7 @@ export default async function JobsPage({
 }) {
   const params = await searchParams;
   const queryRaw = params.q?.trim() ?? "";
-  const query = queryRaw.toLocaleLowerCase("pt");
+  const query = parseQuery(queryRaw, "pt");
   const district = params.distrito ?? "";
   const profession = params.profissao ?? "";
   const sector = params.setor ?? "";
@@ -126,7 +127,7 @@ export default async function JobsPage({
   let filteredJobs = jobs.filter((job) => {
     const haystack = searchHaystack(job, "pt");
     return (
-      (!query || haystack.includes(query)) &&
+      (!queryRaw || stemmedHasAll(haystack, query)) &&
       (!district || job.district === district) &&
       (!profession || job.profession === profession) &&
       (!sector || job.sector === sector) &&
