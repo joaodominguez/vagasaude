@@ -1,4 +1,4 @@
-import { foldText, parseQuery, stemmedHasAll, stemmedText } from "@/lib/search-text";
+import { foldText, lightText, parseQuery, stemmedHasAll, stemmedText } from "@/lib/search-text";
 /** Normaliza tipos de contrato para filtros estáveis. */
 export const CONTRACT_FILTERS = [
   "Tempo inteiro",
@@ -74,7 +74,7 @@ export function scoreJobRelevance(
   if (stemmedHasAll(stemmedText(job.title, "pt"), q)) return 45;
   if (job.description) {
     if (foldText(job.description, "pt").includes(q.folded)) return 15;
-    if (multi && stemmedHasAll(stemmedText(job.description, "pt"), q)) return 10;
+    if (multi && stemmedHasAll(lightText(job.description, "pt"), q)) return 10;
   }
   return 0;
 }

@@ -6,7 +6,7 @@
  */
 import test from "node:test";
 import assert from "node:assert/strict";
-import { parseQuery, stemmedHasAll, stemmedText } from "./search-text";
+import { lightText, parseQuery, stemmedHasAll, stemmedText } from "./search-text";
 
 const LANG = "pt";
 function hit(text: string, query: string) {
@@ -43,4 +43,11 @@ test("não encontra", () => {
 
 test("pesquisa só com palavras vazias usa-as", () => {
   assert.ok(hit("Médico de família", "de"));
+});
+
+test("descrição: só plural, sem género (evita 'assistência médica' trazer tudo)", () => {
+  const job = (desc: string) => stemmedText("Auxiliar", LANG) + lightText(desc, LANG);
+  const q = parseQuery("médico", LANG);
+  assert.ok(!stemmedHasAll(job("Benefícios: assistência médica"), q));
+  assert.ok(stemmedHasAll(job("Procuramos médicos"), q));
 });
