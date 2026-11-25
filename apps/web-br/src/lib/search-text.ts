@@ -36,6 +36,28 @@ function replaceEnding(word: string, ending: string, repl: string): string | nul
   return word.endsWith(ending) ? word.slice(0, -ending.length) + repl : null;
 }
 
+/**
+ * Forma "leve" (só plural, sem género) para a descrição: ali "médica" aparece em "assistência médica"
+ * e não deve trazer todas as vagas quando se pesquisa "médico". No título/entidade/profissão usa-se o radical.
+ */
+export function lightWord(word: string, lang: SearchLang): string {
+  if (word.length <= MIN_STEM || lang === "it" || /^\d+$/.test(word)) return word;
+  const plural =
+    (lang === "pt" &&
+      (replaceEnding(word, "oes", "ao") ?? replaceEnding(word, "aes", "ao") ?? replaceEnding(word, "ais", "al") ?? replaceEnding(word, "eis", "el"))) ||
+    (lang === "es" && replaceEnding(word, "ones", "on")) ||
+    replaceEnding(word, "ores", "or") ||
+    (lang === "es" && /[^aeiou]es$/.test(word) ? replaceEnding(word, "es", "") : null);
+  return plural || (word.endsWith("s") && word.length - 1 >= MIN_STEM ? word.slice(0, -1) : word);
+}
+
+/** Texto da descrição na forma leve, com espaços nas pontas. */
+export function lightText(text: string, lang: SearchLang): string {
+  const folded = foldText(text, lang);
+  if (!folded) return " ";
+  return ` ${folded.split(" ").map((w) => lightWord(w, lang)).join(" ")} `;
+}
+
 /** Radical de uma palavra já "dobrada" (sem acentos, minúscula). */
 export function stemWord(word: string, lang: SearchLang): string {
   if (word.length <= MIN_STEM || /^\d+$/.test(word)) return word;
@@ -66,6 +88,8 @@ export function stemmedText(text: string, lang: SearchLang): string {
 export type ParsedQuery = {
   /** Radicais que têm de aparecer todos. */
   stems: string[];
+  /** Forma leve (só plural) de cada palavra, para a descrição. */
+  lights: string[];
   /** Palavra inteira (dobrada) de cada radical — para a pesquisa por prefixo ao escrever. */
   words: string[];
   folded: string;
@@ -76,14 +100,14 @@ export function parseQuery(raw: string, lang: SearchLang): ParsedQuery {
   const all = folded ? folded.split(" ") : [];
   const meaningful = all.filter((w) => !STOPWORDS[lang].has(w));
   const words = meaningful.length ? meaningful : all;
-  return { stems: words.map((w) => stemWord(w, lang)), words, folded };
+  return { stems: words.map((w) => stemWord(w, lang)), lights: words.map((w) => lightWord(w, lang)), words, folded };
 }
 
-/** Todas as palavras da pesquisa aparecem (como radical) no texto já reduzido? */
+/** Todas as palavras da pesquisa aparecem (como radical, ou na forma leve) no texto já reduzido? */
 export function stemmedHasAll(stemmed: string, q: ParsedQuery): boolean {
   for (let i = 0; i < q.stems.length; i++) {
     const stem = q.stems[i];
-    if (stemmed.includes(` ${stem} `)) continue;
+    if (stemmed.includes(` ${stem} `) || stemmed.includes(` ${q.lights[i]} `)) continue;
     // Palavra sem terminação reconhecida (ex. "enferm", "enfermag"): aceita como prefixo.
     if (q.words[i] === stem && stem.length >= 6 && stemmed.includes(` ${stem}`)) continue;
     return false;
