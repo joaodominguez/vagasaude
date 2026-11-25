@@ -21,6 +21,8 @@ from .estar_toscana import EstarToscanaScraper
 from .anicura import AnicuraScraper
 from .auxologico import AuxologicoScraper
 from .bianalisi import BianalisiScraper
+from .casa_sollievo import CasaSollievoScraper
+from .cazampa import CazampaScraper
 from .cerba import CerbaScraper
 from .clariane import ClarianeScraper
 from .fatebenefratelli import FatebenefratelliScraper
@@ -31,12 +33,16 @@ from .gu_s4 import GuS4Scraper
 from .gvm import GvmScraper
 from .humanitas import HumanitasScraper
 from .ieo import IeoScraper
+from .israelitico import IsraeliticoScraper
 from .inpa import InpaScraper
 from .kos_group import KosGroupScraper
+from .mater_olbia import MaterOlbiaScraper
 from .maugeri import MaugeriScraper
 from .veneto_concorsi import VenetoConcorsiScraper
 from .plone_er import SCRAPER_CLASSES as PLONE_ER_SCRAPERS
 from .randstad import RandstadScraper
+from .sereni_orizzonti import SereniOrizzontiScraper
+from .sospiro import SospiroScraper
 from .synlab import SynlabScraper
 
 SCRAPERS: dict = {
@@ -50,7 +56,9 @@ SCRAPERS: dict = {
                     # Intervieweb: autorizzati dai gruppi il 2026-11-17 (vedi _intervieweb.py).
                     GemelliScraper, GvmScraper, SynlabScraper,
                     # Gruppo KOS (RSA/riabilitazione): lista HTML publica, sem descrizione (2026-11-20).
-                    KosGroupScraper,)
+                    KosGroupScraper,
+                    # Lote 2 de fontes privadas (2026-11-25): paginas "lavora con noi" em HTML (robots OK, UA honesto, >= 2 s).
+                    MaterOlbiaScraper, CasaSollievoScraper, IsraeliticoScraper, CazampaScraper, SospiroScraper, SereniOrizzontiScraper,)
 }
 
 # Fonti private (settore "privato", tipo "offerta"): vedi sources/_it_priv.py.
