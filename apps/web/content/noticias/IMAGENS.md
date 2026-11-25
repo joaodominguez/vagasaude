@@ -11,3 +11,4 @@ Todas do Pexels (Pexels License: uso comercial permitido, sem atribuição obrig
 | curriculo-enfermagem-saude | https://www.pexels.com/photo/a-young-woman-in-blue-scrubs-holding-a-stethoscope-4930705/ | Mix and Match Studio | Pexels License |
 | emprego-nutricionistas-psicologos-vagas-salarios | https://www.pexels.com/photo/nutritionist-holding-broccoli-in-office-15319047/ | beyzahzah | Pexels License |
 | mercado-emprego-saude-outubro-2026 | https://www.pexels.com/photo/full-shot-of-doctors-and-nurses-6129499/ | RDNE Stock project | Pexels License |
+| orcamento-estado-2027-saude-salarios | https://www.pexels.com/photo/doctors-and-nurses-in-a-hospital-6129507/ | RDNE Stock project | Pexels License |
