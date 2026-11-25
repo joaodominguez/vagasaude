@@ -176,6 +176,51 @@ select {
   }
 }
 
+/* Menu móvel em sobreposição: painel absoluto logo abaixo do cabeçalho (sticky), por cima do
+   conteúdo, com scroll próprio; o fundo escurecido fecha o menu ao toque. Não empurra a página. */
+.mobile-nav {
+  position: absolute;
+  top: calc(100% + 1px);
+  left: 0;
+  right: 0;
+  z-index: 2;
+  max-height: calc(100vh - 4rem - 1px);
+  max-height: calc(100dvh - 4rem - 1px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  box-shadow: 0 18px 32px rgb(15 23 42 / 0.18);
+}
+
+.mobile-nav-backdrop {
+  position: absolute;
+  top: calc(100% + 1px);
+  left: 0;
+  right: 0;
+  z-index: 1;
+  height: 100vh;
+  height: 100dvh;
+  background: rgb(15 23 42 / 0.45);
+  animation: mobile-nav-fade 180ms ease;
+}
+
+.dark .mobile-nav {
+  box-shadow: 0 18px 32px rgb(0 0 0 / 0.55);
+}
+
+.dark .mobile-nav-backdrop {
+  background: rgb(0 0 0 / 0.6);
+}
+
+@keyframes mobile-nav-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+
 .hero-section {
   position: relative;
   overflow: hidden;

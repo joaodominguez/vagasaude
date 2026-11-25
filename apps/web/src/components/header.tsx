@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { Bell, Menu, X } from "lucide-react";
 import { FavoritesBadge } from "./favorites-badge";
 import { Logo } from "./logo";
@@ -27,11 +27,35 @@ const SECONDARY_HREFS = new Set<string>(["/favoritos", "/vagas/hoje"]);
 export function Header() {
   const [open, setOpen] = useState(false);
   const panelId = useId();
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  // Fecha e devolve o foco ao botão (Esc, fundo, botão); os links só fecham, porque navegam.
+  function closeMenu() {
+    setOpen(false);
+    buttonRef.current?.focus();
+  }
+
+  // Menu aberto: bloqueia o scroll da página (sem saltar: a posição fica no sítio e compensa-se a
+  // barra de scroll) e leva o foco ao primeiro link.
+  useEffect(() => {
+    if (!open) return;
+    const html = document.documentElement;
+    const { overflow, paddingRight } = html.style;
+    const gap = window.innerWidth - html.clientWidth;
+    html.style.overflow = "hidden";
+    if (gap > 0) html.style.paddingRight = `${gap}px`;
+    panelRef.current?.querySelector<HTMLElement>("a")?.focus();
+    return () => {
+      html.style.overflow = overflow;
+      html.style.paddingRight = paddingRight;
+    };
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;
     function onKey(event: KeyboardEvent) {
-      if (event.key === "Escape") setOpen(false);
+      if (event.key === "Escape") closeMenu();
     }
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
@@ -74,6 +98,7 @@ export function Header() {
           <FavoritesBadge />
           <ThemeToggle />
           <button
+            ref={buttonRef}
             type="button"
             className="icon-button md:hidden"
             aria-label={open ? "Fechar menu" : "Abrir menu"}
@@ -86,8 +111,10 @@ export function Header() {
         </div>
       </div>
 
+      {open ? <div className="mobile-nav-backdrop md:hidden" aria-hidden="true" onClick={closeMenu} /> : null}
       <div
         id={panelId}
+        ref={panelRef}
         className={open ? "mobile-nav is-open md:hidden" : "mobile-nav md:hidden"}
         hidden={!open}
       >
