@@ -91,10 +91,9 @@ export default function PrivacyPage() {
                       dispositivo e browser, posizione approssimativa.
                     </td>
                     <td>
-                      Legittimo interesse (art. 6, par. 1, lett. f GDPR) a
-                      misurare e migliorare il Sito. Gli strumenti sono attivi
-                      per impostazione predefinita e puoi rifiutarli in ogni
-                      momento da «Impostazioni cookie».
+                      Strumenti di misurazione attivi per impostazione
+                      predefinita; puoi disattivarli in ogni momento da
+                      «Impostazioni cookie».
                     </td>
                   </tr>
                 ) : null}
