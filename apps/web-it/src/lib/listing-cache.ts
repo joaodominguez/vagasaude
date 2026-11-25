@@ -1,4 +1,5 @@
 import type { Job } from "@/lib/jobs";
+import { lightText, stemmedText, type SearchLang } from "@/lib/search-text";
 import { isCategoryEligible } from "@/lib/categories";
 import { contractBucket } from "@/lib/contracts";
 
@@ -10,14 +11,14 @@ import { contractBucket } from "@/lib/contracts";
  */
 const haystacks = new WeakMap<Job, string>();
 
-/** Testo su cui agisce la ricerca (titolo, azienda, professione, descrizione), minuscolo e senza accenti. */
-export function searchHaystack(job: Job, locale: string) {
+/**
+ * Texto onde a pesquisa procura (título, entidade, profissão, descrição), sem acentos e reduzido a
+ * radicais — a descrição só com o plural normalizado (ver search-text.ts) —, para a pesquisa ignorar maiúsculas, acentos, género e plural.
+ */
+export function searchHaystack(job: Job, lang: SearchLang) {
   let value = haystacks.get(job);
   if (value === undefined) {
-    value = `${job.title} ${job.company} ${job.profession} ${job.description}`
-      .normalize("NFKD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .toLocaleLowerCase(locale);
+    value = stemmedText(`${job.title} ${job.company} ${job.profession}`, lang) + lightText(job.description, lang);
     haystacks.set(job, value);
   }
   return value;

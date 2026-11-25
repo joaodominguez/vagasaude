@@ -1,3 +1,4 @@
+import { foldText, lightText, parseQuery, stemmedHasAll, stemmedText } from "@/lib/search-text";
 /** Normalizza i tipi di contratto per filtri stabili. */
 export const CONTRACT_FILTERS = [
   "Tempo pieno",
@@ -62,22 +63,22 @@ export function scoreJobRelevance(
   },
   query: string,
 ) {
-  const q = query.trim().toLocaleLowerCase("it");
-  if (!q) return 0;
-  const title = job.title.toLocaleLowerCase("it");
-  const company = job.company.toLocaleLowerCase("it");
-  const profession = job.profession.toLocaleLowerCase("it");
-  if (title === q) return 100;
-  if (title.startsWith(q)) return 80;
-  if (title.includes(q)) return 60;
-  if (profession.includes(q)) return 40;
-  if (company.includes(q)) return 25;
-  const words = q.split(/\s+/).filter(Boolean);
-  if (words.length > 1 && words.every((w) => title.includes(w))) return 50;
+  const q = parseQuery(query, "it");
+  if (!q.folded) return 0;
+  const title = foldText(job.title, "it");
+  const company = foldText(job.company, "it");
+  const profession = foldText(job.profession, "it");
+  if (title === q.folded) return 100;
+  if (title.startsWith(q.folded)) return 80;
+  if (title.includes(q.folded)) return 60;
+  if (profession.includes(q.folded)) return 40;
+  if (company.includes(q.folded)) return 25;
+  const multi = q.stems.length > 1;
+  if (multi && stemmedHasAll(stemmedText(job.title, "it"), q)) return 50;
+  if (stemmedHasAll(stemmedText(job.title, "it"), q)) return 45;
   if (job.description) {
-    const desc = job.description.toLocaleLowerCase("it");
-    if (desc.includes(q)) return 15;
-    if (words.length > 1 && words.every((w) => desc.includes(w))) return 10;
+    if (foldText(job.description, "it").includes(q.folded)) return 15;
+    if (multi && stemmedHasAll(lightText(job.description, "it"), q)) return 10;
   }
   return 0;
 }
