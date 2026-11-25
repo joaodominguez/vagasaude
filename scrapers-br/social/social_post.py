@@ -812,10 +812,29 @@ def main() -> int:
     g.add_argument("--deliver", action="store_true")
     g.add_argument("--publish", action="store_true")
     g.add_argument("--dry-run", action="store_true")
+    g.add_argument("--email-fallback", action="store_true",
+                   help="envia o e-mail do pacote só se o canal de WhatsApp não foi publicado (falta whatsapp.posted)")
     ap.add_argument("--only", default=",".join(CHANNELS), help="canais a publicar, ex.: facebook,instagram")
+    ap.add_argument("--no-email", action="store_true",
+                    help="com --deliver: gera o pacote sem e-mail (o WhatsApp é publicado pelo Mac; e-mail só em falha)")
     a = ap.parse_args()
     configure(a.market)
     root, day = Path(a.root or M["root"]), date.fromisoformat(a.day)
+    if a.email_fallback:
+        out = root / "data" / "social" / day.isoformat()
+        if not (out / "square.png").exists():
+            print(f"[social] e-mail de recurso: não há pacote de {day}")
+            return 1
+        if (out / "whatsapp.posted").exists():
+            print(f"[social] WhatsApp já publicado automaticamente ({day}); e-mail não enviado")
+            return 0
+        if (out / "whatsapp.emailed").exists():
+            print(f"[social] e-mail de recurso já enviado hoje ({day})")
+            return 0
+        print(f"[social] WhatsApp NÃO publicado automaticamente ({day}); a enviar o pacote por e-mail")
+        deliver_email(root, out, day)
+        (out / "whatsapp.emailed").touch()
+        return 0
     if a.publish:
         out = root / "data" / "social" / day.isoformat()
         if not (out / "square.png").exists():
@@ -823,7 +842,7 @@ def main() -> int:
             return 1
         return publish(out, {c.strip() for c in a.only.split(",") if c.strip()})
     out = build_package(root, day, dry_run=a.dry_run)
-    if out and a.deliver:
+    if out and a.deliver and not a.no_email:
         deliver_email(root, out, day)
     return 0
 
