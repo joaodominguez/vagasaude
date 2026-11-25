@@ -22,6 +22,7 @@ from .anicura import AnicuraScraper
 from .auxologico import AuxologicoScraper
 from .bianalisi import BianalisiScraper
 from .casa_sollievo import CasaSollievoScraper
+from .apoteca_natura import ApotecaNaturaScraper
 from .cazampa import CazampaScraper
 from .cerba import CerbaScraper
 from .clariane import ClarianeScraper
@@ -58,7 +59,9 @@ SCRAPERS: dict = {
                     # Gruppo KOS (RSA/riabilitazione): lista HTML publica, sem descrizione (2026-11-20).
                     KosGroupScraper,
                     # Lote 2 de fontes privadas (2026-11-25): paginas "lavora con noi" em HTML (robots OK, UA honesto, >= 2 s).
-                    MaterOlbiaScraper, CasaSollievoScraper, IsraeliticoScraper, CazampaScraper, SospiroScraper, SereniOrizzontiScraper,)
+                    MaterOlbiaScraper, CasaSollievoScraper, IsraeliticoScraper, CazampaScraper, SospiroScraper, SereniOrizzontiScraper,
+                    # Apoteca Natura (2026-11-25): farmacias; unica fonte esentata dal filtro talent-pool.
+                    ApotecaNaturaScraper,)
 }
 
 # Fonti private (settore "privato", tipo "offerta"): vedi sources/_it_priv.py.

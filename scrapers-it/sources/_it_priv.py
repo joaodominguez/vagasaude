@@ -52,7 +52,14 @@ def clean_text(text: str) -> str:
     return re.sub(r"\n{3,}", "\n\n", "\n".join(kept)).strip()
 
 
-def is_talent_pool(title: str, text: str = "") -> bool:
+# Unica fonte esentata dal filtro: Apoteca Natura pubblica ogni farmacia come "Candidatura Spontanea" con data di
+# validita' ma con ruolo, sede, requisiti e contratto reali (decisione del titolare, 2026-11-25).
+TALENT_POOL_EXEMPT_SOURCES = frozenset({"apoteca-natura"})
+
+
+def is_talent_pool(title: str, text: str = "", source: str | None = None) -> bool:
+    if source in TALENT_POOL_EXEMPT_SOURCES:
+        return False
     return bool(_TALENT_POOL_RE.search(title or "")) or bool(_TALENT_POOL_RE.search((text or "")[:300]))
 
 

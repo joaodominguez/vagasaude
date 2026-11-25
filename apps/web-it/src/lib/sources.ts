@@ -274,6 +274,13 @@ export const JOB_SOURCES: JobSourceMeta[] = [
     sector: "Privato",
   },
   {
+    id: "apoteca-natura",
+    name: "Apoteca Natura — Offerte di lavoro",
+    shortName: "Apoteca Natura",
+    url: "https://job.apotecanatura.it/offerte",
+    sector: "Privato",
+  },
+  {
     id: "sereni-orizzonti",
     name: "Sereni Orizzonti — Posizioni aperte",
     shortName: "Sereni Orizzonti",

@@ -1,6 +1,8 @@
 from datetime import date, datetime, timezone
 from pathlib import Path
 
+from sources import _it_priv as PRIV
+from sources import apoteca_natura as AN
 from sources import casa_sollievo as CS
 from sources import cazampa as CZ
 from sources import israelitico as IS
@@ -126,3 +128,39 @@ def test_sereni_orizzonti_only_clinical():
     assert nurse.published_at.startswith("2026-08-20") and nurse.source_id == "sereni-orizzonti-43109"
     assert nurse.application_url.endswith("#posizione-43109")
     no_contacts(nurse)
+
+
+def test_apoteca_natura_titles_and_filter_exemption():
+    rows = AN.parse_list(read("apoteca_list.html"))
+    assert len(rows) == 10 and len(AN.parse_list(read("apoteca_list1.html"))) == 3
+    cipolla = rows[0]
+    assert AN.pharmacy_name(cipolla["title"]) == "Farmacia Cipolla"
+    assert AN.pharmacy_name("Farmacista Collaboratore/Collaboratrice DE LISI &amp; D&#039;AMELIO - Candidatura Spontanea") == "Farmacia De Lisi & D'Amelio"
+    assert AN.pharmacy_name("Candidatura spontanea") is None
+    assert AN.build_title(cipolla["title"], cipolla["role"], "Campobasso") == "Farmacista collaboratore/a - Farmacia Cipolla, Campobasso"
+    assert AN.build_title("Commessa di farmacia FARMACIA X - Candidatura Spontanea", None, "Roma") == "Commesso/a di farmacia - Farmacia X, Roma"
+    # filtro talent-pool: esentata solo apoteca-natura
+    assert PRIV.is_talent_pool(cipolla["title"]) is True
+    assert PRIV.is_talent_pool(cipolla["title"], source="sospiro") is True
+    assert PRIV.is_talent_pool(cipolla["title"], source="apoteca-natura") is False
+
+
+def test_apoteca_natura_job_and_expiry():
+    row = AN.parse_list(read("apoteca_list.html"))[0]
+    body = AN.parse_body(read("apoteca_detail.html"))
+    assert body.startswith("La Farmacia Cipolla di Campobasso") and "Le Farmacie Apoteca Natura si impegnano" not in body
+    stats: dict = {}
+    job = AN.build_job(row, body, datetime(2026, 8, 1, tzinfo=timezone.utc), stats)
+    assert job is not None and job.title == "Farmacista collaboratore/a - Farmacia Cipolla, Campobasso"
+    assert job.profession == "Farmacia" and job.sector == "privato" and job.company == "Apoteca Natura"
+    assert job.location_district == "Molise" and job.location_concelho == "Campobasso"
+    assert job.expires_at.startswith("2026-09-30") and job.published_at.startswith("2026-07-08")
+    assert job.application_url == "https://job.apotecanatura.it" + row["href"]
+    assert job.source == "apoteca-natura" and job.source_id.startswith("apoteca-natura-farmacista-collaboratore")
+    assert "Candidatura Spontanea" not in job.title and stats == {}
+    no_contacts(job)
+    # scaduto (dopo il 30/09/2026) -> escluso
+    assert AN.build_job(row, body, datetime(2026, 11, 25, tzinfo=timezone.utc), stats) is None and stats == {"expired": 1}
+    # scheda generica senza sede -> esclusa
+    generic = AN.parse_list(read("apoteca_list1.html"))[-1]
+    assert AN.build_job(generic, body, datetime(2026, 8, 1, tzinfo=timezone.utc), {}) is None
