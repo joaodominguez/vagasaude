@@ -13,3 +13,4 @@ Todas do Pexels (Pexels License: uso comercial permitido, sem atribuição obrig
 | salario-tecnico-auxiliar-enfermagem-2026-por-estado | https://www.pexels.com/photo/person-in-blue-scrub-suit-holding-the-hand-of-a-patient-6129685/ | RDNE Stock project | Pexels License |
 | vagas-saude-sao-paulo-rio-de-janeiro-belo-horizonte-comparativo | https://www.pexels.com/photo/stunning-aerial-view-of-sao-paulo-skyline-at-sunset-29259735/ | Fabio Akamine | Pexels License |
 | vagas-tecnico-de-enfermagem-salario-escala-12x36 | https://www.pexels.com/photo/photo-of-woman-resting-on-the-couch-4270365/ | Cedric Fauntleroy | Pexels License |
+| piso-enfermagem-salario-minimo-2027 | https://www.pexels.com/photo/doctors-and-nurses-in-a-hospital-6129502/ | RDNE Stock project | Pexels License |
