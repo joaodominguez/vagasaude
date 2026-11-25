@@ -13,3 +13,4 @@ Todas de Pexels (Pexels License: uso comercial permitido, sin atribución obliga
 | curriculum-sanidad | https://www.pexels.com/photo/candidate-having-an-interview-5439143/ | Tima Miroshnichenko | Pexels License |
 | homologacion-titulo-sanitario-espana | https://www.pexels.com/photo/stack-of-framed-diplomas-ready-for-ceremony-37012315/ | Nacho Gomez | Pexels License |
 | trabajar-tcae-espana | https://www.pexels.com/photo/a-nurse-checking-a-woman-s-blood-pressure-6129678/ | RDNE Stock project | Pexels License |
+| subida-salarial-sanitarios-2027 | https://www.pexels.com/photo/doctors-in-white-coats-in-hospital-corridor-10827916/ | Max Mishin | Pexels License |
